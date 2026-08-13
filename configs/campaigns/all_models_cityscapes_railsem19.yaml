@@ -94,6 +94,7 @@ models:
   - id: hf_auto_beit_base_ade
     config: configs/models/hf_auto_beit_base_ade.yaml
     readme: docs/catalog/models/hf-auto-beit-base-ade/README.md
+    campaign_config: configs/campaigns/beit_native_640.yaml
   - id: hf_auto_mobilenetv2_deeplabv3
     config: configs/models/hf_auto_mobilenetv2_deeplabv3.yaml
     readme: docs/catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md
