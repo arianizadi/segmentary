@@ -4345,6 +4345,12 @@ def _publish_snapshot(record: dict[str, Any], campaign: Path, count: int) -> str
             _run_checked(["git", "merge", "--ff-only", f"{remote}/{branch}"], cwd=root)
         else:
             raise CampaignError("publisher worktree and remote branch have diverged")
+    # The public repository intentionally starts without a placeholder quality
+    # bundle. Wait for the first validated cell so the first published table is
+    # useful and includes at least one machine record plus a real records/
+    # target for the README link.
+    if count == 0:
+        return None
     report_campaign(campaign, write=True, publisher_root=root)
     changed = _git_status_porcelain(root)
     if not changed:
