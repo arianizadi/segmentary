@@ -70,6 +70,9 @@ HEADLINE_TAGS = (
     "train/ce",
     "train/lovasz",
     "train/lr",
+    "train/optimizer_steps_per_sec",
+    "train/examples_per_sec",
+    "train/eta_seconds",
     "val/miou",
     "val/macc",
     "val/pixel_acc",
@@ -120,14 +123,21 @@ def _event_files(run_dir: Path) -> list[Path]:
 
 
 def _stage_dir(event_path: Path) -> Path:
-    # <stage>/lightning_logs/version_N/events.out.tfevents...
-    parents = event_path.parents
-    return parents[2] if len(parents) >= 3 else event_path.parent
+    # Current: <stage>/tensorboard/events.out.tfevents...
+    # Legacy:  <stage>/lightning_logs/version_N/events.out.tfevents...
+    if event_path.parent.name == "tensorboard":
+        return event_path.parent.parent
+    if event_path.parent.parent.name == "lightning_logs":
+        return event_path.parent.parent.parent
+    return event_path.parent
 
 
 def _read_total_steps(stage_dir: Path) -> int | None:
     candidates = sorted(
-        stage_dir.glob("lightning_logs/version_*/hparams.yaml"),
+        [
+            *stage_dir.glob("tensorboard/hparams.yaml"),
+            *stage_dir.glob("lightning_logs/version_*/hparams.yaml"),
+        ],
         key=lambda path: path.stat().st_mtime,
         reverse=True,
     )

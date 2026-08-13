@@ -660,6 +660,33 @@ def test_segmentary_train_runs_binary_folder_curriculum_on_cpu(
     assert checkpoint_path.is_file()
     assert results_path.is_file()
 
+    tensorboard_dir = run_dir / "tensorboard"
+    event_files = list(tensorboard_dir.glob("events.out.tfevents*"))
+    assert len(event_files) == 1
+    assert (tensorboard_dir / "hparams.yaml").is_file()
+    from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+
+    events = EventAccumulator(str(event_files[0]), size_guidance={"scalars": 0})
+    events.Reload()
+    scalar_tags = set(events.Tags()["scalars"])
+    assert {
+        "train/loss",
+        "train/lr",
+        "train/iteration",
+        "train/progress",
+        "train/optimizer_steps_per_sec",
+        "train/examples_per_sec",
+        "train/elapsed_seconds",
+        "train/eta_seconds",
+        "val/miou",
+        "val/macc",
+        "val/pixel_acc",
+        "val/boundary_f1",
+    } <= scalar_tags
+    assert events.Scalars("train/iteration")[-1].value == 1
+    assert events.Scalars("train/progress")[-1].value == pytest.approx(1.0)
+    assert events.Scalars("train/eta_seconds")[-1].value == pytest.approx(0.0)
+
     checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
     assert checkpoint["global_step"] == cfg.train.iters == 1
     assert len(checkpoint["optimizer_states"]) == 1

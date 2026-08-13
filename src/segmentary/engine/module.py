@@ -17,6 +17,7 @@ Two things worth knowing before editing:
 from __future__ import annotations
 
 import warnings
+from time import monotonic
 from typing import Any
 
 import lightning as L
@@ -186,6 +187,9 @@ class SegLitModule(L.LightningModule):
 
         self._cm: ConfusionMatrix | None = None
         self._bf1: BoundaryF1 | None = None
+        self._train_started_monotonic: float | None = None
+        self._training_samples = 0
+        self._telemetry_step = -1
         self.save_hyperparameters(ignore=["model", "loss_fn", "space", "eval_active"])
 
     # -- training ----------------------------------------------------------
@@ -216,6 +220,39 @@ class SegLitModule(L.LightningModule):
     def on_train_batch_end(self, outputs, batch, batch_idx: int) -> None:
         if self.ema is not None:
             self.ema.update(self.model, self.global_step)
+        self._training_samples += int(batch["image"].shape[0]) * int(self.trainer.world_size)
+        completed = int(self.global_step)
+        if completed <= self._telemetry_step or self._train_started_monotonic is None:
+            return
+        self._telemetry_step = completed
+        elapsed = monotonic() - self._train_started_monotonic
+        if elapsed <= 0:
+            return
+        total = int(self.train_cfg.iters)
+        step_rate = completed / elapsed
+        remaining = max(0, total - completed)
+        telemetry = {
+            "train/iteration": float(completed),
+            "train/progress": min(1.0, completed / total),
+            "train/optimizer_steps_per_sec": step_rate,
+            "train/examples_per_sec": self._training_samples / elapsed,
+            "train/elapsed_seconds": elapsed,
+            "train/eta_seconds": remaining / step_rate if step_rate > 0 else float("nan"),
+        }
+        if self.device.type == "cuda":
+            device = self.device
+            telemetry.update(
+                {
+                    "system/gpu_memory_allocated_gib": torch.cuda.memory_allocated(device) / 2**30,
+                    "system/gpu_memory_reserved_gib": torch.cuda.memory_reserved(device) / 2**30,
+                    "system/gpu_peak_memory_allocated_gib": torch.cuda.max_memory_allocated(device)
+                    / 2**30,
+                    "system/gpu_peak_memory_reserved_gib": torch.cuda.max_memory_reserved(device)
+                    / 2**30,
+                }
+            )
+        for name, value in telemetry.items():
+            self.log(name, value, on_step=True, on_epoch=False, sync_dist=False)
 
     def on_train_start(self) -> None:
         """Put pretrained modules into training mode before the first batch.
@@ -228,6 +265,9 @@ class SegLitModule(L.LightningModule):
         pre-hook, so this does not weaken those ablations.
         """
         self.train()
+        self._train_started_monotonic = monotonic()
+        self._training_samples = 0
+        self._telemetry_step = -1
 
     def on_save_checkpoint(self, checkpoint: dict[str, Any]) -> None:
         """Persist the EMA shadow Lightning cannot discover on its own.

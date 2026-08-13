@@ -70,10 +70,33 @@ def _write_stage(
     return event
 
 
+def _write_current_tensorboard_stage(
+    run_dir: Path,
+    name: str = "railsem19",
+    iters: int = 40_000,
+) -> Path:
+    log_dir = run_dir / name / "tensorboard"
+    log_dir.mkdir(parents=True)
+    event = log_dir / "events.out.tfevents.fixture"
+    event.touch()
+    (log_dir / "hparams.yaml").write_text(
+        f"train_cfg: !!python/object:segmentary.config.TrainConfig\n  iters: {iters}\n",
+        encoding="utf-8",
+    )
+    return event
+
+
 def test_read_total_steps_accepts_pre_rename_lightning_hparams(tmp_path: Path) -> None:
     legacy_package = "rail" + "yard"
     event = _write_stage(tmp_path / "run", iters=123, package_tag=legacy_package)
     assert progress._read_total_steps(progress._stage_dir(event)) == 123
+
+
+def test_read_total_steps_accepts_stable_tensorboard_directory(tmp_path: Path) -> None:
+    event = _write_current_tensorboard_stage(tmp_path / "run", iters=456)
+    stage = progress._stage_dir(event)
+    assert stage == tmp_path / "run" / "railsem19"
+    assert progress._read_total_steps(stage) == 456
 
 
 def test_inspect_campaign_uses_live_scalars_without_loading_checkpoint(

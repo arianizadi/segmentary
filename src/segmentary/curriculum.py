@@ -27,6 +27,7 @@ from pathlib import Path
 import lightning as L
 import torch
 from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning.pytorch.loggers import TensorBoardLogger
 
 from .checkpoints import checkpoint_uses_lora, read_checkpoint
 from .config import ExperimentConfig, StageConfig, TrainConfig, config_hash, to_dict
@@ -127,6 +128,23 @@ def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[ModelCh
         save_top_k=-1,
     )
     return [best, periodic]
+
+
+def _tensorboard_logger(out_dir: Path) -> TensorBoardLogger:
+    """Return the stable, explicit TensorBoard destination for one stage.
+
+    Lightning's implicit logger chooses ``lightning_logs/version_N``. That is
+    awkward for unattended campaigns because a retry silently moves to a new
+    directory. A fixed stage-local directory lets TensorBoard merge event-file
+    rollovers and lets the read-only progress dashboard find the current run
+    without guessing a version number.
+    """
+    return TensorBoardLogger(
+        save_dir=out_dir,
+        name="tensorboard",
+        version="",
+        default_hp_metric=False,
+    )
 
 
 def resolve_init(stage: StageConfig, previous: Path | None) -> Path | None:
@@ -303,6 +321,7 @@ def run_stage(
     )
 
     checkpoint_callbacks = _checkpoint_callbacks(out_dir, train_cfg)
+    tensorboard_logger = _tensorboard_logger(out_dir)
     trainer = L.Trainer(
         default_root_dir=out_dir,
         max_steps=train_cfg.iters,
@@ -322,7 +341,8 @@ def run_stage(
         val_check_interval=train_cfg.val_every,
         check_val_every_n_epoch=None,  # iteration-based validation
         callbacks=checkpoint_callbacks,
-        log_every_n_steps=50,
+        logger=tensorboard_logger,
+        log_every_n_steps=min(50, train_cfg.iters),
         num_sanity_val_steps=1,
         enable_progress_bar=True,
     )
@@ -333,6 +353,7 @@ def run_stage(
         f"lr={optim_cfg.backbone_lr:.2e}, trainable={trainable / 1e6:.1f}M/{total / 1e6:.1f}M"
         f"{f', frozen {n_frozen} tensors' if n_frozen else ''} ==="
     )
+    print(f"TensorBoard: tensorboard --logdir {out_root}")
 
     with RunTimer() as timer:
         trainer.fit(lit, train_dataloaders=train_loader, val_dataloaders=val_loader)
