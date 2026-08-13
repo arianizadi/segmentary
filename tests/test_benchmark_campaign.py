@@ -458,6 +458,33 @@ def test_prepare_only_persists_without_starting_tmux(
     assert not calls
 
 
+def test_publisher_does_not_create_empty_public_results_bundle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    publisher_root = tmp_path / "publisher"
+    publisher_root.mkdir()
+    record["publisher"] = {
+        "worktree": str(publisher_root),
+        "remote": "origin",
+        "branch": "main",
+    }
+    monkeypatch.setattr(campaign, "_git_status_porcelain", lambda _root: "")
+    monkeypatch.setattr(campaign, "_run_checked", lambda *args, **kwargs: SHA)
+    monkeypatch.setattr(
+        campaign.subprocess,
+        "run",
+        lambda *args, **kwargs: type("Result", (), {"returncode": 0})(),
+    )
+    monkeypatch.setattr(
+        campaign,
+        "report_campaign",
+        lambda *args, **kwargs: pytest.fail("zero-cell snapshot must not render"),
+    )
+
+    assert campaign._publish_snapshot(record, tmp_path / "campaign", 0) is None
+
+
 def test_prepared_campaign_rejects_option_drift(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

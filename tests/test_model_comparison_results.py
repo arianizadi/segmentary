@@ -5,18 +5,22 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_no_historical_quality_result_bundle_is_tracked() -> None:
-    removed = (
+def test_results_tree_is_either_clean_start_or_complete_live_bundle() -> None:
+    historical = (
         ROOT / "docs/findings.md",
-        ROOT / "docs/results/model-comparison/README.md",
-        ROOT / "docs/results/model-comparison/results.csv",
-        ROOT / "docs/results/model-comparison/status.json",
-        ROOT / "docs/results/model-comparison/records/segformer_b2.json",
         ROOT / "docs/results/rail-transfer-m5/audit-summary.json",
         ROOT / "docs/results/rail-transfer-m5/results.csv",
         ROOT / "docs/results/rail-transfer-m5/results.md",
     )
-    assert all(not path.exists() for path in removed)
+    assert all(not path.exists() for path in historical)
+
+    comparison = ROOT / "docs/results/model-comparison"
+    if not comparison.exists():
+        return
+    assert (comparison / "README.md").is_file()
+    assert (comparison / "results.csv").is_file()
+    assert (comparison / "status.json").is_file()
+    assert list((comparison / "records").glob("*.json"))
 
 
 def test_markdown_never_uses_plus_minus_result_formatting() -> None:
