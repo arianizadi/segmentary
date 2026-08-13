@@ -3,9 +3,10 @@
 
 Long-running workers are always created as named tmux sessions. A worker refuses
 to run outside tmux, and each lane receives exactly one physical GPU through
-``CUDA_VISIBLE_DEVICES``. Re-running ``launch`` resumes at job boundaries:
-validated successes are skipped, while an interrupted or failed job receives a
-new attempt directory so earlier evidence is never overwritten.
+``CUDA_VISIBLE_DEVICES``. Re-running ``launch`` resumes an interrupted training
+attempt from its newest complete periodic checkpoint, including optimizer,
+scheduler, EMA, callback, and global-step state. Validated successes are skipped;
+a fresh attempt directory is created only when no recovery checkpoint exists.
 
 The campaign manifest fixes three distinct protocols:
 
@@ -54,6 +55,7 @@ SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
+from segmentary.checkpoints import TRAINING_RESUME_KEY, read_checkpoint
 from segmentary.config import (
     ExperimentConfig,
     config_hash,
@@ -715,6 +717,10 @@ def build_campaign_record(
             "eval_workers": eval_workers,
             "deterministic": deterministic,
             "scheduler": "dependency_aware_lpt_static_lanes",
+            "resume_policy": (
+                "same-attempt full-state resume from newest validated periodic checkpoint; "
+                "fresh attempt only when no recovery checkpoint exists"
+            ),
             "planned_optimizer_iterations": sum(
                 20_000 if job.protocol.id == "cityscapes_to_railsem19" else 40_000 for job in jobs
             ),
@@ -1826,6 +1832,41 @@ def _attempt_paths(
     }
 
 
+def _latest_resume_checkpoint(
+    paths: dict[str, Any], config: dict[str, Any]
+) -> tuple[Path, int, str] | None:
+    """Return the newest complete stage checkpoint created by this attempt."""
+    stages = config.get("stages")
+    if not isinstance(stages, list):
+        raise CampaignError("resolved training config has no stage list")
+    run_dir = Path(paths["run_dir"])
+    ranked: list[tuple[int, int, Path]] = []
+    for stage_index, stage in enumerate(stages):
+        if not isinstance(stage, dict) or not isinstance(stage.get("name"), str):
+            raise CampaignError("resolved training config contains a malformed stage")
+        stage_name = stage["name"]
+        expected = _expected_final_step(config, stage_name)
+        stage_dir = run_dir / stage_name
+        candidates = [*stage_dir.glob("step-*.ckpt")]
+        last = stage_dir / "last.ckpt"
+        if last.is_file():
+            candidates.append(last)
+        for checkpoint in candidates:
+            if not checkpoint.is_file() or checkpoint.stat().st_size == 0:
+                continue
+            step = _checkpoint_global_step(checkpoint)
+            if step is not None and 0 < step <= expected:
+                ranked.append((stage_index, step, checkpoint))
+    if not ranked:
+        return None
+    _, step, checkpoint = max(ranked, key=lambda item: (item[0], item[1], item[2].name))
+    state = read_checkpoint(checkpoint)
+    metadata = state.get(TRAINING_RESUME_KEY)
+    if not isinstance(metadata, dict) or metadata.get("stage_name") != checkpoint.parent.name:
+        raise CampaignError(f"checkpoint is not a compatible Segmentary resume state: {checkpoint}")
+    return checkpoint, step, _sha256(checkpoint)
+
+
 def _commands(
     record: dict[str, Any],
     job: dict[str, Any],
@@ -1833,10 +1874,13 @@ def _commands(
     *,
     result_git_sha: str | None = None,
     result_stage: str | None = None,
+    resume_checkpoint: Path | None = None,
 ) -> tuple[list[str], list[str], list[str]]:
     python = record["execution"]["python"]
     config = str(paths["config"])
     train = [python, "-m", "segmentary.train", config, "--devices", "1"]
+    if resume_checkpoint is not None:
+        train.extend(["--resume-checkpoint", str(resume_checkpoint)])
     if record["execution"]["deterministic"]:
         train.append("--deterministic")
     evaluate = [
@@ -2551,6 +2595,8 @@ def _attempt_record(
         "train_returncode": None,
         "eval_returncode": None,
         "performance_returncode": None,
+        "resume": None,
+        "resumes": [],
         "train_command": train,
         "eval_command": evaluate,
         "performance_command": benchmark,
@@ -2701,7 +2747,36 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             }
             else None
         )
-        if resumable is None:
+        training_resume: (
+            tuple[dict[str, Any], dict[str, Any], dict[str, Path], Path, int, str] | None
+        ) = None
+        if (
+            resumable is None
+            and isinstance(attempts, list)
+            and attempts
+            and isinstance(attempts[-1], dict)
+            and job.get("status") in {"training", "train_failed"}
+        ):
+            interrupted = attempts[-1]
+            _validate_attempt_dependency(interrupted)
+            interrupted_paths, _ = _attempt_path_objects(interrupted)
+            try:
+                interrupted_config = load_yaml(interrupted_paths["config"])
+            except (OSError, ValueError, yaml.YAMLError) as exc:
+                raise CampaignError(f"cannot inspect interrupted {job['id']}: {exc}") from exc
+            latest = _latest_resume_checkpoint(interrupted_paths, interrupted_config)
+            if latest is not None:
+                checkpoint, step, checkpoint_sha256 = latest
+                training_resume = (
+                    interrupted,
+                    interrupted_config,
+                    interrupted_paths,
+                    checkpoint,
+                    step,
+                    checkpoint_sha256,
+                )
+
+        if resumable is None and training_resume is None:
             dependency_checkpoint, dependency = _dependency_checkpoint(status, job)
             number, attempt_dir = _next_attempt(job, campaign)
             attempt_dir.mkdir(parents=True, exist_ok=False)
@@ -2737,6 +2812,30 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             attempt["status"] = "training"
             _persist_status(status_path, status)
 
+            train_code = run_logged(train, env, paths["log"])
+            attempt["train_returncode"] = train_code
+        elif training_resume is not None:
+            attempt, config_dict, paths, checkpoint, step, checkpoint_sha256 = training_resume
+            train, evaluate, benchmark = _commands(
+                record,
+                job,
+                paths,
+                resume_checkpoint=checkpoint,
+            )
+            resume_record = {
+                "checkpoint": str(checkpoint),
+                "checkpoint_sha256": checkpoint_sha256,
+                "global_step": step,
+                "resumed_at": _now(),
+            }
+            attempt["resume"] = resume_record
+            attempt.setdefault("resumes", []).append(resume_record)
+            attempt["train_command"] = train
+            attempt["status"] = job["status"] = "training"
+            attempt["failure"] = job["failure"] = None
+            attempt["finished_at"] = job["finished_at"] = None
+            _persist_status(status_path, status)
+            print(f"resume {job['id']} from optimizer step {step}: {checkpoint}")
             train_code = run_logged(train, env, paths["log"])
             attempt["train_returncode"] = train_code
         else:

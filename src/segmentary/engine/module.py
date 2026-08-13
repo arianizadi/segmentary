@@ -17,6 +17,7 @@ Two things worth knowing before editing:
 from __future__ import annotations
 
 import warnings
+from dataclasses import asdict
 from time import monotonic
 from typing import Any
 
@@ -24,6 +25,7 @@ import lightning as L
 import torch
 from torch import Tensor
 
+from ..checkpoints import TRAINING_RESUME_KEY, TRAINING_RESUME_SCHEMA_VERSION
 from ..config import EvalConfig, OptimConfig, TrainConfig
 from ..models.outputs import SegmentationOutput
 from ..tasks import active_for_loss, validate_canonical_active, validate_task_space
@@ -133,6 +135,7 @@ class SegLitModule(L.LightningModule):
         train_cfg: TrainConfig,
         eval_cfg: EvalConfig,
         eval_active: Tensor | None = None,
+        stage_name: str | None = None,
     ) -> None:
         super().__init__()
         self.model = model
@@ -142,6 +145,7 @@ class SegLitModule(L.LightningModule):
         self.train_cfg = train_cfg
         self.eval_cfg = eval_cfg
         self.eval_active = eval_active
+        self.stage_name = stage_name
         if isinstance(loss_fn, QuerySegmentationLoss):
             self.task = "multiclass"
         elif isinstance(loss_fn, SegmentationLoss):
@@ -189,6 +193,7 @@ class SegLitModule(L.LightningModule):
         self._bf1: BoundaryF1 | None = None
         self._train_started_monotonic: float | None = None
         self._training_samples = 0
+        self._telemetry_start_step = 0
         self._telemetry_step = -1
         self.save_hyperparameters(ignore=["model", "loss_fn", "space", "eval_active"])
 
@@ -217,9 +222,20 @@ class SegLitModule(L.LightningModule):
         self.log("train/lr", self._current_lr(), prog_bar=True, on_step=True, batch_size=bs)
         return loss
 
-    def on_train_batch_end(self, outputs, batch, batch_idx: int) -> None:
+    def optimizer_step(self, *args: Any, **kwargs: Any) -> None:
+        """Advance EMA immediately after each real optimizer update.
+
+        ModelCheckpoint callbacks run from the surrounding train-batch hook. If
+        EMA were updated there too, a periodic ``step-00004000`` checkpoint could
+        contain raw/optimizer state at step 4000 but EMA state at step 3999.
+        ``optimizer_step`` runs only when accumulation actually applies an update,
+        and it runs before the checkpoint callback.
+        """
+        super().optimizer_step(*args, **kwargs)
         if self.ema is not None:
-            self.ema.update(self.model, self.global_step)
+            self.ema.update(self.model, int(self.global_step) + 1)
+
+    def on_train_batch_end(self, outputs, batch, batch_idx: int) -> None:
         self._training_samples += int(batch["image"].shape[0]) * int(self.trainer.world_size)
         completed = int(self.global_step)
         if completed <= self._telemetry_step or self._train_started_monotonic is None:
@@ -229,7 +245,10 @@ class SegLitModule(L.LightningModule):
         if elapsed <= 0:
             return
         total = int(self.train_cfg.iters)
-        step_rate = completed / elapsed
+        completed_since_start = completed - self._telemetry_start_step
+        if completed_since_start <= 0:
+            return
+        step_rate = completed_since_start / elapsed
         remaining = max(0, total - completed)
         telemetry = {
             "train/iteration": float(completed),
@@ -267,7 +286,8 @@ class SegLitModule(L.LightningModule):
         self.train()
         self._train_started_monotonic = monotonic()
         self._training_samples = 0
-        self._telemetry_step = -1
+        self._telemetry_start_step = int(self.global_step)
+        self._telemetry_step = self._telemetry_start_step - 1
 
     def on_save_checkpoint(self, checkpoint: dict[str, Any]) -> None:
         """Persist the EMA shadow Lightning cannot discover on its own.
@@ -279,9 +299,37 @@ class SegLitModule(L.LightningModule):
         """
         if self.ema is not None:
             checkpoint[EMA_CHECKPOINT_KEY] = self.ema.state_dict()
+        checkpoint[TRAINING_RESUME_KEY] = {
+            "schema_version": TRAINING_RESUME_SCHEMA_VERSION,
+            "stage_name": self.stage_name,
+            "space": getattr(self.space, "name", "<unnamed>"),
+            "task": self.task,
+            "train": asdict(self.train_cfg),
+            "optim": asdict(self.optim_cfg),
+        }
 
     def on_load_checkpoint(self, checkpoint: dict[str, Any]) -> None:
         """Restore EMA exactly when resuming an EMA-enabled training run."""
+        metadata = checkpoint.get(TRAINING_RESUME_KEY)
+        if metadata is not None:
+            expected = {
+                "schema_version": TRAINING_RESUME_SCHEMA_VERSION,
+                "stage_name": self.stage_name,
+                "space": getattr(self.space, "name", "<unnamed>"),
+                "task": self.task,
+                "train": asdict(self.train_cfg),
+                "optim": asdict(self.optim_cfg),
+            }
+            if not isinstance(metadata, dict) or metadata != expected:
+                wrong = sorted(
+                    key
+                    for key in expected
+                    if not isinstance(metadata, dict) or metadata.get(key) != expected[key]
+                )
+                raise RuntimeError(
+                    "checkpoint resume metadata does not match this stage "
+                    f"({', '.join(wrong)} differ); refusing a partial or cross-config resume"
+                )
         if self.ema is None:
             return
         if EMA_CHECKPOINT_KEY not in checkpoint:

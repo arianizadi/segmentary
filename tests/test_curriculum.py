@@ -15,9 +15,11 @@ import pytest
 import torch
 import yaml
 from torch import nn
+from torch.utils.data import DataLoader, Dataset
 
 import segmentary.curriculum as curriculum
 from segmentary import eval as eval_module
+from segmentary.checkpoints import TRAINING_RESUME_KEY, TRAINING_RESUME_SCHEMA_VERSION
 from segmentary.config import (
     AugConfigSpec,
     DataConfig,
@@ -40,6 +42,8 @@ from segmentary.curriculum import (
     resolve_init,
 )
 from segmentary.engine.ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma
+from segmentary.engine.losses import LossConfig, SegmentationLoss
+from segmentary.engine.module import SegLitModule
 from segmentary.models.tuning import apply_tuning
 from segmentary.models.wrappers import HFDenseWrapper
 
@@ -474,6 +478,180 @@ def test_checkpoint_callbacks_honor_periodic_checkpoint_cadence(tmp_path: Path):
     assert periodic.save_top_k == -1
     assert periodic.filename == "step-{step:08d}"
     assert periodic.state_key != best.state_key
+
+
+def test_resume_checkpoint_requires_full_optimizer_scheduler_ema_and_stage_state(
+    tmp_path: Path,
+) -> None:
+    train = TrainConfig(iters=100, ema_decay=0.9)
+    checkpoint = tmp_path / "step-00000040.ckpt"
+    state = {
+        "global_step": 40,
+        "optimizer_states": [{}],
+        "lr_schedulers": [{}],
+        "callbacks": {},
+        EMA_CHECKPOINT_KEY: {"num_updates": 40},
+        TRAINING_RESUME_KEY: {
+            "schema_version": TRAINING_RESUME_SCHEMA_VERSION,
+            "stage_name": "cityscapes",
+        },
+    }
+    torch.save(state, checkpoint)
+
+    assert (
+        curriculum.validate_resume_checkpoint(
+            checkpoint,
+            stage=_stage(name="cityscapes"),
+            train_cfg=train,
+        )
+        == 40
+    )
+
+    for missing, message in (
+        ("optimizer_states", "optimizer state"),
+        ("lr_schedulers", "scheduler state"),
+        ("callbacks", "callback state"),
+        (EMA_CHECKPOINT_KEY, "EMA state"),
+    ):
+        broken = tmp_path / f"missing-{missing}.ckpt"
+        payload = dict(state)
+        payload.pop(missing)
+        torch.save(payload, broken)
+        with pytest.raises(RuntimeError, match=message):
+            curriculum.validate_resume_checkpoint(
+                broken,
+                stage=_stage(name="cityscapes"),
+                train_cfg=train,
+            )
+
+
+def test_resume_checkpoint_rejects_cross_stage_and_misaligned_ema(tmp_path: Path) -> None:
+    checkpoint = tmp_path / "step.ckpt"
+    state = {
+        "global_step": 20,
+        "optimizer_states": [{}],
+        "lr_schedulers": [{}],
+        "callbacks": {},
+        EMA_CHECKPOINT_KEY: {"num_updates": 19},
+        TRAINING_RESUME_KEY: {
+            "schema_version": TRAINING_RESUME_SCHEMA_VERSION,
+            "stage_name": "railsem19",
+        },
+    }
+    torch.save(state, checkpoint)
+    with pytest.raises(RuntimeError, match="does not match configured stage"):
+        curriculum.validate_resume_checkpoint(
+            checkpoint,
+            stage=_stage(name="cityscapes"),
+            train_cfg=TrainConfig(iters=100),
+        )
+    state[TRAINING_RESUME_KEY]["stage_name"] = "cityscapes"
+    torch.save(state, checkpoint)
+    with pytest.raises(RuntimeError, match="EMA updates=19"):
+        curriculum.validate_resume_checkpoint(
+            checkpoint,
+            stage=_stage(name="cityscapes"),
+            train_cfg=TrainConfig(iters=100),
+        )
+
+
+def test_lightning_full_state_resume_continues_optimizer_scheduler_ema_and_step(
+    tmp_path: Path,
+) -> None:
+    class _Dataset(Dataset):
+        def __len__(self) -> int:
+            return 8
+
+        def __getitem__(self, index: int) -> dict[str, torch.Tensor]:
+            generator = torch.Generator().manual_seed(index)
+            return {
+                "image": torch.rand(3, 8, 8, generator=generator),
+                "mask": torch.randint(0, 3, (8, 8), generator=generator),
+            }
+
+    space = SimpleNamespace(
+        name="resume-test",
+        num_classes=3,
+        ignore_index=255,
+        names=("a", "b", "c"),
+        thin_classes=(),
+    )
+    train_cfg = TrainConfig(
+        iters=4,
+        batch_size=1,
+        accum=1,
+        num_workers=0,
+        precision="32-true",
+        ema_decay=0.9,
+        val_every=4,
+        ckpt_every=1,
+    )
+    optim_cfg = OptimConfig(warmup_iters=0)
+
+    def module(seed: int) -> SegLitModule:
+        return SegLitModule(
+            model=_tiny_model(seed, num_classes=3),
+            loss_fn=SegmentationLoss(LossConfig(), 3, 255),
+            space=space,
+            optim_cfg=optim_cfg,
+            train_cfg=train_cfg,
+            eval_cfg=EvalConfig(sliding_window=False),
+            stage_name="cityscapes",
+        )
+
+    loader = DataLoader(_Dataset(), batch_size=1)
+    first_dir = tmp_path / "first"
+    first_callback = curriculum.ModelCheckpoint(
+        dirpath=first_dir,
+        filename="step-{step:08d}",
+        auto_insert_metric_name=False,
+        every_n_train_steps=1,
+        save_on_train_epoch_end=False,
+        save_top_k=-1,
+    )
+    first = curriculum.L.Trainer(
+        accelerator="cpu",
+        devices=1,
+        max_steps=2,
+        callbacks=[first_callback],
+        logger=False,
+        enable_progress_bar=False,
+        num_sanity_val_steps=0,
+    )
+    first.fit(module(1), train_dataloaders=loader)
+    checkpoint = first_dir / "step-00000002.ckpt"
+    assert checkpoint.is_file()
+    saved = torch.load(checkpoint, map_location="cpu", weights_only=False)
+    assert saved["global_step"] == 2
+    assert saved[EMA_CHECKPOINT_KEY]["num_updates"] == 2
+
+    resumed_module = module(99)
+    resumed = curriculum.L.Trainer(
+        accelerator="cpu",
+        devices=1,
+        max_steps=4,
+        logger=False,
+        enable_checkpointing=False,
+        enable_progress_bar=False,
+        num_sanity_val_steps=0,
+    )
+    resumed.fit(
+        resumed_module,
+        train_dataloaders=loader,
+        ckpt_path=str(checkpoint),
+        weights_only=False,
+    )
+
+    assert resumed.global_step == 4
+    assert resumed_module.ema is not None
+    assert resumed_module.ema.num_updates == 4
+    optimizer_steps = {
+        int(value["step"].item())
+        for value in resumed.optimizers[0].state.values()
+        if "step" in value
+    }
+    assert optimizer_steps == {4}
+    assert resumed.lr_scheduler_configs[0].scheduler.last_epoch == 4
 
 
 # -------------------------------------------------------------- integration

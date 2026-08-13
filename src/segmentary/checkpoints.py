@@ -10,6 +10,9 @@ import torch
 
 from .engine.ema import EMA_CHECKPOINT_KEY
 
+TRAINING_RESUME_KEY = "segmentary_training_resume"
+TRAINING_RESUME_SCHEMA_VERSION = 1
+
 
 def read_checkpoint(path: Path) -> dict[str, Any]:
     """Load one trusted Segmentary/PyTorch checkpoint and require a mapping root."""

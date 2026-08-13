@@ -144,6 +144,7 @@ segmentary-train CONFIG [CONFIG ...] [options]
 | `--name NAME` | override experiment name/output identity |
 | `--set KEY=VALUE` | repeatable dotted override; JSON scalars/lists parsed |
 | `--deterministic` | deterministic kernels, usually lower throughput |
+| `--resume-checkpoint PATH` | continue the same stage from a compatible full-state periodic checkpoint |
 | `--print-config` | validate and print one JSON document without opening model/data |
 
 Mirror an execution-only `--devices` choice into `train.devices` when you want
