@@ -480,6 +480,18 @@ def test_checkpoint_callbacks_honor_periodic_checkpoint_cadence(tmp_path: Path):
     assert periodic.state_key != best.state_key
 
 
+@pytest.mark.parametrize(
+    ("val_every", "accum", "expected_batches"),
+    [(4000, 1, 4000), (4000, 8, 32000), (7, 3, 21)],
+)
+def test_validation_cadence_remains_in_optimizer_steps_with_accumulation(
+    val_every: int, accum: int, expected_batches: int
+) -> None:
+    train = TrainConfig(val_every=val_every, accum=accum)
+
+    assert curriculum._validation_batch_interval(train) == expected_batches
+
+
 def test_resume_checkpoint_requires_full_optimizer_scheduler_ema_and_stage_state(
     tmp_path: Path,
 ) -> None:
