@@ -2,7 +2,12 @@
 cookies.txt
 *.netrc
 .env
+.env.*
+!.env.example
 secrets.yaml
+*.pem
+*.key
+*.token
 
 # ---- data & artifacts (live on /data and /scr, never in git) ----
 # Leading slash: unanchored, "data/" also matched src/segmentary/data/, so the
@@ -13,14 +18,36 @@ secrets.yaml
 /runs/
 /outputs/
 /checkpoints/
+/artifacts/
+/reports/
+/cache/
+.cache/
 *.ckpt
+*.pt
 *.pth
+*.safetensors
 *.onnx
 *.engine
 *.plan
+*.npy
+*.npz
+*.pkl
 wandb/
 lightning_logs/
+tensorboard/
 events.out.tfevents.*
+*.log
+*.pid
+*.prof
+*.trace.json
+
+# ---- generated campaign state and resolved runtime configs ----
+campaign.json
+lane_*_status.json
+publisher_status.json
+performance.json
+resolved.yaml
+resolved.json
 
 # ---- verify_dataset / overfit visual dumps ----
 debug/

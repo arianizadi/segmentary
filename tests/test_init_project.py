@@ -37,7 +37,22 @@ def test_create_project_is_a_complete_valid_config(tmp_path: Path) -> None:
     assert config.stages[0].data[0].loader == "folder"
 
     ignored = (target / ".gitignore").read_text(encoding="utf-8").splitlines()
-    assert {"data/", "runs/", "debug/", "resolved.json", "*.ckpt"} <= set(ignored)
+    assert {
+        "data/",
+        "runs/",
+        "debug/",
+        "resolved.json",
+        "resolved.yaml",
+        "*.ckpt",
+        "*.safetensors",
+        "events.out.tfevents.*",
+        "tensorboard/",
+        "campaign.json",
+        "lane_*_status.json",
+        "*.log",
+        ".env",
+        "*.pem",
+    } <= set(ignored)
 
     space = load_space(target / "taxonomy", "example")
     mapping = load_mapping(target / "taxonomy", space, "my_dataset")
