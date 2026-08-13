@@ -1,0 +1,17 @@
+# Campaign-only efficient transfer recipe.
+#
+# The launcher replaces the placeholder below with the exact SHA-256-verified
+# checkpoint produced by the matching Cityscapes job. Every compatible learned
+# tensor is reused; only the incompatible 19-class -> rail_union classifier is
+# reset before the 20,000-iteration RailSem19 adaptation.
+name: city_checkpoint_rs
+space: rail_union
+loss: {aux: lovasz, aux_weight: 0.5}
+stages:
+  - name: railsem19
+    data:
+      - {name: railsem19, root: data/railsem19, split_file: splits/railsem19_seed0.json}
+    init_from: /dependency/cityscapes/last.ckpt
+    reset_head: true
+    iters: 20000
+    lr_scale: 0.1

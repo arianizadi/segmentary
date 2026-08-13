@@ -69,6 +69,7 @@ DEFAULT_MANIFEST = Path("configs/campaigns/all_models_cityscapes_railsem19.yaml"
 REQUIRED_PROTOCOLS = ("cityscapes", "railsem19", "cityscapes_to_railsem19")
 STATUS_SCHEMA_VERSION = 1
 CAMPAIGN_SCHEMA_VERSION = 1
+COMPLETED_STATUSES = {"succeeded", "reused"}
 REPORT_START = "<!-- segmentary:generated-city-rail-benchmark:start -->"
 REPORT_END = "<!-- segmentary:generated-city-rail-benchmark:end -->"
 AGGREGATE_METRICS = (
@@ -424,8 +425,15 @@ def campaign_jobs(
     )
 
 
+def _job_cost(job: Job) -> float:
+    # City->Rail is now only the 20k target adaptation; its 40k City source is
+    # the ordinary Cityscapes job and is never trained twice.
+    protocol_scale = 0.5 if job.protocol.id == "cityscapes_to_railsem19" else 1.0
+    return MODEL_COST_WEIGHTS[job.model.id] * protocol_scale
+
+
 def partition_jobs(jobs: Sequence[Job], gpus: Sequence[int]) -> dict[int, tuple[Job, ...]]:
-    """Balance jobs with deterministic longest-processing-time scheduling."""
+    """Balance jobs while keeping every City source immediately before its transfer."""
     if not gpus:
         raise CampaignError("at least one GPU is required")
     unknown = sorted({job.model.id for job in jobs} - MODEL_COST_WEIGHTS.keys())
@@ -434,15 +442,36 @@ def partition_jobs(jobs: Sequence[Job], gpus: Sequence[int]) -> dict[int, tuple[
     lanes = {gpu: [] for gpu in gpus}
     loads = {gpu: 0.0 for gpu in gpus}
     input_order = {job.id: index for index, job in enumerate(jobs)}
+    indexed = {(job.model.id, job.seed, job.protocol.id): job for job in jobs}
+    units: list[tuple[Job, ...]] = []
+    consumed: set[str] = set()
+    for job in jobs:
+        if job.id in consumed:
+            continue
+        if job.protocol.id == "cityscapes":
+            transfer = indexed.get((job.model.id, job.seed, "cityscapes_to_railsem19"))
+            if transfer is None:
+                raise CampaignError(f"{job.id} has no City-to-Rail dependency consumer")
+            units.append((job, transfer))
+            consumed.update((job.id, transfer.id))
+        elif job.protocol.id == "cityscapes_to_railsem19":
+            continue
+        else:
+            units.append((job,))
+            consumed.add(job.id)
+    if consumed != {job.id for job in jobs}:
+        raise CampaignError("dependency-aware partition did not consume every physical job")
 
-    def cost(job: Job) -> float:
-        protocol_scale = 1.5 if job.protocol.id == "cityscapes_to_railsem19" else 1.0
-        return MODEL_COST_WEIGHTS[job.model.id] * protocol_scale
-
-    for job in sorted(jobs, key=lambda item: (-cost(item), input_order[item.id])):
+    units.sort(
+        key=lambda unit: (
+            -sum(_job_cost(job) for job in unit),
+            min(input_order[job.id] for job in unit),
+        )
+    )
+    for unit in units:
         gpu = min(gpus, key=lambda item: (loads[item], gpus.index(item)))
-        lanes[gpu].append(job)
-        loads[gpu] += cost(job)
+        lanes[gpu].extend(unit)
+        loads[gpu] += sum(_job_cost(job) for job in unit)
     return {gpu: tuple(items) for gpu, items in lanes.items()}
 
 
@@ -553,7 +582,7 @@ def _dataset_roots(cityscapes_root: Path, railsem19_root: Path) -> dict[str, str
 
 
 def _job_spec(job: Job, lane: str) -> dict[str, Any]:
-    return {
+    spec = {
         "id": job.id,
         "model": job.model.id,
         "model_config": str(job.model.config),
@@ -580,6 +609,10 @@ def _job_spec(job: Job, lane: str) -> dict[str, Any]:
         "lane": lane,
         "performance_owner": False,
     }
+    if job.protocol.id == "cityscapes_to_railsem19" and job.model.alias_of is None:
+        spec["depends_on"] = f"{job.model.id}--cityscapes--seed-{job.seed}"
+        spec["checkpoint_reuse"] = "all compatible City weights; unified classifier reset"
+    return spec
 
 
 def build_campaign_record(
@@ -667,7 +700,13 @@ def build_campaign_record(
             "train_workers": train_workers,
             "eval_workers": eval_workers,
             "deterministic": deterministic,
-            "scheduler": "measured_cost_lpt_static_lanes",
+            "scheduler": "dependency_aware_lpt_static_lanes",
+            "planned_optimizer_iterations": sum(
+                20_000 if job.protocol.id == "cityscapes_to_railsem19" else 40_000 for job in jobs
+            ),
+            "avoided_duplicate_city_iterations": sum(
+                40_000 for job in jobs if job.protocol.id == "cityscapes_to_railsem19"
+            ),
         },
         "reuse_policy": {
             "roots": [str(path.expanduser().resolve()) for path in reuse_roots],
@@ -1218,7 +1257,10 @@ def _next_attempt(job: dict[str, Any], campaign: Path) -> tuple[int, Path]:
 
 
 def _resolved_config(
-    record: dict[str, Any], job: dict[str, Any], attempt: Path
+    record: dict[str, Any],
+    job: dict[str, Any],
+    attempt: Path,
+    dependency_checkpoint: Path | None = None,
 ) -> tuple[ExperimentConfig, dict[str, Any]]:
     merged: dict[str, Any] = {}
     layers = [
@@ -1247,6 +1289,12 @@ def _resolved_config(
     stages = merged.get("stages")
     if not isinstance(stages, list) or not stages:
         raise CampaignError(f"{job['id']} resolved no curriculum stages")
+    if job.get("depends_on"):
+        if len(stages) != 1 or stages[0].get("name") != "railsem19":
+            raise CampaignError(f"{job['id']} dependency transfer must contain only RailSem19")
+        source = dependency_checkpoint or Path("/dependency") / job["depends_on"] / "last.ckpt"
+        stages[0]["init_from"] = str(source)
+        stages[0]["reset_head"] = True
     for stage in stages:
         if not isinstance(stage, dict) or not isinstance(stage.get("data"), list):
             raise CampaignError(f"{job['id']} has a malformed stage data list")
@@ -1373,6 +1421,9 @@ def _normalised_compatibility_config(
             }.items():
                 if data.get(field) == default:
                     data.pop(field, None)
+        init_from = stage.get("init_from")
+        if isinstance(init_from, str) and init_from not in {"pretrained", "previous"}:
+            stage["init_from"] = "<dependency-checkpoint>"
     return value
 
 
@@ -1695,6 +1746,22 @@ def scan_reusable_cells(record: dict[str, Any]) -> dict[str, Any]:
                     chosen[key] = checkpoint_source[key]
                 chosen["checkpoint_source_result"] = checkpoint_source["source_result"]
                 chosen["caveat"] = None
+        dependent_jobs = [item["id"] for item in record["jobs"] if item.get("depends_on") == job_id]
+        if dependent_jobs and not chosen["checkpoint_available"]:
+            # A reporting-only City result cannot warm-start the transfer cell.
+            # Queue the City source again instead of later failing the dependent
+            # job or silently falling back to upstream pretrained weights.
+            counts["dependency_source_without_checkpoint"] += 1
+            rejected.append(
+                {
+                    "path": chosen["source_result"],
+                    "reason": (
+                        f"{job_id} is the source for {', '.join(dependent_jobs)} but has no "
+                        "exact final checkpoint; source training remains queued"
+                    ),
+                }
+            )
+            continue
         chosen["accepted_at"] = _now()
         chosen["bundle_result"] = str(
             Path(record["campaign"]) / "accepted" / job_id / "results.json"
@@ -2039,6 +2106,7 @@ def validate_success(
     record: dict[str, Any], job: dict[str, Any], attempt: dict[str, Any]
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     paths, _ = _attempt_path_objects(attempt)
+    _validate_attempt_dependency(attempt)
     resolved, stage_records = validate_training_artifacts(record, job, attempt)
     evaluation = validate_evaluation_artifact(record, job, attempt, resolved)
     if job.get("performance_owner"):
@@ -2061,6 +2129,11 @@ def validate_success(
         },
         "common_results": _sha256(paths["common_results"]),
         "performance": _sha256(paths["performance"]) if job.get("performance_owner") else None,
+        "dependency_checkpoint": (
+            attempt.get("dependency", {}).get("checkpoint_sha256")
+            if attempt.get("dependency")
+            else None
+        ),
     }
     if actual_hashes != expected_hashes:
         raise CampaignError(f"successful attempt artifacts changed for {job['id']}")
@@ -2473,6 +2546,56 @@ def _attempt_record(
     }
 
 
+def _dependency_checkpoint(
+    status: dict[str, Any], job: dict[str, Any]
+) -> tuple[Path | None, dict[str, Any] | None]:
+    dependency_id = job.get("depends_on")
+    if not dependency_id:
+        return None, None
+    matches = [item for item in status.get("jobs", []) if item.get("id") == dependency_id]
+    if len(matches) != 1:
+        raise CampaignError(
+            f"{job['id']} requires one same-lane dependency {dependency_id!r}, found {len(matches)}"
+        )
+    source = matches[0]
+    if source.get("status") not in COMPLETED_STATUSES:
+        raise CampaignError(
+            f"{job['id']} cannot start before {dependency_id} completes successfully"
+        )
+    attempts = source.get("attempts")
+    if not isinstance(attempts, list) or not attempts or not isinstance(attempts[-1], dict):
+        raise CampaignError(f"dependency {dependency_id} has no completed attempt")
+    source_attempt = attempts[-1]
+    raw_checkpoint = source_attempt.get("paths", {}).get("checkpoint")
+    expected_hash = source_attempt.get("sha256", {}).get("checkpoint")
+    if not isinstance(raw_checkpoint, str) or not isinstance(expected_hash, str):
+        raise CampaignError(f"dependency {dependency_id} has no hashed checkpoint")
+    checkpoint = Path(raw_checkpoint)
+    if not checkpoint.is_file() or _sha256(checkpoint) != expected_hash:
+        raise CampaignError(f"dependency checkpoint is missing or changed: {checkpoint}")
+    return checkpoint, {
+        "job_id": dependency_id,
+        "checkpoint": str(checkpoint),
+        "checkpoint_sha256": expected_hash,
+        "classifier_policy": "reset incompatible target classifier only",
+    }
+
+
+def _validate_attempt_dependency(attempt: dict[str, Any]) -> None:
+    dependency = attempt.get("dependency")
+    if dependency is None:
+        return
+    if not isinstance(dependency, dict):
+        raise CampaignError("attempt dependency provenance is malformed")
+    raw = dependency.get("checkpoint")
+    expected = dependency.get("checkpoint_sha256")
+    if not isinstance(raw, str) or not isinstance(expected, str):
+        raise CampaignError("attempt dependency lacks checkpoint provenance")
+    checkpoint = Path(raw)
+    if not checkpoint.is_file() or _sha256(checkpoint) != expected:
+        raise CampaignError(f"attempt dependency checkpoint changed: {checkpoint}")
+
+
 def run_worker(campaign: Path, lane_id: str) -> int:
     if not os.environ.get("TMUX"):
         raise CampaignError("campaign workers must run inside a named tmux session")
@@ -2565,13 +2688,21 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             else None
         )
         if resumable is None:
+            dependency_checkpoint, dependency = _dependency_checkpoint(status, job)
             number, attempt_dir = _next_attempt(job, campaign)
             attempt_dir.mkdir(parents=True, exist_ok=False)
-            _, config_dict = _resolved_config(record, job, attempt_dir)
+            _, config_dict = _resolved_config(
+                record,
+                job,
+                attempt_dir,
+                dependency_checkpoint=dependency_checkpoint,
+            )
             paths = _attempt_paths(job, attempt_dir, config_dict)
             atomic_write_text(paths["config"], yaml.safe_dump(config_dict, sort_keys=False))
             train, evaluate, benchmark = _commands(record, job, paths)
             attempt = _attempt_record(number, paths, train, evaluate, benchmark, env)
+            if dependency is not None:
+                attempt["dependency"] = dependency
             job["attempt"] = number
             job.setdefault("attempts", []).append(attempt)
             job.update(
@@ -2596,6 +2727,7 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             attempt["train_returncode"] = train_code
         else:
             attempt = resumable
+            _validate_attempt_dependency(attempt)
             paths, _ = _attempt_path_objects(attempt)
             try:
                 config_dict = load_yaml(paths["config"])
@@ -2717,6 +2849,11 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             "common_results": _sha256(paths["common_results"]),
             "performance": (
                 _sha256(paths["performance"]) if job.get("performance_owner") else None
+            ),
+            "dependency_checkpoint": (
+                attempt.get("dependency", {}).get("checkpoint_sha256")
+                if attempt.get("dependency")
+                else None
             ),
         }
         attempt["status"] = job["status"] = "succeeded"
@@ -3100,16 +3237,27 @@ def _new_protocol(
         raw = attempt["paths"].get("checkpoint")
         checkpoint_step = _checkpoint_global_step(Path(raw)) if isinstance(raw, str) else None
     images = result.get("dataset_sizes", {}).get("eval")
+    dependency = attempt.get("dependency")
+    public_dependency = (
+        {
+            "job_id": dependency.get("job_id"),
+            "checkpoint_sha256": dependency.get("checkpoint_sha256"),
+            "classifier_policy": dependency.get("classifier_policy"),
+        }
+        if isinstance(dependency, dict)
+        else None
+    )
     return {
         "status": "complete",
         "label": job["protocol_label"],
         "dataset": f"{'Cityscapes' if job['protocol'] == 'cityscapes' else 'RailSem19'} val",
         "taxonomy": job["evaluation_space"],
         "training": (
-            "40,000 Cityscapes steps, then 20,000 RailSem19 steps"
+            "reused matching 40,000-step Cityscapes checkpoint; 20,000 RailSem19 steps"
             if job["protocol"] == "cityscapes_to_railsem19"
             else "40,000 steps from pretrained weights"
         ),
+        "source_checkpoint": public_dependency,
         "iteration_progress": _iteration_progress(
             plan,
             checkpoint_available=checkpoint_available,
@@ -3557,8 +3705,7 @@ def _empty_progress(protocol_id: str) -> dict[str, Any]:
         "cityscapes": [("cityscapes", "Cityscapes", 40_000)],
         "railsem19": [("railsem19", "RailSem19", 40_000)],
         "cityscapes_to_railsem19": [
-            ("cityscapes", "Cityscapes", 40_000),
-            ("railsem19", "RailSem19", 20_000),
+            ("railsem19", "RailSem19 adaptation", 20_000),
         ],
     }[protocol_id]
     total = sum(item[2] for item in targets)
@@ -3949,7 +4096,10 @@ def _central_readme(
             "",
             "- Cityscapes: 40,000 iterations, standard 19-class 500-image validation.",
             "- RailSem19: 40,000 iterations, `rail_union`, fixed 850-image validation.",
-            "- Transfer: 40,000 Cityscapes + 20,000 RailSem19 iterations; total 60,000.",
+            "- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint, then run "
+            "20,000 RailSem19 adaptation iterations; Cityscapes is never trained twice.",
+            "- Transfer warm-starts every compatible learned tensor and reinitialises only the "
+            "19-class to `rail_union` classifier mismatch.",
             "- Quality evaluation: EMA, 1024x1024 sliding window, stride 768, no TTA.",
             "- [`results.csv`](results.csv): spreadsheet-friendly mean metrics, iterations, and resources.",
             "- [`status.json`](status.json): machine-readable scope and completion state.",
