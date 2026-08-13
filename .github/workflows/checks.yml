@@ -35,17 +35,35 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           # pyproject pins requires-python to ==3.11.*, and the host only ships
-          # 3.12. This downloads CPython 3.11 into the runner tool cache, so no
-          # system interpreter has to be installed or kept in step.
+          # 3.12. This lands CPython 3.11 in the runner tool cache, which does
+          # persist between jobs, so it is downloaded once and reused after.
           python-version: '3.11'
-          cache: pip
+          # No `cache: pip` on purpose. That uploads a copy of the pip cache to
+          # GitHub's 10 GB per-repo cache storage, which only pays off when the
+          # machine is destroyed after every job. This runner keeps ~/.cache/pip
+          # on local disk, so the wheels are already here and the extra layer
+          # would be pure overhead.
+
+      - name: Create a clean virtual environment
+        # A self-hosted runner also keeps site-packages between jobs. Installing
+        # into the tool-cache interpreter directly would let a dependency that
+        # was deleted from pyproject.toml linger from an earlier run, so
+        # `pip check` would pass against a stale environment and a broken
+        # dependency declaration could ship unnoticed. Rebuilding the venv every
+        # run makes the install step test what it claims to test; the wheels
+        # still come from the local pip cache, so it costs seconds rather than
+        # a fresh download.
+        run: |
+          python -m venv "${{ runner.temp }}/venv"
+          echo "${{ runner.temp }}/venv/bin" >> "$GITHUB_PATH"
+          echo "VIRTUAL_ENV=${{ runner.temp }}/venv" >> "$GITHUB_ENV"
+          "${{ runner.temp }}/venv/bin/python" -m pip install --upgrade pip
 
       - name: Install PyTorch (CPU wheels)
         # torch/torchvision are deliberately absent from [project.dependencies]
         # because their wheels are platform-specific, so they install first and
         # from the CPU index. Versions match [tool.segmentary.install].
         run: |
-          python -m pip install --upgrade pip
           python -m pip install torch==2.11.0 torchvision==0.26.0 \
             --index-url https://download.pytorch.org/whl/cpu
 
@@ -62,9 +80,8 @@ jobs:
         run: ruff format --check src tests scripts
 
       - name: Tests
-        # A self-hosted runner keeps state between jobs; CUDA_VISIBLE_DEVICES is
-        # pinned empty so this stays a genuine CPU run even if the box later
-        # gains a GPU.
+        # CUDA_VISIBLE_DEVICES is pinned empty so this stays a genuine CPU run
+        # even if the box later gains a GPU.
         env:
           CUDA_VISIBLE_DEVICES: ''
         run: python -m pytest -m "not slow and not gpu"
