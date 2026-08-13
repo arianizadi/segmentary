@@ -1,0 +1,318 @@
+{
+  "counts": {
+    "complete_cells": 3,
+    "complete_models": 1,
+    "physical_training_cells": 108,
+    "reported_cells": 3,
+    "total_reported_cells": 111
+  },
+  "models": [
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "eomt_dinov3_large",
+      "priority": 1,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "eomt_large",
+      "priority": 2,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "hf_auto_beit_base_ade",
+      "priority": 3,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "upernet_convnext",
+      "priority": 4,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "segformer_b5",
+      "priority": 5,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "hf_auto_upernet_swin_tiny",
+      "priority": 6,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "hrnet_w48_ocr",
+      "priority": 7,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_resnet101_uper",
+      "priority": 8,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "80.51",
+      "cityscapes_to_railsem19_miou": "66.44 \u00b1 0.03",
+      "model": "segformer_b2",
+      "priority": 9,
+      "railsem19_miou": "70.47 \u00b1 0.17",
+      "status": "complete (reused)"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "deeplabv3plus_r101",
+      "priority": 10,
+      "railsem19_miou": "\u2014",
+      "status": "queued as shared alias"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "hf_auto_mobilenetv2_deeplabv3",
+      "priority": 11,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "hf_auto_mobilevit_xxs_deeplabv3",
+      "priority": 12,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "hf_auto_mobilevitv2_deeplabv3",
+      "priority": 13,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "hf_auto_segformer_b0",
+      "priority": 14,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_convnext_tiny_channelmapper_dpt",
+      "priority": 15,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_convnext_tiny_uper",
+      "priority": 16,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_efficientnet_b0_deeplabv3plus",
+      "priority": 17,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_mobilenetv3_large_deeplabv3plus",
+      "priority": 18,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_mobilenetv3_large_lraspp",
+      "priority": 19,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_resnet18_fpn_fcn",
+      "priority": 20,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_resnet18_fpn_segformer_aux",
+      "priority": 21,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_resnet50_aspp",
+      "priority": 22,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_resnet50_deeplabv3plus",
+      "priority": 23,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_resnet50_fpn_ocr",
+      "priority": 24,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "native_resnet50_psp",
+      "priority": 25,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "segformer_b0",
+      "priority": 26,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_deeplabv3_resnet50",
+      "priority": 27,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_deeplabv3plus_resnet101",
+      "priority": 28,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_fpn_resnet50",
+      "priority": 29,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_linknet_mobilenet_v2",
+      "priority": 30,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_manet_efficientnet_b0",
+      "priority": 31,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_pan_resnext50",
+      "priority": 32,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_pspnet_mobilenet_v2",
+      "priority": 33,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_unet_resnet34",
+      "priority": 34,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_unetplusplus_efficientnet_b0",
+      "priority": 35,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_upernet_mit_b0",
+      "priority": 36,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    },
+    {
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "model": "smp_upernet_resnet101",
+      "priority": 37,
+      "railsem19_miou": "\u2014",
+      "status": "queued"
+    }
+  ],
+  "schema_version": 1,
+  "scope": {
+    "model_recipes": 37,
+    "protocols": [
+      "cityscapes",
+      "railsem19",
+      "cityscapes_to_railsem19"
+    ],
+    "seed_policy": "seed 0 for missing cells; preserve compatible extra seeds",
+    "unique_training_choices": 36
+  }
+}
