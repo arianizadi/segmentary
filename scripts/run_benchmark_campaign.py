@@ -951,7 +951,12 @@ def _tmux_shell_command(
         ]
     )
     lane_log = campaign / f"lane_{lane_spec['id']}.console.log"
-    return f"exec {shlex.join(command)} >> {shlex.quote(str(lane_log))} 2>&1"
+    return _tee_shell(command, lane_log)
+
+
+def _tee_shell(command: Sequence[str], log_path: Path) -> str:
+    """Show a persistent tmux pane while retaining the identical console log."""
+    return f"set -o pipefail; {shlex.join(command)} 2>&1 | tee -a {shlex.quote(str(log_path))}"
 
 
 def launch_campaign(
@@ -1016,9 +1021,9 @@ def launch_campaign(
             "--campaign",
             str(campaign),
         ]
-        shell_command = (
-            f"exec env PYTHONPATH={shlex.quote(str(SRC_ROOT))} {shlex.join(command)} "
-            f">> {shlex.quote(str(campaign / 'reused-performance.console.log'))} 2>&1"
+        shell_command = _tee_shell(
+            ["env", f"PYTHONPATH={SRC_ROOT}", *command],
+            campaign / "reused-performance.console.log",
         )
         print(f"{session}: {shell_command}")
         if _tmux_exists(session):
@@ -1081,9 +1086,9 @@ def launch_campaign(
             "--campaign",
             str(campaign),
         ]
-        shell_command = (
-            f"exec env PYTHONPATH={shlex.quote(str(SRC_ROOT))} {shlex.join(command)} "
-            f">> {shlex.quote(str(campaign / 'publisher.console.log'))} 2>&1"
+        shell_command = _tee_shell(
+            ["env", f"PYTHONPATH={SRC_ROOT}", *command],
+            campaign / "publisher.console.log",
         )
         print(f"{session}: {shell_command}")
         if not dry_run:
