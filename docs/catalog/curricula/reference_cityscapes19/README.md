@@ -44,11 +44,9 @@ preserved 24k best EMA checkpoint scored `0.807275`; the exact 40k weights were
 not retained. The fixed endpoint is the schedule-comparison policy, while the
 best checkpoint is separately labeled.
 
-The repository records those values and protocol in the reviewed
-[project history](../../../project-history.md). The raw machine `results.json` is not bundled in
-this checkout, so use the [benchmark evidence page](../../../benchmarks/README.md)
-for the exact evidence limitation rather than treating this README as a
-recomputable artifact.
+The raw machine `results.json` is not bundled in this checkout, so use the
+[benchmark evidence page](../../../benchmarks/README.md) for the exact evidence
+limitation rather than treating this README as a recomputable artifact.
 
 ## Related documentation
 

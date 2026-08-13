@@ -67,10 +67,6 @@ evaluate an exact checkpoint
   parity and truthful accuracy/latency reporting.
 - [Troubleshooting](guides/troubleshooting.md) starts with cheap checks and
   preserves evidence before expensive reruns.
-- [Migrating to Segmentary](guides/migrating-to-segmentary.md) maps every
-  pre-release package, CLI, environment, resource, and repository name and
-  explains why there is no unsafe alias for the unrelated PyPI project.
-
 For model comparisons, keep the label space, dataset split, checkpoint policy,
 EMA/TTA settings, inference window, seed set, training budget, and source version
 fixed. Change one named variable at a time.
@@ -118,9 +114,6 @@ jobs, a fixed common RailSem19 endpoint, generated Markdown/CSV results, and an
 independent 27-record/15-checkpoint audit. Read it as a reproducible protocol and
 case-specific result, not a universal curriculum ranking.
 
-The reviewed [project history](project-history.md) preserves the release and
-research conclusions without private infrastructure details. The
-`research-stack-notes.md` page retains durable dependency and compatibility
-findings, while `pyproject.toml` and the installation tutorial remain
-authoritative. None of these records replaces the portable onboarding path
-above.
+The [benchmark ledger](benchmarks/README.md) and audited
+[case-study findings](findings.md) preserve the relevant evidence and
+limitations. They do not replace the portable onboarding path above.

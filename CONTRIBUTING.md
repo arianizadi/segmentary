@@ -11,9 +11,6 @@ Read these first:
 2. [`docs/reference/project-layout.md`](docs/reference/project-layout.md) for
    extension points.
 
-The [project history](docs/project-history.md) is background, not a prerequisite
-for portable library contributions. Current docs and tests are authoritative.
-
 ## Development setup
 
 From a Python 3.11 environment with the appropriate platform PyTorch installed:
@@ -93,5 +90,5 @@ When adding a setting or public workflow:
 The command-line tools, typed config objects, taxonomy loaders, model contract,
 result schema, and documented functions in `docs/reference/python-api.md` are the
 intended integration surface for version 0.1. Other helpers may change while the
-research harness matures. If an internal helper becomes useful externally, add a
+library evolves. If an internal helper becomes useful externally, add a
 test and documentation before treating it as stable.

@@ -259,7 +259,6 @@ runs, incompatible Git provenance, and partial metric groups.
 - [Evaluation and fair comparisons](https://github.com/arianizadi/segmentary/blob/main/docs/guides/evaluation-and-results.md)
 - [Export and deployment](https://github.com/arianizadi/segmentary/blob/main/docs/guides/export-and-deployment.md)
 - [Troubleshooting](https://github.com/arianizadi/segmentary/blob/main/docs/guides/troubleshooting.md)
-- [Migrating from the pre-release name](https://github.com/arianizadi/segmentary/blob/main/docs/guides/migrating-to-segmentary.md)
 - [CLI](https://github.com/arianizadi/segmentary/blob/main/docs/reference/cli.md), [Python API](https://github.com/arianizadi/segmentary/blob/main/docs/reference/python-api.md), and
   [architecture](https://github.com/arianizadi/segmentary/blob/main/docs/reference/project-layout.md)
 - [Glossary](https://github.com/arianizadi/segmentary/blob/main/docs/glossary.md)
@@ -277,10 +276,10 @@ demonstrates the fail-closed workflow from true-final checkpoints through one
 common target, independent audit, generated table, and honest negative results.
 It is evidence for that fixed protocol—not a prescribed curriculum for new data.
 
-The reviewed [project history](docs/project-history.md) preserves the public
-release and research conclusions without private infrastructure details.
-`docs/research-stack-notes.md` is a historical design note. Use the tutorials,
-guides, and `pyproject.toml` for the current public workflow.
+The [benchmark ledger](docs/benchmarks/README.md) and audited
+[case-study findings](docs/findings.md) preserve the relevant evidence and
+limitations. Use the tutorials, guides, and `pyproject.toml` for the current
+public workflow.
 
 ## Development
 

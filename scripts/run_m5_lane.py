@@ -13,7 +13,7 @@ four-GPU visibility sets and distinct master ports, for example::
 
 Every job is provenance-gated immediately before launch.  Training failures do
 not block independent jobs, but a changed checkout or output collision stops the
-lane so an overnight sweep cannot silently mix code or overwrite a result.
+lane so an unattended sweep cannot silently mix code or overwrite a result.
 """
 
 from __future__ import annotations

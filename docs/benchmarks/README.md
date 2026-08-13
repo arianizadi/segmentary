@@ -53,11 +53,10 @@ selected on that validation target and is labeled separately. The tracked record
 states that the final result was within roughly 0.5 mIoU of its cited reference
 scale.
 
-Source: the reviewed [project history](../project-history.md). The raw machine
-`results.json` is not part of this repository checkout. Its 40k result is valid,
-while both persisted `best.ckpt` and `last.ckpt` contain the 24k state; the exact
-40k weights cannot be replayed. Retain that checkpoint caveat whenever quoting
-the fixed endpoint.
+Source: the pre-release acceptance run. The raw machine `results.json` is not
+part of this repository checkout. Its 40k result is valid, while both persisted
+`best.ckpt` and `last.ckpt` contain the 24k state; the exact 40k weights cannot
+be replayed. Retain that checkpoint caveat whenever quoting the fixed endpoint.
 
 ## Tracked fixed-shape deployment comparison
 
