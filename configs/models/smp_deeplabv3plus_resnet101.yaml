@@ -1,0 +1,11 @@
+# DeepLabV3+: established atrous-convolution baseline with a high-capacity encoder.
+model:
+  arch: smp
+  smp_arch: DeepLabV3Plus
+  encoder_name: resnet101
+  encoder_weights: imagenet
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

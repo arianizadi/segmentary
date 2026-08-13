@@ -1,0 +1,11 @@
+# DeepLabV3: atrous spatial-pyramid context without the V3+ low-level decoder.
+model:
+  arch: smp
+  smp_arch: DeepLabV3
+  encoder_name: resnet50
+  encoder_weights: imagenet
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

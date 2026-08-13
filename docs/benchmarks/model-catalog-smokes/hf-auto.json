@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "date": "2026-08-12",
+  "status": "passed",
+  "kind": "synthetic_preprocessor_plus_five_step_optimizer_compatibility_smoke",
+  "not_a_benchmark": true,
+  "environment": {"gpu": "NVIDIA L40S", "torch": "2.11.0+cu128"},
+  "protocol": {"steps": 5, "batch_size": 2, "shape_nchw": [2, 3, 128, 128], "precision": "fp32", "labels": 19},
+  "strict_gradient_audit": {
+    "date": "2026-08-12",
+    "precision": "bf16-mixed",
+    "steps": 1,
+    "processor_pixel_parity_atol": 1e-6,
+    "every_remaining_trainable_parameter_had_finite_gradient": true,
+    "classifier_updated": true,
+    "inactive_parameter_policy": "only exact revision-pinned config paths are frozen"
+  },
+  "results": [
+    {"config": "hf_auto_beit_base_ade.yaml", "checkpoint": "microsoft/beit-base-finetuned-ade-640-640", "revision": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2", "parameters": 161498707, "peak_vram_bytes": 3036366848, "inactive_parameter_paths": ["beit.layers.10", "beit.layers.11"], "finite": true},
+    {"config": "hf_auto_mobilenetv2_deeplabv3.yaml", "checkpoint": "google/deeplabv3_mobilenet_v2_1.0_513", "revision": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63", "parameters": 2525203, "peak_vram_bytes": 201792000, "inactive_parameter_paths": ["mobilenet_v2.conv_1x1"], "finite": true},
+    {"config": "hf_auto_mobilevit_xxs_deeplabv3.yaml", "checkpoint": "apple/deeplabv3-mobilevit-xx-small", "revision": "2bece0a6464b15913c1f2c82cb5ab11bc5b7b3ad", "parameters": 1854339, "peak_vram_bytes": 86312448, "processor": "BGR, 1/255, no normalization", "finite": true},
+    {"config": "hf_auto_mobilevitv2_deeplabv3.yaml", "checkpoint": "apple/mobilevitv2-1.0-voc-deeplabv3", "revision": "cd9b6a101aefbccb4c3cc1bce0324cfc1de8a4c9", "parameters": 13317628, "peak_vram_bytes": 322323456, "processor": "BGR, 1/255, no normalization", "finite": true},
+    {"config": "hf_auto_segformer_b0.yaml", "checkpoint": "nvidia/segformer-b0-finetuned-ade-512-512", "revision": "489d5cd81a0b59fab9b7ea758d3548ebe99677da", "parameters": 3719027, "peak_vram_bytes": 115805184, "finite": true},
+    {"config": "hf_auto_upernet_swin_tiny.yaml", "checkpoint": "openmmlab/upernet-swin-tiny", "revision": "dc8e8c94669c6f14d5cc4c21a141daebd2280d59", "parameters": 58952397, "peak_vram_bytes": 1215273984, "inactive_parameter_paths": ["backbone.swin.layernorm"], "finite": true}
+  ]
+}

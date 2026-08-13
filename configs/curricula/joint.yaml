@@ -1,0 +1,29 @@
+# Joint pretraining then custom fine-tune: {Cityscapes + RailSem19} -> custom.
+#
+# Stage 1 is a single mixed loader, not two sequential stages. This is the
+# baseline that says "staging is unnecessary, just pool the data". It is only
+# expressible with unified_head, because one batch holds samples from two
+# datasets with different active class sets.
+#
+# BLOCKED until the custom dataset exists.
+
+name: joint
+space: rail_union
+loss: {aux: lovasz, aux_weight: 0.5}
+model: {head: unified_head}
+
+stages:
+  - name: joint_pretrain
+    data:
+      - {name: cityscapes, root: data/cityscapes}
+      - {name: railsem19, root: data/railsem19, split_file: splits/railsem19_seed0.json}
+    sample_weights: {cityscapes: 0.5, railsem19: 0.5}
+    init_from: pretrained
+    iters: 60000
+
+  - name: custom
+    data:
+      - {name: custom, root: data/custom_rail}
+    init_from: previous
+    iters: 10000
+    lr_scale: 0.1

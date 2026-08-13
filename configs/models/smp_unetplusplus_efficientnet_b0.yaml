@@ -1,0 +1,13 @@
+# U-Net++: denser skip pathways than U-Net, paired with a compact encoder.
+model:
+  arch: smp
+  smp_arch: UnetPlusPlus
+  encoder_name: efficientnet-b0
+  encoder_weights: imagenet
+  # Classification tail retained by the encoder class but never called by SMP.
+  inactive_parameter_paths: [encoder._conv_head, encoder._bn1]
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

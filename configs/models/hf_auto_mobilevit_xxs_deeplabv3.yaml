@@ -1,0 +1,16 @@
+# MobileViT XXS + DeepLabV3 from a complete Pascal VOC checkpoint.
+#
+# Pros: mobile-oriented convolution/attention hybrid with modest memory use.
+# Cons: less capacity than desktop backbones; BatchNorm favors batch >=2.
+model:
+  arch: hf_auto
+  checkpoint: apple/deeplabv3-mobilevit-xx-small
+  revision: 2bece0a6464b15913c1f2c82cb5ab11bc5b7b3ad
+  local_files_only: false
+  trust_remote_code: false
+  tuning: full
+  head: unified_head
+
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

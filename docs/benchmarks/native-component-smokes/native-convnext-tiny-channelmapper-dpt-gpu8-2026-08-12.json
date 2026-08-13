@@ -1,0 +1,640 @@
+{
+  "checks": {
+    "all_logits_finite": true,
+    "all_shapes_forwarded": true,
+    "all_trainable_gradients_finite": true,
+    "all_trainable_gradients_present": true,
+    "classifier_or_head_changed": true,
+    "normalization_valid": true,
+    "optimizer_stepped": true,
+    "production_objective_backward": true,
+    "typed_config_loaded": true
+  },
+  "command": "probe",
+  "config_files": [
+    "configs/base.yaml",
+    "configs/models/native_convnext_tiny_channelmapper_dpt.yaml",
+    "configs/curricula/reference_cityscapes19.yaml"
+  ],
+  "config_hash": "ef4cf760a3bd",
+  "environment": {
+    "cuda_available": true,
+    "cuda_visible_devices": "8",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "source": "timm_pretrained_cfg",
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "railyard": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8"
+  },
+  "experiment": {
+    "first_stage": "cityscapes",
+    "ignore_index": 255,
+    "loss": {
+      "activation": "auto",
+      "aux": "none",
+      "aux_weight": 0.0,
+      "ce_weight": 1.0,
+      "class_weights": null,
+      "label_smoothing": 0.0,
+      "query": null,
+      "task": "multiclass",
+      "terms": []
+    },
+    "model": {
+      "arch": "native",
+      "backbone_path": null,
+      "checkpoint": null,
+      "classifier_path": null,
+      "drop_path": null,
+      "encoder_name": null,
+      "encoder_weights": null,
+      "head": "unified_head",
+      "head_paths": [],
+      "inactive_parameter_paths": [],
+      "local_files_only": false,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "lora_r": 16,
+      "lora_targets": [],
+      "native": {
+        "auxiliary_heads": [],
+        "backbone": {
+          "in_channels": 3,
+          "kind": "timm",
+          "name": "convnext_tiny.fb_in22k_ft_in1k",
+          "out_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "weights": "pretrained"
+        },
+        "head": {
+          "activation": "relu",
+          "channels": 256,
+          "dropout": 0.1,
+          "in_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "kind": "dpt",
+          "norm": "group"
+        },
+        "neck": {
+          "activation": "relu",
+          "kernel_size": 1,
+          "kind": "channel_mapper",
+          "norm": "group",
+          "num_outputs": 4,
+          "out_channels": 256
+        },
+        "task": "multiclass"
+      },
+      "revision": null,
+      "smp_arch": null,
+      "subfolder": null,
+      "trust_remote_code": false,
+      "tuning": "full"
+    },
+    "name": "reference_cityscapes19",
+    "num_classes": 19,
+    "optimizer": {
+      "backbone_lr": 0.0001,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "grad_clip": 1.0,
+      "head_lr_mult": 10.0,
+      "llrd": 1.0,
+      "min_lr_ratio": 0.0,
+      "poly_power": 0.9,
+      "warmup_iters": 1500,
+      "warmup_ratio": 1e-06,
+      "weight_decay": 0.05
+    },
+    "space": "cityscapes19"
+  },
+  "finished_unix_s": 1786575069.4122257,
+  "git": {
+    "dirty": false,
+    "sha": "23eebad016e977bfad5793d52e0516f7b136b09b"
+  },
+  "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+  "model": {
+    "arch": "native",
+    "audited_inactive_parameter_paths": [],
+    "changed_tracked_tensors": [
+      "head.classifier.bias",
+      "head.classifier.weight"
+    ],
+    "class": "NativeDenseSegmenter",
+    "frozen_by_stage_tensors": 0,
+    "head_patterns": [
+      "neck.",
+      "head.",
+      "auxiliary_heads."
+    ],
+    "native_components": {
+      "auxiliary_heads": [],
+      "backbone": {
+        "class": "TimmBackbone",
+        "features": [
+          {
+            "channels": 96,
+            "name": "stages.0",
+            "reduction": 4
+          },
+          {
+            "channels": 192,
+            "name": "stages.1",
+            "reduction": 8
+          },
+          {
+            "channels": 384,
+            "name": "stages.2",
+            "reduction": 16
+          },
+          {
+            "channels": 768,
+            "name": "stages.3",
+            "reduction": 32
+          }
+        ],
+        "name": "convnext_tiny.fb_in22k_ft_in1k",
+        "out_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "pretrained": true,
+        "pretrained_source": {
+          "architecture": "convnext_tiny",
+          "hf_hub_id": "timm/convnext_tiny.fb_in22k_ft_in1k",
+          "tag": "fb_in22k_ft_in1k",
+          "url": "https://dl.fbaipublicfiles.com/convnext/convnext_tiny_22k_1k_224.pth"
+        }
+      },
+      "head": {
+        "class": "DPTHead",
+        "in_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "selected_features": [
+          {
+            "channels": 256,
+            "name": "channel_mapper_0",
+            "reduction": 4
+          },
+          {
+            "channels": 256,
+            "name": "channel_mapper_1",
+            "reduction": 8
+          },
+          {
+            "channels": 256,
+            "name": "channel_mapper_2",
+            "reduction": 16
+          },
+          {
+            "channels": 256,
+            "name": "channel_mapper_3",
+            "reduction": 32
+          }
+        ]
+      },
+      "neck": {
+        "class": "ChannelMapper",
+        "features": [
+          {
+            "channels": 256,
+            "name": "channel_mapper_0",
+            "reduction": 4
+          },
+          {
+            "channels": 256,
+            "name": "channel_mapper_1",
+            "reduction": 8
+          },
+          {
+            "channels": 256,
+            "name": "channel_mapper_2",
+            "reduction": 16
+          },
+          {
+            "channels": 256,
+            "name": "channel_mapper_3",
+            "reduction": 32
+          }
+        ]
+      },
+      "parameter_tensors_by_component": {
+        "auxiliary": 0,
+        "backbone": 178,
+        "head": 53,
+        "neck": 12
+      }
+    },
+    "total_parameters": 38229875,
+    "tracked_tensors": [
+      "head.classifier.bias",
+      "head.classifier.weight"
+    ],
+    "tracked_update_kind": "classifier",
+    "trainable_parameters": 38229875
+  },
+  "optimizer": {
+    "class": "AdamW",
+    "groups": [
+      {
+        "is_head": false,
+        "layer_id": 0,
+        "lr": 0.0001,
+        "name": "layer0.no_decay",
+        "parameter_tensors": 12,
+        "parameters": 2976,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 0,
+        "lr": 0.0001,
+        "name": "layer0.decay",
+        "parameter_tensors": 4,
+        "parameters": 1552896,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": false,
+        "layer_id": 1,
+        "lr": 0.0001,
+        "name": "layer1.no_decay",
+        "parameter_tensors": 24,
+        "parameters": 12960,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 1,
+        "lr": 0.0001,
+        "name": "layer1.decay",
+        "parameter_tensors": 12,
+        "parameters": 6337440,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": false,
+        "layer_id": 2,
+        "lr": 0.0001,
+        "name": "layer2.no_decay",
+        "parameter_tensors": 24,
+        "parameters": 12960,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 2,
+        "lr": 0.0001,
+        "name": "layer2.decay",
+        "parameter_tensors": 12,
+        "parameters": 6337440,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": false,
+        "layer_id": 3,
+        "lr": 0.0001,
+        "name": "layer3.no_decay",
+        "parameter_tensors": 24,
+        "parameters": 12960,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 3,
+        "lr": 0.0001,
+        "name": "layer3.decay",
+        "parameter_tensors": 12,
+        "parameters": 6337440,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": false,
+        "layer_id": 4,
+        "lr": 0.0001,
+        "name": "layer4.no_decay",
+        "parameter_tensors": 6,
+        "parameters": 3456,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 4,
+        "lr": 0.0001,
+        "name": "layer4.decay",
+        "parameter_tensors": 3,
+        "parameters": 1198464,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": false,
+        "layer_id": 5,
+        "lr": 0.0001,
+        "name": "layer5.no_decay",
+        "parameter_tensors": 6,
+        "parameters": 3456,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 5,
+        "lr": 0.0001,
+        "name": "layer5.decay",
+        "parameter_tensors": 3,
+        "parameters": 1198464,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": false,
+        "layer_id": 6,
+        "lr": 0.0001,
+        "name": "layer6.no_decay",
+        "parameter_tensors": 6,
+        "parameters": 3456,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 6,
+        "lr": 0.0001,
+        "name": "layer6.decay",
+        "parameter_tensors": 3,
+        "parameters": 1198464,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": false,
+        "layer_id": 7,
+        "lr": 0.0001,
+        "name": "layer7.no_decay",
+        "parameter_tensors": 6,
+        "parameters": 3456,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 7,
+        "lr": 0.0001,
+        "name": "layer7.decay",
+        "parameter_tensors": 3,
+        "parameters": 1198464,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": false,
+        "layer_id": 8,
+        "lr": 0.0001,
+        "name": "layer8.no_decay",
+        "parameter_tensors": 6,
+        "parameters": 3456,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 8,
+        "lr": 0.0001,
+        "name": "layer8.decay",
+        "parameter_tensors": 3,
+        "parameters": 1198464,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": false,
+        "layer_id": 9,
+        "lr": 0.0001,
+        "name": "layer9.no_decay",
+        "parameter_tensors": 6,
+        "parameters": 3456,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 9,
+        "lr": 0.0001,
+        "name": "layer9.decay",
+        "parameter_tensors": 3,
+        "parameters": 1198464,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": true,
+        "layer_id": 10,
+        "lr": 0.001,
+        "name": "head.no_decay",
+        "parameter_tensors": 43,
+        "parameters": 10771,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": true,
+        "layer_id": 10,
+        "lr": 0.001,
+        "name": "head.decay",
+        "parameter_tensors": 22,
+        "parameters": 10400512,
+        "weight_decay": 0.05
+      }
+    ],
+    "summary": "22 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..10\n  decay      80 tensors,    38.16M params\n  no_decay  163 tensors,     0.07M params\n  head       65 tensors,    10.41M params"
+  },
+  "peak_vram_bytes": {
+    "cuda:0": 767557632
+  },
+  "protocol": {
+    "batch_size": 1,
+    "dense_query_ablation": false,
+    "device": "cuda:0",
+    "objective": "railyard.engine.module.dense_training_objective",
+    "objective_contract": "dense",
+    "objective_kind": "dense",
+    "optimizer_steps": 4,
+    "precision": "bf16",
+    "quality_benchmark": false,
+    "seed": 20260812,
+    "shapes": [
+      [
+        64,
+        96
+      ],
+      [
+        65,
+        97
+      ]
+    ],
+    "synthetic_data": true
+  },
+  "schema_version": 1,
+  "shape_checks": [
+    {
+      "input": [
+        1,
+        3,
+        64,
+        96
+      ],
+      "output": {
+        "dtype": "float32",
+        "finite": true,
+        "max": 1.0693359375,
+        "mean": 0.05561726540327072,
+        "min": -0.811279296875,
+        "shape": [
+          1,
+          19,
+          64,
+          96
+        ]
+      }
+    },
+    {
+      "input": [
+        1,
+        3,
+        65,
+        97
+      ],
+      "output": {
+        "dtype": "float32",
+        "finite": true,
+        "max": 1.0236883163452148,
+        "mean": 0.053544510155916214,
+        "min": -0.8229325413703918,
+        "shape": [
+          1,
+          19,
+          65,
+          97
+        ]
+      }
+    }
+  ],
+  "started_unix_s": 1786575044.515888,
+  "status": "passed",
+  "step_checks": [
+    {
+      "grad_norm_before_clip": 3.526860475540161,
+      "gradients": {
+        "all_finite": true,
+        "all_present": true,
+        "gradient_tensors": 243,
+        "trainable_tensors": 243
+      },
+      "loss": 3.004408836364746,
+      "loss_components": {
+        "cross_entropy": 3.004408836364746,
+        "total": 3.004408836364746
+      },
+      "shape": [
+        64,
+        96
+      ],
+      "step": 1
+    },
+    {
+      "grad_norm_before_clip": 2.800661563873291,
+      "gradients": {
+        "all_finite": true,
+        "all_present": true,
+        "gradient_tensors": 243,
+        "trainable_tensors": 243
+      },
+      "loss": 3.145982027053833,
+      "loss_components": {
+        "cross_entropy": 3.145982027053833,
+        "total": 3.145982027053833
+      },
+      "shape": [
+        65,
+        97
+      ],
+      "step": 2
+    },
+    {
+      "grad_norm_before_clip": 2.189310073852539,
+      "gradients": {
+        "all_finite": true,
+        "all_present": true,
+        "gradient_tensors": 243,
+        "trainable_tensors": 243
+      },
+      "loss": 3.0453364849090576,
+      "loss_components": {
+        "cross_entropy": 3.0453364849090576,
+        "total": 3.0453364849090576
+      },
+      "shape": [
+        64,
+        96
+      ],
+      "step": 3
+    },
+    {
+      "grad_norm_before_clip": 0.9592085480690002,
+      "gradients": {
+        "all_finite": true,
+        "all_present": true,
+        "gradient_tensors": 243,
+        "trainable_tensors": 243
+      },
+      "loss": 2.990152597427368,
+      "loss_components": {
+        "cross_entropy": 2.990152597427368,
+        "total": 2.990152597427368
+      },
+      "shape": [
+        65,
+        97
+      ],
+      "step": 4
+    }
+  ],
+  "wall_clock_s": 24.896337747573853
+}

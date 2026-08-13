@@ -1,0 +1,5313 @@
+{
+  "catalog_dir": "configs/models",
+  "discovered_native_recipes": [
+    "native_convnext_tiny_uper.yaml",
+    "native_efficientnet_b0_deeplabv3plus.yaml",
+    "native_mobilenetv3_large_deeplabv3plus.yaml",
+    "native_mobilenetv3_large_lraspp.yaml",
+    "native_resnet101_uper.yaml",
+    "native_resnet18_fpn_fcn.yaml",
+    "native_resnet18_fpn_segformer_aux.yaml",
+    "native_resnet50_aspp.yaml",
+    "native_resnet50_deeplabv3plus.yaml",
+    "native_resnet50_psp.yaml"
+  ],
+  "finished_unix_s": 1786573605.033056,
+  "gpu_visibility_policy": {
+    "device_name": "NVIDIA L40S",
+    "expected_cuda_visible_devices": "8",
+    "observed_cuda_visible_devices": "8",
+    "visible_device": "cuda:0"
+  },
+  "kind": "railyard-native-catalog-gpu-acceptance",
+  "protocol": {
+    "batch_size": 1,
+    "optimizer_steps_per_recipe": 4,
+    "precision": "bf16",
+    "quality_benchmark": false,
+    "shapes": [
+      [
+        64,
+        96
+      ],
+      [
+        65,
+        97
+      ]
+    ],
+    "synthetic_data": true
+  },
+  "recipe_count": 10,
+  "records": [
+    {
+      "checks": {
+        "all_logits_finite": true,
+        "all_shapes_forwarded": true,
+        "all_trainable_gradients_finite": true,
+        "all_trainable_gradients_present": true,
+        "classifier_or_head_changed": true,
+        "normalization_valid": true,
+        "optimizer_stepped": true,
+        "production_objective_backward": true,
+        "typed_config_loaded": true
+      },
+      "command": "probe",
+      "config_files": [
+        "configs/base.yaml",
+        "configs/models/native_convnext_tiny_uper.yaml",
+        "configs/curricula/reference_cityscapes19.yaml"
+      ],
+      "config_hash": "9d216fe62c04",
+      "environment": {
+        "cuda_available": true,
+        "cuda_visible_devices": "8",
+        "cudnn": 91900,
+        "driver_version": "570.133.20",
+        "gpu_count": 1,
+        "gpu_names": [
+          "NVIDIA L40S"
+        ],
+        "hostname": "hdrfs-app-001",
+        "input_normalization": {
+          "channel_order": "rgb",
+          "mean": [
+            0.485,
+            0.456,
+            0.406
+          ],
+          "source": "timm_pretrained_cfg",
+          "std": [
+            0.229,
+            0.224,
+            0.225
+          ]
+        },
+        "packages": {
+          "albumentations": "2.0.8",
+          "lightning": "2.6.5",
+          "numpy": "2.4.4",
+          "railyard": "0.1.0",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+        "python": "3.11.15",
+        "torch": "2.11.0+cu128",
+        "torch_cuda": "12.8"
+      },
+      "experiment": {
+        "first_stage": "cityscapes",
+        "ignore_index": 255,
+        "loss": {
+          "activation": "auto",
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "class_weights": null,
+          "label_smoothing": 0.0,
+          "query": null,
+          "task": "multiclass",
+          "terms": []
+        },
+        "model": {
+          "arch": "native",
+          "backbone_path": null,
+          "checkpoint": null,
+          "classifier_path": null,
+          "drop_path": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "head": "unified_head",
+          "head_paths": [],
+          "inactive_parameter_paths": [],
+          "local_files_only": false,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_r": 16,
+          "lora_targets": [],
+          "native": {
+            "auxiliary_heads": [],
+            "backbone": {
+              "in_channels": 3,
+              "kind": "timm",
+              "name": "convnext_tiny.fb_in22k_ft_in1k",
+              "out_indices": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "weights": "pretrained"
+            },
+            "head": {
+              "activation": "relu",
+              "channels": 256,
+              "dropout": 0.1,
+              "in_indices": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "kind": "uper",
+              "norm": "group",
+              "pool_bins": [
+                1,
+                2,
+                3,
+                6
+              ]
+            },
+            "neck": {
+              "kind": "identity"
+            },
+            "task": "multiclass"
+          },
+          "revision": null,
+          "smp_arch": null,
+          "subfolder": null,
+          "trust_remote_code": false,
+          "tuning": "full"
+        },
+        "name": "reference_cityscapes19",
+        "num_classes": 19,
+        "optimizer": {
+          "backbone_lr": 0.0001,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0,
+          "head_lr_mult": 10.0,
+          "llrd": 1.0,
+          "min_lr_ratio": 0.0,
+          "poly_power": 0.9,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "weight_decay": 0.05
+        },
+        "space": "cityscapes19"
+      },
+      "finished_unix_s": 1786573358.1740918,
+      "git": {
+        "dirty": false,
+        "sha": "ebfbe49a4c33807f50af920c9b8dd128ed8a24a0"
+      },
+      "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+      "model": {
+        "arch": "native",
+        "audited_inactive_parameter_paths": [],
+        "changed_tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "class": "NativeDenseSegmenter",
+        "frozen_by_stage_tensors": 0,
+        "head_patterns": [
+          "neck.",
+          "head.",
+          "auxiliary_heads."
+        ],
+        "native_components": {
+          "auxiliary_heads": [],
+          "backbone": {
+            "class": "TimmBackbone",
+            "features": [
+              {
+                "channels": 96,
+                "name": "stages.0",
+                "reduction": 4
+              },
+              {
+                "channels": 192,
+                "name": "stages.1",
+                "reduction": 8
+              },
+              {
+                "channels": 384,
+                "name": "stages.2",
+                "reduction": 16
+              },
+              {
+                "channels": 768,
+                "name": "stages.3",
+                "reduction": 32
+              }
+            ],
+            "name": "convnext_tiny.fb_in22k_ft_in1k",
+            "out_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "pretrained": true,
+            "pretrained_source": {
+              "architecture": "convnext_tiny",
+              "hf_hub_id": "timm/convnext_tiny.fb_in22k_ft_in1k",
+              "tag": "fb_in22k_ft_in1k",
+              "url": "https://dl.fbaipublicfiles.com/convnext/convnext_tiny_22k_1k_224.pth"
+            }
+          },
+          "head": {
+            "class": "UPerHead",
+            "in_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "selected_features": [
+              {
+                "channels": 96,
+                "name": "stages.0",
+                "reduction": 4
+              },
+              {
+                "channels": 192,
+                "name": "stages.1",
+                "reduction": 8
+              },
+              {
+                "channels": 384,
+                "name": "stages.2",
+                "reduction": 16
+              },
+              {
+                "channels": 768,
+                "name": "stages.3",
+                "reduction": 32
+              }
+            ]
+          },
+          "neck": {
+            "class": "IdentityNeck",
+            "features": [
+              {
+                "channels": 96,
+                "name": "stages.0",
+                "reduction": 4
+              },
+              {
+                "channels": 192,
+                "name": "stages.1",
+                "reduction": 8
+              },
+              {
+                "channels": 384,
+                "name": "stages.2",
+                "reduction": 16
+              },
+              {
+                "channels": 768,
+                "name": "stages.3",
+                "reduction": 32
+              }
+            ]
+          },
+          "parameter_tensors_by_component": {
+            "auxiliary": 0,
+            "backbone": 178,
+            "head": 41,
+            "neck": 0
+          }
+        },
+        "total_parameters": 36849011,
+        "tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "tracked_update_kind": "classifier",
+        "trainable_parameters": 36849011
+      },
+      "optimizer": {
+        "class": "AdamW",
+        "groups": [
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.no_decay",
+            "parameter_tensors": 12,
+            "parameters": 2976,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.decay",
+            "parameter_tensors": 4,
+            "parameters": 1552896,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 1,
+            "lr": 0.0001,
+            "name": "layer1.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 12960,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 1,
+            "lr": 0.0001,
+            "name": "layer1.decay",
+            "parameter_tensors": 12,
+            "parameters": 6337440,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 2,
+            "lr": 0.0001,
+            "name": "layer2.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 12960,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 2,
+            "lr": 0.0001,
+            "name": "layer2.decay",
+            "parameter_tensors": 12,
+            "parameters": 6337440,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 3,
+            "lr": 0.0001,
+            "name": "layer3.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 12960,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 3,
+            "lr": 0.0001,
+            "name": "layer3.decay",
+            "parameter_tensors": 12,
+            "parameters": 6337440,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 4,
+            "lr": 0.0001,
+            "name": "layer4.no_decay",
+            "parameter_tensors": 6,
+            "parameters": 3456,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 4,
+            "lr": 0.0001,
+            "name": "layer4.decay",
+            "parameter_tensors": 3,
+            "parameters": 1198464,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 5,
+            "lr": 0.0001,
+            "name": "layer5.no_decay",
+            "parameter_tensors": 6,
+            "parameters": 3456,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 5,
+            "lr": 0.0001,
+            "name": "layer5.decay",
+            "parameter_tensors": 3,
+            "parameters": 1198464,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 6,
+            "lr": 0.0001,
+            "name": "layer6.no_decay",
+            "parameter_tensors": 6,
+            "parameters": 3456,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 6,
+            "lr": 0.0001,
+            "name": "layer6.decay",
+            "parameter_tensors": 3,
+            "parameters": 1198464,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 7,
+            "lr": 0.0001,
+            "name": "layer7.no_decay",
+            "parameter_tensors": 6,
+            "parameters": 3456,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 7,
+            "lr": 0.0001,
+            "name": "layer7.decay",
+            "parameter_tensors": 3,
+            "parameters": 1198464,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 8,
+            "lr": 0.0001,
+            "name": "layer8.no_decay",
+            "parameter_tensors": 6,
+            "parameters": 3456,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 8,
+            "lr": 0.0001,
+            "name": "layer8.decay",
+            "parameter_tensors": 3,
+            "parameters": 1198464,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 9,
+            "lr": 0.0001,
+            "name": "layer9.no_decay",
+            "parameter_tensors": 6,
+            "parameters": 3456,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 9,
+            "lr": 0.0001,
+            "name": "layer9.decay",
+            "parameter_tensors": 3,
+            "parameters": 1198464,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": true,
+            "layer_id": 10,
+            "lr": 0.001,
+            "name": "head.no_decay",
+            "parameter_tensors": 27,
+            "parameters": 6163,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": true,
+            "layer_id": 10,
+            "lr": 0.001,
+            "name": "head.decay",
+            "parameter_tensors": 14,
+            "parameters": 9024256,
+            "weight_decay": 0.05
+          }
+        ],
+        "summary": "22 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..10\n  decay      72 tensors,    36.78M params\n  no_decay  147 tensors,     0.07M params\n  head       41 tensors,     9.03M params"
+      },
+      "peak_vram_bytes": {
+        "cuda:0": 717225984
+      },
+      "protocol": {
+        "batch_size": 1,
+        "dense_query_ablation": false,
+        "device": "cuda:0",
+        "objective": "railyard.engine.module.dense_training_objective",
+        "objective_contract": "dense",
+        "objective_kind": "dense",
+        "optimizer_steps": 4,
+        "precision": "bf16",
+        "quality_benchmark": false,
+        "seed": 20260812,
+        "shapes": [
+          [
+            64,
+            96
+          ],
+          [
+            65,
+            97
+          ]
+        ],
+        "synthetic_data": true
+      },
+      "schema_version": 1,
+      "shape_checks": [
+        {
+          "input": [
+            1,
+            3,
+            64,
+            96
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.11602783203125,
+            "mean": 0.01794414408504963,
+            "min": -1.2022705078125,
+            "shape": [
+              1,
+              19,
+              64,
+              96
+            ]
+          }
+        },
+        {
+          "input": [
+            1,
+            3,
+            65,
+            97
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.146270990371704,
+            "mean": 0.014531723223626614,
+            "min": -1.2440801858901978,
+            "shape": [
+              1,
+              19,
+              65,
+              97
+            ]
+          }
+        }
+      ],
+      "started_unix_s": 1786573330.418561,
+      "status": "passed",
+      "step_checks": [
+        {
+          "grad_norm_before_clip": 5.383541107177734,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 219,
+            "trainable_tensors": 219
+          },
+          "loss": 3.0380332469940186,
+          "loss_components": {
+            "cross_entropy": 3.0380332469940186,
+            "total": 3.0380332469940186
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 1
+        },
+        {
+          "grad_norm_before_clip": 1.79407799243927,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 219,
+            "trainable_tensors": 219
+          },
+          "loss": 3.0965983867645264,
+          "loss_components": {
+            "cross_entropy": 3.0965983867645264,
+            "total": 3.0965983867645264
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 2
+        },
+        {
+          "grad_norm_before_clip": 1.2047022581100464,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 219,
+            "trainable_tensors": 219
+          },
+          "loss": 3.0461461544036865,
+          "loss_components": {
+            "cross_entropy": 3.0461461544036865,
+            "total": 3.0461461544036865
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 3
+        },
+        {
+          "grad_norm_before_clip": 0.8336673378944397,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 219,
+            "trainable_tensors": 219
+          },
+          "loss": 2.9953627586364746,
+          "loss_components": {
+            "cross_entropy": 2.9953627586364746,
+            "total": 2.9953627586364746
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 4
+        }
+      ],
+      "wall_clock_s": 27.755530834197998
+    },
+    {
+      "checks": {
+        "all_logits_finite": true,
+        "all_shapes_forwarded": true,
+        "all_trainable_gradients_finite": true,
+        "all_trainable_gradients_present": true,
+        "classifier_or_head_changed": true,
+        "normalization_valid": true,
+        "optimizer_stepped": true,
+        "production_objective_backward": true,
+        "typed_config_loaded": true
+      },
+      "command": "probe",
+      "config_files": [
+        "configs/base.yaml",
+        "configs/models/native_efficientnet_b0_deeplabv3plus.yaml",
+        "configs/curricula/reference_cityscapes19.yaml"
+      ],
+      "config_hash": "d5f1ff226934",
+      "environment": {
+        "cuda_available": true,
+        "cuda_visible_devices": "8",
+        "cudnn": 91900,
+        "driver_version": "570.133.20",
+        "gpu_count": 1,
+        "gpu_names": [
+          "NVIDIA L40S"
+        ],
+        "hostname": "hdrfs-app-001",
+        "input_normalization": {
+          "channel_order": "rgb",
+          "mean": [
+            0.485,
+            0.456,
+            0.406
+          ],
+          "source": "timm_pretrained_cfg",
+          "std": [
+            0.229,
+            0.224,
+            0.225
+          ]
+        },
+        "packages": {
+          "albumentations": "2.0.8",
+          "lightning": "2.6.5",
+          "numpy": "2.4.4",
+          "railyard": "0.1.0",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+        "python": "3.11.15",
+        "torch": "2.11.0+cu128",
+        "torch_cuda": "12.8"
+      },
+      "experiment": {
+        "first_stage": "cityscapes",
+        "ignore_index": 255,
+        "loss": {
+          "activation": "auto",
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "class_weights": null,
+          "label_smoothing": 0.0,
+          "query": null,
+          "task": "multiclass",
+          "terms": []
+        },
+        "model": {
+          "arch": "native",
+          "backbone_path": null,
+          "checkpoint": null,
+          "classifier_path": null,
+          "drop_path": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "head": "unified_head",
+          "head_paths": [],
+          "inactive_parameter_paths": [],
+          "local_files_only": false,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_r": 16,
+          "lora_targets": [],
+          "native": {
+            "auxiliary_heads": [],
+            "backbone": {
+              "in_channels": 3,
+              "kind": "timm",
+              "name": "efficientnet_b0.ra_in1k",
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "weights": "pretrained"
+            },
+            "head": {
+              "activation": "relu",
+              "channels": 160,
+              "dilation_rates": [
+                6,
+                12,
+                18
+              ],
+              "dropout": 0.1,
+              "high_index": 3,
+              "kind": "deeplabv3plus",
+              "low_channels": 32,
+              "low_index": 0,
+              "norm": "group"
+            },
+            "neck": {
+              "kind": "identity"
+            },
+            "task": "multiclass"
+          },
+          "revision": null,
+          "smp_arch": null,
+          "subfolder": null,
+          "trust_remote_code": false,
+          "tuning": "full"
+        },
+        "name": "reference_cityscapes19",
+        "num_classes": 19,
+        "optimizer": {
+          "backbone_lr": 0.0001,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0,
+          "head_lr_mult": 10.0,
+          "llrd": 1.0,
+          "min_lr_ratio": 0.0,
+          "poly_power": 0.9,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "weight_decay": 0.05
+        },
+        "space": "cityscapes19"
+      },
+      "finished_unix_s": 1786573429.6971235,
+      "git": {
+        "dirty": false,
+        "sha": "ebfbe49a4c33807f50af920c9b8dd128ed8a24a0"
+      },
+      "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+      "model": {
+        "arch": "native",
+        "audited_inactive_parameter_paths": [],
+        "changed_tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "class": "NativeDenseSegmenter",
+        "frozen_by_stage_tensors": 0,
+        "head_patterns": [
+          "neck.",
+          "head.",
+          "auxiliary_heads."
+        ],
+        "native_components": {
+          "auxiliary_heads": [],
+          "backbone": {
+            "class": "TimmBackbone",
+            "features": [
+              {
+                "channels": 24,
+                "name": "blocks.1",
+                "reduction": 4
+              },
+              {
+                "channels": 40,
+                "name": "blocks.2",
+                "reduction": 8
+              },
+              {
+                "channels": 112,
+                "name": "blocks.4",
+                "reduction": 16
+              },
+              {
+                "channels": 320,
+                "name": "blocks.6",
+                "reduction": 32
+              }
+            ],
+            "name": "efficientnet_b0.ra_in1k",
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "pretrained": true,
+            "pretrained_source": {
+              "architecture": "efficientnet_b0",
+              "hf_hub_id": "timm/efficientnet_b0.ra_in1k",
+              "tag": "ra_in1k",
+              "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b0_ra-3dd342df.pth"
+            }
+          },
+          "head": {
+            "class": "DeepLabV3PlusHead",
+            "in_indices": [
+              0,
+              3
+            ],
+            "selected_features": [
+              {
+                "channels": 24,
+                "name": "blocks.1",
+                "reduction": 4
+              },
+              {
+                "channels": 320,
+                "name": "blocks.6",
+                "reduction": 32
+              }
+            ]
+          },
+          "neck": {
+            "class": "IdentityNeck",
+            "features": [
+              {
+                "channels": 24,
+                "name": "blocks.1",
+                "reduction": 4
+              },
+              {
+                "channels": 40,
+                "name": "blocks.2",
+                "reduction": 8
+              },
+              {
+                "channels": 112,
+                "name": "blocks.4",
+                "reduction": 16
+              },
+              {
+                "channels": 320,
+                "name": "blocks.6",
+                "reduction": 32
+              }
+            ]
+          },
+          "parameter_tensors_by_component": {
+            "auxiliary": 0,
+            "backbone": 208,
+            "head": 28,
+            "neck": 0
+          }
+        },
+        "total_parameters": 5721359,
+        "tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "tracked_update_kind": "classifier",
+        "trainable_parameters": 5721359
+      },
+      "optimizer": {
+        "class": "AdamW",
+        "groups": [
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.no_decay",
+            "parameter_tensors": 2,
+            "parameters": 64,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.decay",
+            "parameter_tensors": 1,
+            "parameters": 864,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 1,
+            "lr": 0.0001,
+            "name": "layer1.no_decay",
+            "parameter_tensors": 6,
+            "parameters": 136,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 1,
+            "lr": 0.0001,
+            "name": "layer1.decay",
+            "parameter_tensors": 4,
+            "parameters": 1312,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 2,
+            "lr": 0.0001,
+            "name": "layer2.no_decay",
+            "parameter_tensors": 16,
+            "parameters": 1306,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 2,
+            "lr": 0.0001,
+            "name": "layer2.decay",
+            "parameter_tensors": 10,
+            "parameters": 15408,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 3,
+            "lr": 0.0001,
+            "name": "layer3.no_decay",
+            "parameter_tensors": 16,
+            "parameters": 2096,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 3,
+            "lr": 0.0001,
+            "name": "layer3.decay",
+            "parameter_tensors": 10,
+            "parameters": 44544,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 4,
+            "lr": 0.0001,
+            "name": "layer4.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 6530,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 4,
+            "lr": 0.0001,
+            "name": "layer4.decay",
+            "parameter_tensors": 15,
+            "parameters": 236400,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 5,
+            "lr": 0.0001,
+            "name": "layer5.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 9868,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 5,
+            "lr": 0.0001,
+            "name": "layer5.decay",
+            "parameter_tensors": 15,
+            "parameters": 533280,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 6,
+            "lr": 0.0001,
+            "name": "layer6.no_decay",
+            "parameter_tensors": 32,
+            "parameters": 22348,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 6,
+            "lr": 0.0001,
+            "name": "layer6.decay",
+            "parameter_tensors": 20,
+            "parameters": 2004000,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 7,
+            "lr": 0.0001,
+            "name": "layer7.no_decay",
+            "parameter_tensors": 8,
+            "parameters": 6448,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 7,
+            "lr": 0.0001,
+            "name": "layer7.decay",
+            "parameter_tensors": 5,
+            "parameters": 710784,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": true,
+            "layer_id": 8,
+            "lr": 0.001,
+            "name": "head.no_decay",
+            "parameter_tensors": 18,
+            "parameters": 2483,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": true,
+            "layer_id": 8,
+            "lr": 0.001,
+            "name": "head.decay",
+            "parameter_tensors": 10,
+            "parameters": 2123488,
+            "weight_decay": 0.05
+          }
+        ],
+        "summary": "18 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..8\n  decay      90 tensors,     5.67M params\n  no_decay  146 tensors,     0.05M params\n  head       28 tensors,     2.13M params"
+      },
+      "peak_vram_bytes": {
+        "cuda:0": 167772160
+      },
+      "protocol": {
+        "batch_size": 1,
+        "dense_query_ablation": false,
+        "device": "cuda:0",
+        "objective": "railyard.engine.module.dense_training_objective",
+        "objective_contract": "dense",
+        "objective_kind": "dense",
+        "optimizer_steps": 4,
+        "precision": "bf16",
+        "quality_benchmark": false,
+        "seed": 20260812,
+        "shapes": [
+          [
+            64,
+            96
+          ],
+          [
+            65,
+            97
+          ]
+        ],
+        "synthetic_data": true
+      },
+      "schema_version": 1,
+      "shape_checks": [
+        {
+          "input": [
+            1,
+            3,
+            64,
+            96
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.193359375,
+            "mean": -0.03425699472427368,
+            "min": -1.05169677734375,
+            "shape": [
+              1,
+              19,
+              64,
+              96
+            ]
+          }
+        },
+        {
+          "input": [
+            1,
+            3,
+            65,
+            97
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.4030286073684692,
+            "mean": -0.0188791174441576,
+            "min": -1.3364157676696777,
+            "shape": [
+              1,
+              19,
+              65,
+              97
+            ]
+          }
+        }
+      ],
+      "started_unix_s": 1786573358.4864428,
+      "status": "passed",
+      "step_checks": [
+        {
+          "grad_norm_before_clip": 3.186100959777832,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 236,
+            "trainable_tensors": 236
+          },
+          "loss": 3.0269863605499268,
+          "loss_components": {
+            "cross_entropy": 3.0269863605499268,
+            "total": 3.0269863605499268
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 1
+        },
+        {
+          "grad_norm_before_clip": 1.7109801769256592,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 236,
+            "trainable_tensors": 236
+          },
+          "loss": 3.0602712631225586,
+          "loss_components": {
+            "cross_entropy": 3.0602712631225586,
+            "total": 3.0602712631225586
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 2
+        },
+        {
+          "grad_norm_before_clip": 1.5841995477676392,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 236,
+            "trainable_tensors": 236
+          },
+          "loss": 3.035281181335449,
+          "loss_components": {
+            "cross_entropy": 3.035281181335449,
+            "total": 3.035281181335449
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 3
+        },
+        {
+          "grad_norm_before_clip": 0.684311032295227,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 236,
+            "trainable_tensors": 236
+          },
+          "loss": 2.978173017501831,
+          "loss_components": {
+            "cross_entropy": 2.978173017501831,
+            "total": 2.978173017501831
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 4
+        }
+      ],
+      "wall_clock_s": 71.21068072319031
+    },
+    {
+      "checks": {
+        "all_logits_finite": true,
+        "all_shapes_forwarded": true,
+        "all_trainable_gradients_finite": true,
+        "all_trainable_gradients_present": true,
+        "classifier_or_head_changed": true,
+        "normalization_valid": true,
+        "optimizer_stepped": true,
+        "production_objective_backward": true,
+        "typed_config_loaded": true
+      },
+      "command": "probe",
+      "config_files": [
+        "configs/base.yaml",
+        "configs/models/native_mobilenetv3_large_deeplabv3plus.yaml",
+        "configs/curricula/reference_cityscapes19.yaml"
+      ],
+      "config_hash": "e09bed26ba61",
+      "environment": {
+        "cuda_available": true,
+        "cuda_visible_devices": "8",
+        "cudnn": 91900,
+        "driver_version": "570.133.20",
+        "gpu_count": 1,
+        "gpu_names": [
+          "NVIDIA L40S"
+        ],
+        "hostname": "hdrfs-app-001",
+        "input_normalization": {
+          "channel_order": "rgb",
+          "mean": [
+            0.485,
+            0.456,
+            0.406
+          ],
+          "source": "timm_pretrained_cfg",
+          "std": [
+            0.229,
+            0.224,
+            0.225
+          ]
+        },
+        "packages": {
+          "albumentations": "2.0.8",
+          "lightning": "2.6.5",
+          "numpy": "2.4.4",
+          "railyard": "0.1.0",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+        "python": "3.11.15",
+        "torch": "2.11.0+cu128",
+        "torch_cuda": "12.8"
+      },
+      "experiment": {
+        "first_stage": "cityscapes",
+        "ignore_index": 255,
+        "loss": {
+          "activation": "auto",
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "class_weights": null,
+          "label_smoothing": 0.0,
+          "query": null,
+          "task": "multiclass",
+          "terms": []
+        },
+        "model": {
+          "arch": "native",
+          "backbone_path": null,
+          "checkpoint": null,
+          "classifier_path": null,
+          "drop_path": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "head": "unified_head",
+          "head_paths": [],
+          "inactive_parameter_paths": [],
+          "local_files_only": false,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_r": 16,
+          "lora_targets": [],
+          "native": {
+            "auxiliary_heads": [],
+            "backbone": {
+              "in_channels": 3,
+              "kind": "timm",
+              "name": "mobilenetv3_large_100.ra_in1k",
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "weights": "pretrained"
+            },
+            "head": {
+              "activation": "relu",
+              "channels": 160,
+              "dilation_rates": [
+                6,
+                12,
+                18
+              ],
+              "dropout": 0.1,
+              "high_index": 3,
+              "kind": "deeplabv3plus",
+              "low_channels": 32,
+              "low_index": 0,
+              "norm": "group"
+            },
+            "neck": {
+              "kind": "identity"
+            },
+            "task": "multiclass"
+          },
+          "revision": null,
+          "smp_arch": null,
+          "subfolder": null,
+          "trust_remote_code": false,
+          "tuning": "full"
+        },
+        "name": "reference_cityscapes19",
+        "num_classes": 19,
+        "optimizer": {
+          "backbone_lr": 0.0001,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0,
+          "head_lr_mult": 10.0,
+          "llrd": 1.0,
+          "min_lr_ratio": 0.0,
+          "poly_power": 0.9,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "weight_decay": 0.05
+        },
+        "space": "cityscapes19"
+      },
+      "finished_unix_s": 1786573476.0985508,
+      "git": {
+        "dirty": false,
+        "sha": "ebfbe49a4c33807f50af920c9b8dd128ed8a24a0"
+      },
+      "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+      "model": {
+        "arch": "native",
+        "audited_inactive_parameter_paths": [],
+        "changed_tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "class": "NativeDenseSegmenter",
+        "frozen_by_stage_tensors": 0,
+        "head_patterns": [
+          "neck.",
+          "head.",
+          "auxiliary_heads."
+        ],
+        "native_components": {
+          "auxiliary_heads": [],
+          "backbone": {
+            "class": "TimmBackbone",
+            "features": [
+              {
+                "channels": 24,
+                "name": "blocks.1",
+                "reduction": 4
+              },
+              {
+                "channels": 40,
+                "name": "blocks.2",
+                "reduction": 8
+              },
+              {
+                "channels": 112,
+                "name": "blocks.4",
+                "reduction": 16
+              },
+              {
+                "channels": 960,
+                "name": "blocks.6",
+                "reduction": 32
+              }
+            ],
+            "name": "mobilenetv3_large_100.ra_in1k",
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "pretrained": true,
+            "pretrained_source": {
+              "architecture": "mobilenetv3_large_100",
+              "hf_hub_id": "timm/mobilenetv3_large_100.ra_in1k",
+              "tag": "ra_in1k",
+              "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/mobilenetv3_large_100_ra-f55367f5.pth"
+            }
+          },
+          "head": {
+            "class": "DeepLabV3PlusHead",
+            "in_indices": [
+              0,
+              3
+            ],
+            "selected_features": [
+              {
+                "channels": 24,
+                "name": "blocks.1",
+                "reduction": 4
+              },
+              {
+                "channels": 960,
+                "name": "blocks.6",
+                "reduction": 32
+              }
+            ]
+          },
+          "neck": {
+            "class": "IdentityNeck",
+            "features": [
+              {
+                "channels": 24,
+                "name": "blocks.1",
+                "reduction": 4
+              },
+              {
+                "channels": 40,
+                "name": "blocks.2",
+                "reduction": 8
+              },
+              {
+                "channels": 112,
+                "name": "blocks.4",
+                "reduction": 16
+              },
+              {
+                "channels": 960,
+                "name": "blocks.6",
+                "reduction": 32
+              }
+            ]
+          },
+          "parameter_tensors_by_component": {
+            "auxiliary": 0,
+            "backbone": 170,
+            "head": 28,
+            "neck": 0
+          }
+        },
+        "total_parameters": 8067523,
+        "tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "tracked_update_kind": "classifier",
+        "trainable_parameters": 8067523
+      },
+      "optimizer": {
+        "class": "AdamW",
+        "groups": [
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.no_decay",
+            "parameter_tensors": 2,
+            "parameters": 32,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.decay",
+            "parameter_tensors": 1,
+            "parameters": 432,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 1,
+            "lr": 0.0001,
+            "name": "layer1.no_decay",
+            "parameter_tensors": 4,
+            "parameters": 64,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 1,
+            "lr": 0.0001,
+            "name": "layer1.decay",
+            "parameter_tensors": 2,
+            "parameters": 400,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 2,
+            "lr": 0.0001,
+            "name": "layer2.no_decay",
+            "parameter_tensors": 12,
+            "parameters": 640,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 2,
+            "lr": 0.0001,
+            "name": "layer2.decay",
+            "parameter_tensors": 6,
+            "parameters": 7240,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 3,
+            "lr": 0.0001,
+            "name": "layer3.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 1888,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 3,
+            "lr": 0.0001,
+            "name": "layer3.decay",
+            "parameter_tensors": 15,
+            "parameters": 50424,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 4,
+            "lr": 0.0001,
+            "name": "layer4.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 3872,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 4,
+            "lr": 0.0001,
+            "name": "layer4.decay",
+            "parameter_tensors": 12,
+            "parameters": 126952,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 5,
+            "lr": 0.0001,
+            "name": "layer5.no_decay",
+            "parameter_tensors": 16,
+            "parameters": 6496,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 5,
+            "lr": 0.0001,
+            "name": "layer5.decay",
+            "parameter_tensors": 10,
+            "parameters": 594048,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 6,
+            "lr": 0.0001,
+            "name": "layer6.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 14568,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 6,
+            "lr": 0.0001,
+            "name": "layer6.decay",
+            "parameter_tensors": 15,
+            "parameters": 2009376,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 7,
+            "lr": 0.0001,
+            "name": "layer7.no_decay",
+            "parameter_tensors": 2,
+            "parameters": 1920,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 7,
+            "lr": 0.0001,
+            "name": "layer7.decay",
+            "parameter_tensors": 1,
+            "parameters": 153600,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": true,
+            "layer_id": 8,
+            "lr": 0.001,
+            "name": "head.no_decay",
+            "parameter_tensors": 18,
+            "parameters": 2483,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": true,
+            "layer_id": 8,
+            "lr": 0.001,
+            "name": "head.decay",
+            "parameter_tensors": 10,
+            "parameters": 5093088,
+            "weight_decay": 0.05
+          }
+        ],
+        "summary": "18 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..8\n  decay      72 tensors,     8.04M params\n  no_decay  126 tensors,     0.03M params\n  head       28 tensors,     5.10M params"
+      },
+      "peak_vram_bytes": {
+        "cuda:0": 199229440
+      },
+      "protocol": {
+        "batch_size": 1,
+        "dense_query_ablation": false,
+        "device": "cuda:0",
+        "objective": "railyard.engine.module.dense_training_objective",
+        "objective_contract": "dense",
+        "objective_kind": "dense",
+        "optimizer_steps": 4,
+        "precision": "bf16",
+        "quality_benchmark": false,
+        "seed": 20260812,
+        "shapes": [
+          [
+            64,
+            96
+          ],
+          [
+            65,
+            97
+          ]
+        ],
+        "synthetic_data": true
+      },
+      "schema_version": 1,
+      "shape_checks": [
+        {
+          "input": [
+            1,
+            3,
+            64,
+            96
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 2.0775146484375,
+            "mean": 0.015551634132862091,
+            "min": -1.5167236328125,
+            "shape": [
+              1,
+              19,
+              64,
+              96
+            ]
+          }
+        },
+        {
+          "input": [
+            1,
+            3,
+            65,
+            97
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 2.011389970779419,
+            "mean": -0.019011178985238075,
+            "min": -1.4405049085617065,
+            "shape": [
+              1,
+              19,
+              65,
+              97
+            ]
+          }
+        }
+      ],
+      "started_unix_s": 1786573429.950947,
+      "status": "passed",
+      "step_checks": [
+        {
+          "grad_norm_before_clip": 3.031709671020508,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 198,
+            "trainable_tensors": 198
+          },
+          "loss": 3.0117671489715576,
+          "loss_components": {
+            "cross_entropy": 3.0117671489715576,
+            "total": 3.0117671489715576
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 1
+        },
+        {
+          "grad_norm_before_clip": 1.5615757703781128,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 198,
+            "trainable_tensors": 198
+          },
+          "loss": 3.0619089603424072,
+          "loss_components": {
+            "cross_entropy": 3.0619089603424072,
+            "total": 3.0619089603424072
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 2
+        },
+        {
+          "grad_norm_before_clip": 1.058522343635559,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 198,
+            "trainable_tensors": 198
+          },
+          "loss": 2.9975078105926514,
+          "loss_components": {
+            "cross_entropy": 2.9975078105926514,
+            "total": 2.9975078105926514
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 3
+        },
+        {
+          "grad_norm_before_clip": 0.6373487710952759,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 198,
+            "trainable_tensors": 198
+          },
+          "loss": 2.9763009548187256,
+          "loss_components": {
+            "cross_entropy": 2.9763009548187256,
+            "total": 2.9763009548187256
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 4
+        }
+      ],
+      "wall_clock_s": 46.14760375022888
+    },
+    {
+      "checks": {
+        "all_logits_finite": true,
+        "all_shapes_forwarded": true,
+        "all_trainable_gradients_finite": true,
+        "all_trainable_gradients_present": true,
+        "classifier_or_head_changed": true,
+        "normalization_valid": true,
+        "optimizer_stepped": true,
+        "production_objective_backward": true,
+        "typed_config_loaded": true
+      },
+      "command": "probe",
+      "config_files": [
+        "configs/base.yaml",
+        "configs/models/native_mobilenetv3_large_lraspp.yaml",
+        "configs/curricula/reference_cityscapes19.yaml"
+      ],
+      "config_hash": "db825409d8db",
+      "environment": {
+        "cuda_available": true,
+        "cuda_visible_devices": "8",
+        "cudnn": 91900,
+        "driver_version": "570.133.20",
+        "gpu_count": 1,
+        "gpu_names": [
+          "NVIDIA L40S"
+        ],
+        "hostname": "hdrfs-app-001",
+        "input_normalization": {
+          "channel_order": "rgb",
+          "mean": [
+            0.485,
+            0.456,
+            0.406
+          ],
+          "source": "timm_pretrained_cfg",
+          "std": [
+            0.229,
+            0.224,
+            0.225
+          ]
+        },
+        "packages": {
+          "albumentations": "2.0.8",
+          "lightning": "2.6.5",
+          "numpy": "2.4.4",
+          "railyard": "0.1.0",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+        "python": "3.11.15",
+        "torch": "2.11.0+cu128",
+        "torch_cuda": "12.8"
+      },
+      "experiment": {
+        "first_stage": "cityscapes",
+        "ignore_index": 255,
+        "loss": {
+          "activation": "auto",
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "class_weights": null,
+          "label_smoothing": 0.0,
+          "query": null,
+          "task": "multiclass",
+          "terms": []
+        },
+        "model": {
+          "arch": "native",
+          "backbone_path": null,
+          "checkpoint": null,
+          "classifier_path": null,
+          "drop_path": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "head": "unified_head",
+          "head_paths": [],
+          "inactive_parameter_paths": [],
+          "local_files_only": false,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_r": 16,
+          "lora_targets": [],
+          "native": {
+            "auxiliary_heads": [],
+            "backbone": {
+              "in_channels": 3,
+              "kind": "timm",
+              "name": "mobilenetv3_large_100.ra_in1k",
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "weights": "pretrained"
+            },
+            "head": {
+              "activation": "relu",
+              "channels": 128,
+              "dropout": 0.1,
+              "high_index": 3,
+              "kind": "lraspp",
+              "low_index": 0,
+              "norm": "group"
+            },
+            "neck": {
+              "kind": "identity"
+            },
+            "task": "multiclass"
+          },
+          "revision": null,
+          "smp_arch": null,
+          "subfolder": null,
+          "trust_remote_code": false,
+          "tuning": "full"
+        },
+        "name": "reference_cityscapes19",
+        "num_classes": 19,
+        "optimizer": {
+          "backbone_lr": 0.0001,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0,
+          "head_lr_mult": 10.0,
+          "llrd": 1.0,
+          "min_lr_ratio": 0.0,
+          "poly_power": 0.9,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "weight_decay": 0.05
+        },
+        "space": "cityscapes19"
+      },
+      "finished_unix_s": 1786573484.7695413,
+      "git": {
+        "dirty": false,
+        "sha": "ebfbe49a4c33807f50af920c9b8dd128ed8a24a0"
+      },
+      "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+      "model": {
+        "arch": "native",
+        "audited_inactive_parameter_paths": [],
+        "changed_tracked_tensors": [
+          "head.classifier.high.bias",
+          "head.classifier.high.weight",
+          "head.classifier.low.bias",
+          "head.classifier.low.weight"
+        ],
+        "class": "NativeDenseSegmenter",
+        "frozen_by_stage_tensors": 0,
+        "head_patterns": [
+          "neck.",
+          "head.",
+          "auxiliary_heads."
+        ],
+        "native_components": {
+          "auxiliary_heads": [],
+          "backbone": {
+            "class": "TimmBackbone",
+            "features": [
+              {
+                "channels": 24,
+                "name": "blocks.1",
+                "reduction": 4
+              },
+              {
+                "channels": 40,
+                "name": "blocks.2",
+                "reduction": 8
+              },
+              {
+                "channels": 112,
+                "name": "blocks.4",
+                "reduction": 16
+              },
+              {
+                "channels": 960,
+                "name": "blocks.6",
+                "reduction": 32
+              }
+            ],
+            "name": "mobilenetv3_large_100.ra_in1k",
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "pretrained": true,
+            "pretrained_source": {
+              "architecture": "mobilenetv3_large_100",
+              "hf_hub_id": "timm/mobilenetv3_large_100.ra_in1k",
+              "tag": "ra_in1k",
+              "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/mobilenetv3_large_100_ra-f55367f5.pth"
+            }
+          },
+          "head": {
+            "class": "LRASPPHead",
+            "in_indices": [
+              0,
+              3
+            ],
+            "selected_features": [
+              {
+                "channels": 24,
+                "name": "blocks.1",
+                "reduction": 4
+              },
+              {
+                "channels": 960,
+                "name": "blocks.6",
+                "reduction": 32
+              }
+            ]
+          },
+          "neck": {
+            "class": "IdentityNeck",
+            "features": [
+              {
+                "channels": 24,
+                "name": "blocks.1",
+                "reduction": 4
+              },
+              {
+                "channels": 40,
+                "name": "blocks.2",
+                "reduction": 8
+              },
+              {
+                "channels": 112,
+                "name": "blocks.4",
+                "reduction": 16
+              },
+              {
+                "channels": 960,
+                "name": "blocks.6",
+                "reduction": 32
+              }
+            ]
+          },
+          "parameter_tensors_by_component": {
+            "auxiliary": 0,
+            "backbone": 170,
+            "head": 9,
+            "neck": 0
+          }
+        },
+        "total_parameters": 3221022,
+        "tracked_tensors": [
+          "head.classifier.high.bias",
+          "head.classifier.high.weight",
+          "head.classifier.low.bias",
+          "head.classifier.low.weight"
+        ],
+        "tracked_update_kind": "classifier",
+        "trainable_parameters": 3221022
+      },
+      "optimizer": {
+        "class": "AdamW",
+        "groups": [
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.no_decay",
+            "parameter_tensors": 2,
+            "parameters": 32,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.decay",
+            "parameter_tensors": 1,
+            "parameters": 432,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 1,
+            "lr": 0.0001,
+            "name": "layer1.no_decay",
+            "parameter_tensors": 4,
+            "parameters": 64,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 1,
+            "lr": 0.0001,
+            "name": "layer1.decay",
+            "parameter_tensors": 2,
+            "parameters": 400,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 2,
+            "lr": 0.0001,
+            "name": "layer2.no_decay",
+            "parameter_tensors": 12,
+            "parameters": 640,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 2,
+            "lr": 0.0001,
+            "name": "layer2.decay",
+            "parameter_tensors": 6,
+            "parameters": 7240,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 3,
+            "lr": 0.0001,
+            "name": "layer3.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 1888,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 3,
+            "lr": 0.0001,
+            "name": "layer3.decay",
+            "parameter_tensors": 15,
+            "parameters": 50424,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 4,
+            "lr": 0.0001,
+            "name": "layer4.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 3872,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 4,
+            "lr": 0.0001,
+            "name": "layer4.decay",
+            "parameter_tensors": 12,
+            "parameters": 126952,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 5,
+            "lr": 0.0001,
+            "name": "layer5.no_decay",
+            "parameter_tensors": 16,
+            "parameters": 6496,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 5,
+            "lr": 0.0001,
+            "name": "layer5.decay",
+            "parameter_tensors": 10,
+            "parameters": 594048,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 6,
+            "lr": 0.0001,
+            "name": "layer6.no_decay",
+            "parameter_tensors": 24,
+            "parameters": 14568,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 6,
+            "lr": 0.0001,
+            "name": "layer6.decay",
+            "parameter_tensors": 15,
+            "parameters": 2009376,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": false,
+            "layer_id": 7,
+            "lr": 0.0001,
+            "name": "layer7.no_decay",
+            "parameter_tensors": 2,
+            "parameters": 1920,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 7,
+            "lr": 0.0001,
+            "name": "layer7.decay",
+            "parameter_tensors": 1,
+            "parameters": 153600,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": true,
+            "layer_id": 8,
+            "lr": 0.001,
+            "name": "head.no_decay",
+            "parameter_tensors": 5,
+            "parameters": 422,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": true,
+            "layer_id": 8,
+            "lr": 0.001,
+            "name": "head.decay",
+            "parameter_tensors": 4,
+            "parameters": 248648,
+            "weight_decay": 0.05
+          }
+        ],
+        "summary": "18 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..8\n  decay      66 tensors,     3.19M params\n  no_decay  113 tensors,     0.03M params\n  head        9 tensors,     0.25M params"
+      },
+      "peak_vram_bytes": {
+        "cuda:0": 109051904
+      },
+      "protocol": {
+        "batch_size": 1,
+        "dense_query_ablation": false,
+        "device": "cuda:0",
+        "objective": "railyard.engine.module.dense_training_objective",
+        "objective_contract": "dense",
+        "objective_kind": "dense",
+        "optimizer_steps": 4,
+        "precision": "bf16",
+        "quality_benchmark": false,
+        "seed": 20260812,
+        "shapes": [
+          [
+            64,
+            96
+          ],
+          [
+            65,
+            97
+          ]
+        ],
+        "synthetic_data": true
+      },
+      "schema_version": 1,
+      "shape_checks": [
+        {
+          "input": [
+            1,
+            3,
+            64,
+            96
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 19.61676025390625,
+            "mean": 0.8749818801879883,
+            "min": -17.884201049804688,
+            "shape": [
+              1,
+              19,
+              64,
+              96
+            ]
+          }
+        },
+        {
+          "input": [
+            1,
+            3,
+            65,
+            97
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 25.105796813964844,
+            "mean": 1.0293844938278198,
+            "min": -21.08148956298828,
+            "shape": [
+              1,
+              19,
+              65,
+              97
+            ]
+          }
+        }
+      ],
+      "started_unix_s": 1786573476.320266,
+      "status": "passed",
+      "step_checks": [
+        {
+          "grad_norm_before_clip": 4.862253665924072,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 179,
+            "trainable_tensors": 179
+          },
+          "loss": 7.3895134925842285,
+          "loss_components": {
+            "cross_entropy": 7.3895134925842285,
+            "total": 7.3895134925842285
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 1
+        },
+        {
+          "grad_norm_before_clip": 5.077533721923828,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 179,
+            "trainable_tensors": 179
+          },
+          "loss": 7.414559364318848,
+          "loss_components": {
+            "cross_entropy": 7.414559364318848,
+            "total": 7.414559364318848
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 2
+        },
+        {
+          "grad_norm_before_clip": 4.454039573669434,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 179,
+            "trainable_tensors": 179
+          },
+          "loss": 7.096824645996094,
+          "loss_components": {
+            "cross_entropy": 7.096824645996094,
+            "total": 7.096824645996094
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 3
+        },
+        {
+          "grad_norm_before_clip": 4.701115608215332,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 179,
+            "trainable_tensors": 179
+          },
+          "loss": 7.1494574546813965,
+          "loss_components": {
+            "cross_entropy": 7.1494574546813965,
+            "total": 7.1494574546813965
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 4
+        }
+      ],
+      "wall_clock_s": 8.449275255203247
+    },
+    {
+      "checks": {
+        "all_logits_finite": true,
+        "all_shapes_forwarded": true,
+        "all_trainable_gradients_finite": true,
+        "all_trainable_gradients_present": true,
+        "classifier_or_head_changed": true,
+        "normalization_valid": true,
+        "optimizer_stepped": true,
+        "production_objective_backward": true,
+        "typed_config_loaded": true
+      },
+      "command": "probe",
+      "config_files": [
+        "configs/base.yaml",
+        "configs/models/native_resnet101_uper.yaml",
+        "configs/curricula/reference_cityscapes19.yaml"
+      ],
+      "config_hash": "81417d43f589",
+      "environment": {
+        "cuda_available": true,
+        "cuda_visible_devices": "8",
+        "cudnn": 91900,
+        "driver_version": "570.133.20",
+        "gpu_count": 1,
+        "gpu_names": [
+          "NVIDIA L40S"
+        ],
+        "hostname": "hdrfs-app-001",
+        "input_normalization": {
+          "channel_order": "rgb",
+          "mean": [
+            0.485,
+            0.456,
+            0.406
+          ],
+          "source": "timm_pretrained_cfg",
+          "std": [
+            0.229,
+            0.224,
+            0.225
+          ]
+        },
+        "packages": {
+          "albumentations": "2.0.8",
+          "lightning": "2.6.5",
+          "numpy": "2.4.4",
+          "railyard": "0.1.0",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+        "python": "3.11.15",
+        "torch": "2.11.0+cu128",
+        "torch_cuda": "12.8"
+      },
+      "experiment": {
+        "first_stage": "cityscapes",
+        "ignore_index": 255,
+        "loss": {
+          "activation": "auto",
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "class_weights": null,
+          "label_smoothing": 0.0,
+          "query": null,
+          "task": "multiclass",
+          "terms": []
+        },
+        "model": {
+          "arch": "native",
+          "backbone_path": null,
+          "checkpoint": null,
+          "classifier_path": null,
+          "drop_path": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "head": "unified_head",
+          "head_paths": [],
+          "inactive_parameter_paths": [],
+          "local_files_only": false,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_r": 16,
+          "lora_targets": [],
+          "native": {
+            "auxiliary_heads": [],
+            "backbone": {
+              "in_channels": 3,
+              "kind": "timm",
+              "name": "resnet101.a1_in1k",
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "weights": "pretrained"
+            },
+            "head": {
+              "activation": "relu",
+              "channels": 256,
+              "dropout": 0.1,
+              "in_indices": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "kind": "uper",
+              "norm": "group",
+              "pool_bins": [
+                1,
+                2,
+                3,
+                6
+              ]
+            },
+            "neck": {
+              "kind": "identity"
+            },
+            "task": "multiclass"
+          },
+          "revision": null,
+          "smp_arch": null,
+          "subfolder": null,
+          "trust_remote_code": false,
+          "tuning": "full"
+        },
+        "name": "reference_cityscapes19",
+        "num_classes": 19,
+        "optimizer": {
+          "backbone_lr": 0.0001,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0,
+          "head_lr_mult": 10.0,
+          "llrd": 1.0,
+          "min_lr_ratio": 0.0,
+          "poly_power": 0.9,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "weight_decay": 0.05
+        },
+        "space": "cityscapes19"
+      },
+      "finished_unix_s": 1786573536.901059,
+      "git": {
+        "dirty": false,
+        "sha": "ebfbe49a4c33807f50af920c9b8dd128ed8a24a0"
+      },
+      "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+      "model": {
+        "arch": "native",
+        "audited_inactive_parameter_paths": [],
+        "changed_tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "class": "NativeDenseSegmenter",
+        "frozen_by_stage_tensors": 0,
+        "head_patterns": [
+          "neck.",
+          "head.",
+          "auxiliary_heads."
+        ],
+        "native_components": {
+          "auxiliary_heads": [],
+          "backbone": {
+            "class": "TimmBackbone",
+            "features": [
+              {
+                "channels": 256,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 512,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 1024,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ],
+            "name": "resnet101.a1_in1k",
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "pretrained": true,
+            "pretrained_source": {
+              "architecture": "resnet101",
+              "hf_hub_id": "timm/resnet101.a1_in1k",
+              "tag": "a1_in1k",
+              "url": "https://github.com/huggingface/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet101_a1_0-cdcb52a9.pth"
+            }
+          },
+          "head": {
+            "class": "UPerHead",
+            "in_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "selected_features": [
+              {
+                "channels": 256,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 512,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 1024,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ]
+          },
+          "neck": {
+            "class": "IdentityNeck",
+            "features": [
+              {
+                "channels": 256,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 512,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 1024,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ]
+          },
+          "parameter_tensors_by_component": {
+            "auxiliary": 0,
+            "backbone": 312,
+            "head": 41,
+            "neck": 0
+          }
+        },
+        "total_parameters": 61322579,
+        "tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "tracked_update_kind": "classifier",
+        "trainable_parameters": 61322579
+      },
+      "optimizer": {
+        "class": "AdamW",
+        "groups": [
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.no_decay",
+            "parameter_tensors": 208,
+            "parameters": 105344,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.decay",
+            "parameter_tensors": 104,
+            "parameters": 42394816,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.no_decay",
+            "parameter_tensors": 27,
+            "parameters": 8723,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.decay",
+            "parameter_tensors": 14,
+            "parameters": 18813696,
+            "weight_decay": 0.05
+          }
+        ],
+        "summary": "4 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..1\n  decay     118 tensors,    61.21M params\n  no_decay  235 tensors,     0.11M params\n  head       41 tensors,    18.82M params"
+      },
+      "peak_vram_bytes": {
+        "cuda:0": 1224736768
+      },
+      "protocol": {
+        "batch_size": 1,
+        "dense_query_ablation": false,
+        "device": "cuda:0",
+        "objective": "railyard.engine.module.dense_training_objective",
+        "objective_contract": "dense",
+        "objective_kind": "dense",
+        "optimizer_steps": 4,
+        "precision": "bf16",
+        "quality_benchmark": false,
+        "seed": 20260812,
+        "shapes": [
+          [
+            64,
+            96
+          ],
+          [
+            65,
+            97
+          ]
+        ],
+        "synthetic_data": true
+      },
+      "schema_version": 1,
+      "shape_checks": [
+        {
+          "input": [
+            1,
+            3,
+            64,
+            96
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.3643798828125,
+            "mean": 0.034447114914655685,
+            "min": -1.1337890625,
+            "shape": [
+              1,
+              19,
+              64,
+              96
+            ]
+          }
+        },
+        {
+          "input": [
+            1,
+            3,
+            65,
+            97
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.45335054397583,
+            "mean": 0.005796254146844149,
+            "min": -1.2146923542022705,
+            "shape": [
+              1,
+              19,
+              65,
+              97
+            ]
+          }
+        }
+      ],
+      "started_unix_s": 1786573484.9632187,
+      "status": "passed",
+      "step_checks": [
+        {
+          "grad_norm_before_clip": 14.661648750305176,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 353,
+            "trainable_tensors": 353
+          },
+          "loss": 3.021749496459961,
+          "loss_components": {
+            "cross_entropy": 3.021749496459961,
+            "total": 3.021749496459961
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 1
+        },
+        {
+          "grad_norm_before_clip": 1.512625813484192,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 353,
+            "trainable_tensors": 353
+          },
+          "loss": 3.1171023845672607,
+          "loss_components": {
+            "cross_entropy": 3.1171023845672607,
+            "total": 3.1171023845672607
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 2
+        },
+        {
+          "grad_norm_before_clip": 1.0340317487716675,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 353,
+            "trainable_tensors": 353
+          },
+          "loss": 3.010258436203003,
+          "loss_components": {
+            "cross_entropy": 3.010258436203003,
+            "total": 3.010258436203003
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 3
+        },
+        {
+          "grad_norm_before_clip": 1.0545629262924194,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 353,
+            "trainable_tensors": 353
+          },
+          "loss": 3.000744342803955,
+          "loss_components": {
+            "cross_entropy": 3.000744342803955,
+            "total": 3.000744342803955
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 4
+        }
+      ],
+      "wall_clock_s": 51.93784022331238
+    },
+    {
+      "checks": {
+        "all_logits_finite": true,
+        "all_shapes_forwarded": true,
+        "all_trainable_gradients_finite": true,
+        "all_trainable_gradients_present": true,
+        "classifier_or_head_changed": true,
+        "normalization_valid": true,
+        "optimizer_stepped": true,
+        "production_objective_backward": true,
+        "typed_config_loaded": true
+      },
+      "command": "probe",
+      "config_files": [
+        "configs/base.yaml",
+        "configs/models/native_resnet18_fpn_fcn.yaml",
+        "configs/curricula/reference_cityscapes19.yaml"
+      ],
+      "config_hash": "6da03c028b4b",
+      "environment": {
+        "cuda_available": true,
+        "cuda_visible_devices": "8",
+        "cudnn": 91900,
+        "driver_version": "570.133.20",
+        "gpu_count": 1,
+        "gpu_names": [
+          "NVIDIA L40S"
+        ],
+        "hostname": "hdrfs-app-001",
+        "input_normalization": {
+          "channel_order": "rgb",
+          "mean": [
+            0.485,
+            0.456,
+            0.406
+          ],
+          "source": "timm_pretrained_cfg",
+          "std": [
+            0.229,
+            0.224,
+            0.225
+          ]
+        },
+        "packages": {
+          "albumentations": "2.0.8",
+          "lightning": "2.6.5",
+          "numpy": "2.4.4",
+          "railyard": "0.1.0",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+        "python": "3.11.15",
+        "torch": "2.11.0+cu128",
+        "torch_cuda": "12.8"
+      },
+      "experiment": {
+        "first_stage": "cityscapes",
+        "ignore_index": 255,
+        "loss": {
+          "activation": "auto",
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "class_weights": null,
+          "label_smoothing": 0.0,
+          "query": null,
+          "task": "multiclass",
+          "terms": []
+        },
+        "model": {
+          "arch": "native",
+          "backbone_path": null,
+          "checkpoint": null,
+          "classifier_path": null,
+          "drop_path": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "head": "unified_head",
+          "head_paths": [],
+          "inactive_parameter_paths": [],
+          "local_files_only": false,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_r": 16,
+          "lora_targets": [],
+          "native": {
+            "auxiliary_heads": [],
+            "backbone": {
+              "in_channels": 3,
+              "kind": "timm",
+              "name": "resnet18.a1_in1k",
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "weights": "pretrained"
+            },
+            "head": {
+              "activation": "relu",
+              "channels": 128,
+              "dilation": 1,
+              "dropout": 0.1,
+              "in_indices": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "kernel_size": 3,
+              "kind": "fcn",
+              "norm": "group",
+              "num_convs": 2
+            },
+            "neck": {
+              "activation": "relu",
+              "kind": "fpn",
+              "norm": "group",
+              "num_outputs": 4,
+              "out_channels": 128
+            },
+            "task": "multiclass"
+          },
+          "revision": null,
+          "smp_arch": null,
+          "subfolder": null,
+          "trust_remote_code": false,
+          "tuning": "full"
+        },
+        "name": "reference_cityscapes19",
+        "num_classes": 19,
+        "optimizer": {
+          "backbone_lr": 0.0001,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0,
+          "head_lr_mult": 10.0,
+          "llrd": 1.0,
+          "min_lr_ratio": 0.0,
+          "poly_power": 0.9,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "weight_decay": 0.05
+        },
+        "space": "cityscapes19"
+      },
+      "finished_unix_s": 1786573565.2247863,
+      "git": {
+        "dirty": false,
+        "sha": "ebfbe49a4c33807f50af920c9b8dd128ed8a24a0"
+      },
+      "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+      "model": {
+        "arch": "native",
+        "audited_inactive_parameter_paths": [],
+        "changed_tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "class": "NativeDenseSegmenter",
+        "frozen_by_stage_tensors": 0,
+        "head_patterns": [
+          "neck.",
+          "head.",
+          "auxiliary_heads."
+        ],
+        "native_components": {
+          "auxiliary_heads": [],
+          "backbone": {
+            "class": "TimmBackbone",
+            "features": [
+              {
+                "channels": 64,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 128,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 256,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 512,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ],
+            "name": "resnet18.a1_in1k",
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "pretrained": true,
+            "pretrained_source": {
+              "architecture": "resnet18",
+              "hf_hub_id": "timm/resnet18.a1_in1k",
+              "tag": "a1_in1k",
+              "url": "https://github.com/huggingface/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet18_a1_0-d63eafa0.pth"
+            }
+          },
+          "head": {
+            "class": "FCNHead",
+            "in_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "selected_features": [
+              {
+                "channels": 128,
+                "name": "fpn_0",
+                "reduction": 4
+              },
+              {
+                "channels": 128,
+                "name": "fpn_1",
+                "reduction": 8
+              },
+              {
+                "channels": 128,
+                "name": "fpn_2",
+                "reduction": 16
+              },
+              {
+                "channels": 128,
+                "name": "fpn_3",
+                "reduction": 32
+              }
+            ]
+          },
+          "neck": {
+            "class": "FPNNeck",
+            "features": [
+              {
+                "channels": 128,
+                "name": "fpn_0",
+                "reduction": 4
+              },
+              {
+                "channels": 128,
+                "name": "fpn_1",
+                "reduction": 8
+              },
+              {
+                "channels": 128,
+                "name": "fpn_2",
+                "reduction": 16
+              },
+              {
+                "channels": 128,
+                "name": "fpn_3",
+                "reduction": 32
+              }
+            ]
+          },
+          "parameter_tensors_by_component": {
+            "auxiliary": 0,
+            "backbone": 60,
+            "head": 8,
+            "neck": 20
+          }
+        },
+        "total_parameters": 12630995,
+        "tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "tracked_update_kind": "classifier",
+        "trainable_parameters": 12630995
+      },
+      "optimizer": {
+        "class": "AdamW",
+        "groups": [
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.no_decay",
+            "parameter_tensors": 40,
+            "parameters": 9600,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.decay",
+            "parameter_tensors": 20,
+            "parameters": 11166912,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.no_decay",
+            "parameter_tensors": 17,
+            "parameters": 2067,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.decay",
+            "parameter_tensors": 11,
+            "parameters": 1452416,
+            "weight_decay": 0.05
+          }
+        ],
+        "summary": "4 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..1\n  decay      31 tensors,    12.62M params\n  no_decay   57 tensors,     0.01M params\n  head       28 tensors,     1.45M params"
+      },
+      "peak_vram_bytes": {
+        "cuda:0": 287309824
+      },
+      "protocol": {
+        "batch_size": 1,
+        "dense_query_ablation": false,
+        "device": "cuda:0",
+        "objective": "railyard.engine.module.dense_training_objective",
+        "objective_contract": "dense",
+        "objective_kind": "dense",
+        "optimizer_steps": 4,
+        "precision": "bf16",
+        "quality_benchmark": false,
+        "seed": 20260812,
+        "shapes": [
+          [
+            64,
+            96
+          ],
+          [
+            65,
+            97
+          ]
+        ],
+        "synthetic_data": true
+      },
+      "schema_version": 1,
+      "shape_checks": [
+        {
+          "input": [
+            1,
+            3,
+            64,
+            96
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.13330078125,
+            "mean": -0.14965134859085083,
+            "min": -1.2186279296875,
+            "shape": [
+              1,
+              19,
+              64,
+              96
+            ]
+          }
+        },
+        {
+          "input": [
+            1,
+            3,
+            65,
+            97
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.1810566186904907,
+            "mean": -0.1613781899213791,
+            "min": -1.5173815488815308,
+            "shape": [
+              1,
+              19,
+              65,
+              97
+            ]
+          }
+        }
+      ],
+      "started_unix_s": 1786573537.1599655,
+      "status": "passed",
+      "step_checks": [
+        {
+          "grad_norm_before_clip": 1.813849925994873,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 88,
+            "trainable_tensors": 88
+          },
+          "loss": 3.0067265033721924,
+          "loss_components": {
+            "cross_entropy": 3.0067265033721924,
+            "total": 3.0067265033721924
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 1
+        },
+        {
+          "grad_norm_before_clip": 2.2272844314575195,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 88,
+            "trainable_tensors": 88
+          },
+          "loss": 3.0971014499664307,
+          "loss_components": {
+            "cross_entropy": 3.0971014499664307,
+            "total": 3.0971014499664307
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 2
+        },
+        {
+          "grad_norm_before_clip": 1.246402382850647,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 88,
+            "trainable_tensors": 88
+          },
+          "loss": 3.022245168685913,
+          "loss_components": {
+            "cross_entropy": 3.022245168685913,
+            "total": 3.022245168685913
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 3
+        },
+        {
+          "grad_norm_before_clip": 0.7168328762054443,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 88,
+            "trainable_tensors": 88
+          },
+          "loss": 2.984262228012085,
+          "loss_components": {
+            "cross_entropy": 2.984262228012085,
+            "total": 2.984262228012085
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 4
+        }
+      ],
+      "wall_clock_s": 28.064820766448975
+    },
+    {
+      "checks": {
+        "all_logits_finite": true,
+        "all_shapes_forwarded": true,
+        "all_trainable_gradients_finite": true,
+        "all_trainable_gradients_present": true,
+        "classifier_or_head_changed": true,
+        "normalization_valid": true,
+        "optimizer_stepped": true,
+        "production_objective_backward": true,
+        "typed_config_loaded": true
+      },
+      "command": "probe",
+      "config_files": [
+        "configs/base.yaml",
+        "configs/models/native_resnet18_fpn_segformer_aux.yaml",
+        "configs/curricula/reference_cityscapes19.yaml"
+      ],
+      "config_hash": "f9cd35b9b8c3",
+      "environment": {
+        "cuda_available": true,
+        "cuda_visible_devices": "8",
+        "cudnn": 91900,
+        "driver_version": "570.133.20",
+        "gpu_count": 1,
+        "gpu_names": [
+          "NVIDIA L40S"
+        ],
+        "hostname": "hdrfs-app-001",
+        "input_normalization": {
+          "channel_order": "rgb",
+          "mean": [
+            0.485,
+            0.456,
+            0.406
+          ],
+          "source": "timm_pretrained_cfg",
+          "std": [
+            0.229,
+            0.224,
+            0.225
+          ]
+        },
+        "packages": {
+          "albumentations": "2.0.8",
+          "lightning": "2.6.5",
+          "numpy": "2.4.4",
+          "railyard": "0.1.0",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+        "python": "3.11.15",
+        "torch": "2.11.0+cu128",
+        "torch_cuda": "12.8"
+      },
+      "experiment": {
+        "first_stage": "cityscapes",
+        "ignore_index": 255,
+        "loss": {
+          "activation": "auto",
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "class_weights": null,
+          "label_smoothing": 0.0,
+          "query": null,
+          "task": "multiclass",
+          "terms": []
+        },
+        "model": {
+          "arch": "native",
+          "backbone_path": null,
+          "checkpoint": null,
+          "classifier_path": null,
+          "drop_path": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "head": "unified_head",
+          "head_paths": [],
+          "inactive_parameter_paths": [],
+          "local_files_only": false,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_r": 16,
+          "lora_targets": [],
+          "native": {
+            "auxiliary_heads": [
+              {
+                "head": {
+                  "activation": "relu",
+                  "channels": 64,
+                  "dilation": 1,
+                  "dropout": 0.1,
+                  "in_indices": [
+                    2
+                  ],
+                  "kernel_size": 3,
+                  "kind": "fcn",
+                  "norm": "group",
+                  "num_convs": 1
+                },
+                "loss_weight": 0.4,
+                "name": "aux_s16"
+              }
+            ],
+            "backbone": {
+              "in_channels": 3,
+              "kind": "timm",
+              "name": "resnet18.a1_in1k",
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "weights": "pretrained"
+            },
+            "head": {
+              "activation": "relu",
+              "channels": 128,
+              "dropout": 0.1,
+              "in_indices": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "kind": "segformer",
+              "norm": "group"
+            },
+            "neck": {
+              "activation": "relu",
+              "kind": "fpn",
+              "norm": "group",
+              "num_outputs": 4,
+              "out_channels": 128
+            },
+            "task": "multiclass"
+          },
+          "revision": null,
+          "smp_arch": null,
+          "subfolder": null,
+          "trust_remote_code": false,
+          "tuning": "full"
+        },
+        "name": "reference_cityscapes19",
+        "num_classes": 19,
+        "optimizer": {
+          "backbone_lr": 0.0001,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0,
+          "head_lr_mult": 10.0,
+          "llrd": 1.0,
+          "min_lr_ratio": 0.0,
+          "poly_power": 0.9,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "weight_decay": 0.05
+        },
+        "space": "cityscapes19"
+      },
+      "finished_unix_s": 1786573582.36785,
+      "git": {
+        "dirty": false,
+        "sha": "ebfbe49a4c33807f50af920c9b8dd128ed8a24a0"
+      },
+      "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+      "model": {
+        "arch": "native",
+        "audited_inactive_parameter_paths": [],
+        "changed_tracked_tensors": [
+          "auxiliary_heads.aux_s16.classifier.bias",
+          "auxiliary_heads.aux_s16.classifier.weight",
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "class": "NativeDenseSegmenter",
+        "frozen_by_stage_tensors": 0,
+        "head_patterns": [
+          "neck.",
+          "head.",
+          "auxiliary_heads."
+        ],
+        "native_components": {
+          "auxiliary_heads": [
+            {
+              "class": "FCNHead",
+              "in_indices": [
+                2
+              ],
+              "loss_weight": 0.4,
+              "name": "aux_s16",
+              "selected_features": [
+                {
+                  "channels": 128,
+                  "name": "fpn_2",
+                  "reduction": 16
+                }
+              ]
+            }
+          ],
+          "backbone": {
+            "class": "TimmBackbone",
+            "features": [
+              {
+                "channels": 64,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 128,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 256,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 512,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ],
+            "name": "resnet18.a1_in1k",
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "pretrained": true,
+            "pretrained_source": {
+              "architecture": "resnet18",
+              "hf_hub_id": "timm/resnet18.a1_in1k",
+              "tag": "a1_in1k",
+              "url": "https://github.com/huggingface/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet18_a1_0-d63eafa0.pth"
+            }
+          },
+          "head": {
+            "class": "SegFormerMLPHead",
+            "in_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "selected_features": [
+              {
+                "channels": 128,
+                "name": "fpn_0",
+                "reduction": 4
+              },
+              {
+                "channels": 128,
+                "name": "fpn_1",
+                "reduction": 8
+              },
+              {
+                "channels": 128,
+                "name": "fpn_2",
+                "reduction": 16
+              },
+              {
+                "channels": 128,
+                "name": "fpn_3",
+                "reduction": 32
+              }
+            ]
+          },
+          "neck": {
+            "class": "FPNNeck",
+            "features": [
+              {
+                "channels": 128,
+                "name": "fpn_0",
+                "reduction": 4
+              },
+              {
+                "channels": 128,
+                "name": "fpn_1",
+                "reduction": 8
+              },
+              {
+                "channels": 128,
+                "name": "fpn_2",
+                "reduction": 16
+              },
+              {
+                "channels": 128,
+                "name": "fpn_3",
+                "reduction": 32
+              }
+            ]
+          },
+          "parameter_tensors_by_component": {
+            "auxiliary": 5,
+            "backbone": 60,
+            "head": 13,
+            "neck": 20
+          }
+        },
+        "total_parameters": 12100134,
+        "tracked_tensors": [
+          "auxiliary_heads.aux_s16.classifier.bias",
+          "auxiliary_heads.aux_s16.classifier.weight",
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "tracked_update_kind": "classifier",
+        "trainable_parameters": 12100134
+      },
+      "optimizer": {
+        "class": "AdamW",
+        "groups": [
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.no_decay",
+            "parameter_tensors": 40,
+            "parameters": 9600,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.decay",
+            "parameter_tensors": 20,
+            "parameters": 11166912,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.no_decay",
+            "parameter_tensors": 22,
+            "parameters": 2470,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.decay",
+            "parameter_tensors": 16,
+            "parameters": 921152,
+            "weight_decay": 0.05
+          }
+        ],
+        "summary": "4 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..1\n  decay      36 tensors,    12.09M params\n  no_decay   62 tensors,     0.01M params\n  head       38 tensors,     0.92M params"
+      },
+      "peak_vram_bytes": {
+        "cuda:0": 287309824
+      },
+      "protocol": {
+        "batch_size": 1,
+        "dense_query_ablation": false,
+        "device": "cuda:0",
+        "objective": "railyard.engine.module.dense_training_objective",
+        "objective_contract": "dense",
+        "objective_kind": "dense",
+        "optimizer_steps": 4,
+        "precision": "bf16",
+        "quality_benchmark": false,
+        "seed": 20260812,
+        "shapes": [
+          [
+            64,
+            96
+          ],
+          [
+            65,
+            97
+          ]
+        ],
+        "synthetic_data": true
+      },
+      "schema_version": 1,
+      "shape_checks": [
+        {
+          "input": [
+            1,
+            3,
+            64,
+            96
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.16943359375,
+            "mean": 0.00592440040782094,
+            "min": -1.1959228515625,
+            "shape": [
+              1,
+              19,
+              64,
+              96
+            ]
+          }
+        },
+        {
+          "input": [
+            1,
+            3,
+            65,
+            97
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.4570356607437134,
+            "mean": 0.04016591235995293,
+            "min": -1.157325029373169,
+            "shape": [
+              1,
+              19,
+              65,
+              97
+            ]
+          }
+        }
+      ],
+      "started_unix_s": 1786573565.4500196,
+      "status": "passed",
+      "step_checks": [
+        {
+          "grad_norm_before_clip": 1.8878015279769897,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 98,
+            "trainable_tensors": 98
+          },
+          "loss": 4.233205795288086,
+          "loss_components": {
+            "aux/aux_s16/cross_entropy": 2.9961557388305664,
+            "aux/aux_s16/loss": 2.9961557388305664,
+            "aux/aux_s16/weighted_loss": 1.1984623670578003,
+            "cross_entropy": 3.034743309020996,
+            "total": 4.233205795288086
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 1
+        },
+        {
+          "grad_norm_before_clip": 1.6312389373779297,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 98,
+            "trainable_tensors": 98
+          },
+          "loss": 4.2604780197143555,
+          "loss_components": {
+            "aux/aux_s16/cross_entropy": 3.0133635997772217,
+            "aux/aux_s16/loss": 3.0133635997772217,
+            "aux/aux_s16/weighted_loss": 1.2053455114364624,
+            "cross_entropy": 3.0551323890686035,
+            "total": 4.2604780197143555
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 2
+        },
+        {
+          "grad_norm_before_clip": 0.7634453177452087,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 98,
+            "trainable_tensors": 98
+          },
+          "loss": 4.167593479156494,
+          "loss_components": {
+            "aux/aux_s16/cross_entropy": 2.9828288555145264,
+            "aux/aux_s16/loss": 2.9828288555145264,
+            "aux/aux_s16/weighted_loss": 1.1931315660476685,
+            "cross_entropy": 2.974461793899536,
+            "total": 4.167593479156494
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 3
+        },
+        {
+          "grad_norm_before_clip": 0.6337966918945312,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 98,
+            "trainable_tensors": 98
+          },
+          "loss": 4.168249130249023,
+          "loss_components": {
+            "aux/aux_s16/cross_entropy": 2.9763271808624268,
+            "aux/aux_s16/loss": 2.9763271808624268,
+            "aux/aux_s16/weighted_loss": 1.1905308961868286,
+            "cross_entropy": 2.9777183532714844,
+            "total": 4.168249130249023
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 4
+        }
+      ],
+      "wall_clock_s": 16.91783046722412
+    },
+    {
+      "checks": {
+        "all_logits_finite": true,
+        "all_shapes_forwarded": true,
+        "all_trainable_gradients_finite": true,
+        "all_trainable_gradients_present": true,
+        "classifier_or_head_changed": true,
+        "normalization_valid": true,
+        "optimizer_stepped": true,
+        "production_objective_backward": true,
+        "typed_config_loaded": true
+      },
+      "command": "probe",
+      "config_files": [
+        "configs/base.yaml",
+        "configs/models/native_resnet50_aspp.yaml",
+        "configs/curricula/reference_cityscapes19.yaml"
+      ],
+      "config_hash": "63278c6be3fd",
+      "environment": {
+        "cuda_available": true,
+        "cuda_visible_devices": "8",
+        "cudnn": 91900,
+        "driver_version": "570.133.20",
+        "gpu_count": 1,
+        "gpu_names": [
+          "NVIDIA L40S"
+        ],
+        "hostname": "hdrfs-app-001",
+        "input_normalization": {
+          "channel_order": "rgb",
+          "mean": [
+            0.485,
+            0.456,
+            0.406
+          ],
+          "source": "timm_pretrained_cfg",
+          "std": [
+            0.229,
+            0.224,
+            0.225
+          ]
+        },
+        "packages": {
+          "albumentations": "2.0.8",
+          "lightning": "2.6.5",
+          "numpy": "2.4.4",
+          "railyard": "0.1.0",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+        "python": "3.11.15",
+        "torch": "2.11.0+cu128",
+        "torch_cuda": "12.8"
+      },
+      "experiment": {
+        "first_stage": "cityscapes",
+        "ignore_index": 255,
+        "loss": {
+          "activation": "auto",
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "class_weights": null,
+          "label_smoothing": 0.0,
+          "query": null,
+          "task": "multiclass",
+          "terms": []
+        },
+        "model": {
+          "arch": "native",
+          "backbone_path": null,
+          "checkpoint": null,
+          "classifier_path": null,
+          "drop_path": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "head": "unified_head",
+          "head_paths": [],
+          "inactive_parameter_paths": [],
+          "local_files_only": false,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_r": 16,
+          "lora_targets": [],
+          "native": {
+            "auxiliary_heads": [],
+            "backbone": {
+              "in_channels": 3,
+              "kind": "timm",
+              "name": "resnet50.a1_in1k",
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "weights": "pretrained"
+            },
+            "head": {
+              "activation": "relu",
+              "channels": 256,
+              "dilation_rates": [
+                6,
+                12,
+                18
+              ],
+              "dropout": 0.1,
+              "in_index": 3,
+              "kind": "aspp",
+              "norm": "group"
+            },
+            "neck": {
+              "kind": "identity"
+            },
+            "task": "multiclass"
+          },
+          "revision": null,
+          "smp_arch": null,
+          "subfolder": null,
+          "trust_remote_code": false,
+          "tuning": "full"
+        },
+        "name": "reference_cityscapes19",
+        "num_classes": 19,
+        "optimizer": {
+          "backbone_lr": 0.0001,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0,
+          "head_lr_mult": 10.0,
+          "llrd": 1.0,
+          "min_lr_ratio": 0.0,
+          "poly_power": 0.9,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "weight_decay": 0.05
+        },
+        "space": "cityscapes19"
+      },
+      "finished_unix_s": 1786573597.502544,
+      "git": {
+        "dirty": false,
+        "sha": "ebfbe49a4c33807f50af920c9b8dd128ed8a24a0"
+      },
+      "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+      "model": {
+        "arch": "native",
+        "audited_inactive_parameter_paths": [],
+        "changed_tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "class": "NativeDenseSegmenter",
+        "frozen_by_stage_tensors": 0,
+        "head_patterns": [
+          "neck.",
+          "head.",
+          "auxiliary_heads."
+        ],
+        "native_components": {
+          "auxiliary_heads": [],
+          "backbone": {
+            "class": "TimmBackbone",
+            "features": [
+              {
+                "channels": 256,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 512,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 1024,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ],
+            "name": "resnet50.a1_in1k",
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "pretrained": true,
+            "pretrained_source": {
+              "architecture": "resnet50",
+              "hf_hub_id": "timm/resnet50.a1_in1k",
+              "tag": "a1_in1k",
+              "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet50_a1_0-14fe96d1.pth"
+            }
+          },
+          "head": {
+            "class": "ASPPHead",
+            "in_indices": [
+              3
+            ],
+            "selected_features": [
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ]
+          },
+          "neck": {
+            "class": "IdentityNeck",
+            "features": [
+              {
+                "channels": 256,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 512,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 1024,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ]
+          },
+          "parameter_tensors_by_component": {
+            "auxiliary": 0,
+            "backbone": 159,
+            "head": 19,
+            "neck": 0
+          }
+        },
+        "total_parameters": 39047763,
+        "tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "tracked_update_kind": "classifier",
+        "trainable_parameters": 39047763
+      },
+      "optimizer": {
+        "class": "AdamW",
+        "groups": [
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.no_decay",
+            "parameter_tensors": 106,
+            "parameters": 53120,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.decay",
+            "parameter_tensors": 53,
+            "parameters": 23454912,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.no_decay",
+            "parameter_tensors": 12,
+            "parameters": 2835,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.decay",
+            "parameter_tensors": 7,
+            "parameters": 15536896,
+            "weight_decay": 0.05
+          }
+        ],
+        "summary": "4 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..1\n  decay      60 tensors,    38.99M params\n  no_decay  118 tensors,     0.06M params\n  head       19 tensors,    15.54M params"
+      },
+      "peak_vram_bytes": {
+        "cuda:0": 767557632
+      },
+      "protocol": {
+        "batch_size": 1,
+        "dense_query_ablation": false,
+        "device": "cuda:0",
+        "objective": "railyard.engine.module.dense_training_objective",
+        "objective_contract": "dense",
+        "objective_kind": "dense",
+        "optimizer_steps": 4,
+        "precision": "bf16",
+        "quality_benchmark": false,
+        "seed": 20260812,
+        "shapes": [
+          [
+            64,
+            96
+          ],
+          [
+            65,
+            97
+          ]
+        ],
+        "synthetic_data": true
+      },
+      "schema_version": 1,
+      "shape_checks": [
+        {
+          "input": [
+            1,
+            3,
+            64,
+            96
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.209228515625,
+            "mean": 0.03750235587358475,
+            "min": -1.375,
+            "shape": [
+              1,
+              19,
+              64,
+              96
+            ]
+          }
+        },
+        {
+          "input": [
+            1,
+            3,
+            65,
+            97
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.2176223993301392,
+            "mean": 0.01642860844731331,
+            "min": -1.538453459739685,
+            "shape": [
+              1,
+              19,
+              65,
+              97
+            ]
+          }
+        }
+      ],
+      "started_unix_s": 1786573582.600762,
+      "status": "passed",
+      "step_checks": [
+        {
+          "grad_norm_before_clip": 16.3004207611084,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 178,
+            "trainable_tensors": 178
+          },
+          "loss": 3.0060627460479736,
+          "loss_components": {
+            "cross_entropy": 3.0060627460479736,
+            "total": 3.0060627460479736
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 1
+        },
+        {
+          "grad_norm_before_clip": 13.424773216247559,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 178,
+            "trainable_tensors": 178
+          },
+          "loss": 3.103766918182373,
+          "loss_components": {
+            "cross_entropy": 3.103766918182373,
+            "total": 3.103766918182373
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 2
+        },
+        {
+          "grad_norm_before_clip": 19.490766525268555,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 178,
+            "trainable_tensors": 178
+          },
+          "loss": 3.0051422119140625,
+          "loss_components": {
+            "cross_entropy": 3.0051422119140625,
+            "total": 3.0051422119140625
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 3
+        },
+        {
+          "grad_norm_before_clip": 7.069601535797119,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 178,
+            "trainable_tensors": 178
+          },
+          "loss": 2.98808217048645,
+          "loss_components": {
+            "cross_entropy": 2.98808217048645,
+            "total": 2.98808217048645
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 4
+        }
+      ],
+      "wall_clock_s": 14.901782035827637
+    },
+    {
+      "checks": {
+        "all_logits_finite": true,
+        "all_shapes_forwarded": true,
+        "all_trainable_gradients_finite": true,
+        "all_trainable_gradients_present": true,
+        "classifier_or_head_changed": true,
+        "normalization_valid": true,
+        "optimizer_stepped": true,
+        "production_objective_backward": true,
+        "typed_config_loaded": true
+      },
+      "command": "probe",
+      "config_files": [
+        "configs/base.yaml",
+        "configs/models/native_resnet50_deeplabv3plus.yaml",
+        "configs/curricula/reference_cityscapes19.yaml"
+      ],
+      "config_hash": "be120f06e858",
+      "environment": {
+        "cuda_available": true,
+        "cuda_visible_devices": "8",
+        "cudnn": 91900,
+        "driver_version": "570.133.20",
+        "gpu_count": 1,
+        "gpu_names": [
+          "NVIDIA L40S"
+        ],
+        "hostname": "hdrfs-app-001",
+        "input_normalization": {
+          "channel_order": "rgb",
+          "mean": [
+            0.485,
+            0.456,
+            0.406
+          ],
+          "source": "timm_pretrained_cfg",
+          "std": [
+            0.229,
+            0.224,
+            0.225
+          ]
+        },
+        "packages": {
+          "albumentations": "2.0.8",
+          "lightning": "2.6.5",
+          "numpy": "2.4.4",
+          "railyard": "0.1.0",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+        "python": "3.11.15",
+        "torch": "2.11.0+cu128",
+        "torch_cuda": "12.8"
+      },
+      "experiment": {
+        "first_stage": "cityscapes",
+        "ignore_index": 255,
+        "loss": {
+          "activation": "auto",
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "class_weights": null,
+          "label_smoothing": 0.0,
+          "query": null,
+          "task": "multiclass",
+          "terms": []
+        },
+        "model": {
+          "arch": "native",
+          "backbone_path": null,
+          "checkpoint": null,
+          "classifier_path": null,
+          "drop_path": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "head": "unified_head",
+          "head_paths": [],
+          "inactive_parameter_paths": [],
+          "local_files_only": false,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_r": 16,
+          "lora_targets": [],
+          "native": {
+            "auxiliary_heads": [],
+            "backbone": {
+              "in_channels": 3,
+              "kind": "timm",
+              "name": "resnet50.a1_in1k",
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "weights": "pretrained"
+            },
+            "head": {
+              "activation": "relu",
+              "channels": 256,
+              "dilation_rates": [
+                6,
+                12,
+                18
+              ],
+              "dropout": 0.1,
+              "high_index": 3,
+              "kind": "deeplabv3plus",
+              "low_channels": 48,
+              "low_index": 0,
+              "norm": "group"
+            },
+            "neck": {
+              "kind": "identity"
+            },
+            "task": "multiclass"
+          },
+          "revision": null,
+          "smp_arch": null,
+          "subfolder": null,
+          "trust_remote_code": false,
+          "tuning": "full"
+        },
+        "name": "reference_cityscapes19",
+        "num_classes": 19,
+        "optimizer": {
+          "backbone_lr": 0.0001,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0,
+          "head_lr_mult": 10.0,
+          "llrd": 1.0,
+          "min_lr_ratio": 0.0,
+          "poly_power": 0.9,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "weight_decay": 0.05
+        },
+        "space": "cityscapes19"
+      },
+      "finished_unix_s": 1786573603.9590926,
+      "git": {
+        "dirty": false,
+        "sha": "ebfbe49a4c33807f50af920c9b8dd128ed8a24a0"
+      },
+      "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+      "model": {
+        "arch": "native",
+        "audited_inactive_parameter_paths": [],
+        "changed_tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "class": "NativeDenseSegmenter",
+        "frozen_by_stage_tensors": 0,
+        "head_patterns": [
+          "neck.",
+          "head.",
+          "auxiliary_heads."
+        ],
+        "native_components": {
+          "auxiliary_heads": [],
+          "backbone": {
+            "class": "TimmBackbone",
+            "features": [
+              {
+                "channels": 256,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 512,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 1024,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ],
+            "name": "resnet50.a1_in1k",
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "pretrained": true,
+            "pretrained_source": {
+              "architecture": "resnet50",
+              "hf_hub_id": "timm/resnet50.a1_in1k",
+              "tag": "a1_in1k",
+              "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet50_a1_0-14fe96d1.pth"
+            }
+          },
+          "head": {
+            "class": "DeepLabV3PlusHead",
+            "in_indices": [
+              0,
+              3
+            ],
+            "selected_features": [
+              {
+                "channels": 256,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ]
+          },
+          "neck": {
+            "class": "IdentityNeck",
+            "features": [
+              {
+                "channels": 256,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 512,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 1024,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ]
+          },
+          "parameter_tensors_by_component": {
+            "auxiliary": 0,
+            "backbone": 159,
+            "head": 28,
+            "neck": 0
+          }
+        },
+        "total_parameters": 40351411,
+        "tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "tracked_update_kind": "classifier",
+        "trainable_parameters": 40351411
+      },
+      "optimizer": {
+        "class": "AdamW",
+        "groups": [
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.no_decay",
+            "parameter_tensors": 106,
+            "parameters": 53120,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.decay",
+            "parameter_tensors": 53,
+            "parameters": 23454912,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.no_decay",
+            "parameter_tensors": 18,
+            "parameters": 3955,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.decay",
+            "parameter_tensors": 10,
+            "parameters": 16839424,
+            "weight_decay": 0.05
+          }
+        ],
+        "summary": "4 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..1\n  decay      63 tensors,    40.29M params\n  no_decay  124 tensors,     0.06M params\n  head       28 tensors,    16.84M params"
+      },
+      "peak_vram_bytes": {
+        "cuda:0": 790626304
+      },
+      "protocol": {
+        "batch_size": 1,
+        "dense_query_ablation": false,
+        "device": "cuda:0",
+        "objective": "railyard.engine.module.dense_training_objective",
+        "objective_contract": "dense",
+        "objective_kind": "dense",
+        "optimizer_steps": 4,
+        "precision": "bf16",
+        "quality_benchmark": false,
+        "seed": 20260812,
+        "shapes": [
+          [
+            64,
+            96
+          ],
+          [
+            65,
+            97
+          ]
+        ],
+        "synthetic_data": true
+      },
+      "schema_version": 1,
+      "shape_checks": [
+        {
+          "input": [
+            1,
+            3,
+            64,
+            96
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.587890625,
+            "mean": 0.044828180223703384,
+            "min": -1.69287109375,
+            "shape": [
+              1,
+              19,
+              64,
+              96
+            ]
+          }
+        },
+        {
+          "input": [
+            1,
+            3,
+            65,
+            97
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 2.1746973991394043,
+            "mean": 0.09020505845546722,
+            "min": -1.857442021369934,
+            "shape": [
+              1,
+              19,
+              65,
+              97
+            ]
+          }
+        }
+      ],
+      "started_unix_s": 1786573597.7314558,
+      "status": "passed",
+      "step_checks": [
+        {
+          "grad_norm_before_clip": 15.732884407043457,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 187,
+            "trainable_tensors": 187
+          },
+          "loss": 3.059061288833618,
+          "loss_components": {
+            "cross_entropy": 3.059061288833618,
+            "total": 3.059061288833618
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 1
+        },
+        {
+          "grad_norm_before_clip": 2.1978647708892822,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 187,
+            "trainable_tensors": 187
+          },
+          "loss": 3.1035573482513428,
+          "loss_components": {
+            "cross_entropy": 3.1035573482513428,
+            "total": 3.1035573482513428
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 2
+        },
+        {
+          "grad_norm_before_clip": 1.0503993034362793,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 187,
+            "trainable_tensors": 187
+          },
+          "loss": 2.977468490600586,
+          "loss_components": {
+            "cross_entropy": 2.977468490600586,
+            "total": 2.977468490600586
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 3
+        },
+        {
+          "grad_norm_before_clip": 1.1643075942993164,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 187,
+            "trainable_tensors": 187
+          },
+          "loss": 2.9881200790405273,
+          "loss_components": {
+            "cross_entropy": 2.9881200790405273,
+            "total": 2.9881200790405273
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 4
+        }
+      ],
+      "wall_clock_s": 6.227636814117432
+    },
+    {
+      "checks": {
+        "all_logits_finite": true,
+        "all_shapes_forwarded": true,
+        "all_trainable_gradients_finite": true,
+        "all_trainable_gradients_present": true,
+        "classifier_or_head_changed": true,
+        "normalization_valid": true,
+        "optimizer_stepped": true,
+        "production_objective_backward": true,
+        "typed_config_loaded": true
+      },
+      "command": "probe",
+      "config_files": [
+        "configs/base.yaml",
+        "configs/models/native_resnet50_psp.yaml",
+        "configs/curricula/reference_cityscapes19.yaml"
+      ],
+      "config_hash": "3b758c298976",
+      "environment": {
+        "cuda_available": true,
+        "cuda_visible_devices": "8",
+        "cudnn": 91900,
+        "driver_version": "570.133.20",
+        "gpu_count": 1,
+        "gpu_names": [
+          "NVIDIA L40S"
+        ],
+        "hostname": "hdrfs-app-001",
+        "input_normalization": {
+          "channel_order": "rgb",
+          "mean": [
+            0.485,
+            0.456,
+            0.406
+          ],
+          "source": "timm_pretrained_cfg",
+          "std": [
+            0.229,
+            0.224,
+            0.225
+          ]
+        },
+        "packages": {
+          "albumentations": "2.0.8",
+          "lightning": "2.6.5",
+          "numpy": "2.4.4",
+          "railyard": "0.1.0",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+        "python": "3.11.15",
+        "torch": "2.11.0+cu128",
+        "torch_cuda": "12.8"
+      },
+      "experiment": {
+        "first_stage": "cityscapes",
+        "ignore_index": 255,
+        "loss": {
+          "activation": "auto",
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "class_weights": null,
+          "label_smoothing": 0.0,
+          "query": null,
+          "task": "multiclass",
+          "terms": []
+        },
+        "model": {
+          "arch": "native",
+          "backbone_path": null,
+          "checkpoint": null,
+          "classifier_path": null,
+          "drop_path": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "head": "unified_head",
+          "head_paths": [],
+          "inactive_parameter_paths": [],
+          "local_files_only": false,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_r": 16,
+          "lora_targets": [],
+          "native": {
+            "auxiliary_heads": [],
+            "backbone": {
+              "in_channels": 3,
+              "kind": "timm",
+              "name": "resnet50.a1_in1k",
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "weights": "pretrained"
+            },
+            "head": {
+              "activation": "relu",
+              "channels": 256,
+              "dropout": 0.1,
+              "in_index": 3,
+              "kind": "psp",
+              "norm": "group",
+              "pool_bins": [
+                1,
+                2,
+                3,
+                6
+              ]
+            },
+            "neck": {
+              "kind": "identity"
+            },
+            "task": "multiclass"
+          },
+          "revision": null,
+          "smp_arch": null,
+          "subfolder": null,
+          "trust_remote_code": false,
+          "tuning": "full"
+        },
+        "name": "reference_cityscapes19",
+        "num_classes": 19,
+        "optimizer": {
+          "backbone_lr": 0.0001,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0,
+          "head_lr_mult": 10.0,
+          "llrd": 1.0,
+          "min_lr_ratio": 0.0,
+          "poly_power": 0.9,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "weight_decay": 0.05
+        },
+        "space": "cityscapes19"
+      },
+      "finished_unix_s": 1786573604.8445678,
+      "git": {
+        "dirty": false,
+        "sha": "ebfbe49a4c33807f50af920c9b8dd128ed8a24a0"
+      },
+      "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+      "model": {
+        "arch": "native",
+        "audited_inactive_parameter_paths": [],
+        "changed_tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "class": "NativeDenseSegmenter",
+        "frozen_by_stage_tensors": 0,
+        "head_patterns": [
+          "neck.",
+          "head.",
+          "auxiliary_heads."
+        ],
+        "native_components": {
+          "auxiliary_heads": [],
+          "backbone": {
+            "class": "TimmBackbone",
+            "features": [
+              {
+                "channels": 256,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 512,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 1024,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ],
+            "name": "resnet50.a1_in1k",
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "pretrained": true,
+            "pretrained_source": {
+              "architecture": "resnet50",
+              "hf_hub_id": "timm/resnet50.a1_in1k",
+              "tag": "a1_in1k",
+              "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet50_a1_0-14fe96d1.pth"
+            }
+          },
+          "head": {
+            "class": "PSPHead",
+            "in_indices": [
+              3
+            ],
+            "selected_features": [
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ]
+          },
+          "neck": {
+            "class": "IdentityNeck",
+            "features": [
+              {
+                "channels": 256,
+                "name": "layer1",
+                "reduction": 4
+              },
+              {
+                "channels": 512,
+                "name": "layer2",
+                "reduction": 8
+              },
+              {
+                "channels": 1024,
+                "name": "layer3",
+                "reduction": 16
+              },
+              {
+                "channels": 2048,
+                "name": "layer4",
+                "reduction": 32
+              }
+            ]
+          },
+          "parameter_tensors_by_component": {
+            "auxiliary": 0,
+            "backbone": 159,
+            "head": 17,
+            "neck": 0
+          }
+        },
+        "total_parameters": 37149011,
+        "tracked_tensors": [
+          "head.classifier.bias",
+          "head.classifier.weight"
+        ],
+        "tracked_update_kind": "classifier",
+        "trainable_parameters": 37149011
+      },
+      "optimizer": {
+        "class": "AdamW",
+        "groups": [
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.no_decay",
+            "parameter_tensors": 106,
+            "parameters": 53120,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": false,
+            "layer_id": 0,
+            "lr": 0.0001,
+            "name": "layer0.decay",
+            "parameter_tensors": 53,
+            "parameters": 23454912,
+            "weight_decay": 0.05
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.no_decay",
+            "parameter_tensors": 11,
+            "parameters": 4627,
+            "weight_decay": 0.0
+          },
+          {
+            "is_head": true,
+            "layer_id": 1,
+            "lr": 0.001,
+            "name": "head.decay",
+            "parameter_tensors": 6,
+            "parameters": 13636352,
+            "weight_decay": 0.05
+          }
+        ],
+        "summary": "4 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..1\n  decay      59 tensors,    37.09M params\n  no_decay  117 tensors,     0.06M params\n  head       17 tensors,    13.64M params"
+      },
+      "peak_vram_bytes": {
+        "cuda:0": 738197504
+      },
+      "protocol": {
+        "batch_size": 1,
+        "dense_query_ablation": false,
+        "device": "cuda:0",
+        "objective": "railyard.engine.module.dense_training_objective",
+        "objective_contract": "dense",
+        "objective_kind": "dense",
+        "optimizer_steps": 4,
+        "precision": "bf16",
+        "quality_benchmark": false,
+        "seed": 20260812,
+        "shapes": [
+          [
+            64,
+            96
+          ],
+          [
+            65,
+            97
+          ]
+        ],
+        "synthetic_data": true
+      },
+      "schema_version": 1,
+      "shape_checks": [
+        {
+          "input": [
+            1,
+            3,
+            64,
+            96
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 0.79510498046875,
+            "mean": 0.028623346239328384,
+            "min": -0.83203125,
+            "shape": [
+              1,
+              19,
+              64,
+              96
+            ]
+          }
+        },
+        {
+          "input": [
+            1,
+            3,
+            65,
+            97
+          ],
+          "output": {
+            "dtype": "float32",
+            "finite": true,
+            "max": 1.0594696998596191,
+            "mean": 0.07411269843578339,
+            "min": -0.9668975472450256,
+            "shape": [
+              1,
+              19,
+              65,
+              97
+            ]
+          }
+        }
+      ],
+      "started_unix_s": 1786573604.162546,
+      "status": "passed",
+      "step_checks": [
+        {
+          "grad_norm_before_clip": 20.453426361083984,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 176,
+            "trainable_tensors": 176
+          },
+          "loss": 2.986652374267578,
+          "loss_components": {
+            "cross_entropy": 2.986652374267578,
+            "total": 2.986652374267578
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 1
+        },
+        {
+          "grad_norm_before_clip": 2.979065418243408,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 176,
+            "trainable_tensors": 176
+          },
+          "loss": 3.2429494857788086,
+          "loss_components": {
+            "cross_entropy": 3.2429494857788086,
+            "total": 3.2429494857788086
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 2
+        },
+        {
+          "grad_norm_before_clip": 2.3722031116485596,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 176,
+            "trainable_tensors": 176
+          },
+          "loss": 3.0330607891082764,
+          "loss_components": {
+            "cross_entropy": 3.0330607891082764,
+            "total": 3.0330607891082764
+          },
+          "shape": [
+            64,
+            96
+          ],
+          "step": 3
+        },
+        {
+          "grad_norm_before_clip": 0.8599214553833008,
+          "gradients": {
+            "all_finite": true,
+            "all_present": true,
+            "gradient_tensors": 176,
+            "trainable_tensors": 176
+          },
+          "loss": 2.9735348224639893,
+          "loss_components": {
+            "cross_entropy": 2.9735348224639893,
+            "total": 2.9735348224639893
+          },
+          "shape": [
+            65,
+            97
+          ],
+          "step": 4
+        }
+      ],
+      "wall_clock_s": 0.6820218563079834
+    }
+  ],
+  "schema_version": 1,
+  "started_unix_s": 1786573330.4181516,
+  "status": "passed",
+  "wall_clock_s": 274.6149044036865
+}

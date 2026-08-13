@@ -1,0 +1,18 @@
+# Staged transfer: Cityscapes -> RailSem19. This runnable recipe compares
+# sequential source-to-target transfer with the single-domain and joint controls.
+name: cs_rs
+space: rail_union
+loss: {aux: lovasz, aux_weight: 0.5}
+stages:
+  - name: cityscapes
+    data:
+      - {name: cityscapes, root: data/cityscapes}
+    init_from: pretrained
+    iters: 40000
+  - name: railsem19
+    data:
+      - {name: railsem19, root: data/railsem19, split_file: splits/railsem19_seed0.json}
+    init_from: previous     # chain resolution threads the checkpoint automatically
+    reset_head: false       # unified_head keeps the classifier; flip for the ablation
+    iters: 20000            # later stages: shorter schedule
+    lr_scale: 0.1           # ...and LR / 10

@@ -1,0 +1,43 @@
+optim:
+  backbone_lr: 0.00006
+  head_lr_mult: 10.0
+  weight_decay: 0.05
+  warmup_iters: 100
+  poly_power: 0.9
+
+train:
+  iters: 1000
+  batch_size: 2
+  accum: 1
+  num_workers: 4
+  precision: bf16-mixed
+  ema_decay: 0.9998
+  val_every: 100
+  ckpt_every: 100
+  seed: 0
+  devices: auto
+
+eval:
+  sliding_window: true
+  window: [512, 512]
+  stride: [384, 384]
+  batch_size: 1
+  num_workers: 4
+  tta_scales: []
+  tta_flip: false
+  threshold: 0.5
+  boundary_tolerance_frac: 0.0075
+  save_confusion: true
+
+loss:
+  aux: none
+  aux_weight: 0.0
+  ce_weight: 1.0
+  label_smoothing: 0.0
+
+aug:
+  crop: [512, 512]
+  scale_min: 0.5
+  scale_max: 2.0
+  hflip_p: 0.5
+  color_jitter_p: 0.5

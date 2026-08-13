@@ -1,0 +1,10 @@
+# HRNet-W48 + OCR -- the legacy baseline, for continuity with prior work.
+# The OCR head is implemented in src/segmentary/models/heads.py because no
+# maintained pip package ships one; the backbone comes from timm.
+model:
+  arch: hrnet_w48_ocr
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 1.0e-4         # CNN backbone tolerates a higher LR than a ViT
+  llrd: 1.0

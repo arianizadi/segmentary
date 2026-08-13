@@ -1,0 +1,49 @@
+# Cityscapes gtFine *_labelIds.png -> standard trainIds 0..18.
+#
+# This is the official mapping, transcribed from the `trainId` column of
+# cityscapesScripts/helpers/labels.py (fetched and parsed, not recalled).
+# Every id with ignoreInEval=True maps to 255.
+
+space: cityscapes19
+dataset: cityscapes
+source: cityscapesScripts/helpers/labels.py (trainId column)
+
+default: 255
+
+map:
+  0:  255   # unlabeled            ignoreInEval
+  1:  255   # ego vehicle          ignoreInEval
+  2:  255   # rectification border ignoreInEval
+  3:  255   # out of roi           ignoreInEval
+  4:  255   # static               ignoreInEval
+  5:  255   # dynamic              ignoreInEval
+  6:  255   # ground               ignoreInEval
+  7:  0     # road
+  8:  1     # sidewalk
+  9:  255   # parking              ignoreInEval
+  10: 255   # rail track           ignoreInEval
+  11: 2     # building
+  12: 3     # wall
+  13: 4     # fence
+  14: 255   # guard rail           ignoreInEval
+  15: 255   # bridge               ignoreInEval
+  16: 255   # tunnel               ignoreInEval
+  17: 5     # pole
+  18: 255   # polegroup            ignoreInEval
+  19: 6     # traffic light
+  20: 7     # traffic sign
+  21: 8     # vegetation
+  22: 9     # terrain
+  23: 10    # sky
+  24: 11    # person
+  25: 12    # rider
+  26: 13    # car
+  27: 14    # truck
+  28: 15    # bus
+  29: 255   # caravan              ignoreInEval
+  30: 255   # trailer              ignoreInEval
+  31: 16    # train
+  32: 17    # motorcycle
+  33: 18    # bicycle
+
+allow_merge: {}

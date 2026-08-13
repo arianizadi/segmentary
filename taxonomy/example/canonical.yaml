@@ -1,0 +1,8 @@
+name: example
+description: Minimal three-class example for the generic folder loader.
+ignore_index: 255
+classes:
+  - {id: 0, name: background, color: [30, 30, 30]}
+  - {id: 1, name: object-a, color: [220, 60, 60]}
+  - {id: 2, name: object-b, color: [60, 180, 220]}
+thin_classes: []

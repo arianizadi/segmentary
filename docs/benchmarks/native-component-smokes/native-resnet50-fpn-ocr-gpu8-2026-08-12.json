@@ -1,0 +1,496 @@
+{
+  "checks": {
+    "all_logits_finite": true,
+    "all_shapes_forwarded": true,
+    "all_trainable_gradients_finite": true,
+    "all_trainable_gradients_present": true,
+    "classifier_or_head_changed": true,
+    "normalization_valid": true,
+    "optimizer_stepped": true,
+    "production_objective_backward": true,
+    "typed_config_loaded": true
+  },
+  "command": "probe",
+  "config_files": [
+    "configs/base.yaml",
+    "configs/models/native_resnet50_fpn_ocr.yaml",
+    "configs/curricula/reference_cityscapes19.yaml"
+  ],
+  "config_hash": "c8102dec3b3c",
+  "environment": {
+    "cuda_available": true,
+    "cuda_visible_devices": "8",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "source": "timm_pretrained_cfg",
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "railyard": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8"
+  },
+  "experiment": {
+    "first_stage": "cityscapes",
+    "ignore_index": 255,
+    "loss": {
+      "activation": "auto",
+      "aux": "none",
+      "aux_weight": 0.0,
+      "ce_weight": 1.0,
+      "class_weights": null,
+      "label_smoothing": 0.0,
+      "query": null,
+      "task": "multiclass",
+      "terms": []
+    },
+    "model": {
+      "arch": "native",
+      "backbone_path": null,
+      "checkpoint": null,
+      "classifier_path": null,
+      "drop_path": null,
+      "encoder_name": null,
+      "encoder_weights": null,
+      "head": "unified_head",
+      "head_paths": [],
+      "inactive_parameter_paths": [],
+      "local_files_only": false,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "lora_r": 16,
+      "lora_targets": [],
+      "native": {
+        "auxiliary_heads": [],
+        "backbone": {
+          "in_channels": 3,
+          "kind": "timm",
+          "name": "resnet50.a1_in1k",
+          "out_indices": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weights": "pretrained"
+        },
+        "head": {
+          "activation": "relu",
+          "attention_scale": 1,
+          "channels": 512,
+          "coarse_loss_weight": 0.4,
+          "dropout": 0.05,
+          "in_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "key_channels": 256,
+          "kind": "ocr",
+          "norm": "group"
+        },
+        "neck": {
+          "activation": "relu",
+          "kind": "fpn",
+          "norm": "group",
+          "num_outputs": 4,
+          "out_channels": 256
+        },
+        "task": "multiclass"
+      },
+      "revision": null,
+      "smp_arch": null,
+      "subfolder": null,
+      "trust_remote_code": false,
+      "tuning": "full"
+    },
+    "name": "reference_cityscapes19",
+    "num_classes": 19,
+    "optimizer": {
+      "backbone_lr": 0.0001,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "grad_clip": 1.0,
+      "head_lr_mult": 10.0,
+      "llrd": 1.0,
+      "min_lr_ratio": 0.0,
+      "poly_power": 0.9,
+      "warmup_iters": 1500,
+      "warmup_ratio": 1e-06,
+      "weight_decay": 0.05
+    },
+    "space": "cityscapes19"
+  },
+  "finished_unix_s": 1786576637.4943888,
+  "git": {
+    "dirty": false,
+    "sha": "ae6febdb78c334f4c3c9ee30d6edda888c0d4c92"
+  },
+  "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
+  "model": {
+    "arch": "native",
+    "audited_inactive_parameter_paths": [],
+    "changed_tracked_tensors": [
+      "head.classifier.bias",
+      "head.classifier.weight",
+      "head.coarse_classifier.bias",
+      "head.coarse_classifier.weight"
+    ],
+    "class": "NativeDenseSegmenter",
+    "frozen_by_stage_tensors": 0,
+    "head_patterns": [
+      "neck.",
+      "head.",
+      "auxiliary_heads."
+    ],
+    "native_components": {
+      "auxiliary_heads": [],
+      "backbone": {
+        "class": "TimmBackbone",
+        "features": [
+          {
+            "channels": 256,
+            "name": "layer1",
+            "reduction": 4
+          },
+          {
+            "channels": 512,
+            "name": "layer2",
+            "reduction": 8
+          },
+          {
+            "channels": 1024,
+            "name": "layer3",
+            "reduction": 16
+          },
+          {
+            "channels": 2048,
+            "name": "layer4",
+            "reduction": 32
+          }
+        ],
+        "name": "resnet50.a1_in1k",
+        "out_indices": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "pretrained": true,
+        "pretrained_source": {
+          "architecture": "resnet50",
+          "hf_hub_id": "timm/resnet50.a1_in1k",
+          "tag": "a1_in1k",
+          "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet50_a1_0-14fe96d1.pth"
+        }
+      },
+      "head": {
+        "class": "OCRHead",
+        "in_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "selected_features": [
+          {
+            "channels": 256,
+            "name": "fpn_0",
+            "reduction": 4
+          },
+          {
+            "channels": 256,
+            "name": "fpn_1",
+            "reduction": 8
+          },
+          {
+            "channels": 256,
+            "name": "fpn_2",
+            "reduction": 16
+          },
+          {
+            "channels": 256,
+            "name": "fpn_3",
+            "reduction": 32
+          }
+        ]
+      },
+      "neck": {
+        "class": "FPNNeck",
+        "features": [
+          {
+            "channels": 256,
+            "name": "fpn_0",
+            "reduction": 4
+          },
+          {
+            "channels": 256,
+            "name": "fpn_1",
+            "reduction": 8
+          },
+          {
+            "channels": 256,
+            "name": "fpn_2",
+            "reduction": 16
+          },
+          {
+            "channels": 256,
+            "name": "fpn_3",
+            "reduction": 32
+          }
+        ]
+      },
+      "parameter_tensors_by_component": {
+        "auxiliary": 0,
+        "backbone": 159,
+        "head": 22,
+        "neck": 20
+      }
+    },
+    "total_parameters": 32644710,
+    "tracked_tensors": [
+      "head.classifier.bias",
+      "head.classifier.weight",
+      "head.coarse_classifier.bias",
+      "head.coarse_classifier.weight"
+    ],
+    "tracked_update_kind": "classifier",
+    "trainable_parameters": 32644710
+  },
+  "optimizer": {
+    "class": "AdamW",
+    "groups": [
+      {
+        "is_head": false,
+        "layer_id": 0,
+        "lr": 0.0001,
+        "name": "layer0.no_decay",
+        "parameter_tensors": 106,
+        "parameters": 53120,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": false,
+        "layer_id": 0,
+        "lr": 0.0001,
+        "name": "layer0.decay",
+        "parameter_tensors": 53,
+        "parameters": 23454912,
+        "weight_decay": 0.05
+      },
+      {
+        "is_head": true,
+        "layer_id": 1,
+        "lr": 0.001,
+        "name": "head.no_decay",
+        "parameter_tensors": 26,
+        "parameters": 7718,
+        "weight_decay": 0.0
+      },
+      {
+        "is_head": true,
+        "layer_id": 1,
+        "lr": 0.001,
+        "name": "head.decay",
+        "parameter_tensors": 16,
+        "parameters": 9128960,
+        "weight_decay": 0.05
+      }
+    ],
+    "summary": "4 param groups | lr 1.000e-04 .. 1.000e-03 | depths 0..1\n  decay      69 tensors,    32.58M params\n  no_decay  132 tensors,     0.06M params\n  head       42 tensors,     9.14M params"
+  },
+  "peak_vram_bytes": {
+    "cuda:0": 715128832
+  },
+  "protocol": {
+    "batch_size": 1,
+    "dense_query_ablation": false,
+    "device": "cuda:0",
+    "objective": "railyard.engine.module.dense_training_objective",
+    "objective_contract": "dense",
+    "objective_kind": "dense",
+    "optimizer_steps": 4,
+    "precision": "bf16",
+    "quality_benchmark": false,
+    "seed": 20260812,
+    "shapes": [
+      [
+        64,
+        96
+      ],
+      [
+        65,
+        97
+      ]
+    ],
+    "synthetic_data": true
+  },
+  "schema_version": 1,
+  "shape_checks": [
+    {
+      "input": [
+        1,
+        3,
+        64,
+        96
+      ],
+      "output": {
+        "dtype": "float32",
+        "finite": true,
+        "max": 1.26708984375,
+        "mean": 0.08755052089691162,
+        "min": -0.7896728515625,
+        "shape": [
+          1,
+          19,
+          64,
+          96
+        ]
+      }
+    },
+    {
+      "input": [
+        1,
+        3,
+        65,
+        97
+      ],
+      "output": {
+        "dtype": "float32",
+        "finite": true,
+        "max": 1.4470782279968262,
+        "mean": 0.09369703382253647,
+        "min": -0.8873228430747986,
+        "shape": [
+          1,
+          19,
+          65,
+          97
+        ]
+      }
+    }
+  ],
+  "started_unix_s": 1786576578.3568075,
+  "status": "passed",
+  "step_checks": [
+    {
+      "grad_norm_before_clip": 8.759787559509277,
+      "gradients": {
+        "all_finite": true,
+        "all_present": true,
+        "gradient_tensors": 201,
+        "trainable_tensors": 201
+      },
+      "loss": 4.1950788497924805,
+      "loss_components": {
+        "aux/ocr_coarse/cross_entropy": 3.0023348331451416,
+        "aux/ocr_coarse/loss": 3.0023348331451416,
+        "aux/ocr_coarse/weighted_loss": 1.2009339332580566,
+        "cross_entropy": 2.9941446781158447,
+        "total": 4.1950788497924805
+      },
+      "shape": [
+        64,
+        96
+      ],
+      "step": 1
+    },
+    {
+      "grad_norm_before_clip": 4.982009410858154,
+      "gradients": {
+        "all_finite": true,
+        "all_present": true,
+        "gradient_tensors": 201,
+        "trainable_tensors": 201
+      },
+      "loss": 4.686081409454346,
+      "loss_components": {
+        "aux/ocr_coarse/cross_entropy": 3.1152117252349854,
+        "aux/ocr_coarse/loss": 3.1152117252349854,
+        "aux/ocr_coarse/weighted_loss": 1.2460846900939941,
+        "cross_entropy": 3.4399967193603516,
+        "total": 4.686081409454346
+      },
+      "shape": [
+        65,
+        97
+      ],
+      "step": 2
+    },
+    {
+      "grad_norm_before_clip": 3.227954626083374,
+      "gradients": {
+        "all_finite": true,
+        "all_present": true,
+        "gradient_tensors": 201,
+        "trainable_tensors": 201
+      },
+      "loss": 4.353321075439453,
+      "loss_components": {
+        "aux/ocr_coarse/cross_entropy": 2.986008405685425,
+        "aux/ocr_coarse/loss": 2.986008405685425,
+        "aux/ocr_coarse/weighted_loss": 1.1944034099578857,
+        "cross_entropy": 3.1589174270629883,
+        "total": 4.353321075439453
+      },
+      "shape": [
+        64,
+        96
+      ],
+      "step": 3
+    },
+    {
+      "grad_norm_before_clip": 1.4598795175552368,
+      "gradients": {
+        "all_finite": true,
+        "all_present": true,
+        "gradient_tensors": 201,
+        "trainable_tensors": 201
+      },
+      "loss": 4.192038536071777,
+      "loss_components": {
+        "aux/ocr_coarse/cross_entropy": 2.9545443058013916,
+        "aux/ocr_coarse/loss": 2.9545443058013916,
+        "aux/ocr_coarse/weighted_loss": 1.1818177700042725,
+        "cross_entropy": 3.010220766067505,
+        "total": 4.192038536071777
+      },
+      "shape": [
+        65,
+        97
+      ],
+      "step": 4
+    }
+  ],
+  "wall_clock_s": 59.13758134841919
+}

@@ -1,0 +1,21 @@
+# BEiT-Base + UPerNet-style decode/FPN heads, pretrained on ADE20K.
+#
+# Pros: strong transformer features and a complete semantic checkpoint.
+# Cons: substantially heavier than SegFormer-B0/mobile models. Segmentary drops
+# the checkpoint's separate auxiliary head because its one-loss dense contract
+# trains the primary decode head; every dropped key is prefix-audited.
+model:
+  arch: hf_auto
+  checkpoint: microsoft/beit-base-finetuned-ade-640-640
+  revision: a8b6f5ef4acb2ea55d882989deaa02d39401e2b2
+  local_files_only: false
+  trust_remote_code: false
+  tuning: full
+  head: unified_head
+  # The primary segmentation output consumes BEiT layers 0-9. Upstream layers
+  # 10-11 are present in this exact revision but are loss-unreachable.
+  inactive_parameter_paths: [beit.layers.10, beit.layers.11]
+
+optim:
+  backbone_lr: 2.0e-5
+  llrd: 0.8

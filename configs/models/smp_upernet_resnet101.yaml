@@ -1,0 +1,14 @@
+# UPerNet with a ResNet-101 encoder. This is the explicit replacement for the
+# legacy `arch: upernet_r101` alias: decoder, encoder, and weights are recorded
+# independently in every resolved config and result.
+model:
+  arch: smp
+  smp_arch: UPerNet
+  encoder_name: resnet101
+  encoder_weights: imagenet
+  tuning: full
+  head: unified_head
+
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

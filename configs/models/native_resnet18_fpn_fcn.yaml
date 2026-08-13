@@ -1,0 +1,36 @@
+# Small native baseline with an exact timm ImageNet-1k backbone tag.
+model:
+  arch: native
+  tuning: full
+  head: unified_head
+  native:
+    task: multiclass
+    backbone:
+      kind: timm
+      name: resnet18.a1_in1k
+      weights: pretrained
+      out_indices: [1, 2, 3, 4]
+      in_channels: 3
+    neck:
+      kind: fpn
+      out_channels: 128
+      num_outputs: 4
+      norm: group
+      activation: relu
+    head:
+      kind: fcn
+      in_indices: [0, 1, 2, 3]
+      channels: 128
+      num_convs: 2
+      kernel_size: 3
+      dilation: 1
+      dropout: 0.1
+      norm: group
+      activation: relu
+    auxiliary_heads: []
+
+# Lower rate for admitted backbone weights; fresh neck/head receive 10x.
+optim:
+  backbone_lr: 1.0e-4
+  head_lr_mult: 10.0
+  llrd: 1.0

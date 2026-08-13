@@ -1,0 +1,42 @@
+# Custom rail dataset -> rail_union canonical ids.
+#
+# TEMPLATE -- edit when the custom dataset exists.
+#
+# The custom dataset format (see docs/custom_dataset.md) stores masks that are
+# ALREADY in canonical ids, so this mapping is the identity. Keeping the file
+# anyway is deliberate: it means the custom dataset goes through exactly the same
+# validated LUT path as the other two, so the ignore/collision/coverage tests
+# apply to it as well. If your annotation tool emits its own ids instead, change
+# `map` here rather than writing a one-off conversion script.
+
+space: rail_union
+dataset: custom
+source: identity (masks are authored directly in canonical ids)
+
+default: 255
+
+map:
+  0:  0     # road
+  1:  1     # sidewalk
+  2:  2     # construction
+  3:  3     # fence
+  4:  4     # pole
+  5:  5     # traffic-light
+  6:  6     # traffic-sign
+  7:  7     # vegetation
+  8:  8     # terrain
+  9:  9     # sky
+  10: 10    # human
+  11: 11    # car
+  12: 12    # truck
+  13: 13    # motorcycle
+  14: 14    # bicycle
+  15: 15    # on-rails
+  16: 16    # rail-track
+  17: 17    # rail-raised
+  18: 18    # rail-embedded
+  19: 19    # tram-track
+  20: 20    # trackbed
+  255: 255  # ignore
+
+allow_merge: {}

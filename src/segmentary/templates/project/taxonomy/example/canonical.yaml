@@ -1,0 +1,8 @@
+name: example
+description: Replace these example classes with the classes your project predicts.
+ignore_index: 255
+classes:
+  - {id: 0, name: background, color: [0, 0, 0]}
+  - {id: 1, name: object, color: [0, 160, 255]}
+  - {id: 2, name: detail, color: [255, 180, 0]}
+thin_classes: [2]

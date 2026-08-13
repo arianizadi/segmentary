@@ -1,0 +1,25 @@
+# UPerNet + Swin-Tiny from OpenMMLab's complete ADE20K checkpoint.
+#
+# Pros: explicit feature pyramid and a widely used dense-segmentation baseline.
+# Cons: heavier decoder than SegFormer. The source auxiliary head is deliberately
+# dropped and prefix-audited because Segmentary trains one primary dense head.
+model:
+  arch: hf_auto
+  checkpoint: openmmlab/upernet-swin-tiny
+  revision: dc8e8c94669c6f14d5cc4c21a141daebd2280d59
+  local_files_only: false
+  trust_remote_code: false
+  tuning: full
+  head: unified_head
+
+  # UPerNet lacks an unambiguous top-level base_model_prefix, so the complete
+  # audited module partition is explicit rather than guessed.
+  backbone_path: backbone
+  head_paths: [decode_head]
+  classifier_path: decode_head.classifier
+  # UPerNet consumes hierarchical stage outputs before Swin's final norm.
+  inactive_parameter_paths: [backbone.swin.layernorm]
+
+optim:
+  backbone_lr: 6.0e-5
+  llrd: 0.9

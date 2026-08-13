@@ -1,0 +1,46 @@
+# RailSem19 uint8/rs19_val/*.png  ->  rail_union canonical ids.
+#
+# Source of native ids (verified, not recalled): rs19-config.json shipped INSIDE
+# rs19_val.zip -- i.e. the dataset's own class definition, read from disk at
+# the dataset's rs19-config.json (version 1.0, 19 labels).
+# Confirmed empirically over 150 sampled masks: uint8, mode L, 1080x1920,
+# observed id set = {0..18} U {255}, with 255 = void at ~3.2% of pixels.
+#
+# The canonical space was DESIGNED around this list, so every mapping here is
+# 1:1 and there are no merges.
+
+space: rail_union
+dataset: railsem19
+source: rs19-config.json (v1.0, shipped in rs19_val.zip)
+
+default: 255
+
+map:
+  0:  0     # road           -> road
+  1:  1     # sidewalk       -> sidewalk        (RS also covers train platforms)
+  2:  2     # construction   -> construction
+  3:  19    # tram-track     -> tram-track
+  4:  3     # fence          -> fence
+  5:  4     # pole           -> pole
+  6:  5     # traffic-light  -> traffic-light
+  7:  6     # traffic-sign   -> traffic-sign
+  8:  7     # vegetation     -> vegetation
+  9:  8     # terrain        -> terrain
+  10: 9     # sky            -> sky
+  11: 10    # human          -> human
+  12: 16    # rail-track     -> rail-track
+  13: 11    # car            -> car
+  14: 12    # truck          -> truck
+  15: 20    # trackbed       -> trackbed
+  16: 15    # on-rails       -> on-rails
+  17: 17    # rail-raised    -> rail-raised
+  18: 18    # rail-embedded  -> rail-embedded
+  255: 255  # void           -> ignore
+
+# No merges: the canonical space adopts RailSem19 granularity wherever the two
+# datasets disagree, so this mapping is injective on the evaluated classes.
+allow_merge: {}
+
+# Canonical classes RailSem19 cannot produce: motorcycle (13), bicycle (14).
+# This set is DERIVED from `map` at load time, never hand-maintained -- under
+# `unified_head` those two logits are masked out of the loss for this dataset.

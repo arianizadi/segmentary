@@ -1,0 +1,14 @@
+# MILESTONE 4: the reference-implementation check.
+#
+# Trains in the STANDARD Cityscapes 19-class space, not rail_union, because every
+# published mIoU is reported on exactly those 19 classes with exactly those ignore
+# rules. Scored in rail_union the number is comparable to no paper at all.
+# Target: within ~2 mIoU of SegFormer-B2's published Cityscapes val number.
+# Do not change aug/eval here -- deviating invalidates the comparison.
+name: reference_cityscapes19
+space: cityscapes19
+stages:
+  - name: cityscapes
+    data:
+      - {name: cityscapes, root: data/cityscapes}
+    init_from: pretrained

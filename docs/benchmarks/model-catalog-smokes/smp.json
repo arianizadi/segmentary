@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "date": "2026-08-12",
+  "status": "passed",
+  "kind": "real_imagenet_encoder_four_step_bf16_optimizer_compatibility_smoke",
+  "not_a_benchmark": true,
+  "environment": {"gpu": "NVIDIA L40S", "torch": "2.11.0+cu128", "segmentation_models_pytorch": "0.5.0"},
+  "protocol": {"steps": 4, "batch_size": 2, "precision": "bf16", "labels": 5},
+  "strict_gradient_audit": {
+    "date": "2026-08-12",
+    "command": "CUDA_VISIBLE_DEVICES=8 RAILYARD_RUN_SMP_CATALOG=1 python -m pytest -q tests/test_smp_catalog.py -m 'slow and gpu'",
+    "result": "11 passed",
+    "steps_per_recipe": 4,
+    "batch_size": 2,
+    "shape_nchw": [2, 3, 128, 128],
+    "precision": "bf16",
+    "labels": 19,
+    "every_loss_reachable_trainable_parameter_had_finite_gradient": true,
+    "every_segmentation_head_updated": true,
+    "configs": [
+      "smp_deeplabv3_resnet50.yaml",
+      "smp_deeplabv3plus_resnet101.yaml",
+      "smp_fpn_resnet50.yaml",
+      "smp_linknet_mobilenet_v2.yaml",
+      "smp_manet_efficientnet_b0.yaml",
+      "smp_pan_resnext50.yaml",
+      "smp_pspnet_mobilenet_v2.yaml",
+      "smp_unet_resnet34.yaml",
+      "smp_unetplusplus_efficientnet_b0.yaml",
+      "smp_upernet_mit_b0.yaml",
+      "smp_upernet_resnet101.yaml"
+    ]
+  },
+  "results": [
+    {"config": "smp_deeplabv3_resnet50.yaml", "parameters": 39634757, "shape_nchw": [2, 3, 64, 64], "peak_vram_bytes": 806419456, "finite": true, "head_updated": true},
+    {"config": "smp_deeplabv3plus_resnet101.yaml", "parameters": 45670741, "shape_nchw": [2, 3, 64, 64], "peak_vram_bytes": 929873408, "finite": true, "head_updated": true},
+    {"config": "smp_fpn_resnet50.yaml", "parameters": 26116549, "shape_nchw": [2, 3, 64, 64], "peak_vram_bytes": 534724096, "finite": true, "head_updated": true},
+    {"config": "smp_linknet_mobilenet_v2.yaml", "parameters": 4319991, "shape_nchw": [2, 3, 64, 64], "peak_vram_bytes": 87255552, "finite": true, "head_updated": true},
+    {"config": "smp_manet_efficientnet_b0.yaml", "parameters": 9092937, "shape_nchw": [2, 3, 64, 64], "peak_vram_bytes": 196829696, "finite": true, "head_updated": true},
+    {"config": "smp_pan_resnext50.yaml", "parameters": 23732844, "shape_nchw": [2, 3, 128, 128], "peak_vram_bytes": 500131840, "finite": true, "head_updated": true},
+    {"config": "smp_pspnet_mobilenet_v2.yaml", "parameters": 2281789, "shape_nchw": [2, 3, 64, 64], "peak_vram_bytes": 35425792, "finite": true, "head_updated": true},
+    {"config": "smp_unet_resnet34.yaml", "parameters": 24436949, "shape_nchw": [2, 3, 64, 64], "peak_vram_bytes": 511128576, "finite": true, "head_updated": true},
+    {"config": "smp_unetplusplus_efficientnet_b0.yaml", "parameters": 6570161, "shape_nchw": [2, 3, 64, 64], "peak_vram_bytes": 145300992, "finite": true, "head_updated": true},
+    {"config": "smp_upernet_mit_b0.yaml", "parameters": 10733413, "shape_nchw": [2, 3, 64, 64], "peak_vram_bytes": 240452096, "finite": true, "head_updated": true}
+  ]
+}

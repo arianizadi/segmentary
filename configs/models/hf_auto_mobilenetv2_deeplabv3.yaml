@@ -1,0 +1,19 @@
+# MobileNetV2 + DeepLabV3 from a complete Pascal VOC checkpoint.
+#
+# Pros: small, fast, inexpensive baseline; a good first model for a new dataset.
+# Cons: lower capacity and BatchNorm needs at least two values in its pooled
+# training branch (use batch >=2 or synchronized multi-GPU BatchNorm).
+model:
+  arch: hf_auto
+  checkpoint: google/deeplabv3_mobilenet_v2_1.0_513
+  revision: 5282e0eaf10de7cc7f35ee5e40f47981b801bf63
+  local_files_only: false
+  trust_remote_code: false
+  tuning: full
+  head: unified_head
+  # DeepLab consumes the stride-16 feature map before this terminal projection.
+  inactive_parameter_paths: [mobilenet_v2.conv_1x1]
+
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

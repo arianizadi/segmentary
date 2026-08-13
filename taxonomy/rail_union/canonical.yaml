@@ -1,0 +1,75 @@
+# =============================================================================
+# Canonical label space: rail_union
+# =============================================================================
+# The unified class list for staged transfer Cityscapes -> RailSem19 -> custom.
+#
+# DESIGN RATIONALE (defend this in committee):
+#
+# Cityscapes and RailSem19 are each FINER than the other in different regions of
+# the label space:
+#
+#   * Cityscapes is finer for URBAN classes. It separates building/wall,
+#     person/rider, truck/bus/caravan/trailer, and it has motorcycle and bicycle
+#     as distinct classes. RailSem19 merges or omits all of these.
+#   * RailSem19 is finer for RAIL classes. It has rail-track, rail-raised,
+#     rail-embedded, tram-track and trackbed. Cityscapes has none of them as
+#     evaluated classes.
+#
+# A pixel-level mapping can only ever go FINE -> COARSE. You cannot split a
+# RailSem19 `construction` pixel back into building vs wall. Therefore the
+# canonical space adopts, for every semantic region, the granularity of the
+# COARSER dataset that actually labels it:
+#
+#   - urban classes where RailSem19 merges  -> use RailSem19 granularity
+#     (construction, human, truck, on-rails), Cityscapes maps many-to-one.
+#   - urban classes RailSem19 does not have -> keep them (motorcycle, bicycle).
+#     RailSem19 simply never emits them; under `unified_head` they are masked out
+#     of the loss for RailSem19 stages via the mapping's derived active set.
+#   - rail classes                          -> use RailSem19 granularity.
+#     Cityscapes never emits them (unless the rail-bridge variant is enabled).
+#
+# This keeps every mapping lossless-downward and total: every native id lands on
+# exactly one canonical id or on ignore_index. Nothing is invented.
+#
+# For reproducing published Cityscapes numbers (milestone 4) do NOT use this
+# space -- use the `cityscapes19` space, which is the standard 19-class protocol.
+# =============================================================================
+
+name: rail_union
+description: >-
+  Union label space over Cityscapes and RailSem19, at the coarser granularity of
+  the two wherever they disagree. 21 classes + ignore.
+ignore_index: 255
+
+classes:
+  # --- flat / ground -------------------------------------------------------
+  - {id: 0,  name: road,          color: [128,  64, 128]}
+  - {id: 1,  name: sidewalk,      color: [244,  35, 232]}
+  # --- construction --------------------------------------------------------
+  - {id: 2,  name: construction,  color: [ 70,  70,  70]}   # CS building + wall
+  - {id: 3,  name: fence,         color: [190, 153, 153]}
+  # --- objects -------------------------------------------------------------
+  - {id: 4,  name: pole,          color: [153, 153, 153]}
+  - {id: 5,  name: traffic-light, color: [250, 170,  30]}
+  - {id: 6,  name: traffic-sign,  color: [220, 220,   0]}
+  # --- nature --------------------------------------------------------------
+  - {id: 7,  name: vegetation,    color: [107, 142,  35]}
+  - {id: 8,  name: terrain,       color: [152, 251, 152]}
+  - {id: 9,  name: sky,           color: [ 70, 130, 180]}
+  # --- dynamic -------------------------------------------------------------
+  - {id: 10, name: human,         color: [220,  20,  60]}   # CS person + rider
+  - {id: 11, name: car,           color: [  0,   0, 142]}
+  - {id: 12, name: truck,         color: [  0,   0,  70]}   # + bus/caravan/trailer
+  - {id: 13, name: motorcycle,    color: [  0,   0, 230]}   # Cityscapes only
+  - {id: 14, name: bicycle,       color: [119,  11,  32]}   # Cityscapes only
+  - {id: 15, name: on-rails,      color: [  0,  80, 100]}   # CS train; RS on-rails
+  # --- rail infrastructure (RailSem19 + custom only) -----------------------
+  - {id: 16, name: rail-track,    color: [230, 150, 140]}   # drivable, rail only
+  - {id: 17, name: rail-raised,   color: [  0, 254, 254]}   # THIN: metal rails
+  - {id: 18, name: rail-embedded, color: [  0,  68,  63]}   # THIN: drivable rails
+  - {id: 19, name: tram-track,    color: [192,   0, 128]}   # THIN-ish
+  - {id: 20, name: trackbed,      color: [ 90,  40,  40]}
+
+# Classes that are geometrically thin. Reported separately in eval and eligible
+# for boundary-aware loss weighting; plain CE systematically underweights them.
+thin_classes: [17, 18, 19, 5, 6, 4]

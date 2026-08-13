@@ -1,0 +1,11 @@
+# PAN: pyramid attention; use crop dimensions of at least 128 and divisible by 32.
+model:
+  arch: smp
+  smp_arch: PAN
+  encoder_name: resnext50_32x4d
+  encoder_weights: imagenet
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

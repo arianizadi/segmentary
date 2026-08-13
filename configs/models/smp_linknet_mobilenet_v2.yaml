@@ -1,0 +1,11 @@
+# LinkNet: efficient residual skip decoding for latency-conscious experiments.
+model:
+  arch: smp
+  smp_arch: Linknet
+  encoder_name: mobilenet_v2
+  encoder_weights: imagenet
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

@@ -1,0 +1,23 @@
+# ABLATION of cs_rs: stage 1 uses the Cityscapes rail-bridge mapping, so
+# Cityscapes "rail track" (id 10) and "guard rail" (id 14) -- both ignoreInEval in
+# the official protocol -- become real rail supervision. Tests whether ANY early
+# rail signal helps, at the cost of Cityscapes-stage comparability.
+#
+# Expect a small or negative effect: rail track is only ~0.03-0.09% of Cityscapes
+# pixels (measured over sampled gtFine masks), and Cityscapes guard rail includes
+# ROAD guard rails, which are not rails in the RailSem19 sense.
+name: cs_rs_railbridge
+space: rail_union
+loss: {aux: lovasz, aux_weight: 0.5}
+stages:
+  - name: cityscapes
+    data:
+      - {name: cityscapes, root: data/cityscapes, variant: railbridge}
+    init_from: pretrained
+    iters: 40000
+  - name: railsem19
+    data:
+      - {name: railsem19, root: data/railsem19, split_file: splits/railsem19_seed0.json}
+    init_from: previous
+    iters: 20000
+    lr_scale: 0.1

@@ -1,0 +1,9 @@
+# Stage 1 only: Cityscapes. The transfer-learning control arm.
+# Runnable today.
+name: cs_only
+space: rail_union
+stages:
+  - name: cityscapes
+    data:
+      - {name: cityscapes, root: data/cityscapes}
+    init_from: pretrained

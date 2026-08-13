@@ -1,0 +1,77 @@
+# Cityscapes -> rail_union, RAIL-BRIDGE variant.  [NAMED ABLATION]
+#
+# Identical to cityscapes.yaml except that the two Cityscapes classes with a
+# genuine rail counterpart are no longer ignored:
+#
+#   id 10 `rail track` -> canonical 16 rail-track
+#   id 14 `guard rail` -> canonical 17 rail-raised
+#
+# WHY THIS IS AN ABLATION, NOT A BUGFIX:
+#   Both classes carry ignoreInEval=True in the official Cityscapes protocol, so
+#   enabling them makes the Cityscapes stage NON-comparable to published numbers.
+#   In exchange, stage 1 starts supplying rail supervision, which is exactly the
+#   transfer effect this named ablation measures. Run it as a paired variant
+#   against cityscapes.yaml, never as a silent default.
+#
+#   Caveats to state in the write-up:
+#     * `rail track` is only ~0.03% of Cityscapes pixels (measured over 120
+#       sampled gtFine masks) -- the supervision signal is weak and heavily
+#       class-imbalanced.
+#     * Cityscapes `guard rail` includes ROAD guard rails, which are not rails in
+#       the RailSem19 sense. This mapping is semantically lossy; it is included
+#       because RailSem19 defines rail-raised as "both rails and guard rails".
+#       Expect this arm to help less, or hurt.
+
+space: rail_union
+dataset: cityscapes
+source: cityscapesScripts/helpers/labels.py (labelIds, ids 0..33)
+
+default: 255
+
+map:
+  0:  255   # unlabeled
+  1:  255   # ego vehicle
+  2:  255   # rectification border
+  3:  255   # out of roi
+  4:  255   # static
+  5:  255   # dynamic
+  6:  255   # ground
+
+  7:  0     # road
+  8:  1     # sidewalk
+  9:  255   # parking
+  10: 16    # rail track    -> rail-track     [BRIDGE: enabled in this variant]
+
+  11: 2     # building      -> construction   [MERGE]
+  12: 2     # wall          -> construction   [MERGE]
+  13: 3     # fence
+  14: 17    # guard rail    -> rail-raised    [BRIDGE: enabled in this variant]
+  15: 255   # bridge
+  16: 255   # tunnel
+
+  17: 4     # pole
+  18: 255   # polegroup
+  19: 5     # traffic light
+  20: 6     # traffic sign
+
+  21: 7     # vegetation
+  22: 8     # terrain
+  23: 9     # sky
+
+  24: 10    # person        -> human          [MERGE]
+  25: 10    # rider         -> human          [MERGE]
+
+  26: 11    # car
+  27: 12    # truck                           [MERGE]
+  28: 12    # bus                             [MERGE]
+  29: 12    # caravan                         [MERGE]
+  30: 12    # trailer                         [MERGE]
+  31: 15    # train         -> on-rails
+  32: 13    # motorcycle
+  33: 14    # bicycle
+
+allow_merge:
+  2:  "RailSem19 `construction` explicitly includes the Cityscapes wall label."
+  10: "RailSem19 `human` explicitly includes Cityscapes person and rider."
+  12: "RailSem19 `truck` is defined as trucks, busses, caravans, trailers and
+       construction vehicles."

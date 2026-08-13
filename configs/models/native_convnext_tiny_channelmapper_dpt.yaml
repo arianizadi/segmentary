@@ -1,0 +1,33 @@
+# Pretrained ConvNeXt-Tiny with independent channel mapping and DPT-style fusion.
+model:
+  arch: native
+  tuning: full
+  head: unified_head
+  native:
+    task: multiclass
+    backbone:
+      kind: timm
+      name: convnext_tiny.fb_in22k_ft_in1k
+      weights: pretrained
+      out_indices: [0, 1, 2, 3]
+      in_channels: 3
+    neck:
+      kind: channel_mapper
+      out_channels: 256
+      kernel_size: 1
+      num_outputs: 4
+      norm: group
+      activation: relu
+    head:
+      kind: dpt
+      in_indices: [0, 1, 2, 3]
+      channels: 256
+      dropout: 0.1
+      norm: group
+      activation: relu
+    auxiliary_heads: []
+
+optim:
+  backbone_lr: 1.0e-4
+  head_lr_mult: 10.0
+  llrd: 1.0

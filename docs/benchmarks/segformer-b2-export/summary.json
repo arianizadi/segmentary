@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "passed_with_provenance_caveat",
+  "architecture": "segformer_b2",
+  "checkpoint": "calib_cs19_b2_seed0/cityscapes/best.ckpt",
+  "ema": false,
+  "source": {
+    "git_sha": "fac6cea6bd9d406ad8518886cd91c1136438d534",
+    "git_dirty": true
+  },
+  "environment": {
+    "gpu": "NVIDIA L40S",
+    "cuda": "12.8",
+    "torch": "2.11.0+cu128"
+  },
+  "protocol": {
+    "shape_nchw": [1, 3, 1024, 1024],
+    "calibration_dataset": "Cityscapes train deterministic prefix",
+    "calibration_samples": 8,
+    "evaluation_dataset": "Cityscapes val deterministic prefix",
+    "evaluation_samples": 20,
+    "warmup_iterations": 20,
+    "timed_iterations": 100,
+    "timing": "CUDA events"
+  },
+  "artifacts": {
+    "onnx": "3886e7c9a6d962b7753685b9d1407056aa9ac7880404f58fe15cc14a6482b75c",
+    "fp16_engine": "f8a5f9ba8119ab9b7fad849a9ac4ef7e2aa483587efe62f4fb2132ffa95e6b20",
+    "int8_engine": "2e109655b527e67949b282551e18c103915d703178a96b8d222dbbeba948f2e6"
+  },
+  "results": {
+    "pytorch_fp32": {"miou": 0.6632733350391682, "delta": 0.0, "p50_ms": 29.817344665527344, "p95_ms": 30.078104782104493},
+    "onnx_fp32": {"miou": 0.6632830274913438, "delta": -0.000009692452175635857, "p50_ms": 44.47208023071289, "p95_ms": 45.08395366668701, "argmax_agreement": 0.9999904632568359},
+    "tensorrt_fp16": {"miou": 0.6632934344503654, "delta": -0.00002009941119718306, "p50_ms": 10.008063793182373, "p95_ms": 10.074636936187744, "fp16_layers": 314},
+    "tensorrt_int8": {"miou": 0.49419875408033004, "delta": 0.16907458095883815, "p50_ms": 14.937904357910156, "p95_ms": 15.024683475494385, "int8_layers": 378, "qdq_quantize_nodes": 347}
+  },
+  "interpretation": "deployment comparison only; 20 resized samples are not the native-resolution full-validation model-quality endpoint"
+}

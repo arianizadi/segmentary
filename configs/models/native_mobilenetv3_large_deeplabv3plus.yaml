@@ -1,0 +1,31 @@
+# Mobile-oriented native DeepLabV3+ with an exact timm ImageNet-1k tag.
+model:
+  arch: native
+  tuning: full
+  head: unified_head
+  native:
+    task: multiclass
+    backbone:
+      kind: timm
+      name: mobilenetv3_large_100.ra_in1k
+      weights: pretrained
+      out_indices: [1, 2, 3, 4]
+      in_channels: 3
+    neck:
+      kind: identity
+    head:
+      kind: deeplabv3plus
+      low_index: 0
+      high_index: 3
+      channels: 160
+      low_channels: 32
+      dilation_rates: [6, 12, 18]
+      dropout: 0.1
+      norm: group
+      activation: relu
+    auxiliary_heads: []
+
+optim:
+  backbone_lr: 1.0e-4
+  head_lr_mult: 10.0
+  llrd: 1.0

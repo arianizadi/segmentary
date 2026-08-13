@@ -1,0 +1,177 @@
+# Native ResNet-50 + FPN + supervised OCR
+
+Recipe:
+[`native_resnet50_fpn_ocr.yaml`](../../../../configs/models/native_resnet50_fpn_ocr.yaml)
+
+Here, OCR means **object-contextual representations**, not reading text. The
+model predicts a rough semantic map, uses that map to form one image-specific
+feature vector per class, and lets every pixel attend to those class regions
+before making the refined prediction.
+
+The rough map is not disposable scaffolding. It defines the object regions, so
+the recipe exposes it as named full-resolution `ocr_coarse` logits with positive
+loss weight 0.4. Training optimizes both the refined output and that coarse
+region generator; evaluation and the public tensor `forward` use only the
+refined output.
+
+## Beginner use
+
+Compose this model after the base config and before your experiment:
+
+```bash
+segmentary-train \
+  configs/base.yaml \
+  configs/models/native_resnet50_fpn_ocr.yaml \
+  path/to/experiment.yaml \
+  --seed 0 --print-config
+```
+
+Run `segmentary-models probe` and a tiny real-data overfit check before a long
+job. Only the exact ResNet-50 backbone is pretrained. FPN, object-context
+layers, and both classifiers start randomly initialized.
+
+The shipped recipe is multiclass. Binary two-class users may layer
+the normal `model.native.task: binary`, `loss.task: binary`, exact two-class
+taxonomy, and BCE settings after it. Both refined and `ocr_coarse` outputs then
+remain one raw class-1 positive logit. Inside object-context gathering only, Segmentary
+maps a logit difference `z` to centered two-class logits `[-z/2, +z/2]`. This
+gives `[1-sigmoid(z), sigmoid(z)]` under the per-pixel class-axis softmax, and
+cross-entropy on the pair equals BCE on `z`. OCR's later spatial softmax pools
+the two channels separately, so the resulting proxies can differ. Centering is
+a symmetric, zero-mean gauge choice because one logit cannot reconstruct two
+independently learned spatial score maps. It is an explicit Segmentary binary
+extension—not a two-logit OCR equivalence, configuration, or benchmark from the
+primary paper. The retained GPU record below is multiclass; binary OCR has
+separate CPU contract and gradient evidence only.
+
+## Pros:
+
+- the object-region generator is explicitly supervised, as required by the
+  OCR paper;
+- object context distinguishes semantic classes rather than only pooling fixed
+  spatial scales;
+- pixel-to-region attention grows with pixels times classes, avoiding dense
+  pixel-to-pixel attention;
+- FPN gives the head high-resolution detail and deep context through a regular
+  four-level feature contract;
+- the exact pretrained backbone source and both train-time outputs are recorded
+  by the standard model probe.
+
+## Cons:
+
+- a 512-channel fusion path plus FPN is heavier than FCN or LR-ASPP;
+- poor coarse predictions can produce poor region representations early in
+  training;
+- two supervised predictions consume more training memory than a one-output
+  head;
+- the decoder has no task-trained checkpoint; only the backbone is pretrained;
+- this ResNet-50/FPN composition differs from the paper's dilated ResNet-101 and
+  HRNet-W48 architectures, so their mIoU values are not expected results here.
+
+## What each part does
+
+| part | shipped setting | simple meaning |
+|---|---|---|
+| backbone | `resnet50.a1_in1k`, pretrained | exact timm A1 ImageNet-1k feature extractor |
+| feature indices | `[1, 2, 3, 4]` | use admitted 1/4, 1/8, 1/16, and 1/32 stages |
+| FPN | four 256-channel outputs | merge deep context downward and standardize feature widths |
+| OCR `channels` | 512 | width of pixel, region, and fused output representations |
+| `key_channels` | 256 | width used to compare pixels with class regions |
+| `attention_scale` | 1 | compute relations at the full 1/4 fusion grid |
+| dropout | 0.05 | regularize the refined classifier input |
+| coarse loss | 0.4 | supervise class-region formation with 40% of the configured dense objective |
+| primary loss | 1.0 | train the refined full-resolution logits normally |
+
+The loss listed here is not a hidden second implementation. Segmentary returns
+both tensors through `SegmentationOutput`, applies the experiment's configured
+dense loss to each, and records `aux/ocr_coarse/*` components. Thus class
+weights, ignore pixels, active-class masks, and any selected compatible dense
+terms use the same engine contract for both outputs.
+
+## Advanced settings and compatibility
+
+Lowering `channels` reduces the cost of the concatenated FPN projection,
+context feature, and fusion block. Lowering `key_channels` specifically reduces
+the pixel-region query/key/value work. These change model capacity and need a
+new experiment identity; neither is a lossless runtime switch.
+
+`attention_scale: 2` or larger max-pools the pixel-query grid only during
+attention and upsamples the resulting context before fusion. This can reduce
+relation memory at large crops, but small objects and boundaries may lose
+detail. Values must be positive and cannot exceed the finest selected runtime
+feature size. Keep 1 until actual memory pressure is measured.
+
+`coarse_loss_weight` must be finite and greater than zero. The default 0.4 is
+the semantic-segmentation weight reported in the primary paper. Larger values
+emphasize region formation but can pull optimization toward the rough map;
+smaller positive values weaken its direct supervision. Zero is rejected because
+the paper's ablation shows that supervised object-region formation is crucial.
+
+Selected `in_indices` must be unique, increasing, and form a strictly
+fine-to-coarse pyramid. FPN is not mathematically required, but it makes the
+four inputs regular and already shares context across scales. Identity can be
+used as a separate experiment if the much wider raw concatenation fits memory.
+GroupNorm is the safe starting point for small segmentation batches. All native
+normalization and activation choices construct, but changing them is an
+architecture ablation.
+
+OCR may be the primary head only, because placing it in `auxiliary_heads` would
+drop its own coarse output. Ordinary external auxiliary heads can still be
+added with unique names. `reset_head: true` resets exactly the coarse and
+refined classifiers, retaining FPN and class-agnostic context transformations.
+The current generic ONNX/TensorRT exporter does not admit native models, so a
+PyTorch smoke is not deployment evidence.
+
+## Primary-source relationship and upstream benchmarks
+
+The design follows Yuan, Chen, and Wang, [*Object-Contextual Representations for
+Semantic Segmentation* (ECCV
+2020)](https://www.ecva.net/papers/eccv_2020/papers_ECCV/papers/123510171.pdf),
+and the authors' [official HRNet/OCR implementation at the reviewed
+revision](https://github.com/HRNet/HRNet-Semantic-Segmentation/tree/0bbb2880446ddff2d78f8dd7e8c4c610151d5a51). Segmentary
+implements the paper's three central stages: supervised soft class regions,
+spatially weighted class-region representations, and pixel-to-region attention
+followed by feature fusion.
+
+The paper's controlled dilated-ResNet-101 Cityscapes-val ablation reported
+77.31% mIoU without direct object-region supervision and 79.58% with it. Its
+broader tables reported results for dilated ResNet-101 and HRNet-W48 under the
+authors' training and testing protocols. Those are useful architecture evidence
+and motivate the positive 0.4 coarse weight; they are **not** benchmarks for
+this ResNet-50/FPN recipe. No MMSegmentation code, imports, or configs are used.
+
+## Segmentary evidence and no-quality claim
+
+CPU contract tests cover refined and coarse full-resolution logits on odd
+inputs, spatial-softmax region gathering, every native normalization,
+attention scaling, invalid settings, and exact two-classifier reset. The
+production dense objective test verifies the numerical `primary + 0.4 × coarse`
+total and nonzero gradients for both classifiers. Additional tests cover a real
+scratch ResNet-50/FPN forward-backward, four optimizer steps with changes in all
+components and both classifiers, and Gloo DDP without unused parameters. The
+catalog parser checks this exact pretrained YAML.
+
+The exact multiclass recipe also passed a retained physical-GPU8 smoke from
+clean commit `ae6febdb78c334f4c3c9ee30d6edda888c0d4c92`: both configured
+shapes forwarded, four BF16 production-objective steps completed, every
+trainable tensor received a present finite gradient, every step recorded the
+named coarse loss and its weighted value, and the weight and bias of both
+classifiers changed. See the
+[multiclass machine record](../../../benchmarks/native-component-smokes/native-resnet50-fpn-ocr-gpu8-2026-08-12.json).
+
+The one-logit binary extension separately passed the same two shapes and four
+BF16 production-BCE steps from exact clean integration commit
+`5e799107e7572574b51897957051a950ab53e28f`. All 201 trainable tensors had
+present finite gradients each step; OCR pixel-query and region-key weights plus
+both classifier weights and biases received finite nonzero final gradients and
+changed. See the
+[binary-OCR machine record](../../../benchmarks/native-component-smokes/native-binary-ocr-gpu8-2026-08-13.json).
+
+These are construction and training-compatibility checks on synthetic inputs.
+They do not measure convergence, mIoU, boundary quality, calibration,
+throughput, latency, or production-crop memory. No common-protocol Segmentary
+quality benchmark exists for this recipe yet.
+
+See [native heads](../../components/native-heads/README.md),
+[native necks](../../components/native-necks/README.md), and the
+[native smoke ledger](../../../benchmarks/native-component-smokes/README.md).

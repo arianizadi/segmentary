@@ -1,0 +1,12 @@
+# UPerNet with a ConvNeXt-Small backbone and complete ADE20K task weights.
+# Segmentary deliberately disables the upstream auxiliary FCN head because the
+# common trainer owns one dense loss output.
+model:
+  arch: upernet_convnext
+  checkpoint: openmmlab/upernet-convnext-small
+  tuning: full
+  head: unified_head
+
+optim:
+  backbone_lr: 6.0e-5
+  llrd: 1.0

@@ -1,0 +1,42 @@
+.git
+.github
+.gitignore
+.pytest_cache
+.ruff_cache
+.coverage
+htmlcov
+__pycache__
+*.py[cod]
+*.egg-info
+build
+dist
+.venv
+venv
+env
+
+# Training inputs, outputs, and model artefacts never belong in the image.
+data
+datasets
+runs
+outputs
+checkpoints
+lightning_logs
+wandb
+*.ckpt
+*.pth
+*.onnx
+*.engine
+*.plan
+
+# Credentials and local operator state.
+.env
+.env.*
+*.netrc
+cookies.txt
+secrets.yaml
+.vscode
+.idea
+
+# Not needed by the production image.
+docs
+tests

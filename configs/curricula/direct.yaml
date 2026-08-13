@@ -1,0 +1,15 @@
+# No transfer: train directly on the custom rail dataset from ImageNet init.
+# The floor that every staged curriculum must beat to justify itself.
+#
+# BLOCKED until the custom dataset exists.
+
+name: direct
+space: rail_union
+loss: {aux: lovasz, aux_weight: 0.5}
+
+stages:
+  - name: custom
+    data:
+      - {name: custom, root: data/custom_rail}
+    init_from: pretrained
+    iters: 10000

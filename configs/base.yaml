@@ -1,0 +1,66 @@
+# Defaults shared by every experiment. Merged first; a model config and a
+# curriculum config are layered on top, then CLI --set overrides.
+#
+# Every value here is deliberate. Anything you change for an ablation should be
+# changed in the curriculum or on the CLI, never here, so the baseline stays put.
+
+name: base
+taxonomy_root: taxonomy
+output_root: runs
+
+optim:
+  # Starting point derived from the published SegFormer schedule: 6e-5, poly 0.9,
+  # and a 10x multiplier for freshly initialized task components.
+  backbone_lr: 6.0e-5
+  head_lr_mult: 10.0
+  weight_decay: 0.05
+  llrd: 1.0            # 1.0 = off. ViT backbones (EoMT/DINOv3) want 0.65-0.9.
+  warmup_iters: 1500
+  warmup_ratio: 1.0e-6
+  poly_power: 0.9
+  min_lr_ratio: 0.0
+  betas: [0.9, 0.999]
+  grad_clip: 1.0
+
+train:
+  iters: 40000
+  batch_size: 2        # per device; effective = batch_size x devices x accum
+  accum: 1
+  num_workers: 8       # tune for the host, storage, and number of ranks
+  precision: bf16-mixed
+  ema_decay: 0.9998
+  val_every: 4000
+  ckpt_every: 4000
+  seed: 0
+  devices: auto
+
+eval:
+  # Cityscapes val is 1024x2048 and RailSem19 is 1080x1920; neither fits as one
+  # crop, so sliding window is the default and multi-scale TTA is opt-in.
+  sliding_window: true
+  window: [1024, 1024]
+  stride: [768, 768]
+  batch_size: 1
+  num_workers: 4       # set 0 for custom loaders that cannot be pickled
+  tta_scales: []       # report TTA as a variant, never as the default
+  tta_flip: false
+  threshold: 0.5       # binary class-1 probability; unused by multiclass argmax
+  boundary_tolerance_frac: 0.0075
+  save_confusion: true
+
+loss:
+  aux: none            # legacy-compatible baseline; new standalone recipes should use terms
+  aux_weight: 0.0
+  ce_weight: 1.0
+  label_smoothing: 0.0
+
+aug:
+  crop: [1024, 1024]
+  scale_min: 0.5
+  scale_max: 2.0
+  hflip_p: 0.5
+  color_jitter_p: 0.5
+  brightness: 0.25
+  contrast: 0.25
+  saturation: 0.25
+  hue: 0.05

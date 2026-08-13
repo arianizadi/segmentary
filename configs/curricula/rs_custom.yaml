@@ -1,0 +1,26 @@
+# Staged transfer: RailSem19 -> custom. Skips Cityscapes.
+#
+# The point of this arm: it isolates whether the URBAN stage contributes anything
+# beyond what rail-domain pretraining already gives. If cs_rs_custom does not beat
+# rs_custom, the Cityscapes stage is not earning its GPU hours; report that
+# negative result rather than assuming domain sequencing helped.
+#
+# BLOCKED until the custom dataset exists.
+
+name: rs_custom
+space: rail_union
+loss: {aux: lovasz, aux_weight: 0.5}
+
+stages:
+  - name: railsem19
+    data:
+      - {name: railsem19, root: data/railsem19, split_file: splits/railsem19_seed0.json}
+    init_from: pretrained
+    iters: 40000
+
+  - name: custom
+    data:
+      - {name: custom, root: data/custom_rail}
+    init_from: previous
+    iters: 10000
+    lr_scale: 0.1

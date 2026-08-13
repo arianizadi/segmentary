@@ -1,0 +1,20 @@
+# EoMT-Large -- experimental mask-classification model with a dense-loss caveat.
+#
+# This model-only recipe does not select an objective. With base.yaml alone it
+# retains the experimental dense-CE path. Add an explicit loss.query override
+# for Segmentary's native Hungarian objective; never mix the two in one config.
+# See the point-of-choice README before using it.
+model:
+  arch: eomt_large
+  checkpoint: null
+  tuning: full
+  head: unified_head
+
+optim:
+  backbone_lr: 1.0e-5
+  llrd: 0.75
+  head_lr_mult: 10.0
+
+train:
+  batch_size: 1
+  accum: 2

@@ -1,0 +1,54 @@
+# ---- secrets: never commit dataset credentials ----
+cookies.txt
+*.netrc
+.env
+secrets.yaml
+
+# ---- data & artifacts (live on /data and /scr, never in git) ----
+# Leading slash: unanchored, "data/" also matched src/segmentary/data/, so the
+# whole dataset package was invisible to git -- and a run's recorded git_sha
+# then said nothing about the code that produced its batches.
+/data/
+/datasets/
+/runs/
+/outputs/
+/checkpoints/
+*.ckpt
+*.pth
+*.onnx
+*.engine
+*.plan
+wandb/
+lightning_logs/
+events.out.tfevents.*
+
+# ---- verify_dataset / overfit visual dumps ----
+debug/
+*.overlay.png
+
+# ---- python ----
+__pycache__/
+*.py[cod]
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# ---- env ----
+env/
+venv/
+.venv/
+
+# ---- editors / os ----
+.vscode/
+.idea/
+.DS_Store
+*.swp

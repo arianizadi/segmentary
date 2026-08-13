@@ -1,0 +1,5 @@
+model:
+  arch: hf_auto
+  checkpoint: nvidia/segformer-b0-finetuned-ade-512-512
+  tuning: full
+  head: unified_head

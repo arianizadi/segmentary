@@ -1,0 +1,35 @@
+# Exact pretrained ResNet-50 with FPN and supervised object-context refinement.
+model:
+  arch: native
+  tuning: full
+  head: unified_head
+  native:
+    task: multiclass
+    backbone:
+      kind: timm
+      name: resnet50.a1_in1k
+      weights: pretrained
+      out_indices: [1, 2, 3, 4]
+      in_channels: 3
+    neck:
+      kind: fpn
+      out_channels: 256
+      num_outputs: 4
+      norm: group
+      activation: relu
+    head:
+      kind: ocr
+      in_indices: [0, 1, 2, 3]
+      channels: 512
+      key_channels: 256
+      attention_scale: 1
+      dropout: 0.05
+      coarse_loss_weight: 0.4
+      norm: group
+      activation: relu
+    auxiliary_heads: []
+
+optim:
+  backbone_lr: 1.0e-4
+  head_lr_mult: 10.0
+  llrd: 1.0

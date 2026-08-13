@@ -1,0 +1,11 @@
+# UPerNet: pyramid pooling plus an FPN, paired with a hierarchical MiT encoder.
+model:
+  arch: smp
+  smp_arch: UPerNet
+  encoder_name: mit_b0
+  encoder_weights: imagenet
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 6.0e-5
+  llrd: 1.0

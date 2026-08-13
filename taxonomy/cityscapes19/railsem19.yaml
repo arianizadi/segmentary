@@ -1,0 +1,56 @@
+# RailSem19 -> Cityscapes 19-class space.  [CROSS-EVAL ONLY]
+#
+# WARNING: this mapping is LOSSY AND ASYMMETRIC. It exists only so you can ask
+# "how well does a Cityscapes-trained model do on rail imagery, scored in the
+# Cityscapes label space" -- a zero-shot domain-gap number. Do NOT train the rail
+# stages in this space; every rail class is destroyed here.
+#
+# Why each rail class must be ignored rather than mapped:
+#   rail-track / trackbed  -- Cityscapes' nearest ids (rail track, ground) are
+#                             themselves ignoreInEval, so there is no valid
+#                             trainId to map onto.
+#   rail-raised            -- ditto (guard rail is ignoreInEval).
+#   rail-embedded          -- lies inside road; mapping it to road would inflate
+#                             road IoU with pixels the model was never asked to
+#                             call road.
+#   tram-track             -- same argument as rail-embedded.
+#
+# RailSem19's coarser urban classes also cannot be split back apart:
+#   construction -> building  (wall is unrecoverable; building is the majority
+#                              constituent, so this biases wall IoU to 0)
+#   human        -> person    (rider is unrecoverable)
+#   truck        -> truck     (bus/caravan/trailer are unrecoverable)
+# Report these three classes as unreliable whenever you quote this number.
+
+space: cityscapes19
+dataset: railsem19
+source: rs19-config.json (v1.0) reduced onto the Cityscapes 19-class protocol
+
+default: 255
+
+map:
+  0:  0     # road           -> road
+  1:  1     # sidewalk       -> sidewalk
+  2:  2     # construction   -> building     [LOSSY: wall unrecoverable]
+  3:  255   # tram-track     -> ignore       [no Cityscapes counterpart]
+  4:  4     # fence          -> fence
+  5:  5     # pole           -> pole
+  6:  6     # traffic-light  -> traffic-light
+  7:  7     # traffic-sign   -> traffic-sign
+  8:  8     # vegetation     -> vegetation
+  9:  9     # terrain        -> terrain
+  10: 10    # sky            -> sky
+  11: 11    # human          -> person       [LOSSY: rider unrecoverable]
+  12: 255   # rail-track     -> ignore       [CS rail track is ignoreInEval]
+  13: 13    # car            -> car
+  14: 14    # truck          -> truck        [LOSSY: bus/caravan/trailer merged]
+  15: 255   # trackbed       -> ignore       [no Cityscapes counterpart]
+  16: 16    # on-rails       -> train
+  17: 255   # rail-raised    -> ignore       [CS guard rail is ignoreInEval]
+  18: 255   # rail-embedded  -> ignore       [would contaminate road]
+  255: 255  # void           -> ignore
+
+allow_merge: {}
+
+# Cityscapes classes RailSem19 can never produce here: wall (3), rider (12),
+# bus (15), motorcycle (17), bicycle (18). Derived automatically at load time.

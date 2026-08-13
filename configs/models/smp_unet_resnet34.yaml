@@ -1,0 +1,11 @@
+# U-Net: a dependable encoder-decoder baseline with strong skip connections.
+model:
+  arch: smp
+  smp_arch: Unet
+  encoder_name: resnet34
+  encoder_weights: imagenet  # set `scratch` deliberately for random encoder weights
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

@@ -1,0 +1,11 @@
+# Feature Pyramid Network: a practical multi-scale baseline for varied object sizes.
+model:
+  arch: smp
+  smp_arch: FPN
+  encoder_name: resnet50
+  encoder_weights: imagenet
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

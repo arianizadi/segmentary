@@ -1,0 +1,16 @@
+# MobileViTv2 1.0 + DeepLabV3 from a complete Pascal VOC checkpoint.
+#
+# Pros: efficient mobile hybrid and a useful speed/accuracy comparison.
+# Cons: small pretrained source taxonomy and BatchNorm favors batch >=2.
+model:
+  arch: hf_auto
+  checkpoint: apple/mobilevitv2-1.0-voc-deeplabv3
+  revision: cd9b6a101aefbccb4c3cc1bce0324cfc1de8a4c9
+  local_files_only: false
+  trust_remote_code: false
+  tuning: full
+  head: unified_head
+
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

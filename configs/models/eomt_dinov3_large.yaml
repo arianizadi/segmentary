@@ -1,0 +1,26 @@
+# EoMT-L with a DINOv3 backbone -- an advanced research arm.
+#
+# IMPORTANT CAVEAT before using this arm for paper comparisons:
+#   This model-only YAML leaves base.yaml's experimental dense CE unchanged.
+#   Add loss.query explicitly for Segmentary-native Hungarian class/mask training.
+#   Dense and query objectives are separate ablations and cannot be mixed.
+#
+# The factory's default tue-mps/eomt-dinov3-coco-panoptic-large-640 checkpoint is
+# non-gated and has been loaded/forwarded on the target hardware. A custom
+# facebook/dinov3-* override may still be gated and structurally incompatible.
+#
+# LICENSE: check the DINOv3 weight terms before publishing or redistributing.
+model:
+  arch: eomt_dinov3_large
+  checkpoint: null            # factory picks the default; override to pin a revision
+  tuning: full
+  head: unified_head
+
+optim:
+  backbone_lr: 1.0e-5         # ViT backbones want a lower LR than the hierarchical MiT
+  llrd: 0.75                  # layer-wise decay matters a lot for a plain ViT
+  head_lr_mult: 10.0
+
+train:
+  batch_size: 1               # ViT-L at 1024x1024 is heavy even on 46GB
+  accum: 2

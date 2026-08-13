@@ -1,0 +1,23 @@
+# Portable single-stage example. Copy this file, then change only paths, class
+# mapping, and training settings that your project actually needs.
+name: my_first_segmentation_run
+space: example
+taxonomy_root: taxonomy
+output_root: runs
+
+stages:
+  - name: train
+    data:
+      - name: my_dataset
+        root: data/my_dataset
+        loader: folder
+        mapping: my_dataset
+        train_split: train
+        val_split: val
+        loader_options:
+          image_dir: images/{split}
+          mask_dir: masks/{split}
+          recursive: true
+          # Set true for video/sequence data and provide splits.json.
+          require_groups: false
+    init_from: pretrained

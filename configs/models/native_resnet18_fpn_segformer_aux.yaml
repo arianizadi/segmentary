@@ -1,0 +1,44 @@
+# Native composition example with exact pretrained backbone and FCN auxiliary head.
+model:
+  arch: native
+  tuning: full
+  head: unified_head
+  native:
+    task: multiclass
+    backbone:
+      kind: timm
+      name: resnet18.a1_in1k
+      weights: pretrained
+      out_indices: [1, 2, 3, 4]
+      in_channels: 3
+    neck:
+      kind: fpn
+      out_channels: 128
+      num_outputs: 4
+      norm: group
+      activation: relu
+    head:
+      kind: segformer
+      in_indices: [0, 1, 2, 3]
+      channels: 128
+      dropout: 0.1
+      norm: group
+      activation: relu
+    auxiliary_heads:
+      - name: aux_s16
+        loss_weight: 0.4
+        head:
+          kind: fcn
+          in_indices: [2]
+          channels: 64
+          num_convs: 1
+          kernel_size: 3
+          dilation: 1
+          dropout: 0.1
+          norm: group
+          activation: relu
+
+optim:
+  backbone_lr: 1.0e-4
+  head_lr_mult: 10.0
+  llrd: 1.0

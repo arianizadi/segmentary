@@ -1,0 +1,26 @@
+# PSPNet: global pyramid pooling with a lightweight MobileNetV2 encoder.
+model:
+  arch: smp
+  smp_arch: PSPNet
+  encoder_name: mobilenet_v2
+  encoder_weights: imagenet
+  # PSPNet requests a shallow encoder depth; later MobileNet stages are retained
+  # in the module tree but deliberately not traversed by the encoder forward.
+  inactive_parameter_paths:
+    - encoder.features.7
+    - encoder.features.8
+    - encoder.features.9
+    - encoder.features.10
+    - encoder.features.11
+    - encoder.features.12
+    - encoder.features.13
+    - encoder.features.14
+    - encoder.features.15
+    - encoder.features.16
+    - encoder.features.17
+    - encoder.features.18
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

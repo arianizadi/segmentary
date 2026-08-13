@@ -1,0 +1,7 @@
+# SegFormer-B0 -- the smoke-test arm. 3.7M params.
+# Use for overfit_check.py and CI-speed sanity runs, not for reported numbers.
+model:
+  arch: segformer_b0
+  checkpoint: nvidia/mit-b0
+  tuning: full
+  head: unified_head

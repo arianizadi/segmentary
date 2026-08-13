@@ -1,0 +1,9 @@
+# DeepLabV3+ / ResNet-101 via segmentation_models_pytorch -- the sanity floor.
+# If an arm cannot beat this, something is wrong with that arm, not the dataset.
+model:
+  arch: deeplabv3plus_r101
+  tuning: full
+  head: unified_head
+optim:
+  backbone_lr: 1.0e-4
+  llrd: 1.0

@@ -1,0 +1,17 @@
+# SegFormer-B2 -- the fast-iteration arm.
+#
+# 27.4M parameters, ImageNet-pretrained encoder from nvidia/mit-b2 with a freshly
+# initialised decode_head. This is the arm to debug curricula on: hours, not days.
+# It is also the reference-implementation check (milestone 4) -- SegFormer-B2's
+# published Cityscapes val mIoU is the number to land within ~2 points of, using
+# the cityscapes19 label space rather than rail_union.
+
+model:
+  arch: segformer_b2
+  checkpoint: nvidia/mit-b2
+  tuning: full
+  head: unified_head
+
+optim:
+  backbone_lr: 6.0e-5
+  llrd: 1.0        # SegFormer's hierarchical encoder is trained without LLRD upstream

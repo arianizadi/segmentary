@@ -1,0 +1,13 @@
+# SegFormer-B5 -- the highest-capacity built-in SegFormer encoder.
+#
+# The nvidia/mit-b5 checkpoint contains ImageNet-pretrained encoder weights; the
+# destination classifier is new. Measure intended-crop memory before a long run.
+model:
+  arch: segformer_b5
+  checkpoint: nvidia/mit-b5
+  tuning: full
+  head: unified_head
+
+optim:
+  backbone_lr: 6.0e-5
+  llrd: 1.0

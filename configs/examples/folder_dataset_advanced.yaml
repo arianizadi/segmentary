@@ -1,0 +1,17 @@
+# Advanced layout example. This layer may be merged after folder_dataset.yaml.
+stages:
+  - name: train
+    data:
+      - name: my_dataset
+        root: /path/to/my_dataset
+        loader: folder
+        mapping: my_dataset
+        split_file: splits.json
+        loader_options:
+          image_dir: RGB/{split}
+          mask_dir: Labels/{split}
+          image_extensions: [.png, .jpg, .tif]
+          mask_extension: .png
+          recursive: true
+          require_groups: true
+    init_from: pretrained

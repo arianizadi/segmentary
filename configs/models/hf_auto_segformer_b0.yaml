@@ -1,0 +1,23 @@
+# Generic Hugging Face semantic-segmentation checkpoint through the audited
+# AutoModelForSemanticSegmentation path.  This is a complete ADE20K segmentation
+# checkpoint (not an encoder-only nvidia/mit-* checkpoint), so changing the label
+# count is allowed to replace only decode_head.classifier.
+model:
+  arch: hf_auto
+  checkpoint: nvidia/segformer-b0-finetuned-ade-512-512
+  revision: 489d5cd81a0b59fab9b7ea758d3548ebe99677da
+  subfolder: null
+  local_files_only: false
+  trust_remote_code: false   # true is rejected; hf_auto never executes Hub code
+  tuning: full
+  head: unified_head
+
+  # Standard SegFormer is inferred safely.  For another standard auto-model whose
+  # layout cannot be proved unambiguously, set the complete advanced triplet:
+  # backbone_path: segformer
+  # head_paths: [decode_head]
+  # classifier_path: decode_head.classifier
+
+optim:
+  backbone_lr: 6.0e-5
+  llrd: 1.0
