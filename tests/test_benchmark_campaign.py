@@ -430,6 +430,19 @@ def test_lane_status_json_is_strict_json(tmp_path: Path, monkeypatch: pytest.Mon
     assert json.loads(path.read_text())["tmux_session"] == "segmentary-test-gpu0"
 
 
+def test_worker_tmux_pane_is_live_and_also_persisted(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    lane = record["lanes"][0]
+    shell = campaign._tmux_shell_command(tmp_path / "campaign", lane, record["execution"])
+    assert shell.startswith("set -o pipefail; ")
+    assert " 2>&1 | tee -a " in shell
+    assert "lane_gpu0.console.log" in shell
+    assert ">>" not in shell
+
+
 def test_comparison_records_start_empty_without_completed_cells() -> None:
     records = campaign._comparison_records(
         campaign.REPO_ROOT,
