@@ -439,7 +439,7 @@ def partition_jobs(jobs: Sequence[Job], gpus: Sequence[int]) -> dict[int, tuple[
     unknown = sorted({job.model.id for job in jobs} - MODEL_COST_WEIGHTS.keys())
     if unknown:
         raise CampaignError(f"missing admission cost weights for models: {unknown}")
-    lanes = {gpu: [] for gpu in gpus}
+    lane_units: dict[int, list[tuple[Job, ...]]] = {gpu: [] for gpu in gpus}
     loads = {gpu: 0.0 for gpu in gpus}
     input_order = {job.id: index for index, job in enumerate(jobs)}
     indexed = {(job.model.id, job.seed, job.protocol.id): job for job in jobs}
@@ -470,9 +470,23 @@ def partition_jobs(jobs: Sequence[Job], gpus: Sequence[int]) -> dict[int, tuple[
     )
     for unit in units:
         gpu = min(gpus, key=lambda item: (loads[item], gpus.index(item)))
-        lanes[gpu].extend(unit)
+        lane_units[gpu].append(unit)
         loads[gpu] += sum(_job_cost(job) for job in unit)
-    return {gpu: tuple(items) for gpu, items in lanes.items()}
+    # Assignment above is LPT-balanced for minimum makespan. Reordering units
+    # within an already assigned lane cannot change that lane's total work, so
+    # use the manifest's explicit quality priority for start order. City and
+    # transfer remain an indivisible adjacent pair.
+    return {
+        gpu: tuple(
+            job
+            for unit in sorted(
+                assigned,
+                key=lambda value: min(input_order[job.id] for job in value),
+            )
+            for job in unit
+        )
+        for gpu, assigned in lane_units.items()
+    }
 
 
 def _git(arguments: Sequence[str]) -> str:
