@@ -174,6 +174,12 @@ def test_partition_is_complete_unique_and_one_physical_gpu_per_lane() -> None:
     assert set(campaign.MODEL_COST_WEIGHTS) == {job.model.id for job in jobs}
     loads = [sum(campaign._job_cost(job) for job in lane) for lane in lanes.values()]
     assert max(loads) / min(loads) < 1.02
+    priority = {model_id: index for index, model_id in enumerate(manifest.priority_order)}
+    for lane in lanes.values():
+        unit_priorities = [
+            priority[job.model.id] for job in lane if job.protocol.id != "cityscapes_to_railsem19"
+        ]
+        assert unit_priorities == sorted(unit_priorities)
     for lane in lanes.values():
         for index, job in enumerate(lane):
             if job.protocol.id != "cityscapes_to_railsem19":
