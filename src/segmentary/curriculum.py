@@ -197,6 +197,76 @@ def load_backbone_weights(
     compatibility path for legacy checkpoints produced before EMA persistence.
     """
     state = read_checkpoint(ckpt) if checkpoint_state is None else checkpoint_state
+    if reset_head:
+        # A standard source taxonomy and a unified target taxonomy legitimately
+        # have different classifier shapes. Identify exactly the tensors owned
+        # by reset_head from its real mutation, retain the freshly reset target
+        # values for those tensors, and require every other tensor to load with
+        # an exact name and shape. This is a strict feature/decoder warm start,
+        # never a broad partial-load escape hatch.
+        before_reset = {
+            name: tensor.detach().clone() for name, tensor in model.state_dict().items()
+        }
+        model.reset_head()
+        target_state = model.state_dict()
+        changed_reset_keys = {
+            name
+            for name, tensor in target_state.items()
+            if name in before_reset and not torch.equal(tensor, before_reset[name])
+        }
+        if not changed_reset_keys:
+            raise RuntimeError(f"reset_head changed no checkpoint tensors while loading {ckpt}")
+        # A classifier reset can legitimately leave one tensor numerically
+        # unchanged (for example a zero-initialised bias). Once any tensor in a
+        # leaf module proves that reset_head touched that classifier, treat all
+        # state owned directly by that same leaf module as reset state. This
+        # keeps the exception exact without depending on random initial values.
+        reset_modules = {name.rpartition(".")[0] for name in changed_reset_keys}
+        reset_keys = {name for name in target_state if name.rpartition(".")[0] in reset_modules}
+
+        if EMA_CHECKPOINT_KEY in state:
+            ema_state = state[EMA_CHECKPOINT_KEY]
+            if not isinstance(ema_state, dict):
+                raise RuntimeError(f"invalid EMA state in {ckpt}: expected a mapping")
+            params = ema_state.get("params")
+            buffers = ema_state.get("buffers")
+            if not isinstance(params, dict) or not isinstance(buffers, dict):
+                raise RuntimeError(
+                    f"invalid EMA state in {ckpt}: params and buffers must be mappings"
+                )
+            source_state = {**params, **buffers}
+        else:
+            raw = state.get("state_dict", state)
+            if not isinstance(raw, dict):
+                raise RuntimeError(f"invalid checkpoint state in {ckpt}: expected a mapping")
+            source_state = {
+                key[len("model.") :] if key.startswith("model.") else key: value
+                for key, value in raw.items()
+            }
+
+        unexpected = sorted(set(source_state) - set(target_state))
+        missing_non_head = sorted(set(target_state) - set(source_state) - reset_keys)
+        bad_shapes = sorted(
+            name
+            for name in set(source_state) & set(target_state) - reset_keys
+            if getattr(source_state[name], "shape", None) != target_state[name].shape
+        )
+        if unexpected or missing_non_head or bad_shapes:
+            raise RuntimeError(
+                f"loading {ckpt} with reset_head did not exactly match non-classifier "
+                f"weights: {len(missing_non_head)} missing (first {missing_non_head[:5]}), "
+                f"{len(unexpected)} unexpected (first {unexpected[:5]}), "
+                f"{len(bad_shapes)} shape mismatches (first {bad_shapes[:5]})."
+            )
+        filtered = {name: value for name, value in source_state.items() if name not in reset_keys}
+        missing, unexpected_after = model.load_state_dict(filtered, strict=False)
+        if set(missing) != reset_keys or unexpected_after:
+            raise RuntimeError(
+                f"loading {ckpt} with reset_head produced an unexpected partial load: "
+                f"missing={missing[:5]}, unexpected={unexpected_after[:5]}"
+            )
+        return
+
     if EMA_CHECKPOINT_KEY in state:
         ema = ModelEma(model, EmaConfig())
         try:
@@ -215,8 +285,6 @@ def load_backbone_weights(
                 f"uninitialised (first {missing[:5]}), {len(unexpected)} unexpected "
                 f"(first {unexpected[:5]}). Refusing a partially-loaded checkpoint."
             )
-    if reset_head:
-        model.reset_head()
 
 
 def prepare_stage_model(

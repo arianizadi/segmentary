@@ -130,7 +130,7 @@ def test_apply_freeze_rejects_a_spec_that_matches_nothing():
 class _TinyDenseNet(nn.Module):
     """HF-shaped module used through the production HFDenseWrapper."""
 
-    def __init__(self) -> None:
+    def __init__(self, num_classes: int = 3) -> None:
         super().__init__()
         self.backbone = nn.Module()
         self.backbone.stem = nn.Conv2d(3, 4, 3, padding=1)
@@ -141,7 +141,7 @@ class _TinyDenseNet(nn.Module):
         # while intending to exempt external EMA state.
         self.semantic_scale = nn.Parameter(torch.ones(()))
         self.decode_head = nn.Module()
-        self.decode_head.classifier = nn.Conv2d(4, 3, 1)
+        self.decode_head.classifier = nn.Conv2d(4, num_classes, 1)
 
     def forward(self, pixel_values: torch.Tensor) -> SimpleNamespace:
         features = self.backbone.stem(pixel_values).movedim(1, -1)
@@ -150,11 +150,11 @@ class _TinyDenseNet(nn.Module):
         return SimpleNamespace(logits=logits)
 
 
-def _tiny_model(seed: int) -> HFDenseWrapper:
+def _tiny_model(seed: int, num_classes: int = 3) -> HFDenseWrapper:
     torch.manual_seed(seed)
     return HFDenseWrapper(
-        _TinyDenseNet(),
-        num_classes=3,
+        _TinyDenseNet(num_classes),
+        num_classes=num_classes,
         backbone_path="backbone",
         head_paths=("decode_head",),
     )
@@ -340,6 +340,76 @@ def test_reset_head_changes_only_classifier_after_loading(tmp_path: Path):
     assert classifier
     assert backbone
     assert all(torch.equal(target_state[name], source_state[name]) for name in backbone)
+
+
+def test_reset_head_allows_only_classifier_shape_change_from_ema_checkpoint(
+    tmp_path: Path,
+) -> None:
+    source = _tiny_model(seed=20, num_classes=3)
+    _fill_distinct(source)
+    checkpoint = tmp_path / "city-19-class.ckpt"
+    ema = ModelEma(source, EmaConfig())
+    torch.save({EMA_CHECKPOINT_KEY: ema.state_dict()}, checkpoint)
+    target = _tiny_model(seed=21, num_classes=5)
+
+    load_backbone_weights(target, checkpoint, reset_head=True)
+
+    source_state = source.state_dict()
+    target_state = target.state_dict()
+    assert torch.equal(
+        target_state["model.backbone.stem.weight"],
+        source_state["model.backbone.stem.weight"],
+    )
+    assert torch.equal(
+        target_state["model.backbone.attention.q_proj.weight"],
+        source_state["model.backbone.attention.q_proj.weight"],
+    )
+    assert target_state["model.decode_head.classifier.weight"].shape[0] == 5
+    assert not target_state["model.decode_head.classifier.weight"].eq(6.0).all()
+
+
+def test_reset_head_includes_unchanged_zero_bias_owned_by_reset_classifier(
+    tmp_path: Path,
+) -> None:
+    class _ZeroBiasClassifier(nn.Module):
+        def __init__(self, classes: int) -> None:
+            super().__init__()
+            self.backbone = nn.Linear(4, 4)
+            self.classifier = nn.Linear(4, classes)
+            nn.init.zeros_(self.classifier.bias)
+
+        def reset_head(self) -> None:
+            nn.init.normal_(self.classifier.weight)
+            nn.init.zeros_(self.classifier.bias)
+
+    source = _ZeroBiasClassifier(3)
+    checkpoint = tmp_path / "zero-bias-city.ckpt"
+    torch.save(
+        {"state_dict": {f"model.{name}": value for name, value in source.state_dict().items()}},
+        checkpoint,
+    )
+    target = _ZeroBiasClassifier(5)
+
+    load_backbone_weights(target, checkpoint, reset_head=True)
+
+    assert torch.equal(target.backbone.weight, source.backbone.weight)
+    assert target.classifier.weight.shape[0] == 5
+    assert target.classifier.bias.shape[0] == 5
+    assert torch.count_nonzero(target.classifier.bias) == 0
+
+
+def test_reset_head_still_rejects_non_classifier_shape_change(tmp_path: Path) -> None:
+    source = _tiny_model(seed=22)
+    checkpoint = tmp_path / "bad-backbone.ckpt"
+    state = {name: tensor.detach().clone() for name, tensor in source.state_dict().items()}
+    state["model.backbone.stem.weight"] = torch.zeros(5, 3, 3, 3)
+    torch.save(
+        {"state_dict": {f"model.{name}": value for name, value in state.items()}},
+        checkpoint,
+    )
+
+    with pytest.raises(RuntimeError, match="shape mismatches"):
+        load_backbone_weights(_tiny_model(seed=23), checkpoint, reset_head=True)
 
 
 # ---------------------------------------------------------------- strategy

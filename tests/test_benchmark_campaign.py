@@ -6,7 +6,6 @@ import json
 import pickle
 import sys
 import zipfile
-from itertools import pairwise
 from pathlib import Path
 
 import pytest
@@ -172,27 +171,110 @@ def test_partition_is_complete_unique_and_one_physical_gpu_per_lane() -> None:
     flattened = [job for lane in lanes.values() for job in lane]
     assert len(flattened) == len(jobs) == 108
     assert len({job.id for job in flattened}) == 108
-    assert max(map(len, lanes.values())) - min(map(len, lanes.values())) <= 1
     assert set(campaign.MODEL_COST_WEIGHTS) == {job.model.id for job in jobs}
-    loads = [
-        sum(
-            campaign.MODEL_COST_WEIGHTS[job.model.id]
-            * (1.5 if job.protocol.id == "cityscapes_to_railsem19" else 1.0)
-            for job in lane
-        )
-        for lane in lanes.values()
-    ]
+    loads = [sum(campaign._job_cost(job) for job in lane) for lane in lanes.values()]
     assert max(loads) / min(loads) < 1.02
-    assert all(
-        all(
-            campaign.MODEL_COST_WEIGHTS[left.model.id]
-            * (1.5 if left.protocol.id == "cityscapes_to_railsem19" else 1.0)
-            >= campaign.MODEL_COST_WEIGHTS[right.model.id]
-            * (1.5 if right.protocol.id == "cityscapes_to_railsem19" else 1.0)
-            for left, right in pairwise(lane)
-        )
-        for lane in lanes.values()
+    for lane in lanes.values():
+        for index, job in enumerate(lane):
+            if job.protocol.id != "cityscapes_to_railsem19":
+                continue
+            assert index > 0
+            source = lane[index - 1]
+            assert source.model.id == job.model.id
+            assert source.seed == job.seed
+            assert source.protocol.id == "cityscapes"
+
+
+def test_transfer_reuses_city_checkpoint_and_only_schedules_target_iterations(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    transfer = next(job for job in record["jobs"] if job["protocol"] == "cityscapes_to_railsem19")
+    source = next(job for job in record["jobs"] if job["id"] == transfer["depends_on"])
+    assert source["lane"] == transfer["lane"]
+    lane = next(item for item in record["lanes"] if item["id"] == transfer["lane"])
+    assert lane["job_ids"].index(transfer["id"]) == lane["job_ids"].index(source["id"]) + 1
+
+    checkpoint = tmp_path / "city.ckpt"
+    checkpoint.write_bytes(b"city")
+    _, resolved = campaign._resolved_config(
+        record, transfer, tmp_path / "transfer", dependency_checkpoint=checkpoint
     )
+    assert campaign._iteration_plan(resolved)["total_target_iterations"] == 20_000
+    assert resolved["stages"][0]["init_from"] == str(checkpoint)
+    assert resolved["stages"][0]["reset_head"] is True
+    assert record["execution"]["planned_optimizer_iterations"] == 3_600_000
+    assert record["execution"]["avoided_duplicate_city_iterations"] == 1_440_000
+
+
+def test_transfer_dependency_requires_unchanged_completed_city_checkpoint(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    transfer = next(job for job in record["jobs"] if job["protocol"] == "cityscapes_to_railsem19")
+    lane = next(item for item in record["lanes"] if item["id"] == transfer["lane"])
+    status = campaign._lane_status(record, lane)
+    source = next(job for job in status["jobs"] if job["id"] == transfer["depends_on"])
+    checkpoint = tmp_path / "city.ckpt"
+    checkpoint.write_bytes(b"exact city weights")
+    source.update(
+        {
+            "status": "succeeded",
+            "attempts": [
+                {
+                    "paths": {"checkpoint": str(checkpoint)},
+                    "sha256": {"checkpoint": campaign._sha256(checkpoint)},
+                }
+            ],
+        }
+    )
+
+    actual, provenance = campaign._dependency_checkpoint(status, transfer)
+    assert actual == checkpoint
+    assert provenance == {
+        "job_id": source["id"],
+        "checkpoint": str(checkpoint),
+        "checkpoint_sha256": campaign._sha256(checkpoint),
+        "classifier_policy": "reset incompatible target classifier only",
+    }
+
+    checkpoint.write_bytes(b"changed")
+    with pytest.raises(campaign.CampaignError, match="missing or changed"):
+        campaign._dependency_checkpoint(status, transfer)
+
+
+def test_public_transfer_provenance_keeps_hash_but_redacts_server_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    transfer = next(job for job in record["jobs"] if job["protocol"] == "cityscapes_to_railsem19")
+    _, resolved = campaign._resolved_config(record, transfer, tmp_path / "transfer")
+    attempt = {
+        "kind": "reused",
+        "iteration_plan": campaign._iteration_plan(resolved),
+        "checkpoint_available": False,
+        "checkpoint_step": None,
+        "dependency": {
+            "job_id": transfer["depends_on"],
+            "checkpoint": "/data/private/city.ckpt",
+            "checkpoint_sha256": "a" * 64,
+            "classifier_policy": "reset incompatible target classifier only",
+        },
+    }
+
+    protocol = campaign._new_protocol(
+        transfer,
+        {"config": resolved, "dataset_sizes": {"eval": 850}},
+        attempt,
+    )
+
+    serialized = json.dumps(protocol)
+    assert "/data/" not in serialized
+    assert protocol["source_checkpoint"] == {
+        "job_id": transfer["depends_on"],
+        "checkpoint_sha256": "a" * 64,
+        "classifier_policy": "reset incompatible target classifier only",
+    }
 
 
 @pytest.mark.parametrize("model_id", ["eomt_large", "eomt_dinov3_large"])
@@ -387,6 +469,47 @@ def test_reporting_complete_result_without_checkpoint_is_reused_and_not_queued(
     job = next(
         item
         for item in record["jobs"]
+        if item["model"] == "segformer_b2" and item["protocol"] == "railsem19"
+    )
+    _, resolved = campaign._resolved_config(record, job, tmp_path / "prototype")
+    reuse_root = tmp_path / "prior"
+    result_path = reuse_root / "segformer_b2" / "railsem19" / "results.json"
+    write_results(
+        result_path,
+        RunRecord(
+            name="rs_only",
+            stage="railsem19",
+            config_hash=config_hash(resolved),
+            git_sha=SHA,
+            git_dirty=False,
+            seed=0,
+            finished_at="2026-08-13T00:00:00+00:00",
+            wall_clock_s=1.0,
+            metrics=_metric_payload("rail_union"),
+            config=resolved,
+            env={"gpu_count": 1},
+        ),
+    )
+    record["reuse_policy"]["roots"] = [str(reuse_root)]
+
+    audit = campaign.scan_reusable_cells(record)
+
+    assert audit["accepted_cells"] == 1
+    assert audit["queued_cells"] == 107
+    accepted = audit["accepted"][0]
+    assert accepted["job_id"] == job["id"]
+    assert accepted["checkpoint_available"] is False
+    assert accepted["checkpoint"] is None
+    assert "not retrained" in accepted["caveat"]
+
+
+def test_reporting_only_city_source_stays_queued_when_transfer_needs_checkpoint(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    job = next(
+        item
+        for item in record["jobs"]
         if item["model"] == "segformer_b2" and item["protocol"] == "cityscapes"
     )
     _, resolved = campaign._resolved_config(record, job, tmp_path / "prototype")
@@ -412,13 +535,10 @@ def test_reporting_complete_result_without_checkpoint_is_reused_and_not_queued(
 
     audit = campaign.scan_reusable_cells(record)
 
-    assert audit["accepted_cells"] == 1
-    assert audit["queued_cells"] == 107
-    accepted = audit["accepted"][0]
-    assert accepted["job_id"] == job["id"]
-    assert accepted["checkpoint_available"] is False
-    assert accepted["checkpoint"] is None
-    assert "not retrained" in accepted["caveat"]
+    assert audit["accepted_cells"] == 0
+    assert audit["queued_cells"] == 108
+    assert audit["counts"]["dependency_source_without_checkpoint"] == 1
+    assert "source training remains queued" in audit["rejected_examples"][-1]["reason"]
 
 
 def test_lane_status_json_is_strict_json(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

@@ -69,7 +69,8 @@ protocols:
 
   cityscapes_to_railsem19:
     label: Cityscapes to RailSem19
-    curriculum: configs/curricula/cs_rs.yaml
+    # Reuse the matching completed City checkpoint. Do not train City twice.
+    curriculum: configs/campaigns/city_checkpoint_rs.yaml
     final_stage: railsem19
     evaluation_dataset: railsem19
     evaluation_mapping: railsem19
