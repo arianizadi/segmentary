@@ -73,10 +73,88 @@
     },
     {
       "cityscapes_miou": "80.51",
-      "cityscapes_to_railsem19_miou": "66.44 \u00b1 0.03",
+      "cityscapes_to_railsem19_miou": "66.44",
+      "iteration_progress": {
+        "cityscapes": {
+          "target_iterations": 40000,
+          "current_iterations": 40000,
+          "stages": [
+            {
+              "stage": "cityscapes",
+              "dataset": "Cityscapes",
+              "target_iterations": 40000,
+              "current_iterations": 40000
+            }
+          ],
+          "final_verification": {
+            "result_verified": true,
+            "result_total_iterations": 40000,
+            "result_final_stage_iteration": 40000,
+            "checkpoint_available": false,
+            "checkpoint_verified": false,
+            "checkpoint_global_step": null
+          }
+        },
+        "railsem19": {
+          "target_iterations": 40000,
+          "current_iterations": 40000,
+          "stages": [
+            {
+              "stage": "railsem19",
+              "dataset": "RailSem19",
+              "target_iterations": 40000,
+              "current_iterations": 40000
+            }
+          ],
+          "final_verification": {
+            "result_verified": true,
+            "result_total_iterations": 40000,
+            "result_final_stage_iteration": 40000,
+            "checkpoint_available": true,
+            "checkpoint_verified": true,
+            "checkpoint_global_step": 40000
+          }
+        },
+        "cityscapes_to_railsem19": {
+          "target_iterations": 60000,
+          "current_iterations": 60000,
+          "stages": [
+            {
+              "stage": "cityscapes",
+              "dataset": "Cityscapes",
+              "target_iterations": 40000,
+              "current_iterations": 40000
+            },
+            {
+              "stage": "railsem19",
+              "dataset": "RailSem19",
+              "target_iterations": 20000,
+              "current_iterations": 20000
+            }
+          ],
+          "final_verification": {
+            "result_verified": true,
+            "result_total_iterations": 60000,
+            "result_final_stage_iteration": 20000,
+            "checkpoint_available": true,
+            "checkpoint_verified": true,
+            "checkpoint_global_step": 20000
+          }
+        }
+      },
       "model": "segformer_b2",
+      "parameter_count": {
+        "cityscapes19": 27362772,
+        "rail_union": 27364310
+      },
       "priority": 9,
-      "railsem19_miou": "70.47 \u00b1 0.17",
+      "railsem19_miou": "70.47",
+      "standardized_inference": {
+        "status": "pending",
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null
+      },
       "status": "complete (reused)"
     },
     {
@@ -304,7 +382,7 @@
       "status": "queued"
     }
   ],
-  "schema_version": 1,
+  "schema_version": 2,
   "scope": {
     "model_recipes": 37,
     "protocols": [
@@ -312,7 +390,48 @@
       "railsem19",
       "cityscapes_to_railsem19"
     ],
+    "protocol_targets": {
+      "cityscapes": {
+        "target_iterations": 40000,
+        "stages": [
+          {
+            "stage": "cityscapes",
+            "dataset": "Cityscapes",
+            "target_iterations": 40000
+          }
+        ]
+      },
+      "railsem19": {
+        "target_iterations": 40000,
+        "stages": [
+          {
+            "stage": "railsem19",
+            "dataset": "RailSem19",
+            "target_iterations": 40000
+          }
+        ]
+      },
+      "cityscapes_to_railsem19": {
+        "target_iterations": 60000,
+        "stages": [
+          {
+            "stage": "cityscapes",
+            "dataset": "Cityscapes",
+            "target_iterations": 40000
+          },
+          {
+            "stage": "railsem19",
+            "dataset": "RailSem19",
+            "target_iterations": 20000
+          }
+        ]
+      }
+    },
     "seed_policy": "seed 0 for missing cells; preserve compatible extra seeds",
+    "standardized_inference": {
+      "status": "pending",
+      "policy": "Publish FPS, latency, and inference VRAM only after all models use the same input, runtime, warmup, precision, and device protocol."
+    },
     "unique_training_choices": 36
   }
 }

@@ -1,8 +1,21 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "model_id": "segformer_b2",
   "model_config": "configs/models/segformer_b2.yaml",
   "status": "complete",
+  "model_profile": {
+    "parameter_count": {
+      "cityscapes19": 27362772,
+      "rail_union": 27364310
+    },
+    "standardized_inference": {
+      "status": "pending",
+      "fps": null,
+      "latency_ms": null,
+      "peak_vram_bytes": null,
+      "note": "Pending one shared input, runtime, warmup, precision, and device protocol across every model."
+    }
+  },
   "protocols": {
     "cityscapes": {
       "status": "complete",
@@ -10,6 +23,41 @@
       "dataset": "Cityscapes val",
       "taxonomy": "cityscapes19",
       "training": "40,000 steps from pretrained weights",
+      "iteration_progress": {
+        "target_iterations": 40000,
+        "current_iterations": 40000,
+        "stages": [
+          {
+            "stage": "cityscapes",
+            "dataset": "Cityscapes",
+            "target_iterations": 40000,
+            "current_iterations": 40000
+          }
+        ],
+        "final_verification": {
+          "result_verified": true,
+          "result_total_iterations": 40000,
+          "result_final_stage_iteration": 40000,
+          "checkpoint_available": false,
+          "checkpoint_verified": false,
+          "checkpoint_global_step": null
+        }
+      },
+      "resource_evidence": {
+        "parameter_count": 27362772,
+        "final_checkpoint": {
+          "available": false,
+          "size_bytes": null
+        },
+        "training": {
+          "seed_count": 1,
+          "gpu_model": "NVIDIA L40S",
+          "gpus_per_run": 8,
+          "wall_clock_s_mean": 5836.301588855684,
+          "gpu_hours_mean": 12.969559086345964,
+          "peak_vram_bytes_per_device": 12702449664
+        }
+      },
       "evaluation": {
         "split": "val",
         "images": 500,
@@ -269,6 +317,41 @@
       "dataset": "RailSem19 val",
       "taxonomy": "rail_union",
       "training": "40,000 steps from pretrained weights",
+      "iteration_progress": {
+        "target_iterations": 40000,
+        "current_iterations": 40000,
+        "stages": [
+          {
+            "stage": "railsem19",
+            "dataset": "RailSem19",
+            "target_iterations": 40000,
+            "current_iterations": 40000
+          }
+        ],
+        "final_verification": {
+          "result_verified": true,
+          "result_total_iterations": 40000,
+          "result_final_stage_iteration": 40000,
+          "checkpoint_available": true,
+          "checkpoint_verified": true,
+          "checkpoint_global_step": 40000
+        }
+      },
+      "resource_evidence": {
+        "parameter_count": 27364310,
+        "final_checkpoint": {
+          "available": true,
+          "size_bytes": 438443635
+        },
+        "training": {
+          "seed_count": 3,
+          "gpu_model": "NVIDIA L40S",
+          "gpus_per_run": 4,
+          "wall_clock_s_mean": 12790.112696974227,
+          "gpu_hours_mean": 14.211236329971364,
+          "peak_vram_bytes_per_device": 23563599872
+        }
+      },
       "evaluation": {
         "split": "val",
         "images": 850,
@@ -678,6 +761,59 @@
       "dataset": "RailSem19 val",
       "taxonomy": "rail_union",
       "training": "40,000 Cityscapes steps, then 20,000 RailSem19 steps",
+      "iteration_progress": {
+        "target_iterations": 60000,
+        "current_iterations": 60000,
+        "stages": [
+          {
+            "stage": "cityscapes",
+            "dataset": "Cityscapes",
+            "target_iterations": 40000,
+            "current_iterations": 40000
+          },
+          {
+            "stage": "railsem19",
+            "dataset": "RailSem19",
+            "target_iterations": 20000,
+            "current_iterations": 20000
+          }
+        ],
+        "final_verification": {
+          "result_verified": true,
+          "result_total_iterations": 60000,
+          "result_final_stage_iteration": 20000,
+          "checkpoint_available": true,
+          "checkpoint_verified": true,
+          "checkpoint_global_step": 20000
+        }
+      },
+      "resource_evidence": {
+        "parameter_count": 27364310,
+        "final_checkpoint": {
+          "available": true,
+          "size_bytes": 438443635
+        },
+        "training": {
+          "seed_count": 3,
+          "gpu_model": "NVIDIA L40S",
+          "gpus_per_run": 4,
+          "wall_clock_s_mean": 18842.40265654524,
+          "gpu_hours_mean": 20.936002951716933,
+          "peak_vram_bytes_per_device": 23563599872,
+          "stages": [
+            {
+              "stage": "cityscapes",
+              "wall_clock_s_mean": 12438.818275439242,
+              "peak_vram_bytes_per_device": 23563599872
+            },
+            {
+              "stage": "railsem19",
+              "wall_clock_s_mean": 6403.5843811059995,
+              "peak_vram_bytes_per_device": 18104713216
+            }
+          ]
+        }
+      },
       "evaluation": {
         "split": "val",
         "images": 850,
