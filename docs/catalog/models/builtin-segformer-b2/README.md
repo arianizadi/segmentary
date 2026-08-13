@@ -39,6 +39,7 @@ validation split after a 40,000-step, seed-0 run:
 
 | item | recorded value |
 |---|---:|
+| completed iterations | `40,000 / 40,000` |
 | mIoU | `0.8050734618` (80.5073%) |
 | pixel accuracy | `0.9645175301` |
 | mean class accuracy | `0.8748474489` |
@@ -85,15 +86,37 @@ and [interpreting results](../../../tutorials/interpreting-results.md).
 ## Cityscapes and RailSem19 benchmark results
 
 These are validated prior results, reused without retraining. Values are
-percentages; `±` is sample standard deviation when multiple seeds exist.
-Cityscapes uses the standard 19-class taxonomy. RailSem19 protocols use
-`rail_union`, where unsupported classes are `—` and excluded from the mean.
+mean percentages: each metric is one clean number even when multiple retained
+seeds contribute to it. Cityscapes uses the standard 19-class taxonomy.
+RailSem19 protocols use `rail_union`, where unsupported classes are `—` and
+excluded from the mean. The machine record retains each individual seed.
 
-| protocol | seeds | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 1 | 80.51 | 87.48 | 90.11 | 88.70 | 99.78 | 96.45 | 93.38 | 86.69 |
-| RailSem19 | 3 | 70.47 ± 0.17 | 81.51 ± 0.14 | 82.50 ± 0.16 | 81.94 ± 0.16 | 99.41 ± 0.00 | 89.89 ± 0.11 | 82.43 ± 0.08 | 78.62 ± 0.13 |
-| Cityscapes → RailSem19 | 3 | 66.44 ± 0.03 | 79.17 ± 0.06 | 79.14 ± 0.05 | 78.98 ± 0.04 | 99.30 ± 0.00 | 88.17 ± 0.03 | 79.74 ± 0.05 | 74.31 ± 0.09 |
+| protocol | iterations | seeds | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Cityscapes | 40,000 / 40,000 | 1 | 80.51 | 87.48 | 90.11 | 88.70 | 99.78 | 96.45 | 93.38 | 86.69 |
+| RailSem19 | 40,000 / 40,000 | 3 | 70.47 | 81.51 | 82.50 | 81.94 | 99.41 | 89.89 | 82.43 | 78.62 |
+| Cityscapes → RailSem19 | 60,000 / 60,000 | 3 | 66.44 | 79.17 | 79.14 | 78.98 | 99.30 | 88.17 | 79.74 | 74.31 |
+
+The transfer total is 40,000 Cityscapes iterations plus 20,000 RailSem19
+iterations. Its final RailSem19 checkpoint correctly has final-stage
+`global_step=20,000`.
+
+### Resource evidence
+
+These are historical training measurements from the retained result records.
+Multi-seed wall time and GPU-hours are means per run. They are separate from the
+standardized inference benchmark, which is pending and therefore left blank.
+
+| protocol | parameters | final checkpoint | train wall / run | GPU-hours / run | peak train VRAM / GPU | inference FPS | latency | inference VRAM |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Cityscapes | 27,362,772 | — | 1h 37m 16s | 12.97 | 11.83 GiB | — | — | — |
+| RailSem19 | 27,364,310 | 418.1 MiB | 3h 33m 10s | 14.21 | 21.95 GiB | — | — | — |
+| Cityscapes → RailSem19 | 27,364,310 | 418.1 MiB | 5h 14m 02s | 20.94 | 21.95 GiB | — | — | — |
+
+The Cityscapes row has no final checkpoint size because its exact
+40,000-iteration checkpoint was not retained. Standardized inference FPS,
+latency, and VRAM will be filled only after every model can be measured with the
+same input, runtime, warmup, precision, and device protocol.
 
 ### Cityscapes class IoU
 
@@ -123,27 +146,27 @@ Cityscapes uses the standard 19-class taxonomy. RailSem19 protocols use
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | 62.93 ± 0.14 | 56.76 ± 0.15 |
-| sidewalk | 63.24 ± 0.08 | 58.88 ± 0.22 |
-| construction | 79.59 ± 0.18 | 77.68 ± 0.06 |
-| fence | 58.59 ± 0.09 | 54.31 ± 0.13 |
-| pole | 63.76 ± 0.23 | 62.58 ± 0.06 |
-| traffic-light | 56.91 ± 0.37 | 53.83 ± 0.28 |
-| traffic-sign | 51.59 ± 0.52 | 51.05 ± 0.46 |
-| vegetation | 87.04 ± 0.51 | 86.21 ± 0.01 |
-| terrain | 69.98 ± 0.09 | 65.51 ± 0.23 |
-| sky | 95.84 ± 0.08 | 95.33 ± 0.09 |
-| human | 66.71 ± 0.24 | 66.60 ± 0.33 |
-| car | 81.90 ± 0.08 | 81.12 ± 0.19 |
-| truck | 45.23 ± 2.75 | 41.60 ± 1.41 |
+| road | 62.93 | 56.76 |
+| sidewalk | 63.24 | 58.88 |
+| construction | 79.59 | 77.68 |
+| fence | 58.59 | 54.31 |
+| pole | 63.76 | 62.58 |
+| traffic-light | 56.91 | 53.83 |
+| traffic-sign | 51.59 | 51.05 |
+| vegetation | 87.04 | 86.21 |
+| terrain | 69.98 | 65.51 |
+| sky | 95.84 | 95.33 |
+| human | 66.71 | 66.60 |
+| car | 81.90 | 81.12 |
+| truck | 45.23 | 41.60 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | 83.82 ± 0.35 | 81.56 ± 0.27 |
-| rail-track | 90.39 ± 0.04 | 84.06 ± 0.10 |
-| rail-raised | 73.46 ± 0.05 | 65.49 ± 0.11 |
-| rail-embedded | 57.12 ± 0.27 | 48.99 ± 0.41 |
-| tram-track | 74.89 ± 0.11 | 60.26 ± 0.20 |
-| trackbed | 76.01 ± 0.01 | 70.55 ± 0.13 |
+| on-rails | 83.82 | 81.56 |
+| rail-track | 90.39 | 84.06 |
+| rail-raised | 73.46 | 65.49 |
+| rail-embedded | 57.12 | 48.99 |
+| tram-track | 74.89 | 60.26 |
+| trackbed | 76.01 | 70.55 |
 
 ### Evidence notes
 
