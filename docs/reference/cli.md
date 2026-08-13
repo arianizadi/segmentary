@@ -12,24 +12,41 @@ segmentary-progress runs/my_campaign --timezone America/Los_Angeles
 
 This opens a read-only Rich terminal dashboard over an existing queued
 campaign. It combines every `lane_*_status.json` file with the TensorBoard
-scalar stream and, when available, `nvidia-smi` and tmux health. The display
-shows:
+scalar stream and, when available, `nvidia-smi` and tmux health.
 
-- completed, active, and queued jobs in each lane;
-- the actual active stage and optimizer step, with a progress bar;
-- training loss, learning rate, validation mIoU, boundary F1, and measured
-  optimizer-step throughput;
-- current-stage, lane, and campaign completion estimates; and
-- per-GPU utilization, memory, and temperature.
+Every lane is one row, so a ten-GPU campaign fits in one window without
+scrolling. Each row carries the lane's health, the current model/protocol/seed,
+its whole queue as one glyph per job (`✓` done, `▶` active, `·` pending,
+`✗` failed), a progress bar with the optimizer step, training loss, validation
+mIoU tagged with the step it came from, measured optimizer-step throughput, the
+estimated time left in the stage, that lane's GPU utilization/memory/
+temperature, and AGE.
+
+AGE is the time since that lane last logged a scalar, and it is the column to
+read when the question is "is this thing alive?". It ticks every second, while
+the metric columns can only change when training logs. A rising AGE is a
+healthy lane between writes; an AGE that keeps climbing past a few minutes is a
+stalled one.
+
+The row is width-adaptive. As the terminal narrows the dashboard drops columns
+in a fixed order -- GPU, then queue, then loss and throughput, then validation
+mIoU -- rather than wrapping. If the window is too short to hold every lane,
+idle lanes are hidden first and the number hidden is printed.
 
 The command never loads a checkpoint or model, reserves a GPU, changes a run
 file, or sends a signal to training. Ctrl-C stops only the dashboard. Use
-`--once` for a normal printable status snapshot, `--refresh SECONDS` to change
-the live cadence, `--no-gpus` on a non-NVIDIA host, and `--tmux-prefix PREFIX`
-when lane sessions do not use the default `segmentary-m5-a`/`-b` names.
+`--once` for a normal printable status snapshot (which prints every lane
+regardless of window height), `--refresh SECONDS` to change the live cadence
+(default 1 second, minimum 0.25), `--no-gpus` on a non-NVIDIA host, and
+`--tmux-prefix PREFIX` when a lane status file predates recorded
+`tmux_session` names.
 
-Training scalars normally update at `log_every_n_steps`, whereas validation
-metrics update only at `val_every`. The dashboard labels both steps so an older
+Training scalars normally update at `log_every_n_steps`, which is 50, whereas
+validation metrics update only at `val_every`. A lane training at roughly
+1 it/s therefore advances its iteration count about once a minute, fifty steps
+at a time: the dashboard polls files rather than tailing the training loop, so
+a still frame between writes is expected and AGE is what distinguishes it from
+a stall. The dashboard tags validation mIoU with its own step so an older
 validation value is never presented as if it came from the newest training
 iteration. Its ETA is an estimate based on measured stage throughput and
 completed jobs of the same curriculum, not a scheduler guarantee.

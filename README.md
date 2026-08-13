@@ -120,9 +120,10 @@ to your environment. Segmentary does not assume Slurm, a particular host, or a
 particular data mount.
 
 For a queued campaign that writes `lane_*_status.json`, open the read-only live
-dashboard in another terminal. It shows both lanes, live optimizer iterations,
-training and validation metrics, throughput, ETA, queue state, and GPU health;
-Ctrl-C closes only the display and does not stop training:
+dashboard in another terminal. Every lane is one row, so a whole multi-GPU
+campaign fits in one window: live optimizer iterations, training and validation
+metrics, throughput, ETA, queue state, and GPU health. Ctrl-C closes only the
+display and does not stop training:
 
 ```bash
 segmentary-progress runs/my_campaign --timezone America/Los_Angeles

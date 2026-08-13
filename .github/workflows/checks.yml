@@ -79,6 +79,12 @@ jobs:
       - name: Ruff format
         run: ruff format --check src tests scripts
 
+      - name: Types
+        # A ratchet, not a retrofit: the modules listed under
+        # [[tool.mypy.overrides]] in pyproject.toml are exempt until their
+        # pre-existing errors are cleared. Everything else must stay clean.
+        run: mypy
+
       - name: Tests
         # CUDA_VISIBLE_DEVICES is pinned empty so this stays a genuine CPU run
         # even if the box later gains a GPU.

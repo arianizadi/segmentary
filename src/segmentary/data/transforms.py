@@ -49,8 +49,14 @@ class AugConfig:
     std: tuple[float, float, float] = IMAGENET_STD
     channel_order: str = "rgb"
     ignore_index: int = 255
-    # Images are padded with 0 after normalisation, which is the dataset mean --
-    # a neutral grey. The mask is what must never be padded with a class id.
+    # A RAW pixel level, not a normalised one: padding happens before Normalize
+    # in every pipeline below, so 0 pads with black and normalises to roughly
+    # -2.1 sigma rather than to the dataset mean. That is deliberate and matches
+    # the reference recipes. The padded region always carries ignore_index in the
+    # mask, so it contributes no loss, but it does still enter the encoder's
+    # receptive field and its normalisation statistics -- changing this value
+    # changes what the model sees at frame borders, so it is not a free knob.
+    # The mask is the thing that must never be padded with a class id.
     image_fill: int = 0
 
     def __post_init__(self) -> None:

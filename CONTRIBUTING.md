@@ -32,9 +32,20 @@ own tested pin.
 python -m pytest -q
 ruff check src tests scripts
 ruff format --check src tests scripts
+mypy
 python -m pip check
 git diff --check
 ```
+
+Every one of these except `git diff --check` also runs in CI
+(`.github/workflows/checks.yml`) on each push to `main` and each pull request,
+on a CPU-only runner. Running them locally first is still faster than waiting
+for a red build.
+
+`mypy` is a ratchet rather than a full retrofit: the modules listed under
+`[[tool.mypy.overrides]]` in `pyproject.toml` carry pre-existing errors and are
+exempt. Clearing one means deleting its line from that list, which then makes
+the module impossible to regress. Do not add new modules to it.
 
 Run real-data/GPU tests when the change touches data, model, curriculum,
 evaluation, EMA, distributed training, or export. State explicitly when hardware
