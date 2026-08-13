@@ -24,9 +24,15 @@ run with explicit `alias_of` provenance.
   available GPUs, minimizing the slow tail without changing the effective batch
   or adding multi-GPU communication.
 - `campaign.json` is immutable. Lane status is atomically replaced after every
-  transition, and every retry gets a new `attempt-NNN` directory.
-- Restarting `launch` skips each validated success/reused result and retries only
-  unfinished or failed cells. Earlier attempts are never overwritten.
+  transition. Each resume records the checkpoint path, SHA-256, optimizer step,
+  and restart time without overwriting its earlier provenance.
+- Periodic checkpoints contain model, optimizer, scheduler, EMA, callback, and
+  global-step state plus an exact stage/config compatibility marker. Restarting
+  `launch` resumes the same attempt from its newest valid checkpoint. A new
+  `attempt-NNN` directory is created only when no recovery checkpoint exists.
+- Restarting `launch` also skips each validated success/reused result and retries
+  only unfinished or failed work. Evaluation and performance-only failures resume
+  after training rather than repeating it.
 - Existing result roots are scanned before scheduling. A clean, explicitly
   approved source revision, exact semantic config/effective-batch signature,
   correct seed/protocol/class schema, and valid metrics make a result
@@ -79,6 +85,16 @@ python scripts/run_benchmark_campaign.py launch \
 
 Add `--dry-run` to run every read-only provenance/dataset/reuse check and print
 the exact tmux commands without creating the campaign or starting a process.
+
+The same full-state contract is available for a standalone run:
+
+```bash
+segmentary-train resolved-config.yaml --devices 1 \
+  --resume-checkpoint runs/example_seed0/cityscapes/step-00004000.ckpt
+```
+
+The command fails closed if the checkpoint belongs to another stage/config or
+lacks optimizer, scheduler, EMA, callback, or Segmentary resume metadata.
 
 The normal progress dashboard reads the resulting `lane_gpu*_status.json`
 files:

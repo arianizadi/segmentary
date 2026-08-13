@@ -9,8 +9,11 @@ import zipfile
 from pathlib import Path
 
 import pytest
+import torch
+import yaml
 from scripts import run_benchmark_campaign as campaign
 
+from segmentary.checkpoints import TRAINING_RESUME_KEY, TRAINING_RESUME_SCHEMA_VERSION
 from segmentary.config import config_hash
 from segmentary.taxonomy import load_space
 from segmentary.utils.results import RunRecord, write_results
@@ -162,6 +165,62 @@ def test_checkpoint_global_step_is_read_without_unpickling(tmp_path: Path) -> No
     with zipfile.ZipFile(checkpoint, "w") as archive:
         archive.writestr("archive/data.pkl", pickle.dumps({"global_step": 24_000}))
     assert campaign._checkpoint_global_step(checkpoint) == 24_000
+
+
+def test_latest_resume_checkpoint_selects_newest_stage_state_and_wires_cli(
+    tmp_path: Path,
+) -> None:
+    job = {
+        "experiment_name": "example",
+        "seed": 0,
+        "final_stage": "cityscapes",
+        "evaluation_dataset": "cityscapes",
+        "evaluation_mapping": "cityscapes19",
+        "evaluation_split": "val",
+        "evaluation_space": "cityscapes19",
+        "model": "example",
+        "id": "example--cityscapes--seed-0",
+        "performance_owner": False,
+    }
+    attempt = tmp_path / "attempt-001"
+    config = {
+        "train": {"iters": 100},
+        "stages": [{"name": "cityscapes", "iters": None}],
+    }
+    paths = campaign._attempt_paths(job, attempt, config)
+    paths["config"].parent.mkdir(parents=True, exist_ok=True)
+    paths["config"].write_text(yaml.safe_dump(config))
+    stage_dir = paths["run_dir"] / "cityscapes"
+    stage_dir.mkdir(parents=True)
+    for step in (20, 40):
+        torch.save(
+            {
+                "global_step": step,
+                TRAINING_RESUME_KEY: {
+                    "schema_version": TRAINING_RESUME_SCHEMA_VERSION,
+                    "stage_name": "cityscapes",
+                },
+            },
+            stage_dir / f"step-{step:08d}.ckpt",
+        )
+
+    checkpoint, step, digest = campaign._latest_resume_checkpoint(paths, config) or (None, 0, "")
+    assert checkpoint == stage_dir / "step-00000040.ckpt"
+    assert step == 40
+    assert digest == campaign._sha256(checkpoint)
+
+    record = {
+        "execution": {
+            "python": sys.executable,
+            "deterministic": False,
+            "eval_workers": 1,
+        },
+        "source": {"expected_git_sha": SHA},
+        "datasets": {"cityscapes": "/cityscapes"},
+        "jobs": [job],
+    }
+    train, _, _ = campaign._commands(record, job, paths, resume_checkpoint=checkpoint)
+    assert train[-2:] == ["--resume-checkpoint", str(checkpoint)]
 
 
 def test_partition_is_complete_unique_and_one_physical_gpu_per_lane() -> None:
@@ -426,6 +485,70 @@ def test_reused_performance_failure_retries_same_attempt_without_training(
     assert len(final["jobs"][0]["attempts"]) == 1
     assert final["jobs"][0]["attempts"][0]["number"] == 0
     assert final["jobs"][0]["status"] == "reused"
+
+
+def test_interrupted_training_resumes_same_attempt_from_latest_checkpoint(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    lane = record["lanes"][0]
+    source = next(job for job in record["jobs"] if job["lane"] == lane["id"])
+    lane["job_ids"] = [source["id"]]
+    record["lanes"] = [lane]
+    root = Path(record["campaign"])
+    root.mkdir(parents=True)
+    campaign.atomic_write_json(root / "campaign.json", record)
+    status = campaign._lane_status(record, lane)
+    job = status["jobs"][0]
+    attempt_dir = root / "jobs" / job["id"] / "attempt-001"
+    _, config = campaign._resolved_config(record, job, attempt_dir)
+    paths = campaign._attempt_paths(job, attempt_dir, config)
+    paths["config"].parent.mkdir(parents=True)
+    paths["config"].write_text(yaml.safe_dump(config))
+    checkpoint = paths["run_dir"] / job["final_stage"] / "step-00004000.ckpt"
+    checkpoint.parent.mkdir(parents=True)
+    checkpoint.write_bytes(b"resume checkpoint")
+    train, evaluate, benchmark = campaign._commands(record, job, paths)
+    attempt = campaign._attempt_record(
+        1,
+        paths,
+        train,
+        evaluate,
+        benchmark,
+        campaign._job_environment(record, job, lane),
+    )
+    attempt["status"] = job["status"] = "training"
+    job["attempts"] = [attempt]
+    campaign.atomic_write_json(campaign._status_path(root, lane["id"]), status)
+
+    monkeypatch.setenv("TMUX", "/tmp/tmux")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", str(lane["gpu"]))
+    monkeypatch.setattr(campaign, "check_source_provenance", lambda _sha: SHA)
+    digest = "d" * 64
+    monkeypatch.setattr(
+        campaign,
+        "_latest_resume_checkpoint",
+        lambda *_args: (checkpoint, 4_000, digest),
+    )
+    commands: list[list[str]] = []
+
+    def fail_after_capture(command, *_args):
+        commands.append(list(command))
+        return 1
+
+    monkeypatch.setattr(campaign, "run_logged", fail_after_capture)
+
+    assert campaign.run_worker(root, lane["id"]) == 1
+    final = json.loads(campaign._status_path(root, lane["id"]).read_text())
+    final_job = final["jobs"][0]
+    assert len(final_job["attempts"]) == 1
+    assert commands[0][-2:] == ["--resume-checkpoint", str(checkpoint)]
+    assert final_job["attempts"][0]["resume"] == {
+        "checkpoint": str(checkpoint),
+        "checkpoint_sha256": digest,
+        "global_step": 4_000,
+        "resumed_at": final_job["attempts"][0]["resumes"][0]["resumed_at"],
+    }
 
 
 def test_dry_run_prints_named_tmux_sessions_without_mutation(

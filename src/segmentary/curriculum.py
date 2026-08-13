@@ -29,7 +29,12 @@ import torch
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import TensorBoardLogger
 
-from .checkpoints import checkpoint_uses_lora, read_checkpoint
+from .checkpoints import (
+    TRAINING_RESUME_KEY,
+    TRAINING_RESUME_SCHEMA_VERSION,
+    checkpoint_uses_lora,
+    read_checkpoint,
+)
 from .config import ExperimentConfig, StageConfig, TrainConfig, config_hash, to_dict
 from .data.base import SegDataset
 from .data.loaders import (
@@ -106,6 +111,57 @@ def _save_final_checkpoint(trainer: L.Trainer, out_dir: Path) -> Path:
     # strategies may participate in saving, and Lightning supplies the barrier.
     trainer.save_checkpoint(final_checkpoint, weights_only=False)
     return final_checkpoint
+
+
+def validate_resume_checkpoint(
+    checkpoint: Path,
+    *,
+    stage: StageConfig,
+    train_cfg: TrainConfig,
+) -> int:
+    """Require a complete, compatible Lightning training state before resuming."""
+    if not checkpoint.is_file():
+        raise FileNotFoundError(f"resume checkpoint not found: {checkpoint}")
+    state = read_checkpoint(checkpoint)
+    step = state.get("global_step")
+    if isinstance(step, bool) or not isinstance(step, int) or not 0 < step <= train_cfg.iters:
+        raise RuntimeError(
+            f"resume checkpoint {checkpoint} has global_step={step!r}; expected an integer "
+            f"in [1, {train_cfg.iters}]"
+        )
+    metadata = state.get(TRAINING_RESUME_KEY)
+    if not isinstance(metadata, dict):
+        raise RuntimeError(
+            f"resume checkpoint {checkpoint} has no Segmentary full-state resume metadata"
+        )
+    if metadata.get("schema_version") != TRAINING_RESUME_SCHEMA_VERSION:
+        raise RuntimeError(
+            f"resume checkpoint {checkpoint} uses unsupported resume schema "
+            f"{metadata.get('schema_version')!r}"
+        )
+    if metadata.get("stage_name") != stage.name:
+        raise RuntimeError(
+            f"resume checkpoint stage {metadata.get('stage_name')!r} does not match "
+            f"configured stage {stage.name!r}"
+        )
+    optimizer_states = state.get("optimizer_states")
+    if not isinstance(optimizer_states, list) or not optimizer_states:
+        raise RuntimeError(f"resume checkpoint {checkpoint} has no optimizer state")
+    schedulers = state.get("lr_schedulers")
+    if not isinstance(schedulers, list) or not schedulers:
+        raise RuntimeError(f"resume checkpoint {checkpoint} has no scheduler state")
+    if not isinstance(state.get("callbacks"), dict):
+        raise RuntimeError(f"resume checkpoint {checkpoint} has no callback state")
+    if train_cfg.ema_decay is not None:
+        ema = state.get(EMA_CHECKPOINT_KEY)
+        if not isinstance(ema, dict):
+            raise RuntimeError(f"resume checkpoint {checkpoint} has no EMA state")
+        if ema.get("num_updates") != step:
+            raise RuntimeError(
+                f"resume checkpoint {checkpoint} EMA updates={ema.get('num_updates')!r}, "
+                f"but global_step={step}"
+            )
+    return step
 
 
 def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[ModelCheckpoint]:
@@ -322,6 +378,7 @@ def run_stage(
     out_root: Path,
     devices,
     provenance_root: Path,
+    resume_checkpoint: Path | None = None,
 ) -> StageResult:
     """Train one stage and return its checkpoint plus metrics."""
     validate_training_contract(cfg)
@@ -386,7 +443,17 @@ def run_stage(
         train_cfg=train_cfg,
         eval_cfg=cfg.eval,
         eval_active=validation_active_mask(stage, space, cfg.taxonomy_root),
+        stage_name=stage.name,
     )
+
+    resume_step: int | None = None
+    if resume_checkpoint is not None:
+        resume_checkpoint = resume_checkpoint.expanduser().resolve()
+        resume_step = validate_resume_checkpoint(
+            resume_checkpoint,
+            stage=stage,
+            train_cfg=train_cfg,
+        )
 
     checkpoint_callbacks = _checkpoint_callbacks(out_dir, train_cfg)
     tensorboard_logger = _tensorboard_logger(out_dir)
@@ -422,9 +489,17 @@ def run_stage(
         f"{f', frozen {n_frozen} tensors' if n_frozen else ''} ==="
     )
     print(f"TensorBoard: tensorboard --logdir {out_root}")
+    if resume_checkpoint is not None:
+        print(f"Resuming stage {stage.name} from step {resume_step}: {resume_checkpoint}")
 
     with RunTimer() as timer:
-        trainer.fit(lit, train_dataloaders=train_loader, val_dataloaders=val_loader)
+        trainer.fit(
+            lit,
+            train_dataloaders=train_loader,
+            val_dataloaders=val_loader,
+            ckpt_path=str(resume_checkpoint) if resume_checkpoint is not None else None,
+            weights_only=False if resume_checkpoint is not None else None,
+        )
         final_checkpoint = _save_final_checkpoint(trainer, out_dir)
 
     metrics = lit.latest_metrics() if trainer.is_global_zero else {}
@@ -466,6 +541,7 @@ def run_curriculum(
     cfg: ExperimentConfig,
     devices="auto",
     provenance_root: str | Path | None = None,
+    resume_checkpoint: str | Path | None = None,
 ) -> list[StageResult]:
     """Run every stage in order, threading each stage's checkpoint into the next."""
     validate_training_contract(cfg)
@@ -477,8 +553,45 @@ def run_curriculum(
 
     results: list[StageResult] = []
     previous: Path | None = None
-    for stage in cfg.stages:
-        result = run_stage(cfg, stage, space, previous, out_root, devices, source_root)
+    start_index = 0
+    resume_path: Path | None = None
+    if resume_checkpoint is not None:
+        resume_path = Path(resume_checkpoint).expanduser().resolve()
+        state = read_checkpoint(resume_path)
+        metadata = state.get(TRAINING_RESUME_KEY)
+        stage_name = metadata.get("stage_name") if isinstance(metadata, dict) else None
+        matches = [index for index, stage in enumerate(cfg.stages) if stage.name == stage_name]
+        if len(matches) != 1:
+            raise RuntimeError(
+                f"resume checkpoint names stage {stage_name!r}, which matches "
+                f"{len(matches)} configured stages"
+            )
+        start_index = matches[0]
+        expected_parent = (out_root / cfg.stages[start_index].name).resolve()
+        if resume_path.parent != expected_parent:
+            raise RuntimeError(
+                f"resume checkpoint must belong to this run's stage directory "
+                f"{expected_parent}, got {resume_path.parent}"
+            )
+        if start_index:
+            previous = out_root / cfg.stages[start_index - 1].name / "last.ckpt"
+            if not previous.is_file():
+                raise FileNotFoundError(
+                    f"cannot resume stage {stage_name!r}: previous stage checkpoint "
+                    f"is missing: {previous}"
+                )
+
+    for index, stage in enumerate(cfg.stages[start_index:], start=start_index):
+        result = run_stage(
+            cfg,
+            stage,
+            space,
+            previous,
+            out_root,
+            devices,
+            source_root,
+            resume_checkpoint=resume_path if index == start_index else None,
+        )
         results.append(result)
         previous = result.checkpoint
         # Only rank 0 holds real metrics (the others return {}), so only rank 0

@@ -52,6 +52,15 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument(
         "--deterministic", action="store_true", help="fully deterministic kernels; costs throughput"
     )
+    ap.add_argument(
+        "--resume-checkpoint",
+        type=Path,
+        default=None,
+        help=(
+            "resume model, optimizer, scheduler, EMA, callbacks, and global step from a "
+            "compatible Segmentary periodic checkpoint"
+        ),
+    )
     ap.add_argument("--print-config", action="store_true", help="print merged config and exit")
     return ap
 
@@ -93,7 +102,12 @@ def main(argv: list[str] | None = None) -> int:
     print(f"seed       : {cfg.train.seed}   devices: {devices}")
 
     provenance_root = discover_git_root([*args.configs, Path.cwd()]) or Path.cwd()
-    results = run_curriculum(cfg, devices=devices, provenance_root=provenance_root)
+    results = run_curriculum(
+        cfg,
+        devices=devices,
+        provenance_root=provenance_root,
+        resume_checkpoint=args.resume_checkpoint,
+    )
 
     print("\n=== curriculum complete ===")
     for r in results:
