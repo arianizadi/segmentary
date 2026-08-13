@@ -188,6 +188,18 @@ def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[Callbac
     return [best, periodic]
 
 
+def _validation_batch_interval(train_cfg: TrainConfig) -> int:
+    """Translate the public optimizer-step cadence to Lightning train batches.
+
+    Lightning interprets an integer ``val_check_interval`` as a number of
+    *training batches*, while Segmentary's iteration contract and ``max_steps``
+    are optimizer steps.  With gradient accumulation, one optimizer step spans
+    ``accum`` training batches, so passing ``val_every`` directly would run
+    validation ``accum`` times too often.
+    """
+    return train_cfg.val_every * train_cfg.accum
+
+
 def _tensorboard_logger(out_dir: Path) -> TensorBoardLogger:
     """Return the stable, explicit TensorBoard destination for one stage.
 
@@ -475,7 +487,7 @@ def run_stage(
         precision=cast(Any, train_cfg.precision),
         accumulate_grad_batches=train_cfg.accum,
         gradient_clip_val=optim_cfg.grad_clip,
-        val_check_interval=train_cfg.val_every,
+        val_check_interval=_validation_batch_interval(train_cfg),
         check_val_every_n_epoch=None,  # iteration-based validation
         callbacks=checkpoint_callbacks,
         logger=tensorboard_logger,
