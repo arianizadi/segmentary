@@ -76,10 +76,15 @@ HEADLINE_TAGS = (
     "val/boundary_f1",
     "val/thin_miou",
 )
-ACTIVE_STATUSES = {"training", "evaluating"}
+ACTIVE_STATUSES = {"training", "evaluating", "benchmarking"}
+COMPLETED_STATUSES = {"succeeded", "reused"}
 FAILED_STATUSES = {
     "train_failed",
+    "train_artifact_failed",
     "eval_failed",
+    "eval_artifact_failed",
+    "performance_failed",
+    "performance_artifact_failed",
     "checkpoint_missing",
     "provenance_failed",
 }
@@ -251,7 +256,7 @@ def _remaining_lane_seconds(
     unfinished = False
     for job in _job_records(record):
         status = job.get("status")
-        if status == "succeeded" or status in FAILED_STATUSES:
+        if status in COMPLETED_STATUSES or status in FAILED_STATUSES:
             continue
         unfinished = True
         typical = observed.get(job.get("curriculum"))
@@ -333,7 +338,7 @@ def inspect_campaign(campaign: Path, now: datetime | None = None) -> list[LaneSn
                 record=record,
                 active_job=active,
                 stage=stage,
-                completed=sum(job.get("status") == "succeeded" for job in jobs),
+                completed=sum(job.get("status") in COMPLETED_STATUSES for job in jobs),
                 lane_eta_seconds=_remaining_lane_seconds(record, stage, observed, now),
                 warnings=warnings,
             )
@@ -384,8 +389,14 @@ def _queue_text(jobs: list[dict[str, Any]]) -> Text:
         if index:
             text.append("  →  ", style="dim")
         status = job.get("status")
-        slug = f"{job.get('curriculum', '?')} s{job.get('seed', '?')}"
-        if status == "succeeded":
+        model = job.get("model")
+        protocol = job.get("protocol", job.get("curriculum", "?"))
+        slug = (
+            f"{model} / {protocol} s{job.get('seed', '?')}"
+            if model
+            else f"{protocol} s{job.get('seed', '?')}"
+        )
+        if status in COMPLETED_STATUSES:
             text.append("✓ ", style="bold green")
             text.append(slug, style="green")
         elif status in ACTIVE_STATUSES:
@@ -400,10 +411,10 @@ def _queue_text(jobs: list[dict[str, Any]]) -> Text:
     return text
 
 
-def _tmux_alive(lane: str, prefix: str) -> bool | None:
+def _tmux_alive(session: str) -> bool | None:
     try:
         result = subprocess.run(
-            ["tmux", "has-session", "-t", f"{prefix}-{lane}"],
+            ["tmux", "has-session", "-t", session],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             timeout=2,
@@ -444,13 +455,21 @@ def _gpu_rows(indices: set[int] | None = None) -> list[tuple[int, float, float, 
     return rows
 
 
-def _lane_panel(snapshot: LaneSnapshot, timezone: tzinfo, tmux_prefix: str) -> Panel:
+def _lane_panel(snapshot: LaneSnapshot, timezone: tzinfo, tmux_prefix: str | None) -> Panel:
     jobs = _job_records(snapshot.record)
     total_jobs = len(jobs)
     failed = any(job.get("status") in FAILED_STATUSES for job in jobs) or bool(
         snapshot.record.get("failure")
     )
-    alive = _tmux_alive(snapshot.lane, tmux_prefix)
+    recorded_session = snapshot.record.get("tmux_session")
+    session = (
+        recorded_session
+        if isinstance(recorded_session, str) and recorded_session
+        else f"{tmux_prefix}-{snapshot.lane}"
+        if tmux_prefix
+        else snapshot.lane
+    )
+    alive = _tmux_alive(session)
     health = (
         "FAILED"
         if failed
@@ -479,7 +498,16 @@ def _lane_panel(snapshot: LaneSnapshot, timezone: tzinfo, tmux_prefix: str) -> P
         content.append(
             Text.assemble(
                 (f"{phase}  ", "bold cyan"),
-                (f"{active.get('curriculum')}  seed {active.get('seed')}", "bold white"),
+                (
+                    (
+                        f"{active.get('model')} / "
+                        f"{active.get('protocol', active.get('curriculum'))}  "
+                        f"seed {active.get('seed')}"
+                        if active.get("model")
+                        else f"{active.get('curriculum')}  seed {active.get('seed')}"
+                    ),
+                    "bold white",
+                ),
                 f"   elapsed {_format_duration(_elapsed(active))}",
             )
         )
@@ -526,16 +554,18 @@ def _lane_panel(snapshot: LaneSnapshot, timezone: tzinfo, tmux_prefix: str) -> P
 
     completed_results = []
     for job in jobs:
-        if job.get("status") != "succeeded":
+        if job.get("status") not in COMPLETED_STATUSES:
             continue
         value = _result_miou(job)
         if value is not None:
             completed_results.append(
-                f"{job.get('curriculum')} s{job.get('seed')} {100 * value:.2f}%"
+                f"{job.get('model')} / {job.get('protocol')} s{job.get('seed')} {100 * value:.2f}%"
+                if job.get("model")
+                else f"{job.get('curriculum')} s{job.get('seed')} {100 * value:.2f}%"
             )
     if completed_results:
         content.extend(
-            [Text(), Text("Common RailSem19 mIoU: " + "  •  ".join(completed_results), style="dim")]
+            [Text(), Text("Validated mIoU: " + "  •  ".join(completed_results), style="dim")]
         )
 
     lane_finish = datetime.now(UTC) + timedelta(seconds=snapshot.lane_eta_seconds or 0)
@@ -558,7 +588,7 @@ def render_dashboard(
     campaign: Path,
     snapshots: list[LaneSnapshot],
     timezone: tzinfo,
-    tmux_prefix: str,
+    tmux_prefix: str | None,
     show_gpus: bool,
 ) -> Group:
     now = datetime.now(UTC)
@@ -666,8 +696,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--no-gpus", action="store_true", help="do not call nvidia-smi")
     parser.add_argument(
         "--tmux-prefix",
-        default="segmentary-m5",
-        help="session prefix used for lane health (default: segmentary-m5)",
+        default=None,
+        help="fallback session prefix when old lane status lacks tmux_session",
     )
     return parser
 

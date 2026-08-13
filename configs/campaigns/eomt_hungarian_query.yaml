@@ -1,0 +1,30 @@
+# Fixed native objective for EoMT arms in the all-model comparison.
+#
+# Query models must train their raw class/mask proposals through assignment. The
+# model recipes intentionally leave a historical dense-collapse ablation active;
+# this final layer resets every dense/legacy field so no curriculum can carry a
+# Lovasz or CE term into the benchmark.
+loss:
+  task: multiclass
+  activation: auto
+  terms: []
+  aux: none
+  aux_weight: 0.0
+  ce_weight: 1.0
+  label_smoothing: 0.0
+  class_weights: null
+  query:
+    kind: hungarian_query
+    classification_weight: 2.0
+    mask_bce_weight: 5.0
+    dice_weight: 5.0
+    no_object_coefficient: 0.1
+    match_class_cost: 2.0
+    match_mask_bce_cost: 5.0
+    match_dice_cost: 5.0
+    # Full 1024x1024 matching is a large temporary tensor for ViT-L query
+    # models. Deterministic uniform sampling keeps assignment bounded while
+    # retaining substantially more pixels than typical 12.5k-point recipes.
+    matching_num_points: 8192
+    auxiliary_layer_weight: 1.0
+    dice_smooth: 1.0
