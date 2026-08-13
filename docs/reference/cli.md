@@ -34,6 +34,21 @@ validation value is never presented as if it came from the newest training
 iteration. Its ETA is an estimate based on measured stage throughput and
 completed jobs of the same curriculum, not a scheduler guarantee.
 
+Every training stage also writes a stable TensorBoard stream under
+`<run>/<stage>/tensorboard/`. Point TensorBoard at one experiment or an entire
+campaign root:
+
+```bash
+tensorboard --logdir runs/my_campaign --bind_all --port 6006
+```
+
+The stream includes total and component losses, learning rate, optimizer
+iteration, completion fraction, elapsed time, ETA, optimizer steps/second,
+examples/second, validation summaries, per-class IoU, and CUDA allocated,
+reserved, and peak memory when training on a GPU. A retry writes another event
+file into the same stage directory, which TensorBoard and `segmentary-progress`
+merge by step and timestamp.
+
 ## List and probe models
 
 ```bash
