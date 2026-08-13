@@ -489,3 +489,20 @@ def test_public_privacy_check_rejects_server_identifiers(tmp_path: Path) -> None
     for leaked in ("/data/private", "/scr/private", "/Users/name", "gpu_uuid"):
         with pytest.raises(campaign.CampaignError, match="private infrastructure"):
             campaign._public_privacy_check({tmp_path / "record.json": leaked})
+
+
+def test_git_status_porcelain_preserves_first_status_column(tmp_path: Path) -> None:
+    subprocess = campaign.subprocess
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True)
+    readme = tmp_path / "docs/catalog/models/example/README.md"
+    readme.parent.mkdir(parents=True)
+    readme.write_text("before\n")
+    subprocess.run(["git", "add", "."], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-qm", "initial"], cwd=tmp_path, check=True)
+    readme.write_text("after\n")
+
+    changed = campaign._git_status_porcelain(tmp_path)
+    assert changed == " M docs/catalog/models/example/README.md"
+    assert changed.splitlines()[0][3:] == "docs/catalog/models/example/README.md"

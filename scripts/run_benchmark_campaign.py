@@ -4062,6 +4062,21 @@ def _run_checked(command: Sequence[str], *, cwd: Path, env: dict[str, str] | Non
     return completed.stdout.strip()
 
 
+def _git_status_porcelain(root: Path) -> str:
+    """Return porcelain output without stripping its leading XY status column."""
+    completed = subprocess.run(
+        ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout).strip()
+        raise CampaignError(f"cannot inspect publisher worktree: {detail}")
+    return completed.stdout.rstrip("\n")
+
+
 def _publisher_status(campaign: Path, **updates: object) -> dict[str, Any]:
     path = campaign / "publisher_status.json"
     if path.is_file():
@@ -4129,7 +4144,7 @@ def _publish_snapshot(record: dict[str, Any], campaign: Path, count: int) -> str
     branch = publisher["branch"]
     if not root.is_dir():
         raise CampaignError(f"publisher worktree does not exist: {root}")
-    if _run_checked(["git", "status", "--porcelain=v1", "--untracked-files=all"], cwd=root):
+    if _git_status_porcelain(root):
         raise CampaignError("publisher worktree is dirty before synchronization")
     _run_checked(["git", "fetch", remote, branch], cwd=root)
     local_head = _run_checked(["git", "rev-parse", "HEAD"], cwd=root)
@@ -4162,7 +4177,7 @@ def _publish_snapshot(record: dict[str, Any], campaign: Path, count: int) -> str
         else:
             raise CampaignError("publisher worktree and remote branch have diverged")
     report_campaign(campaign, write=True, publisher_root=root)
-    changed = _run_checked(["git", "status", "--porcelain=v1", "--untracked-files=all"], cwd=root)
+    changed = _git_status_porcelain(root)
     if not changed:
         return None
     unexpected = []
