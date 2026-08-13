@@ -192,18 +192,14 @@ def test_render_is_plain_language_and_labels_validation_cadence(
         )
     )
     shown = output.getvalue()
-    assert "SEGMENTARY  LIVE TRAINING" in shown
-    assert "12,000 / 40,000" in shown
-    assert "validation through step 8,000" in shown
-    assert "val mIoU" in shown
-    assert "68.10%" in shown
-    assert "val mean acc" in shown
-    assert "80.90%" in shown
-    assert "pixel accuracy" in shown
-    assert "89.10%" in shown
+    assert "SEGMENTARY" in shown
+    assert "pretty_campaign" in shown
+    assert "12,000/40,000" in shown
+    assert "VAL mIoU" in shown
+    assert "68.10% @8,000" in shown
     assert "Validated mIoU: cs_only s0 29.75%" in shown
-    assert "Expected lane finish" in shown
-    assert "Read-only view" in shown
+    assert "expected finish" in shown
+    assert "read-only view" in shown
 
 
 def test_render_labels_tensorboard_validation_step_zero_as_first_step(
@@ -244,7 +240,7 @@ def test_render_labels_tensorboard_validation_step_zero_as_first_step(
             False,
         )
     )
-    assert "validation through step 1" in output.getvalue()
+    assert "25.00% @1" in output.getvalue()
 
 
 def test_partial_tensorboard_file_is_a_warning_not_a_crash(
@@ -293,7 +289,13 @@ def test_lane_panel_uses_recorded_tmux_session(
         lane_eta_seconds=None,
         warnings=[],
     )
-    progress._lane_panel(snapshot, ZoneInfo("UTC"), "wrong-prefix")
+    progress._lane_cells(
+        snapshot,
+        "wrong-prefix",
+        {},
+        datetime.now(UTC),
+        {"job": 32, "queue": 11, "miou": 14},
+    )
     assert seen == ["segmentary-cityrail-gpu9"]
 
 
@@ -304,7 +306,9 @@ def test_missing_campaign_and_bad_refresh_fail_cleanly(tmp_path: Path, capsys) -
     campaign = tmp_path / "campaign"
     campaign.mkdir()
     assert progress.main([str(campaign), "--once", "--refresh", "0"]) == 2
-    assert "--refresh must be at least 1 second" in capsys.readouterr().err
+    assert (
+        f"--refresh must be at least {progress.MINIMUM_REFRESH} seconds" in capsys.readouterr().err
+    )
 
 
 def test_eta_is_withheld_until_every_remaining_curriculum_has_evidence(

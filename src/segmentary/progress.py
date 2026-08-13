@@ -1,10 +1,15 @@
-"""A read-only, human-friendly dashboard for queued Segmentary campaigns.
+"""A read-only, single-screen dashboard for queued Segmentary campaigns.
 
 The dashboard deliberately observes files that training already writes.  It
 never imports a model, opens a checkpoint, reserves a GPU, or signals a trainer.
 That makes it safe to start beside an in-progress multi-GPU campaign::
 
     segmentary-progress runs/my_campaign
+
+Every lane is one row, so a ten-GPU campaign fits in one window without
+scrolling.  The view refreshes once a second; the columns that can only move
+when training logs a scalar are paired with an AGE column that ticks every
+second, so a still frame is always distinguishable from a stalled lane.
 
 Press Ctrl-C to leave the dashboard; training continues unchanged.
 Use ``--once`` for a plain snapshot suitable for logs or remote status checks.
@@ -20,6 +25,7 @@ import statistics
 import subprocess
 import sys
 import time
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta, tzinfo
 from pathlib import Path
@@ -27,10 +33,11 @@ from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from rich.align import Align
-from rich.console import Console, Group
+from rich.console import Console, ConsoleOptions, RenderResult
 from rich.live import Live
 from rich.panel import Panel
 from rich.progress_bar import ProgressBar
+from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 
@@ -92,6 +99,58 @@ FAILED_STATUSES = {
     "provenance_failed",
 }
 
+# A one-second refresh must not re-read the campaign from scratch every tick.
+# Event files only grow when training logs (every 50 optimizer steps, so roughly
+# once a minute per lane), and nvidia-smi/tmux answers stay true for seconds, so
+# each source is re-read only when it can actually have changed.
+_EVENT_SCAN_TTL = 5.0
+_TMUX_TTL = 15.0
+_GPU_TTL = 4.0
+_TOTAL_STEPS_TTL = 60.0
+_CACHE_ENTRIES = 4096
+
+_ttl_cache: dict[Any, tuple[float, Any]] = {}
+_signature_cache: dict[Any, tuple[Any, Any]] = {}
+
+
+def _prune(cache: dict[Any, Any]) -> None:
+    # Long campaigns retire stages and jobs; drop the oldest keys rather than
+    # letting a days-long dashboard grow without bound.
+    while len(cache) > _CACHE_ENTRIES:
+        cache.pop(next(iter(cache)))
+
+
+def _cached(key: Any, ttl: float, produce: Callable[[], Any]) -> Any:
+    """Return a recent value for ``key``, recomputing only after ``ttl`` seconds."""
+    now = time.monotonic()
+    hit = _ttl_cache.get(key)
+    if hit is not None and now - hit[0] < ttl:
+        return hit[1]
+    value = produce()
+    _ttl_cache[key] = (now, value)
+    _prune(_ttl_cache)
+    return value
+
+
+def _signature(path: Path) -> tuple[float, int] | None:
+    try:
+        stat = path.stat()
+    except OSError:
+        return None
+    return (stat.st_mtime, stat.st_size)
+
+
+def _cached_by_file(key: Any, path: Path, produce: Callable[[], Any]) -> Any:
+    """Return a cached value that is reused until ``path`` changes on disk."""
+    signature = _signature(path)
+    hit = _signature_cache.get(key)
+    if hit is not None and hit[0] == signature:
+        return hit[1]
+    value = produce()
+    _signature_cache[key] = (signature, value)
+    _prune(_signature_cache)
+    return value
+
 
 def _parse_datetime(value: Any) -> datetime | None:
     if not isinstance(value, str):
@@ -116,10 +175,13 @@ def _read_json(path: Path) -> tuple[dict[str, Any] | None, str | None]:
 
 
 def _event_files(run_dir: Path) -> list[Path]:
-    try:
-        return [path for path in run_dir.rglob("events.out.tfevents*") if path.is_file()]
-    except OSError:
-        return []
+    def scan() -> list[Path]:
+        try:
+            return [path for path in run_dir.rglob("events.out.tfevents*") if path.is_file()]
+        except OSError:
+            return []
+
+    return _cached(("events", run_dir), _EVENT_SCAN_TTL, scan)
 
 
 def _stage_dir(event_path: Path) -> Path:
@@ -133,41 +195,56 @@ def _stage_dir(event_path: Path) -> Path:
 
 
 def _read_total_steps(stage_dir: Path) -> int | None:
-    candidates = sorted(
-        [
-            *stage_dir.glob("tensorboard/hparams.yaml"),
-            *stage_dir.glob("lightning_logs/version_*/hparams.yaml"),
-        ],
-        key=lambda path: path.stat().st_mtime,
-        reverse=True,
-    )
-    for path in candidates:
-        try:
-            text = path.read_text(encoding="utf-8")
-        except (OSError, UnicodeError):
-            continue
-        match = re.search(r"(?m)^\s+iters:\s*(\d+)\s*$", text)
-        if match:
-            return int(match.group(1))
-    return None
+    def read() -> int | None:
+        candidates = sorted(
+            [
+                *stage_dir.glob("tensorboard/hparams.yaml"),
+                *stage_dir.glob("lightning_logs/version_*/hparams.yaml"),
+            ],
+            key=lambda path: path.stat().st_mtime,
+            reverse=True,
+        )
+        for path in candidates:
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeError):
+                continue
+            match = re.search(r"(?m)^\s+iters:\s*(\d+)\s*$", text)
+            if match:
+                return int(match.group(1))
+        return None
+
+    # The iteration budget is fixed for the life of a stage, so a short TTL is
+    # enough to notice a newly written hparams.yaml without re-reading it 1x/s.
+    return _cached(("total_steps", stage_dir), _TOTAL_STEPS_TTL, read)
 
 
 def _load_event_scalars(event_paths: list[Path]) -> dict[str, list[ScalarPoint]]:
     """Merge scalar summaries across rollovers/resumes of one active stage."""
     from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
-    result: dict[str, list[ScalarPoint]] = {}
-    for event_path in event_paths:
+    def parse(event_path: Path) -> dict[str, list[ScalarPoint]]:
         accumulator = EventAccumulator(str(event_path), size_guidance={"scalars": 0})
         accumulator.Reload()
         available = set(accumulator.Tags().get("scalars", []))
-        for tag in HEADLINE_TAGS:
-            if tag not in available:
-                continue
-            result.setdefault(tag, []).extend(
+        return {
+            tag: [
                 ScalarPoint(int(item.step), float(item.value), float(item.wall_time))
                 for item in accumulator.Scalars(tag)
-            )
+            ]
+            for tag in HEADLINE_TAGS
+            if tag in available
+        }
+
+    result: dict[str, list[ScalarPoint]] = {}
+    for event_path in event_paths:
+        # Re-parsing a growing event file is the single most expensive thing the
+        # dashboard does, and the file only changes when training logs.
+        parsed = _cached_by_file(
+            ("scalars", event_path), event_path, lambda event_path=event_path: parse(event_path)
+        )
+        for tag, points in parsed.items():
+            result.setdefault(tag, []).extend(points)
     for tag, points in result.items():
         # A resumed logger can repeat the last step. The most recently written
         # scalar is the authoritative value for that step.
@@ -365,8 +442,26 @@ def _format_duration(seconds: float | None) -> str:
     return f"{hours}h {minutes:02d}m" if hours else f"{minutes}m"
 
 
+def _format_short_duration(seconds: float | None) -> str:
+    """Compact ``2h04``/``31m``/``18s`` form for narrow columns."""
+    if seconds is None or not math.isfinite(seconds):
+        return "—"
+    seconds = max(0, int(seconds))
+    if seconds < 60:
+        return f"{seconds}s"
+    minutes, rest = divmod(seconds, 60)
+    if minutes < 60:
+        return f"{minutes}m{rest:02d}"
+    hours, minutes = divmod(minutes, 60)
+    return f"{hours}h{minutes:02d}"
+
+
 def _local_time(value: datetime | None, timezone: tzinfo) -> str:
     return "—" if value is None else value.astimezone(timezone).strftime("%a %I:%M %p %Z")
+
+
+def _clock(value: datetime, timezone: tzinfo) -> str:
+    return value.astimezone(timezone).strftime("%I:%M:%S %p")
 
 
 def _metric(
@@ -387,211 +482,514 @@ def _metric(
 
 def _result_miou(job: dict[str, Any]) -> float | None:
     path = Path(str(job.get("common_results", "")))
-    record, _ = _read_json(path)
-    metrics = record.get("metrics") if record else None
-    value = metrics.get("miou") if isinstance(metrics, dict) else None
-    return float(value) if isinstance(value, int | float) and math.isfinite(value) else None
+
+    def read() -> float | None:
+        record, _ = _read_json(path)
+        metrics = record.get("metrics") if record else None
+        value = metrics.get("miou") if isinstance(metrics, dict) else None
+        return float(value) if isinstance(value, int | float) and math.isfinite(value) else None
+
+    # A finished job's results.json never changes again, and a campaign
+    # accumulates hundreds of them.
+    return _cached_by_file(("result", path), path, read)
 
 
-def _queue_text(jobs: list[dict[str, Any]]) -> Text:
+def _truncate(value: str, width: int) -> str:
+    return value if len(value) <= width else value[: max(1, width - 1)] + "…"
+
+
+def _job_label(job: dict[str, Any]) -> str:
+    protocol = job.get("protocol", job.get("curriculum", "?"))
+    model = job.get("model")
+    seed = job.get("seed", "?")
+    return f"{model} / {protocol} s{seed}" if model else f"{protocol} s{seed}"
+
+
+def _queue_text(jobs: list[dict[str, Any]], width: int) -> Text:
+    """One glyph per job: the whole lane plan at a glance, in a fixed column."""
     text = Text()
-    for index, job in enumerate(jobs):
-        if index:
-            text.append("  →  ", style="dim")
+    shown = jobs[:width] if len(jobs) > width else jobs
+    for job in shown:
         status = job.get("status")
-        model = job.get("model")
-        protocol = job.get("protocol", job.get("curriculum", "?"))
-        slug = (
-            f"{model} / {protocol} s{job.get('seed', '?')}"
-            if model
-            else f"{protocol} s{job.get('seed', '?')}"
-        )
         if status in COMPLETED_STATUSES:
-            text.append("✓ ", style="bold green")
-            text.append(slug, style="green")
+            text.append("✓", style="green")
         elif status in ACTIVE_STATUSES:
-            text.append("▶ ", style="bold cyan")
-            text.append(slug, style="bold white")
+            text.append("▶", style="bold cyan")
         elif status in FAILED_STATUSES:
-            text.append("✗ ", style="bold red")
-            text.append(slug, style="red")
+            text.append("✗", style="bold red")
         else:
-            text.append("○ ", style="dim")
-            text.append(slug, style="dim")
+            text.append("·", style="grey42")
+    if len(jobs) > len(shown):
+        text.append(f"+{len(jobs) - len(shown)}", style="dim")
     return text
 
 
 def _tmux_alive(session: str) -> bool | None:
-    try:
-        result = subprocess.run(
-            ["tmux", "has-session", "-t", session],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            timeout=2,
-            check=False,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return None
-    return result.returncode == 0
+    def probe() -> bool | None:
+        try:
+            result = subprocess.run(
+                ["tmux", "has-session", "-t", session],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=2,
+                check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return None
+        return result.returncode == 0
+
+    # Forking one tmux per lane per second would cost more than the dashboard.
+    return _cached(("tmux", session), _TMUX_TTL, probe)
 
 
 def _gpu_rows(indices: set[int] | None = None) -> list[tuple[int, float, float, float, int]]:
-    try:
-        result = subprocess.run(
-            [
-                "nvidia-smi",
-                "--query-gpu=index,utilization.gpu,memory.used,memory.total,temperature.gpu",
-                "--format=csv,noheader,nounits",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=4,
-            check=False,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return []
-    if result.returncode != 0:
-        return []
-    rows = []
-    for line in result.stdout.splitlines():
+    def query() -> list[tuple[int, float, float, float, int]]:
         try:
-            raw = [part.strip() for part in line.split(",")]
-            index = int(raw[0])
-            if indices is not None and index not in indices:
+            result = subprocess.run(
+                [
+                    "nvidia-smi",
+                    "--query-gpu=index,utilization.gpu,memory.used,memory.total,temperature.gpu",
+                    "--format=csv,noheader,nounits",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=4,
+                check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return []
+        if result.returncode != 0:
+            return []
+        rows = []
+        for line in result.stdout.splitlines():
+            try:
+                raw = [part.strip() for part in line.split(",")]
+                rows.append(
+                    (
+                        int(raw[0]),
+                        float(raw[1]),
+                        float(raw[2]),
+                        float(raw[3]),
+                        int(raw[4]),
+                    )
+                )
+            except (ValueError, IndexError):
                 continue
-            rows.append((index, float(raw[1]), float(raw[2]), float(raw[3]), int(raw[4])))
-        except (ValueError, IndexError):
-            continue
-    return rows
+        return rows
+
+    # nvidia-smi on a saturated host can take a noticeable moment; one call
+    # serves every lane in the frame, and stays valid for a few frames.
+    rows = _cached(("gpus",), _GPU_TTL, query)
+    return [row for row in rows if indices is None or row[0] in indices]
 
 
-def _lane_panel(snapshot: LaneSnapshot, timezone: tzinfo, tmux_prefix: str | None) -> Panel:
+def _lane_session(snapshot: LaneSnapshot, tmux_prefix: str | None) -> str:
+    recorded = snapshot.record.get("tmux_session")
+    if isinstance(recorded, str) and recorded:
+        return recorded
+    return f"{tmux_prefix}-{snapshot.lane}" if tmux_prefix else snapshot.lane
+
+
+def _lane_gpus(snapshot: LaneSnapshot) -> list[int]:
+    return [
+        int(raw.strip())
+        for raw in str(snapshot.record.get("gpu_visibility", "")).split(",")
+        if raw.strip().isdigit()
+    ]
+
+
+def _health(snapshot: LaneSnapshot, alive: bool | None) -> Text:
     jobs = _job_records(snapshot.record)
-    total_jobs = len(jobs)
     failed = any(job.get("status") in FAILED_STATUSES for job in jobs) or bool(
         snapshot.record.get("failure")
     )
-    recorded_session = snapshot.record.get("tmux_session")
-    session = (
-        recorded_session
-        if isinstance(recorded_session, str) and recorded_session
-        else f"{tmux_prefix}-{snapshot.lane}"
-        if tmux_prefix
-        else snapshot.lane
-    )
-    alive = _tmux_alive(session)
-    health = (
-        "FAILED"
-        if failed
-        else "RUNNING"
-        if snapshot.active_job
-        else snapshot.record.get("status", "—")
-    )
-    health_style = "bold red" if failed else "bold green"
+    if failed:
+        return Text("✗ failed", style="bold red")
+    if snapshot.active_job is not None:
+        if alive is False:
+            # A lane that claims to be running with no tmux session behind it is
+            # the one state worth shouting about.
+            return Text("⚠ no tmux", style="bold red")
+        status = str(snapshot.active_job.get("status", "active"))
+        label = {"training": "training", "evaluating": "eval", "benchmarking": "bench"}.get(
+            status, status
+        )
+        return Text(f"● {label}", style="bold green" if status == "training" else "bold cyan")
+    if jobs and all(job.get("status") in COMPLETED_STATUSES for job in jobs):
+        return Text("✓ done", style="green")
+    return Text(f"○ {snapshot.record.get('status', 'idle')}", style="dim")
 
+
+def _age_text(stage: StageSnapshot | None, now: datetime) -> Text:
+    """Seconds since the last logged scalar — the one cell that moves every tick."""
+    if stage is None or stage.last_update is None:
+        return Text("—", style="dim")
+    seconds = max(0.0, (now - stage.last_update).total_seconds())
+    if seconds < 300:
+        style = "green"
+    elif seconds < 900:
+        style = "yellow"
+    else:
+        style = "bold red"
+    return Text(_format_short_duration(seconds), style=style)
+
+
+def _miou_text(stage: StageSnapshot | None, width: int) -> Text:
+    point = stage.scalars.get("val/miou") if stage else None
+    if point is None:
+        return Text("—", style="dim")
+    text = Text(f"{100 * point.value:.2f}%", style="bold green")
+    # Validation lags training, so the step the number came from is part of the
+    # number: without it a stale mIoU reads as a live one.
+    suffix = f" @{point.step + 1:,}"
+    if len(text.plain) + len(suffix) <= width:
+        text.append(suffix, style="dim")
+    return text
+
+
+def _gpu_text(snapshot: LaneSnapshot, rows: dict[int, tuple[float, float, float, int]]) -> Text:
+    measured = [rows[index] for index in _lane_gpus(snapshot) if index in rows]
+    if not measured:
+        return Text("—", style="dim")
+    util = sum(item[0] for item in measured) / len(measured)
+    used = sum(item[1] for item in measured) / 1024
+    temp = max(item[3] for item in measured)
+    style = "red" if temp >= 80 else "green" if util >= 10 else "yellow"
+    return Text(f"{util:3.0f}% {used:4.1f}G {temp}°", style=style)
+
+
+@dataclass(frozen=True)
+class _Column:
+    key: str
+    header: str
+    width: int | None = None
+    justify: str = "left"
+    # 0 is always kept; higher numbers are dropped first as the window narrows.
+    priority: int = 0
+
+
+_BAR_MIN_WIDTH = 10
+_COLUMNS: tuple[_Column, ...] = (
+    _Column("lane", "LANE", width=5),
+    _Column("state", "", width=10),
+    _Column("job", "CURRENT JOB", width=32),
+    _Column("queue", "QUEUE", width=11, priority=3),
+    _Column("bar", "PROGRESS"),
+    _Column("step", "ITERATIONS", width=19, justify="right"),
+    _Column("loss", "LOSS", width=7, justify="right", priority=2),
+    _Column("miou", "VAL mIoU", width=14, justify="right", priority=1),
+    _Column("rate", "it/s", width=5, justify="right", priority=2),
+    _Column("eta", "LEFT", width=7, justify="right"),
+    _Column("gpu", "GPU", width=14, justify="right", priority=4),
+    _Column("age", "AGE", width=5, justify="right"),
+)
+_JOB_MIN_WIDTH = 14
+
+
+def _plan_columns(available: int) -> list[_Column]:
+    """Choose the widest column set that fits, dropping the least useful first."""
+
+    def required(columns: Iterable[_Column]) -> int:
+        columns = list(columns)
+        return sum(column.width or _BAR_MIN_WIDTH for column in columns) + 2 * len(columns)
+
+    columns = list(_COLUMNS)
+    for group in sorted({column.priority for column in _COLUMNS if column.priority}, reverse=True):
+        if required(columns) <= available:
+            break
+        columns = [column for column in columns if column.priority != group]
+    overflow = required(columns) - available
+    if overflow > 0:
+        # Model names are long but recognisable from their prefix, so the job
+        # column is the last thing to give ground.
+        job = next(column for column in columns if column.key == "job")
+        shrunk = max(_JOB_MIN_WIDTH, (job.width or _JOB_MIN_WIDTH) - overflow)
+        columns = [
+            _Column(job.key, job.header, shrunk, job.justify, job.priority)
+            if column.key == "job"
+            else column
+            for column in columns
+        ]
+    return columns
+
+
+def _lane_cells(
+    snapshot: LaneSnapshot,
+    tmux_prefix: str | None,
+    gpus: dict[int, tuple[float, float, float, int]],
+    now: datetime,
+    widths: dict[str, int],
+) -> dict[str, Any]:
+    alive = _tmux_alive(_lane_session(snapshot, tmux_prefix))
+    jobs = _job_records(snapshot.record)
+    stage = snapshot.stage
+    active = snapshot.active_job
+
+    if active is not None:
+        job_text = Text(_truncate(_job_label(active), widths["job"]), style="white")
+    elif jobs and all(job.get("status") in COMPLETED_STATUSES for job in jobs):
+        job_text = Text("lane complete", style="dim green")
+    else:
+        job_text = Text("—", style="dim")
+
+    step = stage.step if stage and stage.step is not None else None
+    total = stage.total_steps if stage and stage.total_steps else None
+    if step is not None and total:
+        bar: Any = ProgressBar(
+            total=total,
+            completed=step,
+            complete_style="cyan",
+            finished_style="green",
+            style="grey27",
+        )
+        step_text = Text.assemble(
+            (f"{step:>7,}", "white"),
+            ("/", "dim"),
+            (f"{total:,}", "dim"),
+            (f" {100 * step / total:3.0f}%", "bold cyan"),
+        )
+    else:
+        bar = Align.center(
+            Text("waiting for first scalar" if active is not None else "—", style="dim")
+        )
+        step_text = Text("—", style="dim")
+
+    return {
+        "lane": Text(snapshot.lane.upper(), style="bold"),
+        "state": _health(snapshot, alive),
+        "job": job_text,
+        "queue": _queue_text(jobs, widths.get("queue", 11)),
+        "bar": bar,
+        "step": step_text,
+        "loss": Text(_metric(stage, "train/loss"), style="white" if stage else "dim"),
+        "miou": _miou_text(stage, widths.get("miou", 14)),
+        "rate": Text(
+            f"{stage.rate:.2f}" if stage and stage.rate else "—",
+            style="white" if stage and stage.rate else "dim",
+        ),
+        "eta": Text(
+            _format_short_duration(stage.eta_seconds) if stage else "—",
+            style="magenta" if stage and stage.eta_seconds else "dim",
+        ),
+        "gpu": _gpu_text(snapshot, gpus),
+        "age": _age_text(stage, now),
+    }
+
+
+def _lane_table(
+    snapshots: list[LaneSnapshot],
+    tmux_prefix: str | None,
+    show_gpus: bool,
+    width: int,
+    now: datetime,
+) -> Table:
+    columns = _plan_columns(width)
+    widths = {column.key: column.width or _BAR_MIN_WIDTH for column in columns}
+    gpus: dict[int, tuple[float, float, float, int]] = {}
+    if show_gpus and any(column.key == "gpu" for column in columns):
+        configured = {index for item in snapshots for index in _lane_gpus(item)}
+        gpus = {row[0]: row[1:] for row in _gpu_rows(configured or None)}
+
+    table = Table(
+        box=None,
+        expand=True,
+        pad_edge=False,
+        padding=(0, 1),
+        header_style="bold grey58",
+    )
+    for column in columns:
+        table.add_column(
+            column.header,
+            width=column.width,
+            ratio=1 if column.width is None else None,
+            justify=column.justify,
+            no_wrap=True,
+            overflow="ellipsis",
+        )
+    for snapshot in snapshots:
+        cells = _lane_cells(snapshot, tmux_prefix, gpus, now, widths)
+        table.add_row(*(cells[column.key] for column in columns))
+    return table
+
+
+def _campaign_header(
+    campaign: Path,
+    snapshots: list[LaneSnapshot],
+    timezone: tzinfo,
+    now: datetime,
+    tick: int,
+) -> Table:
+    total_jobs = sum(len(_job_records(item.record)) for item in snapshots)
+    completed = sum(item.completed for item in snapshots)
+    running = sum(1 for item in snapshots if item.active_job is not None)
+    campaign_eta = (
+        max(item.lane_eta_seconds for item in snapshots if item.lane_eta_seconds is not None)
+        if snapshots and all(item.lane_eta_seconds is not None for item in snapshots)
+        else None
+    )
     header = Table.grid(expand=True)
-    header.add_column(ratio=3)
-    header.add_column(justify="right", ratio=2)
-    tmux = "tmux unknown" if alive is None else "tmux alive" if alive else "tmux missing"
+    header.add_column(justify="left", ratio=2)
+    header.add_column(justify="center", ratio=2)
+    header.add_column(justify="right", ratio=3)
     header.add_row(
         Text.assemble(
-            (f"● {health}", health_style), f"   GPUs {snapshot.record.get('gpu_visibility', '—')}"
+            ("SEGMENTARY ", "bold cyan"),
+            # The spinner advances on every frame, so the view is visibly alive
+            # even while the training numbers wait on the next logged scalar.
+            (_SPINNER[tick % len(_SPINNER)], "bold green"),
+            (f"  {campaign.name}", "white"),
         ),
-        f"{snapshot.completed}/{total_jobs} jobs complete   •   {tmux}",
+        Text.assemble(
+            (f"{completed}", "bold"),
+            (f"/{total_jobs} jobs", "grey58"),
+            (f"   {running}/{len(snapshots)} lanes running", "grey58"),
+        ),
+        Text.assemble(
+            (
+                f"expected finish {_local_time(now + timedelta(seconds=campaign_eta), timezone)}"
+                if campaign_eta is not None
+                else "expected finish estimating…",
+                "magenta" if campaign_eta is not None else "dim",
+            ),
+            ("   ", ""),
+            (_clock(now, timezone), "bold white"),
+        ),
+    )
+    return header
+
+
+def _results_line(snapshots: list[LaneSnapshot], width: int) -> Text | None:
+    results: list[tuple[float, str]] = []
+    for snapshot in snapshots:
+        for job in _job_records(snapshot.record):
+            if job.get("status") not in COMPLETED_STATUSES:
+                continue
+            value = _result_miou(job)
+            if value is not None:
+                results.append((value, f"{_job_label(job)} {100 * value:.2f}%"))
+    if not results:
+        return None
+    results.sort(key=lambda item: item[0], reverse=True)
+    text = Text("Validated mIoU: ", style="grey58")
+    used = len(text.plain)
+    for index, (_, label) in enumerate(results):
+        addition = ("  •  " if index else "") + label
+        if used + len(addition) > width - 8:
+            text.append(f"  (+{len(results) - index} more)", style="dim")
+            break
+        text.append(addition, style="green")
+        used += len(addition)
+    return text
+
+
+def _attention_lines(snapshots: list[LaneSnapshot], budget: int) -> list[str]:
+    messages = [
+        str(item.record.get("failure")) for item in snapshots if item.record.get("failure")
+    ] + [warning for item in snapshots for warning in item.warnings]
+    shown = messages[:budget]
+    if len(messages) > len(shown):
+        shown.append(f"…and {len(messages) - len(shown)} more")
+    return shown
+
+
+def _attention_panel(lines: list[str]) -> Panel:
+    return Panel(
+        "\n".join(lines),
+        title=" attention ",
+        title_align="left",
+        border_style="yellow",
+        padding=(0, 1),
     )
 
-    content: list[Any] = [header, Text(), _queue_text(jobs)]
-    active = snapshot.active_job
-    if active is not None:
-        content.append(Text())
-        phase = str(active.get("status", "active")).upper()
-        content.append(
-            Text.assemble(
-                (f"{phase}  ", "bold cyan"),
-                (
-                    (
-                        f"{active.get('model')} / "
-                        f"{active.get('protocol', active.get('curriculum'))}  "
-                        f"seed {active.get('seed')}"
-                        if active.get("model")
-                        else f"{active.get('curriculum')}  seed {active.get('seed')}"
-                    ),
-                    "bold white",
-                ),
-                f"   elapsed {_format_duration(_elapsed(active))}",
-            )
-        )
-        if snapshot.stage is not None:
-            stage = snapshot.stage
-            step = stage.step or 0
-            total = stage.total_steps or 0
-            percent = 100 * step / total if total else 0
-            progress = Table.grid(expand=True, padding=(0, 1))
-            progress.add_column(width=24)
-            progress.add_column(ratio=1)
-            progress.add_column(width=47, justify="right")
-            progress.add_row(
-                f"{stage.name} • iterations",
-                ProgressBar(total=max(total, 1), completed=step, width=None),
-                f"{step:,} / {total:,}  •  {percent:5.1f}%  •  "
-                f"{_format_duration(stage.eta_seconds)} left",
-            )
-            content.extend([Text(), progress])
 
-            metrics = Table.grid(expand=True, padding=(0, 2))
-            for _ in range(7):
-                metrics.add_column(justify="center")
-            rate = f"{stage.rate:.2f} it/s" if stage.rate else "estimating…"
-            metrics.add_row(
-                f"loss\n[bold]{_metric(stage, 'train/loss')}[/]",
-                f"learning rate\n[bold]{_metric(stage, 'train/lr', scientific=True)}[/]",
-                f"val mIoU\n[bold green]{_metric(stage, 'val/miou', percent=True)}[/]",
-                f"val mean acc\n[bold]{_metric(stage, 'val/macc', percent=True)}[/]",
-                f"pixel accuracy\n[bold]{_metric(stage, 'val/pixel_acc', percent=True)}[/]",
-                f"boundary F1\n[bold]{_metric(stage, 'val/boundary_f1', percent=True)}[/]",
-                f"throughput\n[bold]{rate}[/]",
+_SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+_LEGEND = (
+    "● training   ✓ done   · pending   ✗ failed      "
+    "AGE = time since the last logged scalar (training logs every 50 steps)      "
+    "read-only view • Ctrl-C closes the dashboard, not training"
+)
+
+
+class Dashboard:
+    """A one-screen campaign view that adapts to the terminal it is printed to."""
+
+    def __init__(
+        self,
+        campaign: Path,
+        snapshots: list[LaneSnapshot],
+        timezone: tzinfo,
+        tmux_prefix: str | None,
+        show_gpus: bool,
+        *,
+        tick: int = 0,
+        limit_height: bool = False,
+    ) -> None:
+        self.campaign = campaign
+        self.snapshots = snapshots
+        self.timezone = timezone
+        self.tmux_prefix = tmux_prefix
+        self.show_gpus = show_gpus
+        self.tick = tick
+        self.limit_height = limit_height
+
+    def _visible_lanes(self, height: int, extra_lines: int) -> tuple[list[LaneSnapshot], int]:
+        if not self.limit_height:
+            return self.snapshots, 0
+        # header + rule + column header + legend + one line of slack, plus
+        # whatever the attention panel and the results line need.
+        budget = height - (5 + extra_lines)
+        if budget >= len(self.snapshots):
+            return self.snapshots, 0
+        budget = max(1, budget - 1)  # room for the "hidden lanes" note
+
+        def needs_attention(item: LaneSnapshot) -> bool:
+            return bool(
+                item.active_job is not None
+                or item.warnings
+                or item.record.get("failure")
+                or any(job.get("status") in FAILED_STATUSES for job in _job_records(item.record))
             )
-            val_point = stage.scalars.get("val/miou")
-            freshness = Text(
-                f"Live scalar step {step:,}; validation through step "
-                f"{val_point.step + 1:,}.  "
-                f"Last scalar {_local_time(stage.last_update, timezone)}."
-                if val_point
-                else f"Live scalar step {step:,}; waiting for the first validation.",
+
+        # Lanes that need attention keep their seat, but the survivors are
+        # re-sorted into lane order so a given lane never moves between frames.
+        ranked = sorted(
+            range(len(self.snapshots)),
+            key=lambda index: (not needs_attention(self.snapshots[index]), index),
+        )
+        kept = sorted(ranked[:budget])
+        return [self.snapshots[index] for index in kept], len(self.snapshots) - len(kept)
+
+    def _renderables(self, width: int, height: int) -> Iterator[Any]:
+        now = datetime.now(UTC)
+        if not self.snapshots:
+            yield Panel(
+                f"No readable lane_*_status.json files under\n{self.campaign}",
+                title=" segmentary progress ",
+                border_style="yellow",
+            )
+            return
+
+        attention = _attention_lines(self.snapshots, budget=3)
+        results = _results_line(self.snapshots, width)
+        extra = (len(attention) + 2 if attention else 0) + (0 if results is None else 1)
+        lanes, hidden = self._visible_lanes(height, extra)
+
+        yield _campaign_header(self.campaign, self.snapshots, self.timezone, now, self.tick)
+        yield Rule(style="grey30")
+        yield _lane_table(lanes, self.tmux_prefix, self.show_gpus, width, now)
+        if hidden:
+            yield Text(
+                f"  …{hidden} idle lane(s) hidden — the window is too short to show them",
                 style="dim",
             )
-            content.extend([metrics, Align.center(freshness)])
+        if results is not None:
+            yield results
+        if attention:
+            yield _attention_panel(attention)
+        yield Align.center(Text(_LEGEND, style="dim"))
 
-    completed_results = []
-    for job in jobs:
-        if job.get("status") not in COMPLETED_STATUSES:
-            continue
-        value = _result_miou(job)
-        if value is not None:
-            completed_results.append(
-                f"{job.get('model')} / {job.get('protocol')} s{job.get('seed')} {100 * value:.2f}%"
-                if job.get("model")
-                else f"{job.get('curriculum')} s{job.get('seed')} {100 * value:.2f}%"
-            )
-    if completed_results:
-        content.extend(
-            [Text(), Text("Validated mIoU: " + "  •  ".join(completed_results), style="dim")]
-        )
-
-    lane_finish = datetime.now(UTC) + timedelta(seconds=snapshot.lane_eta_seconds or 0)
-    eta_text = (
-        f"Expected lane finish: {_local_time(lane_finish, timezone)} "
-        f"({_format_duration(snapshot.lane_eta_seconds)} remaining)"
-        if snapshot.lane_eta_seconds is not None
-        else "Expected lane finish: estimating from completed jobs…"
-    )
-    content.extend([Text(), Text(eta_text, style="bold magenta")])
-    return Panel(Group(*content), title=f" Lane {snapshot.lane.upper()} ", border_style="cyan")
-
-
-def _elapsed(job: dict[str, Any]) -> float | None:
-    started = _parse_datetime(job.get("started_at"))
-    return None if started is None else max(0, (datetime.now(UTC) - started).total_seconds())
+    def __rich_console__(self, console: Console, options: ConsoleOptions) -> RenderResult:
+        yield from self._renderables(options.max_width, console.size.height)
 
 
 def render_dashboard(
@@ -600,80 +998,19 @@ def render_dashboard(
     timezone: tzinfo,
     tmux_prefix: str | None,
     show_gpus: bool,
-) -> Group:
-    now = datetime.now(UTC)
-    total_jobs = sum(len(_job_records(item.record)) for item in snapshots)
-    completed = sum(item.completed for item in snapshots)
-    campaign_eta = (
-        max(item.lane_eta_seconds for item in snapshots if item.lane_eta_seconds is not None)
-        if snapshots and all(item.lane_eta_seconds is not None for item in snapshots)
-        else None
+    *,
+    tick: int = 0,
+    limit_height: bool = False,
+) -> Dashboard:
+    return Dashboard(
+        campaign,
+        snapshots,
+        timezone,
+        tmux_prefix,
+        show_gpus,
+        tick=tick,
+        limit_height=limit_height,
     )
-    finish = now + timedelta(seconds=campaign_eta or 0)
-    title = Text.assemble(
-        ("SEGMENTARY  ", "bold cyan"),
-        ("LIVE TRAINING", "bold white"),
-        f"   {campaign.name}",
-    )
-    summary = Table.grid(expand=True)
-    summary.add_column(justify="left")
-    summary.add_column(justify="center")
-    summary.add_column(justify="right")
-    summary.add_row(
-        title,
-        f"[bold]{completed}/{total_jobs}[/] jobs complete",
-        (
-            f"expected finish [bold magenta]{_local_time(finish, timezone)}[/]"
-            if campaign_eta is not None
-            else "expected finish estimating…"
-        ),
-    )
-    renderables: list[Any] = [
-        Panel(summary, subtitle=_local_time(now, timezone), border_style="blue")
-    ]
-    renderables.extend(_lane_panel(item, timezone, tmux_prefix) for item in snapshots)
-
-    if show_gpus:
-        configured: set[int] = set()
-        for item in snapshots:
-            for raw in str(item.record.get("gpu_visibility", "")).split(","):
-                if raw.strip().isdigit():
-                    configured.add(int(raw))
-        rows = _gpu_rows(configured or None)
-        if rows:
-            table = Table(expand=True, box=None, padding=(0, 2))
-            table.add_column("GPU", style="bold")
-            table.add_column("util", justify="right")
-            table.add_column("memory", justify="right")
-            table.add_column("temp", justify="right")
-            table.add_column("state")
-            for index, util, used, total, temp in rows:
-                state = "● training" if util >= 10 else "○ between phases"
-                style = "green" if temp < 80 else "red"
-                table.add_row(
-                    str(index),
-                    f"{util:.0f}%",
-                    f"{used / 1024:.1f}/{total / 1024:.1f} GiB",
-                    f"{temp}°C",
-                    Text(state, style=style),
-                )
-            renderables.append(Panel(table, title=" GPU health ", border_style="green"))
-
-    warnings = [warning for item in snapshots for warning in item.warnings]
-    failures = [str(item.record.get("failure")) for item in snapshots if item.record.get("failure")]
-    if warnings or failures:
-        renderables.append(
-            Panel("\n".join([*failures, *warnings]), title=" Attention ", border_style="yellow")
-        )
-    renderables.append(
-        Align.center(
-            Text(
-                "Read-only view • refreshes from TensorBoard/status files • Ctrl-C exits only the dashboard",
-                style="dim",
-            )
-        )
-    )
-    return Group(*renderables)
 
 
 def _timezone(value: str) -> ZoneInfo:
@@ -683,10 +1020,14 @@ def _timezone(value: str) -> ZoneInfo:
         raise argparse.ArgumentTypeError(f"unknown IANA timezone: {value}") from exc
 
 
+MINIMUM_REFRESH = 0.25
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
             "Open a read-only Rich dashboard over a queued Segmentary campaign. "
+            "Every lane is one row, so the whole campaign fits in one window. "
             "It observes status and TensorBoard files without loading models or "
             "affecting training."
         )
@@ -694,7 +1035,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("campaign", type=Path, help="campaign directory with lane_*_status.json")
     parser.add_argument("--once", action="store_true", help="print one snapshot and exit")
     parser.add_argument(
-        "--refresh", type=float, default=10.0, help="live refresh interval (seconds)"
+        "--refresh", type=float, default=1.0, help="live refresh interval in seconds (default: 1)"
     )
     parser.add_argument(
         "--timezone",
@@ -718,37 +1059,41 @@ def main(argv: list[str] | None = None) -> int:
     if not campaign.is_dir():
         print(f"segmentary-progress: campaign directory not found: {campaign}", file=sys.stderr)
         return 2
-    if args.refresh < 1:
-        print("segmentary-progress: --refresh must be at least 1 second", file=sys.stderr)
+    if args.refresh < MINIMUM_REFRESH:
+        print(
+            f"segmentary-progress: --refresh must be at least {MINIMUM_REFRESH} seconds",
+            file=sys.stderr,
+        )
         return 2
     console = Console()
 
-    def snapshot() -> Group:
-        lanes = inspect_campaign(campaign)
-        if not lanes:
-            return Group(
-                Panel(
-                    f"No readable lane_*_status.json files under\n{campaign}",
-                    title=" Segmentary progress ",
-                    border_style="yellow",
-                )
-            )
+    def snapshot(tick: int, *, limit_height: bool) -> Dashboard:
         return render_dashboard(
             campaign,
-            lanes,
+            inspect_campaign(campaign),
             args.timezone,
             args.tmux_prefix,
             not args.no_gpus,
+            tick=tick,
+            limit_height=limit_height,
         )
 
     if args.once:
-        console.print(snapshot())
+        console.print(snapshot(0, limit_height=False))
         return 0
     try:
-        with Live(snapshot(), console=console, refresh_per_second=4, screen=True) as live:
+        with Live(
+            snapshot(0, limit_height=True),
+            console=console,
+            refresh_per_second=4,
+            screen=True,
+            transient=False,
+        ) as live:
+            tick = 0
             while True:
                 time.sleep(args.refresh)
-                live.update(snapshot(), refresh=True)
+                tick += 1
+                live.update(snapshot(tick, limit_height=True), refresh=True)
     except KeyboardInterrupt:
         return 0
 
