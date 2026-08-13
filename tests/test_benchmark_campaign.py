@@ -370,6 +370,45 @@ def test_eomt_campaign_cells_use_fixed_native_query_objective(
     assert resolved["train"]["accum"] == 8
 
 
+@pytest.mark.parametrize("protocol_id", ["cityscapes", "railsem19", "cityscapes_to_railsem19"])
+def test_beit_campaign_uses_native_crop_and_fast_equivalent_batch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, protocol_id: str
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    job = next(
+        item
+        for item in record["jobs"]
+        if item["model"] == "hf_auto_beit_base_ade" and item["protocol"] == protocol_id
+    )
+
+    _, resolved = campaign._resolved_config(record, job, tmp_path / "prototype")
+
+    assert resolved["aug"]["crop"] == [640, 640]
+    assert resolved["train"]["batch_size"] == 4
+    assert resolved["train"]["accum"] == 4
+    assert resolved["train"]["batch_size"] * resolved["train"]["accum"] == 16
+    assert resolved["eval"]["window"] == [1024, 1024]
+
+
+def test_model_runtime_override_cannot_change_effective_batch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    job = next(item for item in record["jobs"] if item["model"] == "hf_auto_beit_base_ade")
+    original_load_yaml = campaign.load_yaml
+
+    def load_yaml(path: Path) -> dict:
+        if path.name == "bad-runtime.yaml":
+            return {"train": {"batch_size": 3, "accum": 4}}
+        return original_load_yaml(path)
+
+    monkeypatch.setattr(campaign, "load_yaml", load_yaml)
+    job["campaign_config"] = "bad-runtime.yaml"
+
+    with pytest.raises(campaign.CampaignError, match="changed effective batch to 12"):
+        campaign._resolved_config(record, job, tmp_path / "prototype")
+
+
 def test_default_cli_uses_batch_two_and_accumulation_eight() -> None:
     args = campaign.build_parser().parse_args(
         [

@@ -1286,15 +1286,17 @@ def _resolved_config(
     dependency_checkpoint: Path | None = None,
 ) -> tuple[ExperimentConfig, dict[str, Any]]:
     merged: dict[str, Any] = {}
+    campaign_overrides: dict[str, Any] = {}
     layers = [
         Path("configs/base.yaml"),
         Path(job["model_config"]),
         Path(job["curriculum_config"]),
     ]
     if job.get("campaign_config"):
-        layers.append(Path(job["campaign_config"]))
+        campaign_overrides = load_yaml(REPO_ROOT / Path(job["campaign_config"]))
     for relative in layers:
         merged = deep_merge(merged, load_yaml(REPO_ROOT / relative))
+    merged = deep_merge(merged, campaign_overrides)
     merged["name"] = job["experiment_name"]
     merged["output_root"] = str(attempt / "train")
     merged["train"] = {
@@ -1305,6 +1307,14 @@ def _resolved_config(
         "accum": record["execution"]["gradient_accumulation"],
         "num_workers": record["execution"]["train_workers"],
     }
+    # A reviewed model-specific campaign overlay may trade batch size against
+    # accumulation for throughput, but it must retain the campaign's effective
+    # batch so optimization semantics remain comparable.
+    override_train = campaign_overrides.get("train", {})
+    if isinstance(override_train, dict):
+        for field in ("batch_size", "accum"):
+            if field in override_train:
+                merged["train"][field] = override_train[field]
     merged["eval"] = {
         **merged.get("eval", {}),
         "num_workers": record["execution"]["eval_workers"],
@@ -1330,6 +1340,12 @@ def _resolved_config(
             if data["name"] == "railsem19" and data.get("split_file"):
                 data["split_file"] = str((REPO_ROOT / data["split_file"]).resolve())
     cfg = from_dict(ExperimentConfig, merged)
+    effective_batch = cfg.train.batch_size * cfg.train.accum
+    if effective_batch != record["execution"]["effective_batch_size"]:
+        raise CampaignError(
+            f"{job['id']} model-specific runtime override changed effective batch "
+            f"to {effective_batch}; expected {record['execution']['effective_batch_size']}"
+        )
     if cfg.space != job["evaluation_space"]:
         raise CampaignError(f"{job['id']} resolved unexpected space {cfg.space!r}")
     if cfg.stages[-1].name != job["final_stage"]:

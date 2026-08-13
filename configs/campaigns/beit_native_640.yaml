@@ -1,0 +1,11 @@
+# BEiT's ADE20K checkpoint is trained at 640x640. At the campaign-wide
+# 1024x1024 crop, its quadratic attention makes it a multi-week straggler on an
+# L40S. This override keeps the same effective batch (16), optimizer schedule,
+# iteration budgets, and 1024x1024 sliding-window evaluation while using the
+# checkpoint's native training resolution and the measured fastest safe batch.
+aug:
+  crop: [640, 640]
+
+train:
+  batch_size: 4
+  accum: 4
