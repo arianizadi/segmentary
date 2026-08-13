@@ -17,6 +17,8 @@ paper's, and this baseline should be read accordingly.
 
 from __future__ import annotations
 
+from typing import Any, cast
+
 import timm
 import torch.nn as nn
 from torch import Tensor
@@ -56,14 +58,19 @@ class HRNetOCR(SegmentationModel):
                 f"{backbone_name!r} is not a timm HRNet (no stage4_cfg); HRNetOCR reads its "
                 f"branch widths from that config"
             )
-        trunk.incre_modules = None
-        trunk.downsamp_modules = None
-        trunk.final_layer = nn.Identity()
-        trunk.global_pool = nn.Identity()
-        trunk.classifier = nn.Identity()
+        # Strip timm's classification path so forward_features returns the four
+        # branch feature maps. nn.Module types attribute writes as
+        # Tensor | Module, which cannot express "set this submodule to None".
+        trunk_attrs = cast(Any, trunk)
+        trunk_attrs.incre_modules = None
+        trunk_attrs.downsamp_modules = None
+        trunk_attrs.final_layer = nn.Identity()
+        trunk_attrs.global_pool = nn.Identity()
+        trunk_attrs.classifier = nn.Identity()
         self.trunk = trunk
 
-        in_channels = sum(trunk.stage4_cfg["num_channels"])
+        stage4_cfg = cast(dict[str, Any], trunk.stage4_cfg)
+        in_channels = sum(stage4_cfg["num_channels"])
         self.head = OCRHead(
             in_channels, num_classes, ocr_channels=ocr_channels, key_channels=key_channels
         )
@@ -71,7 +78,7 @@ class HRNetOCR(SegmentationModel):
     def forward(self, pixel_values: Tensor) -> Tensor:
         # With incre_modules removed, forward_features returns the four branch
         # feature maps rather than a fused classification embedding.
-        branches = self.trunk.forward_features(pixel_values)
+        branches = cast(Any, self.trunk).forward_features(pixel_values)
         if not isinstance(branches, (list, tuple)):
             raise ValueError(
                 "HRNet trunk returned a fused tensor; its classification head was not removed"

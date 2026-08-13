@@ -42,18 +42,20 @@ class MixedDataset(ConcatDataset):
             raise ValueError(f"duplicate dataset names in mixed loader: {names}")
 
         super().__init__(datasets)
-        self.datasets: list[SegDataset]
+        # ConcatDataset types this list as Dataset[Any], and list is invariant, so
+        # the narrower element type has to live beside it rather than override it.
+        self.members: list[SegDataset] = list(datasets)
         self.space = datasets[0].mapping.space
 
     @property
     def name(self) -> str:
-        return "+".join(d.name for d in self.datasets)
+        return "+".join(d.name for d in self.members)
 
     @property
     def active(self) -> torch.Tensor:
         """Union of the members' active classes -- what the head must cover."""
         out = torch.zeros(self.space.num_classes, dtype=torch.bool)
-        for d in self.datasets:
+        for d in self.members:
             out |= d.active
         return out
 
@@ -71,10 +73,10 @@ class MixedDataset(ConcatDataset):
         if isinstance(num_samples, bool) or not isinstance(num_samples, int) or num_samples <= 0:
             raise ValueError(f"sampler num_samples must be a positive integer, got {num_samples!r}")
 
-        unknown = sorted(set(weights) - {d.name for d in self.datasets})
+        unknown = sorted(set(weights) - {d.name for d in self.members})
         if unknown:
             raise ValueError(f"sampler weights name unknown datasets {unknown}")
-        missing = sorted({d.name for d in self.datasets} - set(weights))
+        missing = sorted({d.name for d in self.members} - set(weights))
         if missing:
             raise ValueError(f"sampler weights omit {missing}; list every dataset explicitly")
         if any(
@@ -89,7 +91,7 @@ class MixedDataset(ConcatDataset):
         total = math.fsum(float(weight) for weight in weights.values())
         per_sample = np.empty(len(self), dtype=np.float64)
         start = 0
-        for d in self.datasets:
+        for d in self.members:
             n = len(d)
             # Each dataset's share is spread evenly across its own samples, so the
             # ratio holds regardless of how differently sized the datasets are.
@@ -98,14 +100,16 @@ class MixedDataset(ConcatDataset):
 
         g = torch.Generator().manual_seed(seed)
         return WeightedRandomSampler(
-            weights=torch.from_numpy(per_sample),
+            # WeightedRandomSampler takes a plain sequence and builds its own
+            # double tensor; handing it one directly relies on an untyped path.
+            weights=per_sample.tolist(),
             num_samples=num_samples,
             replacement=True,
             generator=g,
         )
 
     def describe(self) -> str:
-        parts = ", ".join(f"{d.name}={len(d)}" for d in self.datasets)
+        parts = ", ".join(f"{d.name}={len(d)}" for d in self.members)
         return f"MixedDataset({parts}, total={len(self)})"
 
 

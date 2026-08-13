@@ -23,10 +23,11 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, replace
 from pathlib import Path
+from typing import Any, cast
 
 import lightning as L
 import torch
-from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning.pytorch.callbacks import Callback, ModelCheckpoint
 from lightning.pytorch.loggers import TensorBoardLogger
 
 from .checkpoints import (
@@ -44,13 +45,14 @@ from .data.loaders import (
     load_data_mapping,
     validation_active_mask,
 )
-from .data.mixed import MixedDataset
+from .data.mixed import MixedDataset, as_dataset
 from .engine.ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma
 from .engine.losses import LossConfig, SegmentationLoss
 from .engine.module import SegLitModule
 from .engine.query_loss import QuerySegmentationLoss
 from .models.factory import build_model
 from .models.tuning import apply_tuning, count_trainable
+from .models.wrappers import SegmentationModel
 from .tasks import (
     validate_canonical_active,
     validate_task_configuration,
@@ -164,7 +166,7 @@ def validate_resume_checkpoint(
     return step
 
 
-def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[ModelCheckpoint]:
+def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[Callback]:
     """Keep the best validation model and explicit periodic recovery snapshots."""
     best = ModelCheckpoint(
         dirpath=out_dir,
@@ -239,7 +241,7 @@ def apply_freeze(model: torch.nn.Module, spec: str | None) -> int:
 
 
 def load_backbone_weights(
-    model: torch.nn.Module,
+    model: SegmentationModel,
     ckpt: Path,
     reset_head: bool,
     *,
@@ -344,11 +346,11 @@ def load_backbone_weights(
 
 
 def prepare_stage_model(
-    model: torch.nn.Module,
+    model: SegmentationModel,
     cfg: ExperimentConfig,
     init_ckpt: Path | None,
     reset_head: bool,
-) -> torch.nn.Module:
+) -> SegmentationModel:
     """Apply tuning and a raw/adapted warm-start in the only compatible order."""
     checkpoint_state = read_checkpoint(init_ckpt) if init_ckpt is not None else None
     adapted_checkpoint = (
@@ -470,7 +472,7 @@ def run_stage(
         # let each validation rank score a slightly different model and only
         # rank 0's running statistics would survive in the EMA checkpoint.
         sync_batchnorm=_multi(devices),
-        precision=train_cfg.precision,
+        precision=cast(Any, train_cfg.precision),
         accumulate_grad_batches=train_cfg.accum,
         gradient_clip_val=optim_cfg.grad_clip,
         val_check_interval=train_cfg.val_every,
@@ -502,6 +504,9 @@ def run_stage(
         )
         final_checkpoint = _save_final_checkpoint(trainer, out_dir)
 
+    train_dataset = as_dataset(train_loader.dataset)
+    if timer.started_at is None:
+        raise RuntimeError("run timer recorded no start time; the stage never entered training")
     metrics = lit.latest_metrics() if trainer.is_global_zero else {}
     sha, dirty = git_sha(provenance_root)
     record_config = to_dict(cfg)
@@ -522,11 +527,11 @@ def run_stage(
         config=record_config,
         env=record_env,
         dataset_sizes={
-            "train": len(train_loader.dataset),
+            "train": len(train_dataset),
             "val": len(val_ds),
             # Flat "train:<name>" keys rather than a nested dict: RunRecord types
             # this field dict[str, int] and the table generator reads it as one.
-            **{f"train:{d.name}": len(d) for d in _members(train_loader.dataset)},
+            **{f"train:{d.name}": len(d) for d in _members(train_dataset)},
         },
         notes=f"stage {stage.name} of curriculum {cfg.name}",
     )

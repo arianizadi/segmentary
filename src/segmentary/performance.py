@@ -24,6 +24,7 @@ import os
 import pickletools
 import statistics
 import subprocess
+import sys
 import tempfile
 import time
 import zipfile
@@ -407,7 +408,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         payload = run_benchmark(args)
     except (OSError, RuntimeError, ValueError, PerformanceError) as exc:
-        print(f"performance benchmark error: {exc}", file=os.sys.stderr)
+        print(f"performance benchmark error: {exc}", file=sys.stderr)
         return 2
     measurements = payload["measurements"]
     print(

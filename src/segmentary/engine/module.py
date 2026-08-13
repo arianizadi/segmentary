@@ -19,7 +19,7 @@ from __future__ import annotations
 import warnings
 from dataclasses import asdict
 from time import monotonic
-from typing import Any
+from typing import Any, Literal, cast
 
 import lightning as L
 import torch
@@ -205,14 +205,17 @@ class SegLitModule(L.LightningModule):
     def training_step(self, batch: dict[str, Any], batch_idx: int) -> Tensor:
         # Per-sample active masks: a `joint` batch mixes datasets that disagree
         # about which canonical classes are supervised.
-        objective = (
-            query_training_objective
-            if isinstance(self.loss_fn, QuerySegmentationLoss)
-            else dense_training_objective
-        )
-        loss, parts = objective(
-            self.model, self.loss_fn, batch["image"], batch["mask"], active=batch.get("active")
-        )
+        # Branch on the objective rather than selecting a function object: each
+        # objective accepts only its own loss type, and the isinstance check is
+        # what establishes which one this is.
+        if isinstance(self.loss_fn, QuerySegmentationLoss):
+            loss, parts = query_training_objective(
+                self.model, self.loss_fn, batch["image"], batch["mask"], active=batch.get("active")
+            )
+        else:
+            loss, parts = dense_training_objective(
+                self.model, self.loss_fn, batch["image"], batch["mask"], active=batch.get("active")
+            )
 
         bs = batch["image"].shape[0]
         self.log("train/loss", loss, prog_bar=True, on_step=True, batch_size=bs, sync_dist=False)
@@ -354,14 +357,30 @@ class SegLitModule(L.LightningModule):
             device=self.device,
         )
 
+    def _metric_state(self) -> tuple[ConfusionMatrix, BoundaryF1]:
+        """The accumulators for the current validation epoch.
+
+        They are built in ``on_validation_epoch_start``. Reaching them before
+        that means the caller is outside a validation epoch, which would
+        otherwise surface as an AttributeError on None several frames away.
+        """
+        if self._cm is None or self._bf1 is None:
+            raise RuntimeError("validation metrics are only available during a validation epoch")
+        return self._cm, self._bf1
+
     def validation_step(self, batch: dict[str, Any], batch_idx: int) -> None:
+        if self.task not in ("multiclass", "binary"):
+            raise ValueError(f"validation supports multiclass and binary tasks, not {self.task!r}")
+        # self.task is a plain str, so the check above is what proves the value;
+        # restate it as the literal InferenceConfig accepts.
+        task = cast(Literal["multiclass", "binary"], self.task)
         infer_cfg = InferenceConfig(
             sliding_window=self.eval_cfg.sliding_window,
-            window=tuple(self.eval_cfg.window),
-            stride=tuple(self.eval_cfg.stride),
+            window=(int(self.eval_cfg.window[0]), int(self.eval_cfg.window[1])),
+            stride=(int(self.eval_cfg.stride[0]), int(self.eval_cfg.stride[1])),
             scales=tuple(self.eval_cfg.tta_scales) or (1.0,),
             flip=self.eval_cfg.tta_flip,
-            task=self.task,
+            task=task,
             threshold=self.eval_cfg.threshold,
         )
         # EMA weights are the ones we report; swapped() restores on exit even if
@@ -372,14 +391,16 @@ class SegLitModule(L.LightningModule):
 
         pred = prediction_from_inference(logits, infer_cfg)
         target = batch["mask"]
-        self._cm.update(pred, target)
-        self._bf1.update(pred, target)
+        cm, bf1 = self._metric_state()
+        cm.update(pred, target)
+        bf1.update(pred, target)
 
     def on_validation_epoch_end(self) -> None:
-        self._cm.all_reduce()
-        self._bf1.all_reduce()
-        result = self._cm.compute()
-        boundary = self._bf1.compute()
+        cm, bf1 = self._metric_state()
+        cm.all_reduce()
+        bf1.all_reduce()
+        result = cm.compute()
+        boundary = bf1.compute()
 
         self.log("val/miou", result.miou, prog_bar=True, sync_dist=False)
         self.log("val/macc", result.macc, sync_dist=False)
@@ -411,9 +432,10 @@ class SegLitModule(L.LightningModule):
         """Full metric dump for results.json, including the confusion matrix."""
         if self._cm is None:
             raise RuntimeError("latest_metrics() called before any validation ran")
-        result = self._cm.compute()
+        cm, bf1 = self._metric_state()
+        result = cm.compute()
         out = result.as_dict(list(self.space.names))
-        out["boundary"] = self._bf1.compute().as_dict(list(self.space.names))
+        out["boundary"] = bf1.compute().as_dict(list(self.space.names))
         if self.eval_cfg.save_confusion:
             out["confusion"] = result.confusion.tolist()
         return out

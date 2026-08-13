@@ -22,11 +22,11 @@ import os
 import statistics
 import tempfile
 import time
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import torch
@@ -317,8 +317,9 @@ class _CalibrationReader:
     def get_next(self) -> dict[str, np.ndarray] | None:
         if self._iterator is None:
             self._iterator = iter(self._images)
+        iterator = cast(Iterator[Any], self._iterator)
         try:
-            return {"pixel_values": next(self._iterator)}
+            return {"pixel_values": next(iterator)}
         except StopIteration:
             return None
 
@@ -522,8 +523,8 @@ class TrtRunner:
         self.context = self.engine.create_execution_context()
         if self.context is None:
             raise ExportError(f"TensorRT could not create an execution context for {path}")
-        inputs = []
-        outputs = []
+        inputs: list[Any] = []
+        outputs: list[Any] = []
         for index in range(self.engine.num_io_tensors):
             name = self.engine.get_tensor_name(index)
             mode = self.engine.get_tensor_mode(name)
@@ -905,7 +906,7 @@ def main(argv: list[str] | None = None) -> int:
         )
     reason = unsupported_reason(cfg.model.arch)
     if reason is not None:
-        rows = [
+        rows: list[dict[str, Any]] = [
             _row(variant, reason) for variant in ("onnx_fp32", "tensorrt_fp16", "tensorrt_int8")
         ]
         write_summary(out_dir, metadata, rows)
@@ -942,7 +943,12 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     example = evaluation[0][0].unsqueeze(0).to(device)
-    fixed_shape = tuple(int(v) for v in example.shape)
+    fixed_shape = (
+        int(example.shape[0]),
+        int(example.shape[1]),
+        int(example.shape[2]),
+        int(example.shape[3]),
+    )
     export_cfg = to_dict(cfg)
     export_cfg["input_normalization"] = input_normalization(model)
     export_cfg["export"] = {
@@ -958,7 +964,7 @@ def main(argv: list[str] | None = None) -> int:
         "untrained_test_only": args.untrained_test_only,
         "int8_excluded_nodes": list(args.int8_exclude_node),
     }
-    rows: list[dict[str, Any]] = []
+    rows = []
 
     def torch_runner(image: Tensor) -> Tensor:
         with torch.inference_mode():

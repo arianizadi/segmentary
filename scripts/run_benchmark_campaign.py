@@ -749,7 +749,10 @@ def build_campaign_record(
         ),
         "progress": {
             "tmux_session": f"{tmux_prefix}-progress",
-            "refresh_seconds": 10,
+            # Match segmentary-progress's own default. The dashboard only polls
+            # files training already writes, and its AGE column has to tick every
+            # second to distinguish a quiet lane from a stalled one.
+            "refresh_seconds": 1,
         },
         "preflight": {
             "tmux_session": f"{tmux_prefix}-reused-performance",

@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import time
 from pathlib import Path
+from typing import Literal, cast
 
 import torch
 
@@ -136,12 +137,12 @@ def main(argv: list[str] | None = None) -> int:
     for step in range(1, args.iters + 1):
         optimizer.zero_grad(set_to_none=True)
         with torch.autocast("cuda", dtype=torch.bfloat16, enabled=device.type == "cuda"):
-            objective = (
-                query_training_objective
-                if isinstance(loss_fn, QuerySegmentationLoss)
-                else dense_training_objective
-            )
-            loss, _ = objective(model, loss_fn, images, masks, active=active_dev)
+            # Branch rather than select a function object: each objective
+            # accepts only its own loss type.
+            if isinstance(loss_fn, QuerySegmentationLoss):
+                loss, _ = query_training_objective(model, loss_fn, images, masks, active=active_dev)
+            else:
+                loss, _ = dense_training_objective(model, loss_fn, images, masks, active=active_dev)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         optimizer.step()
@@ -152,9 +153,13 @@ def main(argv: list[str] | None = None) -> int:
                 torch.no_grad(),
                 torch.autocast("cuda", dtype=torch.bfloat16, enabled=device.type == "cuda"),
             ):
+                if cfg.loss.task not in ("multiclass", "binary"):
+                    raise SystemExit(
+                        f"overfit check supports multiclass and binary, not {cfg.loss.task!r}"
+                    )
                 infer_cfg = InferenceConfig(
                     sliding_window=False,
-                    task=cfg.loss.task,
+                    task=cast(Literal["multiclass", "binary"], cfg.loss.task),
                     threshold=cfg.eval.threshold,
                 )
                 scores = inference(model, images, space.num_classes, infer_cfg)

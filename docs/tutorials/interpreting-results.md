@@ -14,9 +14,27 @@ For example, a stored score of `0.75` renders as **75%**. It does not mean
 `0.75%`. Generated result tables do the multiplication for you.
 
 That conversion is easy. Deciding whether two numbers answer the same question
-is the important part. This tutorial starts with the metric meanings, then shows
-how to read a real `results.json`, recognize common failure patterns, and debug
-from the cheapest checks to the most expensive ones.
+is the important part — and that is what the rest of this page is about.
+
+**It is a reference, not a read-through.** Jump to the question you have:
+
+| Your question | Go to |
+|---|---|
+| What does this metric actually mean? | [2. Metric meanings](#2-metric-meanings-and-scales) |
+| Is this score good? | [3. Interpretation bands](#3-practical-interpretation-bands) |
+| Why is a class `null` instead of `0`? | [4. null, zero, support, ignored](#4-null-zero-support-and-ignored-pixels) |
+| Pixel accuracy is high but the model looks bad | [5. Aggregate traps](#5-aggregate-traps) |
+| Why do two of my own numbers disagree? | [6. Stage vs native vs common-target](#6-training-stage-native-and-common-target-results) |
+| Which checkpoint should I report? | [7. Best, last, EMA, raw, TTA](#7-best-last-ema-raw-and-tta) |
+| How do I read `results.json`? | [8. Read a result without jq](#8-read-a-result-without-jq) |
+| Something is clearly wrong | [9. Symptom-to-cause](#9-symptom-to-cause-guide) → [10. Debugging flow](#10-cheapest-first-debugging-flow) |
+| Thin structures score badly | [12. Boundary details](#12-boundary-details-for-thin-structures) |
+| Can I report this yet? | [14. Ready to report](#14-a-result-is-ready-to-report-when) |
+
+If you are comparing two runs, read
+[1. Check the experiment identity](#1-check-the-experiment-identity-before-the-score)
+first. A higher number under a different class space, split, or checkpoint rule
+is not evidence that a model is better.
 
 ## 1. Check the experiment identity before the score
 

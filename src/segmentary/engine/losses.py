@@ -372,11 +372,13 @@ class SegmentationLoss(nn.Module):
 
         if not bool(valid.any()):
             zero = _graph_zero(original_logits)
-            components = {term.kind: zero.detach() for term in self.cfg.terms}
+            # Keys are widened to str deliberately: alongside the term kinds this
+            # dict also carries the "total" and "empty_crop" reporting entries.
+            components: dict[str, Tensor] = {term.kind: zero.detach() for term in self.cfg.terms}
             components.update(total=zero.detach(), empty_crop=zero.detach() + 1)
             return zero, components
 
-        components: dict[str, Tensor] = {}
+        components = {}
         total = _graph_zero(original_logits)
         for term in self.cfg.terms:
             value = self._term(
@@ -465,7 +467,8 @@ class SegmentationLoss(nn.Module):
                     probs, target, valid, self.num_classes
                 )
                 pt = flat_probs.gather(1, flat_target[:, None]).squeeze(1).clamp_min(1e-7)
-                alpha = 1.0
+                # Scalar for a shared weight, per-pixel tensor for per-class alpha.
+                alpha: float | Tensor = 1.0
                 if isinstance(term.alpha, (int, float)):
                     alpha = float(term.alpha)
                 elif isinstance(term.alpha, list):
@@ -511,12 +514,17 @@ class SegmentationLoss(nn.Module):
             tp = (pred * truth).sum(reduce_dims)
             fp = (pred * (1.0 - truth)).sum(reduce_dims)
             fn = ((1.0 - pred) * truth * selected).sum(reduce_dims)
+            # Compare against each kind explicitly rather than falling through to
+            # an else: the term specs are a discriminated union, so an equality
+            # test on .kind is what proves alpha/beta exist on this branch.
             if term.kind == "dice":
                 score = (2.0 * tp + term.smooth) / (2.0 * tp + fp + fn + term.smooth)
             elif term.kind == "jaccard":
                 score = (tp + term.smooth) / (tp + fp + fn + term.smooth)
-            else:
+            elif term.kind == "tversky":
                 score = (tp + term.smooth) / (tp + term.alpha * fp + term.beta * fn + term.smooth)
+            else:  # pragma: no cover - guarded by the enclosing kind check
+                raise AssertionError(f"unreachable overlap term kind {term.kind!r}")
             return 1.0 - score[channel_mask].mean()
 
         if term.kind == "lovasz":

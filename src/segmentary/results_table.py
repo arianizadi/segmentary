@@ -17,6 +17,7 @@ import math
 import statistics
 from collections import defaultdict
 from pathlib import Path
+from typing import NoReturn
 
 from segmentary.config import config_hash
 from segmentary.utils.results import load_results
@@ -35,7 +36,8 @@ def find_results(root: Path) -> list[dict]:
     return records
 
 
-def _fail(record: dict, message: str) -> None:
+def _fail(record: dict, message: str) -> NoReturn:
+    """Abort aggregation. Declared NoReturn so callers narrow after a check."""
     raise SystemExit(f"{record.get('_path', '<result>')}: {message}")
 
 
