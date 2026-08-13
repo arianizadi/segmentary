@@ -30,19 +30,30 @@ Run `segmentary-models probe` and a tiny real-data overfit check before a long
 job. Only the exact ResNet-50 backbone is pretrained. FPN, object-context
 layers, and both classifiers start randomly initialized.
 
-The shipped recipe is multiclass. Binary two-class users may layer
-the normal `model.native.task: binary`, `loss.task: binary`, exact two-class
-taxonomy, and BCE settings after it. Both refined and `ocr_coarse` outputs then
-remain one raw class-1 positive logit. Inside object-context gathering only, Segmentary
-maps a logit difference `z` to centered two-class logits `[-z/2, +z/2]`. This
-gives `[1-sigmoid(z), sigmoid(z)]` under the per-pixel class-axis softmax, and
-cross-entropy on the pair equals BCE on `z`. OCR's later spatial softmax pools
-the two channels separately, so the resulting proxies can differ. Centering is
-a symmetric, zero-mean gauge choice because one logit cannot reconstruct two
-independently learned spatial score maps. It is an explicit Segmentary binary
-extension—not a two-logit OCR equivalence, configuration, or benchmark from the
-primary paper. The retained GPU record below is multiclass; binary OCR has
-separate CPU contract and gradient evidence only.
+The shipped recipe is **multiclass**. For a binary task, layer the usual
+`model.native.task: binary`, `loss.task: binary`, an exact two-class taxonomy,
+and BCE settings on top. Both the refined and `ocr_coarse` outputs stay at one
+raw class-1 positive logit.
+
+<details>
+<summary>How binary OCR handles object-context gathering</summary>
+
+Inside object-context gathering *only*, a logit difference `z` maps to centered
+two-class logits `[-z/2, +z/2]`. Under the per-pixel class-axis softmax that
+gives `[1-sigmoid(z), sigmoid(z)]`, and cross-entropy on the pair equals BCE
+on `z`.
+
+OCR's later spatial softmax pools the two channels separately, so the resulting
+proxies can differ. Centering is a symmetric, zero-mean **gauge choice** — one
+logit cannot reconstruct two independently learned spatial score maps.
+
+This is an explicit Segmentary extension, not a two-logit OCR equivalence,
+configuration, or benchmark from the paper.
+
+</details>
+
+The retained GPU record below is multiclass. Binary OCR has separate CPU
+contract and gradient evidence only.
 
 ## Pros:
 

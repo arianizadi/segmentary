@@ -1,19 +1,24 @@
 # Models and tuning modes
 
-Every Segmentary model obeys one contract: input `(N, 3, H, W)` produces dense
-logits `(N, C, H, W)`. This keeps the data, loss, metrics, and evaluator the same
-while the model backend changes.
+Every model obeys one contract: `(N, 3, H, W)` in, dense logits `(N, C, H, W)`
+out. Swap the backend and your data, loss, metrics, and evaluator stay identical.
 
-The [model config catalog](../../configs/models/README.md) links a dedicated
-README for each shipped recipe. Those pages state architecture, preprocessing,
-pros/cons, resource evidence, tuning support, and benchmark scope at the point
-where you choose the model.
+**In a hurry?** Use `segformer_b2` with `tuning: full`. It is the default for a
+reason: verified, and a good speed/accuracy balance.
 
-Use [`segmentary-models list` and `probe`](model-catalog-and-probe.md) to discover
-the installed typed recipes and admission-test an exact composed model through
-normalization, two input shapes, production loss/backward, gradients, and AdamW
-before opening a dataset. That synthetic check proves compatibility, not model
-quality.
+Two commands worth knowing before you pick anything:
+
+```bash
+segmentary-models list                          # what is installed
+segmentary-models probe base.yaml model.yaml experiment.yaml   # will it actually run?
+```
+
+`probe` composes the exact model and pushes synthetic data through
+normalization, two input shapes, the production loss, backward, and AdamW — so
+you find out it works before you open a dataset. It proves compatibility, never
+quality. Each recipe also has its own page in the
+[model catalog](../../configs/models/README.md) covering architecture,
+preprocessing, pros/cons, resource evidence, and benchmark scope.
 
 ## Choosing a model
 
@@ -94,16 +99,20 @@ encoder names and weight tags come from the installed SMP release:
 python -c 'from segmentation_models_pytorch.encoders import get_encoder_names; print("\n".join(get_encoder_names()))'
 ```
 
-Not every encoder is compatible with every decoder or crop size. Start with a
-crop divisible by 32, run the overfit check, and only then schedule a long run.
-Segmentary obtains mean, standard deviation, and RGB/BGR order from the exact SMP
-encoder/weight metadata and rejects unsupported input ranges; it does not assume
-that every installed encoder uses the common ImageNet statistics.
-The catalog deliberately does not accept an arbitrary constructor dictionary:
-new decoder-specific knobs need a typed field, validation, and a test so a typo
-cannot become an unreported experiment change. Full and frozen tuning work for
-the catalog; ordinary convolutional encoders do not expose the attention
-projections required by Segmentary's LoRA mode.
+Not every encoder pairs with every decoder or crop size, so: **crop divisible by
+32 → overfit check → long run.** In that order.
+
+Three things this path does deliberately:
+
+- **Normalization comes from the encoder,** not from an assumption. Mean,
+  standard deviation, and RGB/BGR order are read from the exact SMP
+  encoder/weight metadata, and unsupported input ranges are rejected. Not every
+  installed encoder uses ImageNet statistics.
+- **No arbitrary constructor dictionary.** A new decoder knob needs a typed
+  field, validation, and a test — so a typo cannot quietly become an unreported
+  change to your experiment.
+- **`full` and `frozen` tuning only.** Ordinary convolutional encoders have no
+  attention projections for LoRA to adapt.
 
 `deeplabv3plus_r101` and `upernet_r101` remain supported as compatibility
 aliases. New configs should use `arch: smp` so decoder, encoder, and weights are

@@ -1,13 +1,17 @@
 # Segmentary-native dense heads
 
-Each native head consumes a checked feature tuple and returns raw dense logits
-at the input image size. Multiclass mode returns one channel per canonical
-class. Binary mode returns exactly one raw class-1 positive logit even though
-the canonical taxonomy contains IDs 0 and 1 with arbitrary names. The same
-configured objective suite is applied by the trainer; heads do not hide their
-own activation, loss, or preprocessing. OCR additionally declares one named,
-positive-weight coarse output because that supervision is a required part of
-its object-region learning contract.
+Every native head takes a checked feature tuple and returns **raw dense logits at
+the input image size**. No head hides its own activation, loss, or
+preprocessing — the trainer applies the objective you configured.
+
+- **Multiclass:** one channel per canonical class.
+- **Binary:** exactly one raw class-1 positive logit, even though the taxonomy
+  holds IDs 0 and 1.
+- **OCR** is the one exception: it also declares a named, positive-weight coarse
+  output, because that supervision is part of how it learns object regions.
+
+**New here?** Start with `fcn` — it is the smallest head and the easiest to
+inspect when something looks wrong.
 
 ## Choose a head
 
@@ -157,20 +161,28 @@ backbone widths already equal `head.channels`.
 
 ### OCR object-context contract
 
-OCR first resizes selected pyramid maps to the finest selected resolution,
-concatenates them, and projects them into `channels`. A coarse linear classifier
-produces one raw map per output channel. Multiclass uses those maps directly.
-Binary keeps its one-logit output contract and uses the centered two-region
-conversion described above only inside the context path. Negating `z` swaps the
-two internal channels exactly. Spatial softmax independently normalizes each
-region map across all pixels; this later normalization is why the centered pair
-is an explicit gauge choice rather than a reconstruction of an unobserved
-two-logit classifier. The resulting weights pool the pixel features into one
-image-specific representation per region. Scaled dot-product relations between
-pixel queries and region keys then mix the region values back into every pixel.
-A 1x1 block fuses that context with the original pixel feature, and the final
-classifier emits refined logits. Fewer than two context regions are rejected so
-a future change cannot silently restore singleton-attention degeneracy.
+OCR runs in six steps:
+
+1. **Fuse** — resize the selected pyramid maps to the finest resolution,
+   concatenate, and project into `channels`.
+2. **Classify coarsely** — a linear classifier emits one raw map per output
+   channel. Multiclass uses these directly; binary keeps its one-logit contract
+   and applies the centered two-region conversion *only* inside the context
+   path, where negating `z` swaps the two internal channels exactly.
+3. **Normalize** — spatial softmax normalizes each region map across all pixels,
+   independently.
+4. **Pool** — those weights collapse the pixel features into one image-specific
+   representation per region.
+5. **Attend** — scaled dot-product between pixel queries and region keys mixes
+   the region values back into every pixel.
+6. **Refine** — a 1x1 block fuses that context with the original pixel feature,
+   and the final classifier emits refined logits.
+
+Two consequences worth knowing. The spatial softmax in step 3 is why the
+centered pair is an explicit *gauge choice*, not a reconstruction of some
+unobserved two-logit classifier. And fewer than two context regions is rejected
+outright, so a later change cannot silently reintroduce singleton-attention
+degeneracy.
 
 `key_channels` controls relation width; lowering it reduces attention work.
 `attention_scale > 1` max-pools only the pixel-query grid during relation
