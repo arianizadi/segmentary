@@ -68,9 +68,8 @@ def test_comparison_status_covers_every_recipe_and_only_marks_real_results_compl
     assert len(rows) == len(recipes)
     assert {row["model"] for row in rows} == recipes
     assert [row["priority"] for row in rows] == list(range(1, len(rows) + 1))
-    assert [row["model"] for row in rows if row["status"] == "complete (reused)"] == [
-        "segformer_b2"
-    ]
+    assert [row["model"] for row in rows if row["status"] == "complete"] == ["segformer_b2"]
+    assert {row["status"] for row in rows} <= {"queued", "running", "complete", "failed"}
     assert status["counts"]["complete_cells"] == 3
     assert status["counts"]["total_reported_cells"] == 37 * 3
     assert status["counts"]["physical_training_cells"] == 36 * 3

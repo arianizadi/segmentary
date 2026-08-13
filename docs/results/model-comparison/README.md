@@ -17,8 +17,8 @@ while this human-facing table deliberately shows one clean number.
 | 6 | `hf_auto_upernet_swin_tiny` | queued | — | — | — |
 | 7 | `hrnet_w48_ocr` | queued | — | — | — |
 | 8 | `native_resnet101_uper` | queued | — | — | — |
-| 9 | [`segformer_b2`](../../catalog/models/builtin-segformer-b2/README.md) | complete (reused) | 80.51 (40,000) | 70.47 (40,000) | 66.44 (60,000) |
-| 10 | `deeplabv3plus_r101` | queued as shared alias | — | — | — |
+| 9 | [`segformer_b2`](../../catalog/models/builtin-segformer-b2/README.md) | complete | 80.51 (40,000) | 70.47 (40,000) | 66.44 (60,000) |
+| 10 | `deeplabv3plus_r101` | queued | — | — | — |
 | 11 | `hf_auto_mobilenetv2_deeplabv3` | queued | — | — | — |
 | 12 | `hf_auto_mobilevit_xxs_deeplabv3` | queued | — | — | — |
 | 13 | `hf_auto_mobilevitv2_deeplabv3` | queued | — | — | — |
