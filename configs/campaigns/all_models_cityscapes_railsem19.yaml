@@ -1,0 +1,194 @@
+# Auditable scope for the public all-model benchmark campaign.
+#
+# Every shipped model recipe appears exactly once. Tests fail when a recipe is
+# added or removed without updating this manifest and its documentation target.
+schema_version: 1
+name: all_models_cityscapes_railsem19
+
+# Missing cells are scheduled in this order. It is a capacity/architecture
+# prior, not a benchmark claim; once compatible results exist, measured mIoU is
+# used as the primary ordering signal and this list breaks ties.
+priority_order:
+  - eomt_dinov3_large
+  - eomt_large
+  - hf_auto_beit_base_ade
+  - upernet_convnext
+  - segformer_b5
+  - hf_auto_upernet_swin_tiny
+  - hrnet_w48_ocr
+  - native_resnet101_uper
+  - segformer_b2
+  - smp_upernet_resnet101
+  - smp_deeplabv3plus_resnet101
+  - deeplabv3plus_r101
+  - native_convnext_tiny_uper
+  - native_convnext_tiny_channelmapper_dpt
+  - smp_pan_resnext50
+  - native_resnet50_deeplabv3plus
+  - native_resnet50_fpn_ocr
+  - native_resnet50_psp
+  - native_resnet50_aspp
+  - smp_deeplabv3_resnet50
+  - smp_fpn_resnet50
+  - smp_upernet_mit_b0
+  - segformer_b0
+  - hf_auto_segformer_b0
+  - smp_unet_resnet34
+  - smp_unetplusplus_efficientnet_b0
+  - smp_manet_efficientnet_b0
+  - native_efficientnet_b0_deeplabv3plus
+  - hf_auto_mobilevitv2_deeplabv3
+  - hf_auto_mobilevit_xxs_deeplabv3
+  - hf_auto_mobilenetv2_deeplabv3
+  - native_mobilenetv3_large_deeplabv3plus
+  - native_mobilenetv3_large_lraspp
+  - smp_pspnet_mobilenet_v2
+  - smp_linknet_mobilenet_v2
+  - native_resnet18_fpn_segformer_aux
+  - native_resnet18_fpn_fcn
+
+protocols:
+  cityscapes:
+    label: Cityscapes
+    curriculum: configs/curricula/reference_cityscapes19.yaml
+    final_stage: cityscapes
+    evaluation_dataset: cityscapes
+    evaluation_mapping: cityscapes
+    evaluation_split: val
+    evaluation_space: cityscapes19
+
+  railsem19:
+    label: RailSem19
+    curriculum: configs/curricula/rs_only.yaml
+    final_stage: railsem19
+    evaluation_dataset: railsem19
+    evaluation_mapping: railsem19
+    evaluation_split: val
+    evaluation_split_file: splits/railsem19_seed0.json
+    evaluation_space: rail_union
+
+  cityscapes_to_railsem19:
+    label: Cityscapes to RailSem19
+    curriculum: configs/curricula/cs_rs.yaml
+    final_stage: railsem19
+    evaluation_dataset: railsem19
+    evaluation_mapping: railsem19
+    evaluation_split: val
+    evaluation_split_file: splits/railsem19_seed0.json
+    evaluation_space: rail_union
+
+models:
+  - id: deeplabv3plus_r101
+    config: configs/models/deeplabv3plus_r101.yaml
+    readme: docs/catalog/models/builtin-deeplabv3plus-r101-alias/README.md
+    alias_of: smp_deeplabv3plus_resnet101
+  - id: eomt_dinov3_large
+    config: configs/models/eomt_dinov3_large.yaml
+    readme: docs/catalog/models/builtin-eomt-dinov3-large/README.md
+    campaign_config: configs/campaigns/eomt_hungarian_query.yaml
+  - id: eomt_large
+    config: configs/models/eomt_large.yaml
+    readme: docs/catalog/models/builtin-eomt-large/README.md
+    campaign_config: configs/campaigns/eomt_hungarian_query.yaml
+  - id: hf_auto_beit_base_ade
+    config: configs/models/hf_auto_beit_base_ade.yaml
+    readme: docs/catalog/models/hf-auto-beit-base-ade/README.md
+  - id: hf_auto_mobilenetv2_deeplabv3
+    config: configs/models/hf_auto_mobilenetv2_deeplabv3.yaml
+    readme: docs/catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md
+  - id: hf_auto_mobilevit_xxs_deeplabv3
+    config: configs/models/hf_auto_mobilevit_xxs_deeplabv3.yaml
+    readme: docs/catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md
+  - id: hf_auto_mobilevitv2_deeplabv3
+    config: configs/models/hf_auto_mobilevitv2_deeplabv3.yaml
+    readme: docs/catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md
+  - id: hf_auto_segformer_b0
+    config: configs/models/hf_auto_segformer_b0.yaml
+    readme: docs/catalog/models/hf-auto-segformer-b0/README.md
+  - id: hf_auto_upernet_swin_tiny
+    config: configs/models/hf_auto_upernet_swin_tiny.yaml
+    readme: docs/catalog/models/hf-auto-upernet-swin-tiny/README.md
+  - id: hrnet_w48_ocr
+    config: configs/models/hrnet_w48_ocr.yaml
+    readme: docs/catalog/models/builtin-hrnet-w48-ocr/README.md
+  - id: native_convnext_tiny_channelmapper_dpt
+    config: configs/models/native_convnext_tiny_channelmapper_dpt.yaml
+    readme: docs/catalog/models/native-convnext-tiny-channelmapper-dpt/README.md
+  - id: native_convnext_tiny_uper
+    config: configs/models/native_convnext_tiny_uper.yaml
+    readme: docs/catalog/models/native-convnext-tiny-uper/README.md
+  - id: native_efficientnet_b0_deeplabv3plus
+    config: configs/models/native_efficientnet_b0_deeplabv3plus.yaml
+    readme: docs/catalog/models/native-efficientnet-b0-deeplabv3plus/README.md
+  - id: native_mobilenetv3_large_deeplabv3plus
+    config: configs/models/native_mobilenetv3_large_deeplabv3plus.yaml
+    readme: docs/catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md
+  - id: native_mobilenetv3_large_lraspp
+    config: configs/models/native_mobilenetv3_large_lraspp.yaml
+    readme: docs/catalog/models/native-mobilenetv3-large-lraspp/README.md
+  - id: native_resnet101_uper
+    config: configs/models/native_resnet101_uper.yaml
+    readme: docs/catalog/models/native-resnet101-uper/README.md
+  - id: native_resnet18_fpn_fcn
+    config: configs/models/native_resnet18_fpn_fcn.yaml
+    readme: docs/catalog/models/native-resnet18-fpn-fcn/README.md
+  - id: native_resnet18_fpn_segformer_aux
+    config: configs/models/native_resnet18_fpn_segformer_aux.yaml
+    readme: docs/catalog/models/native-resnet18-fpn-segformer-aux/README.md
+  - id: native_resnet50_aspp
+    config: configs/models/native_resnet50_aspp.yaml
+    readme: docs/catalog/models/native-resnet50-aspp/README.md
+  - id: native_resnet50_deeplabv3plus
+    config: configs/models/native_resnet50_deeplabv3plus.yaml
+    readme: docs/catalog/models/native-resnet50-deeplabv3plus/README.md
+  - id: native_resnet50_fpn_ocr
+    config: configs/models/native_resnet50_fpn_ocr.yaml
+    readme: docs/catalog/models/native-resnet50-fpn-ocr/README.md
+  - id: native_resnet50_psp
+    config: configs/models/native_resnet50_psp.yaml
+    readme: docs/catalog/models/native-resnet50-psp/README.md
+  - id: segformer_b0
+    config: configs/models/segformer_b0.yaml
+    readme: docs/catalog/models/builtin-segformer-b0/README.md
+  - id: segformer_b2
+    config: configs/models/segformer_b2.yaml
+    readme: docs/catalog/models/builtin-segformer-b2/README.md
+  - id: segformer_b5
+    config: configs/models/segformer_b5.yaml
+    readme: docs/catalog/models/builtin-segformer-b5/README.md
+  - id: smp_deeplabv3_resnet50
+    config: configs/models/smp_deeplabv3_resnet50.yaml
+    readme: docs/catalog/models/smp-deeplabv3-resnet50/README.md
+  - id: smp_deeplabv3plus_resnet101
+    config: configs/models/smp_deeplabv3plus_resnet101.yaml
+    readme: docs/catalog/models/smp-deeplabv3plus-resnet101/README.md
+  - id: smp_fpn_resnet50
+    config: configs/models/smp_fpn_resnet50.yaml
+    readme: docs/catalog/models/smp-fpn-resnet50/README.md
+  - id: smp_linknet_mobilenet_v2
+    config: configs/models/smp_linknet_mobilenet_v2.yaml
+    readme: docs/catalog/models/smp-linknet-mobilenet-v2/README.md
+  - id: smp_manet_efficientnet_b0
+    config: configs/models/smp_manet_efficientnet_b0.yaml
+    readme: docs/catalog/models/smp-manet-efficientnet-b0/README.md
+  - id: smp_pan_resnext50
+    config: configs/models/smp_pan_resnext50.yaml
+    readme: docs/catalog/models/smp-pan-resnext50/README.md
+  - id: smp_pspnet_mobilenet_v2
+    config: configs/models/smp_pspnet_mobilenet_v2.yaml
+    readme: docs/catalog/models/smp-pspnet-mobilenet-v2/README.md
+  - id: smp_unet_resnet34
+    config: configs/models/smp_unet_resnet34.yaml
+    readme: docs/catalog/models/smp-unet-resnet34/README.md
+  - id: smp_unetplusplus_efficientnet_b0
+    config: configs/models/smp_unetplusplus_efficientnet_b0.yaml
+    readme: docs/catalog/models/smp-unetplusplus-efficientnet-b0/README.md
+  - id: smp_upernet_mit_b0
+    config: configs/models/smp_upernet_mit_b0.yaml
+    readme: docs/catalog/models/smp-upernet-mit-b0/README.md
+  - id: smp_upernet_resnet101
+    config: configs/models/smp_upernet_resnet101.yaml
+    readme: docs/catalog/models/smp-upernet-resnet101/README.md
+  - id: upernet_convnext
+    config: configs/models/upernet_convnext.yaml
+    readme: docs/catalog/models/builtin-upernet-convnext/README.md

@@ -44,6 +44,7 @@ def _write_status(campaign: Path, lane: str, jobs: list[dict]) -> None:
                 "status": "running",
                 "gpu_visibility": "0,1,2,3" if lane == "a" else "4,5,6,7",
                 "failure": None,
+                "tmux_session": f"recorded-{lane}",
                 "jobs": jobs,
             }
         ),
@@ -177,7 +178,7 @@ def test_render_is_plain_language_and_labels_validation_cadence(
     assert "80.90%" in shown
     assert "pixel accuracy" in shown
     assert "89.10%" in shown
-    assert "Common RailSem19 mIoU: cs_only s0 29.75%" in shown
+    assert "Validated mIoU: cs_only s0 29.75%" in shown
     assert "Expected lane finish" in shown
     assert "Read-only view" in shown
 
@@ -239,6 +240,38 @@ def test_partial_tensorboard_file_is_a_warning_not_a_crash(
     assert snapshot.stage is not None
     assert snapshot.stage.step is None
     assert any("refresh deferred" in warning for warning in snapshot.warnings)
+
+
+@pytest.mark.parametrize(
+    "status",
+    ["benchmarking", "performance_failed", "performance_artifact_failed"],
+)
+def test_performance_statuses_are_visible(status: str) -> None:
+    assert (status in progress.ACTIVE_STATUSES) is (status == "benchmarking")
+    assert (status in progress.FAILED_STATUSES) is (status != "benchmarking")
+
+
+def test_lane_panel_uses_recorded_tmux_session(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    seen: list[str] = []
+    monkeypatch.setattr(progress, "_tmux_alive", lambda session: seen.append(session) or True)
+    snapshot = progress.LaneSnapshot(
+        lane="gpu9",
+        record={
+            "lane": "gpu9",
+            "tmux_session": "segmentary-cityrail-gpu9",
+            "status": "running",
+            "jobs": [],
+        },
+        active_job=None,
+        stage=None,
+        completed=0,
+        lane_eta_seconds=None,
+        warnings=[],
+    )
+    progress._lane_panel(snapshot, ZoneInfo("UTC"), "wrong-prefix")
+    assert seen == ["segmentary-cityrail-gpu9"]
 
 
 def test_missing_campaign_and_bad_refresh_fail_cleanly(tmp_path: Path, capsys) -> None:

@@ -65,6 +65,9 @@ evaluate an exact checkpoint
   multi-seed aggregation, and reproducible result records.
 - [Interpreting results](tutorials/interpreting-results.md) gives the detailed
   metric and debugging tutorial.
+- [All-model Cityscapes and RailSem19 campaign](guides/all-model-city-rail-campaign.md)
+  documents reuse-first scheduling, named tmux lanes, frozen training provenance,
+  and incremental model README publication.
 - [Export and deployment](guides/export-and-deployment.md) covers the explicitly
   supported ONNX, ONNX Runtime, TensorRT FP16, and TensorRT INT8 path, including
   parity and truthful accuracy/latency reporting.
