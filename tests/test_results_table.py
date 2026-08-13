@@ -88,7 +88,7 @@ def _run_table(runs: Path, out: Path) -> int:
     )
 
 
-def test_table_aggregates_seed_mean_and_sample_std_and_marks_unavailable(
+def test_table_aggregates_seed_mean_and_marks_unavailable(
     tmp_path: Path,
 ) -> None:
     runs = tmp_path / "runs"
@@ -115,17 +115,18 @@ def test_table_aggregates_seed_mean_and_sample_std_and_marks_unavailable(
     assert len(rows) == 1
     row = rows[0]
     assert row["seeds"] == "3"
-    assert row["miou"] == "70.00 ± 10.00"
-    assert row["macc"] == "80.00 ± 10.00"
-    assert row["pixel_accuracy"] == "85.00 ± 10.00"
-    assert row["boundary_f1"] == "50.00 ± 10.00"
-    assert row["rail-track"] == "50.00 ± 20.00"
+    assert row["miou"] == "70.00"
+    assert row["macc"] == "80.00"
+    assert row["pixel_accuracy"] == "85.00"
+    assert row["boundary_f1"] == "50.00"
+    assert row["rail-track"] == "50.00"
     assert row["rail-raised"] == "--"
     assert row["wall_clock_h"] == "2.00"
     assert row["peak_vram_gb"] == "3.0"
 
     markdown = (out / "results.md").read_text()
-    assert "70.00 ± 10.00" in markdown
+    assert "70.00" in markdown
+    assert "±" not in markdown
     assert "| -- |" in markdown
     assert "not total curriculum training costs" in markdown
 

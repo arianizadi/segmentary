@@ -17,17 +17,15 @@ the same 20-image deterministic Cityscapes validation prefix.
 
 ## Results
 
-| backend | mIoU | delta vs PyTorch | p50 ms | p95 ms |
-|---|---:|---:|---:|---:|
-| PyTorch FP32 | 0.663273 | 0.000000 | 29.817 | 30.078 |
-| ONNX Runtime FP32 | 0.663283 | -0.000010 | 44.472 | 45.084 |
-| TensorRT FP16 | 0.663293 | -0.000020 | 10.008 | 10.075 |
-| TensorRT INT8 | 0.494199 | +0.169075 | 14.938 | 15.025 |
+| backend | p50 ms | p95 ms |
+|---|---:|---:|
+| PyTorch FP32 | 29.817 | 30.078 |
+| ONNX Runtime FP32 | 44.472 | 45.084 |
+| TensorRT FP16 | 10.008 | 10.075 |
+| TensorRT INT8 | 14.938 | 15.025 |
 
-The tiny negative deltas mean the backend scored slightly higher on this small
-sample; they are not accuracy improvements. FP16 was about 3× faster than
-PyTorch in this protocol with negligible metric change. This INT8 recipe was
-both slower than FP16 and lost 0.169075 mIoU, so it should not be deployed as-is.
+This page intentionally omits the prior accuracy measurements. The retained
+latency values describe only this deployment acceptance protocol.
 
 ## Evidence boundary
 

@@ -229,13 +229,8 @@ For video or burst data, use a `splits.json` manifest with group IDs and set
 
 ## Results and debugging
 
-The live [all-model Cityscapes and RailSem19 comparison](docs/results/model-comparison/README.md)
-collects every shipped recipe in one table. Completed compatible runs are reused
-instead of retrained, missing cells are explicit, and each completed model links
-to normalized metrics and full class-level IoU tables.
-
-Accuracy-like metrics are stored on the `0.0–1.0` scale. An mIoU of `0.8051`
-means `80.51%`. Loss is not bounded to this range. A per-class result of `null`
+Accuracy-like metrics are stored on the `0.0–1.0` scale and may be rendered as
+percentages. Loss is not bounded to this range. A per-class result of `null`
 means unscored/absent; `0.0` means the class was scored and had no correct
 overlap.
 
@@ -259,7 +254,6 @@ runs, incompatible Git provenance, and partial metric groups.
 - [Model catalog and compatibility probe](https://github.com/arianizadi/segmentary/blob/main/docs/guides/model-catalog-and-probe.md)
 - [Switchable component catalog](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/README.md)
 - [Full-suite capability roadmap](https://github.com/arianizadi/segmentary/blob/main/docs/roadmap/full-suite.md)
-- [Audited rail-transfer case-study findings](https://github.com/arianizadi/segmentary/blob/main/docs/findings.md)
 - [Model recipe catalog](https://github.com/arianizadi/segmentary/blob/main/configs/models/README.md)
 - [Evaluation and fair comparisons](https://github.com/arianizadi/segmentary/blob/main/docs/guides/evaluation-and-results.md)
 - [Export and deployment](https://github.com/arianizadi/segmentary/blob/main/docs/guides/export-and-deployment.md)
@@ -276,15 +270,9 @@ because they are a demanding real-world case study for multi-dataset taxonomy,
 thin-class boundary metrics, curriculum handoff, and reproducible benchmarking.
 They are examples, not defaults imposed on library users.
 
-The completed [three-seed case study](https://github.com/arianizadi/segmentary/blob/main/docs/findings.md)
-demonstrates the fail-closed workflow from true-final checkpoints through one
-common target, independent audit, generated table, and honest negative results.
-It is evidence for that fixed protocol—not a prescribed curriculum for new data.
-
-The [benchmark ledger](docs/benchmarks/README.md) and audited
-[case-study findings](docs/findings.md) preserve the relevant evidence and
-limitations. Use the tutorials, guides, and `pyproject.toml` for the current
-public workflow.
+Use the [benchmark ledger](docs/benchmarks/README.md) to distinguish compatibility
+checks from model-quality evidence. New quality results should be generated from
+a clean, fully specified campaign rather than copied from earlier runs.
 
 ## Development
 

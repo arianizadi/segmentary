@@ -71,12 +71,8 @@ Cons:
 ## Evidence and benchmark boundary
 
 Real-data tests verify matched files, split counts, native sizes/modes/IDs,
-mapping coverage, and native-resolution loading. The completed
-[three-seed case study](../../../findings.md) uses this same 850-image split for
-all 12 common evaluations and independently verifies the full 8,500-key dataset
-inventory. Its curriculum findings are protocol-specific; any new comparison
-must keep the split, taxonomy, EMA/raw policy, checkpoint rule, and evaluator
-settings fixed.
+mapping coverage, and native-resolution loading. New comparisons must keep the
+split, taxonomy, EMA/raw policy, checkpoint rule, and evaluator settings fixed.
 
 ## Related documentation
 

@@ -102,14 +102,9 @@ evaluation for every checkpoint before comparing sequential and joint curricula.
 
 ## Evidence and benchmark boundary
 
-The fixed reference run recorded **0.805073 Cityscapes-19 mIoU** on all 500
-validation images during its final in-memory EMA validation at step 40k; that is
-a whole model/schedule acceptance result, not a claim that one evaluation switch
-is superior. Exact
-tracked context and the raw-artifact limitation are in the
-[benchmark evidence page](../../../benchmarks/README.md). Numeric tests
-independently verify confusion, ignore/active semantics, sliding grids, TTA,
-boundary aggregation, and JSON serialization.
+No prior model-quality result is bundled. Numeric tests independently verify
+confusion, ignore/active semantics, sliding grids, TTA, boundary aggregation,
+and JSON serialization.
 
 ## Related documentation
 

@@ -230,11 +230,10 @@ and the authors' [official HRNet/OCR implementation at the reviewed
 revision](https://github.com/HRNet/HRNet-Semantic-Segmentation/tree/0bbb2880446ddff2d78f8dd7e8c4c610151d5a51). The paper
 defines supervised coarse object regions, spatially weighted class-region
 representations, pixel-region relations, augmented pixel features, and losses
-on both coarse and final predictions. Its controlled dilated-ResNet-101
-Cityscapes-val ablation reported 77.31% mIoU without object-region supervision
-and 79.58% with it; this supports the need for a positive coarse loss, not a
-performance claim for Segmentary. The paper's HRNet-W48 OCR results and training
-protocol likewise do not transfer to the shipped ResNet-50/FPN recipe.
+on both coarse and final predictions. Its controlled ablations support the need
+for a positive coarse loss but are not performance claims for Segmentary. The
+paper's results and training protocol do not transfer to the shipped
+ResNet-50/FPN recipe.
 
 The native module is written against Segmentary's own feature/output contracts.
 It does not copy or execute MMSegmentation code or configs.

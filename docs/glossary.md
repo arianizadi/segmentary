@@ -191,9 +191,9 @@ Every checkpoint is evaluated on the same dataset, split, weights policy, and
 inference settings. Native stage metrics are useful diagnostics but cannot form
 a fair curriculum table when their validation datasets differ.
 
-**Mean ± sample standard deviation**
-Average performance across seeds plus observed spread. Three seeds reveal basic
-instability but rarely justify a strong significance claim.
+**Multi-seed mean**
+Average performance across seeds. Segmentary's public tables show this as one
+number while the machine record retains each contributing seed.
 
 **Config hash**
 A stable fingerprint of the fully resolved experiment config. Different hashes

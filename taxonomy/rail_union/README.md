@@ -87,8 +87,7 @@ Taxonomy tests verify every native target, active set, merge declaration,
 variant difference, and real observed IDs where datasets are available. No
 completed multi-seed `rail_union` curriculum table is committed, so this page
 does not claim that staged, joint, or rail-bridge training wins. The
-Cityscapes-19 `0.805073` reference belongs to a different taxonomy and cannot be
-borrowed.
+Cityscapes-19 reference belongs to a different taxonomy and cannot be borrowed.
 
 ## Related documentation
 

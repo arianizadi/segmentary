@@ -76,13 +76,9 @@ segmentary-export base.yaml model.yaml experiment.yaml \
 
 ## Evidence and benchmark boundary
 
-The tracked trained SegFormer-B2 acceptance at batch 1 and 1024x1024 found
-PyTorch FP32 mIoU `0.663273` at p50 `29.817 ms`, ONNX Runtime FP32 `0.663283` at
-`44.472 ms`, TensorRT FP16 `0.663293` at `10.008 ms`, and TensorRT INT8
-`0.494199` at `14.938 ms`. INT8 lost `0.169075` mIoU and was slower than FP16.
-The [benchmark evidence page](../../../benchmarks/README.md) gives the full p95
-values and provenance caveat. These resized-subset numbers compare deployment
-backends only; they are not native-resolution model-quality scores.
+The retained export acceptance compares deployment backends on a fixed resized
+subset. It is implementation evidence, not a native-resolution model-quality
+score. See the [benchmark evidence page](../../../benchmarks/README.md).
 
 No trained DeepLabV3+-R101 quality benchmark is committed. An untrained
 deployment smoke, if present, must remain labeled untrained/test-only.

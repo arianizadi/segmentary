@@ -44,11 +44,8 @@ stochastic and total compute must be matched carefully.
 ## Evidence and benchmark boundary
 
 Tests verify exact weighted-sampler shares, deterministic seeds, per-sample
-active masks, and first-dataset validation masking. In the completed
-[three-seed case study](../../../findings.md), joint training had the highest
-descriptive mean: `71.04 ± 0.23%` mIoU and `78.98 ± 0.13%` boundary F1. It was
-only `0.57 ± 0.37` mIoU points above `rs_only`; with three optimizer seeds, this
-small protocol-specific effect is not a universal or formal significance claim.
+active masks, and first-dataset validation masking. No model-quality result is
+bundled; compare this curriculum only under a fixed common-target protocol.
 
 ## Related documentation
 
@@ -57,4 +54,3 @@ small protocol-specific effect is not a universal or formal significance claim.
 - [Heads and active masks](../../components/heads/README.md)
 - [Evaluation choices](../../components/evaluation/README.md)
 - [All curricula](../README.md)
-- [Audited case-study findings](../../../findings.md)

@@ -133,12 +133,9 @@ implements the paper's three central stages: supervised soft class regions,
 spatially weighted class-region representations, and pixel-to-region attention
 followed by feature fusion.
 
-The paper's controlled dilated-ResNet-101 Cityscapes-val ablation reported
-77.31% mIoU without direct object-region supervision and 79.58% with it. Its
-broader tables reported results for dilated ResNet-101 and HRNet-W48 under the
-authors' training and testing protocols. Those are useful architecture evidence
-and motivate the positive 0.4 coarse weight; they are **not** benchmarks for
-this ResNet-50/FPN recipe. No MMSegmentation code, imports, or configs are used.
+The paper's controlled ablations are useful architecture evidence and motivate
+the positive coarse weight; they are **not** benchmarks for this ResNet-50/FPN
+recipe. No MMSegmentation code, imports, or configs are used.
 
 ## Segmentary evidence and no-quality claim
 

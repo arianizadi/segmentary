@@ -6,12 +6,12 @@ fractions from **0 to 1**. Multiply by 100 to write them as percentages.
 ```text
 0.0000 =   0.00%
 0.5000 =  50.00%
-0.8051 =  80.51%
+0.7500 =  75.00%
 1.0000 = 100.00%
 ```
 
-For example, `"miou": 0.805073` means **80.5073% mIoU**. It does not mean
-0.805%. The generated result tables do the multiplication for you.
+For example, a stored score of `0.75` renders as **75%**. It does not mean
+`0.75%`. Generated result tables do the multiplication for you.
 
 That conversion is easy. Deciding whether two numbers answer the same question
 is the important part. This tutorial starts with the metric meanings, then shows
@@ -490,7 +490,8 @@ segmentary-overfit base.yaml model.yaml experiment.yaml \
   --images 8 --target 0.95 --device cuda:0
 ```
 
-The intended check exceeds `0.95` mIoU on the same eight images. Failure points
+The intended check must reach its configured tiny-set threshold on the same
+eight images. Failure points
 to model/loss/mapping/optimizer wiring, not generalization. Passing does not
 prove that the validation split or research protocol is correct.
 
@@ -677,11 +678,11 @@ Boundary F1 does not replace IoU. Report both because a rail can occupy roughly
 the right region while being too thick, or have an approximately aligned edge
 while its interior and class identity remain wrong.
 
-## 13. Seeds, uncertainty, and paired comparisons
+## 13. Seeds and paired comparisons
 
-With more than one seed, Segmentary's table generator reports mean ± **sample
-standard deviation**. The standard deviation describes run-to-run spread; it is
-not a confidence interval and does not prove significance.
+With more than one seed, Segmentary's table generator shows one mean. Machine
+records retain the individual per-seed values so you can inspect consistency
+without adding spread notation to the public table.
 
 For two curricula run with the same seeds, also inspect paired differences:
 
