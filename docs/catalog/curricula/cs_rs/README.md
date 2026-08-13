@@ -47,13 +47,9 @@ and checkpoints; a positive single-seed delta may be noise.
 
 ## Evidence and benchmark boundary
 
-The chain, EMA handoff, exact load, and true-final checkpoints are tested. In the
-completed [three-seed case study](../../../findings.md), this schedule reached
-`66.44 ± 0.03%` common-target mIoU: `4.03 ± 0.20` points below `rs_only` and
-`4.60 ± 0.21` below the equal-total-update joint path, paired by seed. This is a
-real negative result for these settings. It mixes source initialization with
-half as many target updates and a 0.1 target LR, so it does not show that staged
-transfer is universally harmful.
+The chain, EMA handoff, exact load, and true-final checkpoints are tested. No
+model-quality result is bundled. A fair comparison must separate source
+initialization, target-update count, and target learning rate.
 
 ## Related documentation
 
@@ -62,4 +58,3 @@ transfer is universally harmful.
 - [`rs_only`](../rs_only/README.md)
 - [Training runtime](../../components/training-runtime/README.md)
 - [Evaluation choices](../../components/evaluation/README.md)
-- [Audited case-study findings](../../../findings.md)

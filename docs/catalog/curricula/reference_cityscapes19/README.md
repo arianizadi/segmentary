@@ -37,16 +37,8 @@ compute; changing model or schedule removes direct comparability.
 
 ## Verified evidence
 
-The tracked corrected SegFormer-B2 run on 8 GPUs scored **0.805073 mIoU**,
-`0.874847` mAcc, `0.964518` pixel accuracy, and `0.866939` boundary F1 on all
-500 validation images during its final in-memory EMA validation at step 40k. A
-preserved 24k best EMA checkpoint scored `0.807275`; the exact 40k weights were
-not retained. The fixed endpoint is the schedule-comparison policy, while the
-best checkpoint is separately labeled.
-
-The raw machine `results.json` is not bundled in this checkout, so use the
-[benchmark evidence page](../../../benchmarks/README.md) for the exact evidence
-limitation rather than treating this README as a recomputable artifact.
+Config and runtime tests cover the schedule, checkpoint, EMA, and evaluation
+contracts. No prior model-quality result is bundled.
 
 ## Related documentation
 

@@ -36,7 +36,7 @@ Cons:
 
 ## Benchmarks and verified evidence
 
-The upstream model card reports **73.6% Pascal VOC mIoU** and 1.9M parameters.
+The upstream model card reports Pascal VOC quality and model-size evidence.
 That number uses the upstream VOC protocol and must not be compared directly to
 Cityscapes, RailSem19, or a different label space.
 

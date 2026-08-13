@@ -58,8 +58,6 @@ def test_every_model_recipe_is_indexed_and_has_point_of_choice_guidance() -> Non
 def test_legacy_brand_only_appears_in_immutable_or_explicitly_archived_records() -> None:
     allowed = {
         Path("tests/test_progress.py"),
-        Path("docs/results/rail-transfer-m5/audit-summary.json"),
-        Path("docs/results/rail-transfer-m5/results.md"),
     }
     allowed.update(path.relative_to(ROOT) for path in (ROOT / "docs/benchmarks").rglob("*.json"))
 

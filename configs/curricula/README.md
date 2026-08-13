@@ -76,10 +76,8 @@ use a complete small YAML layer when stage structure or paths change.
 ## Evidence and unsupported limits
 
 Config parsing and stage mechanics are tested, but a YAML file is not a quality
-benchmark. The four runnable public-data controls now have one completed
-[three-seed common-target case study](https://github.com/arianizadi/segmentary/blob/main/docs/findings.md);
-its conclusions are limited to that exact model, split, schedules, and evaluator.
-All custom-final curricula remain blocked. `per_stage_head` is not implemented;
+benchmark. No prior quality table is bundled. All custom-final curricula remain
+blocked. `per_stage_head` is not implemented;
 mixed curricula require the existing unified head. See the linked pages before
 turning a template into a scheduled job.
 

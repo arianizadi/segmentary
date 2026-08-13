@@ -41,11 +41,8 @@ benchmark.
 
 ## Evidence and benchmark boundary
 
-The completed [three-seed case study](../../../findings.md) evaluated every
-true-final EMA checkpoint on the same RailSem19 target. This zero-shot control
-scored `30.24 ± 0.50%` mIoU, far below each RailSem-supervised arm. That measures
-the domain gap for this fixed protocol; it is not a general Cityscapes transfer
-ceiling.
+No model-quality result is bundled for this curriculum. Evaluate its true-final
+EMA checkpoint on the same target and protocol used by every comparison arm.
 
 ## Related documentation
 
@@ -53,4 +50,3 @@ ceiling.
 - [Cityscapes dataset](../../datasets/cityscapes/README.md)
 - [`rail_union` taxonomy](../../../../taxonomy/rail_union/README.md)
 - [`cs_rs` staged transfer](../cs_rs/README.md)
-- [Audited case-study findings](../../../findings.md)

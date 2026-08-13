@@ -57,9 +57,6 @@ evaluate an exact checkpoint
 
 ## Design and report a fair experiment
 
-- [Live all-model comparison](results/model-comparison/README.md) tracks every
-  shipped recipe across Cityscapes, RailSem19, and staged Cityscapes →
-  RailSem19, with normalized machine records and complete class-IoU tables.
 - [Evaluation and results](guides/evaluation-and-results.md) explains native and
   common endpoints, EMA versus raw weights, final versus best checkpoints, TTA,
   multi-seed aggregation, and reproducible result records.
@@ -115,11 +112,6 @@ examples. They demonstrate cross-dataset taxonomy, inactive classes, sequential
 versus mixed training, thin-structure boundary metrics, and common-target
 evaluation. They are not required for your own project.
 
-The [audited three-seed findings](findings.md) show the complete example: 12
-jobs, a fixed common RailSem19 endpoint, generated Markdown/CSV results, and an
-independent 27-record/15-checkpoint audit. Read it as a reproducible protocol and
-case-specific result, not a universal curriculum ranking.
-
-The [benchmark ledger](benchmarks/README.md) and audited
-[case-study findings](findings.md) preserve the relevant evidence and
-limitations. They do not replace the portable onboarding path above.
+The [benchmark ledger](benchmarks/README.md) explains evidence levels and keeps
+compatibility checks separate from model-quality claims. No prior quality table
+is bundled; start new comparisons from a clean, fully specified campaign.

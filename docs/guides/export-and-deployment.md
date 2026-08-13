@@ -103,10 +103,8 @@ table. For every backend, look at:
 - INT8 calibration count and engine precision composition.
 
 In the retained [trained SegFormer-B2 deployment
-acceptance](../benchmarks/segformer-b2-export/README.md), TensorRT FP16 was both
-fastest and effectively accuracy-neutral on the fixed 20-image resized slice.
-Its INT8 engine was slower than FP16 and lost 0.169075 on the 0-to-1 mIoU scale,
-or 16.9075 percentage points. This is useful deployment evidence, but the small
+acceptance](../benchmarks/segformer-b2-export/README.md), the backends were
+compared on a fixed resized slice. This is useful deployment evidence, but the small
 legacy slice and dirty source provenance make it unsuitable as a publication
 benchmark until rerun cleanly.
 

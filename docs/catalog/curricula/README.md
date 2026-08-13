@@ -66,14 +66,9 @@ evaluation after every arm.
 
 ## Evidence and benchmark boundary
 
-The Cityscapes-19 reference has a tracked fixed-endpoint result. The four
-public-data controls also have a completed [three-seed common-target case
-study](../../findings.md): joint training had the highest descriptive mean,
-while the shipped staged schedule underperformed the RailSem-only control. The
-page documents the budget/LR confound and does not promote this into a universal
-winner. Unit/integration tests separately prove stage chaining, EMA handoff,
-reset/freeze, mixed sampling, and result records. See
-[benchmark evidence](../../benchmarks/README.md).
+No prior quality table is bundled. Unit and integration tests prove stage
+chaining, EMA handoff, reset/freeze, mixed sampling, and result-record behavior;
+they do not rank curricula. See [benchmark evidence](../../benchmarks/README.md).
 
 ## Related documentation
 

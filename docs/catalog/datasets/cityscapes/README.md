@@ -62,11 +62,8 @@ cities separate, so this is audit information rather than a new split.
 ## Evidence and benchmarks
 
 Real-data tests verify the 2,975/500 counts, paths, modes, raw IDs, taxonomy
-coverage, and native 1024x2048 validation behavior. The fixed SegFormer-B2
-reference run recorded `0.805073` mIoU on all 500 `cityscapes19` validation
-images during its final in-memory EMA validation at step 40k. See the
-[benchmark evidence page](../../../benchmarks/README.md) for protocol and raw
-artifact caveats. That result does not transfer to `rail_union` or rail-bridge.
+coverage, and native 1024x2048 validation behavior. No prior model-quality
+result is bundled.
 
 ## Related documentation
 

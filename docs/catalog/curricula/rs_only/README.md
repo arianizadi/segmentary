@@ -37,12 +37,9 @@ motorcycle/bicycle in `rail_union`; one seed is not a conclusion.
 
 ## Evidence and benchmark boundary
 
-The completed [three-seed case study](../../../findings.md) reports
-`70.47 ± 0.17%` mIoU and `78.62 ± 0.13%` boundary F1 at the fixed common
-RailSem19 endpoint. It outperformed the shipped staged schedule, but received
-twice as many target updates at a higher target LR; the difference is not an
-isolated causal estimate of source pretraining. Report the class/boundary table
-with the aggregate.
+No model-quality result is bundled for this curriculum. Compare it only at a
+fixed common RailSem19 endpoint with the same update budget, seed policy,
+checkpoint rule, and evaluator.
 
 ## Related documentation
 
@@ -50,4 +47,3 @@ with the aggregate.
 - [RailSem19 dataset](../../datasets/railsem19/README.md)
 - [Loss choices](../../components/losses/README.md)
 - [`cs_rs` staged transfer](../cs_rs/README.md)
-- [Audited case-study findings](../../../findings.md)

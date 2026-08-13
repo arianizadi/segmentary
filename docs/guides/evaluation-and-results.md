@@ -134,9 +134,9 @@ dataset, split, EMA/raw, and TTA/no-TTA evaluation in its own descriptive
 directory. A file such as `eval.json` is valid evaluator output but is not table
 input.
 
-The script computes mean ± **sample** standard deviation for mIoU, mean class
-accuracy, pixel accuracy, boundary F1, and requested per-class IoUs when more
-than one seed exists. It fails closed on malformed records, duplicate seeds,
+The script displays the mean for mIoU, mean class accuracy, pixel accuracy,
+boundary F1, and requested per-class IoUs when more than one seed exists.
+Machine records retain every per-seed value. It fails closed on malformed records, duplicate seeds,
 mismatched config hashes, config differences beyond seed, mixed git provenance,
 dirty multi-seed groups, or a class missing for only some seeds.
 
@@ -195,6 +195,6 @@ Before interpreting a delta, confirm:
 5. same final/best checkpoint rule;
 6. same seed set and clean code SHA;
 7. training budgets and effective batches are disclosed;
-8. mean and sample standard deviation are generated from records;
+8. the displayed mean is generated from the retained per-seed records;
 9. paired per-seed directions agree before making a strong claim;
 10. task-critical per-class and boundary results support the overall mIoU story.

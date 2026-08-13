@@ -421,18 +421,6 @@ def test_reporting_complete_result_without_checkpoint_is_reused_and_not_queued(
     assert "not retrained" in accepted["caveat"]
 
 
-def test_generated_model_section_supports_incremental_missing_protocols() -> None:
-    record = json.loads(
-        (campaign.REPO_ROOT / "docs/results/model-comparison/records/segformer_b2.json").read_text()
-    )
-    record["protocols"] = {"cityscapes": record["protocols"]["cityscapes"]}
-    record["protocols"]["cityscapes"]["caveats"] = ["checkpoint unavailable; cell is not retrained"]
-    section = campaign._model_generated_section(record)
-    assert "| Cityscapes | 40,000 / 40,000 | 80.51" in section
-    assert "| RailSem19 | 0 / 40,000 | —" in section
-    assert "checkpoint unavailable" in section
-
-
 def test_lane_status_json_is_strict_json(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     record = _record(tmp_path, monkeypatch)
     lane = record["lanes"][0]
@@ -442,22 +430,14 @@ def test_lane_status_json_is_strict_json(tmp_path: Path, monkeypatch: pytest.Mon
     assert json.loads(path.read_text())["tmux_session"] == "segmentary-test-gpu0"
 
 
-def test_preservation_merge_keeps_public_b2_record_exactly() -> None:
-    path = campaign.REPO_ROOT / "docs/results/model-comparison/records/segformer_b2.json"
-    before = json.loads(path.read_text())
+def test_comparison_records_start_empty_without_completed_cells() -> None:
     records = campaign._comparison_records(
         campaign.REPO_ROOT,
         campaign.load_campaign_manifest(),
         {},
         {},
     )
-    assert records["segformer_b2"] == before
-    assert records["segformer_b2"]["protocols"]["railsem19"]["seeds"] == [0, 1, 2]
-    assert records["segformer_b2"]["protocols"]["cityscapes_to_railsem19"]["seeds"] == [
-        0,
-        1,
-        2,
-    ]
+    assert records == {}
 
 
 def test_legacy_confusion_derivation_uses_taxonomy_order() -> None:

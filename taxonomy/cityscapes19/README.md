@@ -56,12 +56,6 @@ do not train a RailSem stage through the lossy cross-map and call it transfer.
 
 ## Verified evidence
 
-The corrected SegFormer-B2 reference curriculum recorded `0.805073` mIoU on
-all 500 Cityscapes validation images at the true 40k endpoint. It validates this
-exact space and does not establish performance on RailSem19. Exact tracked
-context and the absent raw-machine-record caveat are in
-[benchmark evidence](https://github.com/arianizadi/segmentary/blob/main/docs/benchmarks/README.md).
-
 Taxonomy and real-data tests verify the official raw-ID mapping, all active
 classes, ignore behavior, and Cityscapes mask coverage.
 
