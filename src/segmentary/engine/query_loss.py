@@ -169,7 +169,8 @@ def _deterministic_points(valid: Tensor, count: int | None) -> Tensor:
     return indices[positions]
 
 
-def _resize_masks(mask_logits: Tensor, size: tuple[int, int]) -> Tensor:
+def _resize_masks(mask_logits: Tensor, size: tuple[int, ...]) -> Tensor:
+    """Resize to a spatial (H, W); callers pass a tensor ``.shape`` directly."""
     if tuple(mask_logits.shape[-2:]) == tuple(size):
         return mask_logits
     return F.interpolate(

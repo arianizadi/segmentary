@@ -20,6 +20,7 @@ from __future__ import annotations
 import re
 from collections.abc import Mapping
 from pathlib import Path
+from typing import Any, cast
 
 import torch
 from torch import Tensor, nn
@@ -208,7 +209,7 @@ def _load_local(path: Path, *, backbone: bool) -> nn.Module:
     converted = _convert_state_dict(raw, depth, path)
     model.load_state_dict(converted, strict=True)
     periods = raw["rope_embed.periods"]
-    inv_freq = model.rope_embeddings.inv_freq
+    inv_freq = cast(Any, model.rope_embeddings).inv_freq
     if periods.ndim != 1 or periods.shape != inv_freq.shape:
         raise ValueError(
             f"{path}: RoPE periods shape {tuple(periods.shape)} does not match Transformers "

@@ -17,7 +17,8 @@ from ..features import (
 from ..outputs import SegmentationOutput
 
 
-def resize(feature: Tensor, size: tuple[int, int]) -> Tensor:
+def resize(feature: Tensor, size: tuple[int, ...]) -> Tensor:
+    """Resize to a spatial (H, W); callers pass a tensor .shape slice directly."""
     if tuple(feature.shape[-2:]) == tuple(size):
         return feature
     return F.interpolate(feature, size=size, mode="bilinear", align_corners=False)

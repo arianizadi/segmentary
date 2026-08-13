@@ -121,7 +121,7 @@ class DatasetMapping:
     _filename: str = ""
 
 
-def _require(cond: bool, msg: str) -> None:
+def _require(cond: object, msg: str) -> None:
     if not cond:
         raise TaxonomyError(msg)
 
@@ -147,7 +147,8 @@ def load_space(root: Path | str, name: str) -> LabelSpace:
     )
 
     raw = data.get("classes")
-    _require(isinstance(raw, list) and raw, f"{path}: `classes` must be a non-empty list")
+    if not isinstance(raw, list) or not raw:
+        raise TaxonomyError(f"{path}: `classes` must be a non-empty list")
 
     classes: list[CanonicalClass] = []
     for entry in raw:
@@ -160,7 +161,8 @@ def load_space(root: Path | str, name: str) -> LabelSpace:
             len(color) == 3 and all(0 <= c < 256 for c in color),
             f"{path}: class {entry['name']!r} has a malformed colour {color!r}",
         )
-        classes.append(CanonicalClass(int(entry["id"]), str(entry["name"]), color))
+        rgb = (color[0], color[1], color[2])
+        classes.append(CanonicalClass(int(entry["id"]), str(entry["name"]), rgb))
 
     ids = [c.id for c in classes]
     _require(
@@ -218,7 +220,8 @@ def load_mapping(
     )
 
     raw_map = data.get("map")
-    _require(isinstance(raw_map, dict) and raw_map, f"{path}: `map` must be a non-empty mapping")
+    if not isinstance(raw_map, dict) or not raw_map:
+        raise TaxonomyError(f"{path}: `map` must be a non-empty mapping")
 
     valid = set(range(space.num_classes)) | {space.ignore_index}
     lut = np.full(LUT_SIZE, space.ignore_index, dtype=np.uint8)

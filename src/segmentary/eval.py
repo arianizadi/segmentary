@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from typing import Any, Literal, cast
 
 import torch
 from torch.utils.data import DataLoader
@@ -48,6 +49,7 @@ from .engine.inference import InferenceConfig, inference, prediction_from_infere
 from .engine.metrics import ConfusionMatrix
 from .models.factory import build_model
 from .models.tuning import apply_tuning
+from .models.wrappers import SegmentationModel
 from .tasks import (
     validate_canonical_active,
     validate_task_configuration,
@@ -97,11 +99,11 @@ def load_checkpoint(
 
 
 def load_configured_checkpoint(
-    model: torch.nn.Module,
+    model: SegmentationModel,
     cfg: ExperimentConfig,
     ckpt: Path,
     use_ema: bool,
-) -> torch.nn.Module:
+) -> SegmentationModel:
     """Match a raw or PEFT-shaped checkpoint before exact loading."""
     state = read_checkpoint(ckpt)
     adapted = checkpoint_uses_lora(state)
@@ -247,13 +249,21 @@ def main(argv: list[str] | None = None) -> int:
         )
     dataset = build_dataset(data, space, cfg.taxonomy_root, split, transform)
 
+    # InferenceConfig would reject anything else in __post_init__; checking here
+    # names the command that cannot serve the task instead of the dataclass.
+    if cfg.loss.task not in ("multiclass", "binary"):
+        raise SystemExit(
+            f"segmentary-eval supports multiclass and binary tasks, not {cfg.loss.task!r}"
+        )
+    task = cast(Literal["multiclass", "binary"], cfg.loss.task)
+
     infer_cfg = InferenceConfig(
         sliding_window=cfg.eval.sliding_window,
-        window=tuple(cfg.eval.window),
-        stride=tuple(cfg.eval.stride),
+        window=(int(cfg.eval.window[0]), int(cfg.eval.window[1])),
+        stride=(int(cfg.eval.stride[0]), int(cfg.eval.stride[1])),
         scales=tuple(args.scales) if args.tta else (1.0,),
         flip=bool(args.tta),
-        task=cfg.loss.task,
+        task=task,
         threshold=cfg.eval.threshold,
     )
 
@@ -269,7 +279,10 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     num_workers = cfg.eval.num_workers if args.num_workers is None else args.num_workers
-    loader_kwargs = {
+    # dict[str, Any]: these are DataLoader keyword arguments with several
+    # different parameter types, and a narrower inferred value type fails every
+    # one of them when the mapping is unpacked.
+    loader_kwargs: dict[str, Any] = {
         "batch_size": cfg.eval.batch_size,
         "shuffle": False,
         "num_workers": num_workers,
@@ -306,6 +319,8 @@ def main(argv: list[str] | None = None) -> int:
             cm.update(pred, target)
             bf1.update(pred, target)
 
+    if timer.started_at is None:
+        raise RuntimeError("run timer recorded no start time; evaluation never ran")
     result = cm.compute()
     metrics = result.as_dict(list(space.names))
     metrics["boundary"] = bf1.compute().as_dict(list(space.names))

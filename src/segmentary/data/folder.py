@@ -133,7 +133,9 @@ class FolderSegmentationDataset(SegDataset):
             raise ValueError(f"folder dataset {path}: groups must map string keys to group names")
         # Treat cosmetic whitespace consistently with make_split. Otherwise
         # ``"run-7"`` and ``" run-7 "`` can evade the cross-split leak check.
-        groups = {key: value.strip() for key, value in raw_groups.items()}
+        # The isinstance check above already proved both sides are str; state it
+        # so the split-leak comparison below is checked against real string sets.
+        groups: dict[str, str] = {key: value.strip() for key, value in raw_groups.items()}
 
         members: dict[str, set[str]] = {}
         split_keys: dict[str, set[str]] = {}
@@ -142,10 +144,13 @@ class FolderSegmentationDataset(SegDataset):
                 continue
             if not isinstance(values, list) or not all(isinstance(value, str) for value in values):
                 raise ValueError(f"folder dataset {path}: split {name!r} must be a list of keys")
-            if len(values) != len(set(values)):
+            # The check above proves these are strings; binding them to a typed
+            # name keeps the group lookup below a str -> str mapping.
+            entries: list[str] = list(values)
+            if len(entries) != len(set(entries)):
                 raise ValueError(f"folder dataset {path}: split {name!r} contains duplicate keys")
-            split_keys[name] = set(values)
-            members[name] = {groups.get(key, key) for key in values}
+            split_keys[name] = set(entries)
+            members[name] = {groups.get(entry, entry) for entry in entries}
 
         names = sorted(members)
         for index, left in enumerate(names):

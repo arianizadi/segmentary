@@ -36,7 +36,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Sequence
-from typing import TypeVar
+from typing import Any, TypeVar, cast
 
 from torch import nn
 
@@ -88,7 +88,7 @@ _T = TypeVar("_T")
 def _load(loader: type[_T], model_id: str, **kwargs: object) -> _T:
     """``from_pretrained`` with a gated-repo failure turned into instructions."""
     try:
-        return loader.from_pretrained(model_id, **kwargs)
+        return cast(_T, cast(Any, loader).from_pretrained(model_id, **kwargs))
     except OSError as exc:
         raise ValueError(
             f"could not load {model_id!r}: {exc}\n"
@@ -145,13 +145,13 @@ def _eomt_native_size(model: nn.Module) -> tuple[int, int]:
     patch tokens with ``self.grid_size``, frozen at export time, so a 512-export
     would otherwise die inside transformers on an unreadable view error.
     """
-    patch = model.config.patch_size
+    patch = cast(Any, model.config).patch_size
     if not isinstance(patch, int):
         raise ValueError(
             f"EoMT checkpoint has a non-scalar patch_size {patch!r}; the native input size "
             f"cannot be derived and inference would fail on a token-grid reshape"
         )
-    grid_h, grid_w = model.grid_size
+    grid_h, grid_w = cast(Any, model.grid_size)
     return (grid_h * patch, grid_w * patch)
 
 
@@ -185,10 +185,11 @@ def assemble_mask2former(backbone: nn.Module, num_classes: int) -> SegmentationM
     """
     from transformers import Mask2FormerConfig, Mask2FormerForUniversalSegmentation
 
-    config = Mask2FormerConfig(backbone_config=backbone.config, num_labels=num_classes)
+    config = Mask2FormerConfig(backbone_config=cast(Any, backbone.config))
+    config.num_labels = num_classes
     model = Mask2FormerForUniversalSegmentation(config)
     encoder = model.model.pixel_level_module.encoder
-    if list(encoder.channels) != list(backbone.channels):
+    if list(cast(Any, encoder).channels) != list(cast(Any, backbone).channels):
         raise ValueError(
             f"backbone channels {backbone.channels} do not match the pixel decoder's "
             f"expectation {encoder.channels}"
@@ -296,7 +297,7 @@ def _smp(arch: str, cfg: ModelConfig, num_classes: int) -> SegmentationModel:
             raise ValueError(
                 f"SMP encoder {encoder!r}/{encoder_weights!r} has invalid {name}={raw!r}"
             )
-        values = tuple(float(value) for value in raw)
+        values = tuple(float(value) for value in cast(Any, raw))
         if any(not math.isfinite(value) for value in values) or (
             name == "std" and any(value <= 0.0 for value in values)
         ):
@@ -373,7 +374,7 @@ def build_model(cfg: ModelConfig, num_classes: int) -> SegmentationModel:
             native.backbone,
             native.neck,
             native.head,
-            native.auxiliary_heads,
+            cast(Any, native.auxiliary_heads),
             num_classes,
             task=native.task,
         )

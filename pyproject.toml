@@ -48,7 +48,13 @@ Documentation = "https://github.com/arianizadi/segmentary/tree/main/docs"
 Repository = "https://github.com/arianizadi/segmentary"
 
 [project.optional-dependencies]
-dev = ["pytest==9.1.1", "pytest-cov==7.1.0", "ruff==0.16.2", "mypy==1.18.2"]
+dev = [
+  "pytest==9.1.1",
+  "pytest-cov==7.1.0",
+  "ruff==0.16.2",
+  "mypy==1.18.2",
+  "types-PyYAML==6.0.12.20250915",  # config/taxonomy parse YAML; stubs make that checked
+]
 # Export extras: install separately. `tensorrt` (bare) now resolves to the cu13
 # build which requires driver >= 580 -- always use the -cu12 package here.
 export = [
@@ -110,32 +116,6 @@ warn_unused_configs = true
 warn_redundant_casts = true
 no_implicit_optional = true
 
-# This is a ratchet, not a retrofit. It keeps NEW type errors out of the 57
-# modules that are already clean -- including every metric, objective, and
-# inference path -- rather than pretending the whole tree is annotated. The
-# modules below carry pre-existing errors (82 at the time of writing, mostly
-# unions from YAML parsing and dataclass reflection). Clear a module, delete its
-# line, and it can never regress. Do not add to this list.
-[[tool.mypy.overrides]]
-module = [
-  "segmentary.config",
-  "segmentary.curriculum",
-  "segmentary.data.folder",
-  "segmentary.data.loaders",
-  "segmentary.engine.losses",
-  "segmentary.engine.module",
-  "segmentary.eval",
-  "segmentary.export",
-  "segmentary.models.components",
-  "segmentary.models.factory",
-  "segmentary.overfit",
-  "segmentary.performance",
-  "segmentary.progress",
-  "segmentary.results_table",
-  "segmentary.taxonomy",
-  "segmentary.verify",
-]
-ignore_errors = true
 
 [tool.ruff]
 line-length = 100

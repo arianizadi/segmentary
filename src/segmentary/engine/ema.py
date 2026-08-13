@@ -24,9 +24,10 @@ and keep the name-keyed bookkeeping ourselves.
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass
+from typing import cast
 
 import torch
 from torch import Tensor, nn
@@ -86,7 +87,8 @@ def _unwrap(model: nn.Module) -> nn.Module:
         if isinstance(inner, (nn.parallel.DistributedDataParallel, nn.DataParallel)):
             inner = inner.module
         elif hasattr(inner, "_orig_mod"):  # torch.compile's OptimizedModule
-            inner = inner._orig_mod
+            # nn.Module.__getattr__ is typed Tensor | Module; this one is a Module.
+            inner = cast(nn.Module, inner._orig_mod)
         else:
             return inner
 
@@ -96,8 +98,10 @@ _DROPPED = "loading would silently drop weights"
 
 
 def _require_same(
-    label: str, shadow: dict[str, Tensor], other: dict[str, Tensor], consequence: str
+    label: str, shadow: Mapping[str, Tensor], other: Mapping[str, Tensor], consequence: str
 ) -> None:
+    # Mapping, not dict: callers pass named_parameters() (dict[str, Parameter]),
+    # and dict is invariant in its value type even though Parameter is a Tensor.
     if set(shadow) != set(other):
         extra = sorted(set(other) - set(shadow))[:3]
         lost = sorted(set(shadow) - set(other))[:3]

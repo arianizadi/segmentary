@@ -18,7 +18,7 @@ import math
 from dataclasses import dataclass, field, fields, is_dataclass
 from pathlib import Path
 from types import UnionType
-from typing import Any, Literal, TypeVar, Union, get_args, get_origin, get_type_hints
+from typing import Any, Literal, TypeVar, Union, cast, get_args, get_origin, get_type_hints
 
 import yaml
 
@@ -88,9 +88,9 @@ class DataConfig:
         ):
             if not isinstance(value, str) or not value.strip():
                 raise ConfigError(f"data.{field_name} must be a non-empty string")
-        for field_name, value in (("loader", self.loader), ("mapping", self.mapping)):
-            if value is not None and (not isinstance(value, str) or not value.strip()):
-                raise ConfigError(f"data.{field_name} cannot be empty or whitespace")
+        for optional_name, optional in (("loader", self.loader), ("mapping", self.mapping)):
+            if optional is not None and (not isinstance(optional, str) or not optional.strip()):
+                raise ConfigError(f"data.{optional_name} cannot be empty or whitespace")
         if not isinstance(self.loader_options, dict) or any(
             not isinstance(key, str) or not key for key in self.loader_options
         ):
@@ -1434,7 +1434,7 @@ def _coerce(value: Any, typ: Any, path: str) -> Any:
             for arm in arms:
                 if not is_dataclass(arm):
                     continue
-                discriminator = _hints(arm).get("kind")
+                discriminator = _hints(cast(type, arm)).get("kind")
                 if get_origin(discriminator) is Literal and value["kind"] in get_args(
                     discriminator
                 ):
@@ -1442,11 +1442,13 @@ def _coerce(value: Any, typ: Any, path: str) -> Any:
             if len(matches) == 1:
                 return _coerce(value, matches[0], path)
             if not matches and all(is_dataclass(arm) for arm in arms):
-                allowed = sorted(
-                    literal for arm in arms for literal in get_args(_hints(arm).get("kind"))
+                allowed_kinds = sorted(
+                    literal
+                    for arm in arms
+                    for literal in get_args(_hints(cast(type, arm)).get("kind"))
                 )
                 raise ConfigError(
-                    f"{path}.kind: expected one of {tuple(allowed)}, got {value['kind']!r}"
+                    f"{path}.kind: expected one of {tuple(allowed_kinds)}, got {value['kind']!r}"
                 )
         for arm in arms:
             try:
@@ -1457,7 +1459,7 @@ def _coerce(value: Any, typ: Any, path: str) -> Any:
         raise ConfigError(f"{path}: expected {expected}, got {type(value).__name__}")
 
     if is_dataclass(typ):
-        return from_dict(typ, value, path)
+        return from_dict(cast(type, typ), value, path)
 
     if origin is list:
         (inner,) = get_args(typ) or (Any,)
@@ -1525,7 +1527,7 @@ def from_dict(cls: type[T], data: dict[str, Any], path: str = "") -> T:
     if not isinstance(data, dict):
         raise ConfigError(f"{path or cls.__name__}: expected a mapping, got {type(data).__name__}")
 
-    known = {f.name for f in fields(cls)}
+    known = {f.name for f in fields(cast(Any, cls))}
     unknown = sorted(set(data) - known)
     if unknown:
         raise ConfigError(
@@ -1595,4 +1597,4 @@ def config_hash(cfg: Any) -> str:
 
 def replace(cfg: T, **changes: Any) -> T:
     """dataclasses.replace, re-running validation."""
-    return dataclasses.replace(cfg, **changes)
+    return cast(T, dataclasses.replace(cast(Any, cfg), **changes))

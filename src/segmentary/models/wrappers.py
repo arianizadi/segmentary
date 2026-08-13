@@ -30,7 +30,8 @@ from .outputs import SegmentationOutput
 _PEFT_PREFIXES = ("", "base_model.model.")
 
 
-def resize_logits(logits: Tensor, size: tuple[int, int]) -> Tensor:
+def resize_logits(logits: Tensor, size: tuple[int, ...]) -> Tensor:
+    """Resize to a spatial (H, W); callers pass a tensor .shape slice directly."""
     """Bilinearly resize (N, C, h, w) logits to ``size``, or pass through if equal.
 
     Segmentary fixes ``align_corners=False`` everywhere so train, sliding-window,

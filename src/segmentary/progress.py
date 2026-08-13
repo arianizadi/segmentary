@@ -28,8 +28,9 @@ import time
 from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta, tzinfo
+from functools import partial
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from rich.align import Align
@@ -240,9 +241,7 @@ def _load_event_scalars(event_paths: list[Path]) -> dict[str, list[ScalarPoint]]
     for event_path in event_paths:
         # Re-parsing a growing event file is the single most expensive thing the
         # dashboard does, and the file only changes when training logs.
-        parsed = _cached_by_file(
-            ("scalars", event_path), event_path, lambda event_path=event_path: parse(event_path)
-        )
+        parsed = _cached_by_file(("scalars", event_path), event_path, partial(parse, event_path))
         for tag, points in parsed.items():
             result.setdefault(tag, []).extend(points)
     for tag, points in result.items():
@@ -346,7 +345,8 @@ def _remaining_lane_seconds(
         if status in COMPLETED_STATUSES or status in FAILED_STATUSES:
             continue
         unfinished = True
-        typical = observed.get(job.get("curriculum"))
+        curriculum = job.get("curriculum")
+        typical = observed.get(curriculum) if isinstance(curriculum, str) else None
         # A partial sum would be a dangerously optimistic lane ETA. Until every
         # remaining curriculum has a completed analogue, say "estimating".
         if typical is None:
@@ -663,7 +663,7 @@ class _Column:
     key: str
     header: str
     width: int | None = None
-    justify: str = "left"
+    justify: Literal["default", "left", "center", "right", "full"] = "left"
     # 0 is always kept; higher numbers are dropped first as the window narrows.
     priority: int = 0
 

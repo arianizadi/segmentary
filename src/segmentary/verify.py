@@ -191,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     # --- canonical distribution ----------------------------------------------
-    canon = Counter()
+    canon: Counter[int] = Counter()
     for nid, n in native_hist.items():
         if 0 <= nid < len(mapping.lut):
             canon[int(mapping.lut[nid])] += n

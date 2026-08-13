@@ -225,116 +225,116 @@ def build_head(
 ) -> DenseHead:
     kind = getattr(spec, "kind", None)
     if kind == "fcn":
-        item = cast(FCNHeadSpecLike, spec)
+        fcn_spec = cast(FCNHeadSpecLike, spec)
         return FCNHead(
             input_specs,
             num_classes,
-            in_indices=item.in_indices,
-            channels=item.channels,
-            num_convs=item.num_convs,
-            kernel_size=item.kernel_size,
-            dilation=item.dilation,
-            dropout=item.dropout,
-            norm=item.norm,
-            activation=item.activation,
+            in_indices=fcn_spec.in_indices,
+            channels=fcn_spec.channels,
+            num_convs=fcn_spec.num_convs,
+            kernel_size=fcn_spec.kernel_size,
+            dilation=fcn_spec.dilation,
+            dropout=fcn_spec.dropout,
+            norm=fcn_spec.norm,
+            activation=fcn_spec.activation,
         )
     if kind == "segformer":
-        item = cast(SegFormerHeadSpecLike, spec)
+        segformer_spec = cast(SegFormerHeadSpecLike, spec)
         return SegFormerMLPHead(
             input_specs,
             num_classes,
-            in_indices=item.in_indices,
-            channels=item.channels,
-            dropout=item.dropout,
-            norm=item.norm,
-            activation=item.activation,
+            in_indices=segformer_spec.in_indices,
+            channels=segformer_spec.channels,
+            dropout=segformer_spec.dropout,
+            norm=segformer_spec.norm,
+            activation=segformer_spec.activation,
         )
     if kind == "psp":
-        item = cast(PSPHeadSpecLike, spec)
+        psp_spec = cast(PSPHeadSpecLike, spec)
         return PSPHead(
             input_specs,
             num_classes,
-            in_index=item.in_index,
-            channels=item.channels,
-            pool_bins=item.pool_bins,
-            dropout=item.dropout,
-            norm=item.norm,
-            activation=item.activation,
+            in_index=psp_spec.in_index,
+            channels=psp_spec.channels,
+            pool_bins=psp_spec.pool_bins,
+            dropout=psp_spec.dropout,
+            norm=psp_spec.norm,
+            activation=psp_spec.activation,
         )
     if kind == "aspp":
-        item = cast(ASPPHeadSpecLike, spec)
+        aspp_spec = cast(ASPPHeadSpecLike, spec)
         return ASPPHead(
             input_specs,
             num_classes,
-            in_index=item.in_index,
-            channels=item.channels,
-            dilation_rates=item.dilation_rates,
-            dropout=item.dropout,
-            norm=item.norm,
-            activation=item.activation,
+            in_index=aspp_spec.in_index,
+            channels=aspp_spec.channels,
+            dilation_rates=aspp_spec.dilation_rates,
+            dropout=aspp_spec.dropout,
+            norm=aspp_spec.norm,
+            activation=aspp_spec.activation,
         )
     if kind == "deeplabv3plus":
-        item = cast(DeepLabV3PlusHeadSpecLike, spec)
+        deeplab_spec = cast(DeepLabV3PlusHeadSpecLike, spec)
         return DeepLabV3PlusHead(
             input_specs,
             num_classes,
-            low_index=item.low_index,
-            high_index=item.high_index,
-            channels=item.channels,
-            low_channels=item.low_channels,
-            dilation_rates=item.dilation_rates,
-            dropout=item.dropout,
-            norm=item.norm,
-            activation=item.activation,
+            low_index=deeplab_spec.low_index,
+            high_index=deeplab_spec.high_index,
+            channels=deeplab_spec.channels,
+            low_channels=deeplab_spec.low_channels,
+            dilation_rates=deeplab_spec.dilation_rates,
+            dropout=deeplab_spec.dropout,
+            norm=deeplab_spec.norm,
+            activation=deeplab_spec.activation,
         )
     if kind == "lraspp":
-        item = cast(LRASPPHeadSpecLike, spec)
+        lraspp_spec = cast(LRASPPHeadSpecLike, spec)
         return LRASPPHead(
             input_specs,
             num_classes,
-            low_index=item.low_index,
-            high_index=item.high_index,
-            channels=item.channels,
-            dropout=item.dropout,
-            norm=item.norm,
-            activation=item.activation,
+            low_index=lraspp_spec.low_index,
+            high_index=lraspp_spec.high_index,
+            channels=lraspp_spec.channels,
+            dropout=lraspp_spec.dropout,
+            norm=lraspp_spec.norm,
+            activation=lraspp_spec.activation,
         )
     if kind == "uper":
-        item = cast(UPerHeadSpecLike, spec)
+        uper_spec = cast(UPerHeadSpecLike, spec)
         return UPerHead(
             input_specs,
             num_classes,
-            in_indices=item.in_indices,
-            channels=item.channels,
-            pool_bins=item.pool_bins,
-            dropout=item.dropout,
-            norm=item.norm,
-            activation=item.activation,
+            in_indices=uper_spec.in_indices,
+            channels=uper_spec.channels,
+            pool_bins=uper_spec.pool_bins,
+            dropout=uper_spec.dropout,
+            norm=uper_spec.norm,
+            activation=uper_spec.activation,
         )
     if kind == "dpt":
-        item = cast(DPTHeadSpecLike, spec)
+        dpt_spec = cast(DPTHeadSpecLike, spec)
         return DPTHead(
             input_specs,
             num_classes,
-            in_indices=item.in_indices,
-            channels=item.channels,
-            dropout=item.dropout,
-            norm=item.norm,
-            activation=item.activation,
+            in_indices=dpt_spec.in_indices,
+            channels=dpt_spec.channels,
+            dropout=dpt_spec.dropout,
+            norm=dpt_spec.norm,
+            activation=dpt_spec.activation,
         )
     if kind == "ocr":
-        item = cast(OCRHeadSpecLike, spec)
+        ocr_spec = cast(OCRHeadSpecLike, spec)
         return OCRHead(
             input_specs,
             num_classes,
-            in_indices=item.in_indices,
-            channels=item.channels,
-            key_channels=item.key_channels,
-            attention_scale=item.attention_scale,
-            dropout=item.dropout,
-            coarse_loss_weight=item.coarse_loss_weight,
-            norm=item.norm,
-            activation=item.activation,
+            in_indices=ocr_spec.in_indices,
+            channels=ocr_spec.channels,
+            key_channels=ocr_spec.key_channels,
+            attention_scale=ocr_spec.attention_scale,
+            dropout=ocr_spec.dropout,
+            coarse_loss_weight=ocr_spec.coarse_loss_weight,
+            norm=ocr_spec.norm,
+            activation=ocr_spec.activation,
         )
     raise ValueError(
         f"unknown native head kind {kind!r}; choose fcn, segformer, psp, aspp, "

@@ -94,7 +94,9 @@ def input_normalization(model: object | None = None) -> dict[str, Any]:
 def aug_from_spec(spec: AugConfigSpec, model: object | None = None) -> AugConfig:
     normalization = input_normalization(model)
     return AugConfig(
-        crop=tuple(spec.crop),
+        # AugConfig wants an exact (H, W); config validation already guarantees
+        # spec.crop has two entries, so say so rather than passing tuple[int, ...].
+        crop=(int(spec.crop[0]), int(spec.crop[1])),
         scale_min=spec.scale_min,
         scale_max=spec.scale_max,
         hflip_p=spec.hflip_p,
@@ -159,7 +161,10 @@ def build_train_loader(
         build_dataset(d, space, taxonomy_root, d.train_split, transform) for d in stage.data
     ]
 
-    common = dict(
+    # dict[str, Any] rather than an inferred dict[str, object]: these are keyword
+    # arguments for DataLoader, whose parameters have many different types, and
+    # `object` would fail every one of them when the mapping is unpacked.
+    common: dict[str, Any] = dict(
         batch_size=train.batch_size,
         num_workers=train.num_workers,
         collate_fn=collate,

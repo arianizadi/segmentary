@@ -16,10 +16,10 @@ import json
 import math
 import sys
 import time
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import torch
 from torch import Tensor, nn
@@ -304,8 +304,8 @@ def _native_description(model: nn.Module) -> dict[str, Any] | None:
                 "name": name,
                 "class": type(head).__name__,
                 "loss_weight": model._auxiliary_weights[name],
-                "in_indices": list(head.in_indices),
-                "selected_features": _feature_rows(head.selected_specs),
+                "in_indices": list(cast(Any, head).in_indices),
+                "selected_features": _feature_rows(cast(Any, head).selected_specs),
             }
             for name, head in model.auxiliary_heads.items()
         ],
@@ -459,12 +459,12 @@ def _query_stats(output: QueryOutput) -> dict[str, Any]:
     }
 
 
-def _tracked_parameters(model: nn.Module) -> dict[str, Tensor]:
+def _tracked_parameters(model: nn.Module) -> dict[str, nn.Parameter]:
     trainable = {name: value for name, value in model.named_parameters() if value.requires_grad}
     classifier = {name: value for name, value in trainable.items() if "classifier" in name.lower()}
     if classifier:
         return classifier
-    patterns = tuple(model.head_patterns()) if hasattr(model, "head_patterns") else ()
+    patterns = tuple(cast(Any, model).head_patterns()) if hasattr(model, "head_patterns") else ()
     head = {
         name: value
         for name, value in trainable.items()
@@ -610,7 +610,7 @@ def probe_configs(
         loss_fn: SegmentationLoss | QuerySegmentationLoss = QuerySegmentationLoss(
             cfg.loss.query, space.num_classes, space.ignore_index
         ).to(device)
-        objective = query_training_objective
+        objective: Callable[..., tuple[Tensor, dict[str, Tensor]]] = query_training_objective
         objective_name = "segmentary.engine.query_loss.query_training_objective"
         objective_kind = "query"
     else:
