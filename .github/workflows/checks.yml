@@ -1,0 +1,87 @@
+# The checks CONTRIBUTING.md asks every contributor to run, enforced on every
+# push to main and every pull request.
+#
+# CPU-only on purpose. The `gpu` and `slow` markers cover everything needing a
+# CUDA device or a real dataset on disk, and the remaining suite passes with
+# CUDA fully hidden. Real-Hub, Cityscapes and RailSem19 tests skip themselves
+# when their environment variables are unset, which is the case here, so this
+# job needs no dataset mount and no accelerator.
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    # Self-hosted box: 32 cores. The `segmentary` label is what pins the job to
+    # the runner registered for this repository rather than any other instance
+    # sharing the machine.
+    runs-on: [self-hosted, Linux, X64, segmentary]
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          # pyproject pins requires-python to ==3.11.*, and the host only ships
+          # 3.12. This lands CPython 3.11 in the runner tool cache, which does
+          # persist between jobs, so it is downloaded once and reused after.
+          python-version: '3.11'
+          # No `cache: pip` on purpose. That uploads a copy of the pip cache to
+          # GitHub's 10 GB per-repo cache storage, which only pays off when the
+          # machine is destroyed after every job. This runner keeps ~/.cache/pip
+          # on local disk, so the wheels are already here and the extra layer
+          # would be pure overhead.
+
+      - name: Create a clean virtual environment
+        # A self-hosted runner also keeps site-packages between jobs. Installing
+        # into the tool-cache interpreter directly would let a dependency that
+        # was deleted from pyproject.toml linger from an earlier run, so
+        # `pip check` would pass against a stale environment and a broken
+        # dependency declaration could ship unnoticed. Rebuilding the venv every
+        # run makes the install step test what it claims to test; the wheels
+        # still come from the local pip cache, so it costs seconds rather than
+        # a fresh download.
+        run: |
+          python -m venv "${{ runner.temp }}/venv"
+          echo "${{ runner.temp }}/venv/bin" >> "$GITHUB_PATH"
+          echo "VIRTUAL_ENV=${{ runner.temp }}/venv" >> "$GITHUB_ENV"
+          "${{ runner.temp }}/venv/bin/python" -m pip install --upgrade pip
+
+      - name: Install PyTorch (CPU wheels)
+        # torch/torchvision are deliberately absent from [project.dependencies]
+        # because their wheels are platform-specific, so they install first and
+        # from the CPU index. Versions match [tool.segmentary.install].
+        run: |
+          python -m pip install torch==2.11.0 torchvision==0.26.0 \
+            --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Install project and dev tools
+        run: python -m pip install -e '.[dev]'
+
+      - name: Check the resolved environment is self-consistent
+        run: python -m pip check
+
+      - name: Ruff lint
+        run: ruff check src tests scripts
+
+      - name: Ruff format
+        run: ruff format --check src tests scripts
+
+      - name: Tests
+        # CUDA_VISIBLE_DEVICES is pinned empty so this stays a genuine CPU run
+        # even if the box later gains a GPU.
+        env:
+          CUDA_VISIBLE_DEVICES: ''
+        run: python -m pytest -m "not slow and not gpu"
