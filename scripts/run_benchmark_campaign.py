@@ -2915,7 +2915,10 @@ def _training_stage_evidence(attempt: dict[str, Any]) -> list[dict[str, Any]]:
 def _normalised_individual(
     job: dict[str, Any], result: dict[str, Any], attempt: dict[str, Any]
 ) -> dict[str, Any]:
-    names = list(result["metrics"]["per_class_iou"])
+    # Result JSON is emitted with sorted mapping keys, while the confusion matrix
+    # always follows canonical class-id order.  Legacy precision/Dice/specificity
+    # derivation must therefore use the taxonomy, not dictionary insertion order.
+    names = list(load_space(REPO_ROOT / "taxonomy", job["evaluation_space"]).names)
     metrics = _complete_metrics(result["metrics"], names)
     boundary = metrics["boundary"]
     source_result = Path(attempt["paths"]["common_results"])

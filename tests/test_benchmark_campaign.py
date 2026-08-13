@@ -460,6 +460,31 @@ def test_preservation_merge_keeps_public_b2_record_exactly() -> None:
     ]
 
 
+def test_legacy_confusion_derivation_uses_taxonomy_order() -> None:
+    space = load_space(campaign.REPO_ROOT / "taxonomy", "rail_union")
+    canonical_names = list(space.names)
+    assert canonical_names != sorted(canonical_names)
+
+    metrics = _metric_payload("rail_union")
+    metrics.pop("mprecision")
+    metrics.pop("mdice")
+    metrics.pop("mspecificity")
+    metrics["per_class_iou"] = {
+        name: None if name in {"bicycle", "motorcycle"} else 0.5 for name in sorted(canonical_names)
+    }
+    size = len(canonical_names)
+    metrics["confusion"] = [
+        [10 + row if row == column else (row + column) % 3 for column in range(size)]
+        for row in range(size)
+    ]
+
+    canonical = campaign._complete_metrics(metrics, canonical_names)
+    alphabetic = campaign._complete_metrics(metrics, sorted(canonical_names))
+    assert canonical["mprecision"] != alphabetic["mprecision"]
+    assert canonical["mdice"] != alphabetic["mdice"]
+    assert canonical["mspecificity"] != alphabetic["mspecificity"]
+
+
 def test_public_privacy_check_rejects_server_identifiers(tmp_path: Path) -> None:
     for leaked in ("/data/private", "/scr/private", "/Users/name", "gpu_uuid"):
         with pytest.raises(campaign.CampaignError, match="private infrastructure"):
