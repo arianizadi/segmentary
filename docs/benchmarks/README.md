@@ -23,6 +23,11 @@ the complete config, code SHA, seed, environment, split, and metrics.
 5. **Documented/blocked:** config or integration exists, but a prerequisite or
    scientifically correct objective is absent.
 
+The [live model-comparison folder](../results/model-comparison/README.md) is the
+single place to compare every shipped recipe on Cityscapes, RailSem19, and
+staged Cityscapes → RailSem19. It shows completed, reused, queued, and missing
+cells without turning compatibility probes into model-quality results.
+
 ## Beginner reading rule
 
 Start with the evidence level and protocol, not the largest number. Compare two

@@ -57,6 +57,9 @@ evaluate an exact checkpoint
 
 ## Design and report a fair experiment
 
+- [Live all-model comparison](results/model-comparison/README.md) tracks every
+  shipped recipe across Cityscapes, RailSem19, and staged Cityscapes →
+  RailSem19, with normalized machine records and complete class-IoU tables.
 - [Evaluation and results](guides/evaluation-and-results.md) explains native and
   common endpoints, EMA versus raw weights, final versus best checkpoints, TTA,
   multi-seed aggregation, and reproducible result records.
