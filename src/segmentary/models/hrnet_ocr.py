@@ -7,16 +7,15 @@ classification head timm attaches -- ``incre_modules``, ``downsamp_modules``,
 add tens of millions of parameters that receive no gradient signal but still get
 allocated optimiser state and written into every checkpoint.
 
-Deviation from the paper, stated plainly: OCR is normally trained with deep
-supervision on the coarse auxiliary logits. ``SegmentationModel.forward``
-returns exactly one tensor, and ``engine.losses`` has no slot for a second
-head, so the auxiliary classifier here is trained only through the gradient that
-reaches it via the region-pooling softmax. That is weaker supervision than the
-paper's, and this baseline should be read accordingly.
+Public inference returns only the refined logits. Training uses the richer
+``SegmentationOutput`` contract so the coarse OCR logits receive their own
+weighted auxiliary loss instead of learning only indirectly through region
+pooling.
 """
 
 from __future__ import annotations
 
+import math
 from typing import Any, cast
 
 import timm
@@ -24,6 +23,7 @@ import torch.nn as nn
 from torch import Tensor
 
 from .heads import OCRHead, concat_multi_scale
+from .outputs import AuxiliaryDenseOutput, SegmentationOutput
 from .wrappers import SegmentationModel, reinit_, reinit_component_, resize_logits
 
 
@@ -45,8 +45,12 @@ class HRNetOCR(SegmentationModel):
         pretrained: bool = True,
         ocr_channels: int = 512,
         key_channels: int = 256,
+        coarse_loss_weight: float = 0.4,
     ) -> None:
         super().__init__(num_classes)
+        if not math.isfinite(coarse_loss_weight) or coarse_loss_weight <= 0.0:
+            raise ValueError("coarse_loss_weight must be finite and positive")
+        self.coarse_loss_weight = float(coarse_loss_weight)
         # No drop_path here on purpose: timm's HighResolutionNet has no
         # drop_path_rate argument, builds no DropPath modules, and absorbs the
         # keyword into **kwargs without complaint. Accepting it would report
@@ -75,7 +79,7 @@ class HRNetOCR(SegmentationModel):
             in_channels, num_classes, ocr_channels=ocr_channels, key_channels=key_channels
         )
 
-    def forward(self, pixel_values: Tensor) -> Tensor:
+    def _predictions(self, pixel_values: Tensor) -> tuple[Tensor, Tensor]:
         # With incre_modules removed, forward_features returns the four branch
         # feature maps rather than a fused classification embedding.
         branches = cast(Any, self.trunk).forward_features(pixel_values)
@@ -83,9 +87,22 @@ class HRNetOCR(SegmentationModel):
             raise ValueError(
                 "HRNet trunk returned a fused tensor; its classification head was not removed"
             )
-        logits, _aux = self.head(concat_multi_scale(list(branches)))
-        logits = resize_logits(logits, tuple(pixel_values.shape[-2:]))
-        return self._check_output(logits, pixel_values)
+        logits, coarse = self.head(concat_multi_scale(list(branches)))
+        output_size = tuple(pixel_values.shape[-2:])
+        logits = self._check_output(resize_logits(logits, output_size), pixel_values)
+        coarse = self._check_output(resize_logits(coarse, output_size), pixel_values)
+        return logits, coarse
+
+    def forward(self, pixel_values: Tensor) -> Tensor:
+        logits, _ = self._predictions(pixel_values)
+        return logits
+
+    def forward_output(self, pixel_values: Tensor) -> SegmentationOutput:
+        logits, coarse = self._predictions(pixel_values)
+        return SegmentationOutput(
+            dense_logits=logits,
+            auxiliary_dense=(AuxiliaryDenseOutput("ocr_coarse", coarse, self.coarse_loss_weight),),
+        )
 
     def head_patterns(self) -> tuple[str, ...]:
         return ("head.",)

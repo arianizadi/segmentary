@@ -333,6 +333,42 @@ def test_lora_on_hrnet_ocr_leaves_no_head_parameter_frozen():
     model(torch.randn(2, 3, 64, 64)).sum().backward()
 
 
+def test_hrnet_ocr_exposes_full_resolution_weighted_coarse_supervision():
+    model = HRNetOCR(
+        NUM_CLASSES,
+        backbone_name="hrnet_w18_small",
+        pretrained=False,
+        ocr_channels=32,
+        key_channels=16,
+        coarse_loss_weight=0.4,
+    )
+    model.train()
+    output = model.forward_output(torch.randn(2, 3, 64, 96))
+
+    assert output.dense_logits is not None
+    assert output.dense_logits.shape == (2, NUM_CLASSES, 64, 96)
+    assert len(output.auxiliary_dense) == 1
+    coarse = output.auxiliary_dense[0]
+    assert coarse.name == "ocr_coarse"
+    assert coarse.loss_weight == pytest.approx(0.4)
+    assert coarse.logits.shape == output.dense_logits.shape
+
+    (output.dense_logits.mean() + coarse.loss_weight * coarse.logits.mean()).backward()
+    assert model.head.classifier.weight.grad is not None
+    assert model.head.coarse[-1].weight.grad is not None
+
+
+@pytest.mark.parametrize("weight", [0.0, -0.1, float("nan"), float("inf")])
+def test_hrnet_ocr_rejects_invalid_coarse_loss_weight(weight):
+    with pytest.raises(ValueError, match="finite and positive"):
+        HRNetOCR(
+            NUM_CLASSES,
+            backbone_name="hrnet_w18_small",
+            pretrained=False,
+            coarse_loss_weight=weight,
+        )
+
+
 def test_drop_path_is_rejected_where_it_would_be_ignored():
     # timm's HighResolutionNet absorbs drop_path_rate into **kwargs and builds no
     # DropPath modules, so accepting it would log regularisation nobody applied.

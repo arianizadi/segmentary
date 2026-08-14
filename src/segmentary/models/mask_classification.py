@@ -156,3 +156,15 @@ class MaskClassWrapper(SegmentationModel):
 
     def reset_head(self) -> None:
         reinit_component_(self, self.classifier_component)
+
+    def reset_head_state_keys(self) -> tuple[str, ...]:
+        """Keep the target-sized no-object weights during taxonomy transfer.
+
+        Hugging Face EoMT persists ``criterion.empty_weight`` with one entry per
+        semantic class plus no-object. Segmentary never calls that private
+        criterion, but the buffer remains in the checkpoint and legitimately
+        changes shape when a Cityscapes classifier is rebuilt for RailSem19.
+        It is target-owned classifier state, not a backbone mismatch.
+        """
+
+        return tuple(name for name in self.state_dict() if name.endswith("criterion.empty_weight"))

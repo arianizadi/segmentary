@@ -293,6 +293,23 @@ def load_backbone_weights(
         # keeps the exception exact without depending on random initial values.
         reset_modules = {name.rpartition(".")[0] for name in changed_reset_keys}
         reset_keys = {name for name in target_state if name.rpartition(".")[0] in reset_modules}
+        declared_state = getattr(model, "reset_head_state_keys", None)
+        if callable(declared_state):
+            extra_reset_keys = declared_state()
+            if not isinstance(extra_reset_keys, tuple) or any(
+                not isinstance(name, str) or not name for name in extra_reset_keys
+            ):
+                raise RuntimeError(
+                    f"{type(model).__name__}.reset_head_state_keys() must return a tuple "
+                    "of non-empty state_dict keys"
+                )
+            unknown_reset_keys = sorted(set(extra_reset_keys) - set(target_state))
+            if unknown_reset_keys:
+                raise RuntimeError(
+                    f"{type(model).__name__} declared reset state absent from its target "
+                    f"state_dict: {unknown_reset_keys}"
+                )
+            reset_keys.update(extra_reset_keys)
 
         if EMA_CHECKPOINT_KEY in state:
             ema_state = state[EMA_CHECKPOINT_KEY]
