@@ -845,9 +845,9 @@ def test_worker_tmux_pane_is_live_and_also_persisted(
     assert ">>" not in shell
 
 
-def test_comparison_records_start_empty_without_completed_cells() -> None:
+def test_comparison_records_start_empty_without_completed_cells(tmp_path: Path) -> None:
     records = campaign._comparison_records(
-        campaign.REPO_ROOT,
+        tmp_path,
         campaign.load_campaign_manifest(),
         {},
         {},
