@@ -16,6 +16,7 @@ from segmentary.config import (
     TrainConfig,
     from_dict,
 )
+from segmentary.engine import query_loss as query_loss_module
 from segmentary.engine.losses import LossConfig, SegmentationLoss
 from segmentary.engine.module import SegLitModule, dense_training_objective
 from segmentary.engine.query_loss import (
@@ -165,6 +166,22 @@ def test_query_loss_backpropagates_to_class_and_mask_logits_in_float32():
     assert prediction.mask_logits.grad is not None
     assert bool(prediction.class_logits.grad.abs().sum() > 0)
     assert bool(prediction.mask_logits.grad.abs().sum() > 0)
+
+
+def test_selecting_matched_queries_before_resize_is_value_and_gradient_exact():
+    torch.manual_seed(8)
+    logits = torch.randn(5, 3, 4, dtype=torch.float64, requires_grad=True)
+    matched = torch.tensor([0, 3], dtype=torch.long)
+    coefficients = torch.randn(2, 7, 9, dtype=torch.float64)
+
+    resize = query_loss_module._resize_masks
+    old = resize(logits, (7, 9))[matched]
+    new = resize(logits[matched], (7, 9))
+    torch.testing.assert_close(new, old, rtol=0.0, atol=0.0)
+
+    old_gradient = torch.autograd.grad((old * coefficients).sum(), logits, retain_graph=True)[0]
+    new_gradient = torch.autograd.grad((new * coefficients).sum(), logits)[0]
+    torch.testing.assert_close(new_gradient, old_gradient, rtol=0.0, atol=0.0)
 
 
 def test_auxiliary_decoder_layers_are_reassigned_and_weighted_independently():

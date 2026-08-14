@@ -372,6 +372,37 @@ def test_reset_head_allows_only_classifier_shape_change_from_ema_checkpoint(
     assert not target_state["model.decode_head.classifier.weight"].eq(6.0).all()
 
 
+def test_reset_head_ignores_only_target_nonpersistent_ema_buffers(tmp_path: Path) -> None:
+    class _CachedClassifier(nn.Module):
+        def __init__(self, classes: int, cache_value: float) -> None:
+            super().__init__()
+            self.backbone = nn.Linear(4, 4)
+            self.classifier = nn.Linear(4, classes)
+            self.register_buffer("runtime_cache", torch.tensor(cache_value), persistent=False)
+
+        def reset_head(self) -> None:
+            nn.init.normal_(self.classifier.weight)
+            nn.init.zeros_(self.classifier.bias)
+
+    source = _CachedClassifier(3, cache_value=3.0)
+    with torch.no_grad():
+        source.backbone.weight.fill_(7.0)
+    checkpoint = tmp_path / "nonpersistent-buffer.ckpt"
+    torch.save({EMA_CHECKPOINT_KEY: ModelEma(source, EmaConfig()).state_dict()}, checkpoint)
+    target = _CachedClassifier(5, cache_value=11.0)
+
+    load_backbone_weights(target, checkpoint, reset_head=True)
+
+    assert torch.equal(target.backbone.weight, source.backbone.weight)
+    assert target.classifier.weight.shape[0] == 5
+    assert target.runtime_cache.item() == pytest.approx(11.0)
+
+    source.register_buffer("unexpected_persistent", torch.tensor(13.0))
+    torch.save({EMA_CHECKPOINT_KEY: ModelEma(source, EmaConfig()).state_dict()}, checkpoint)
+    with pytest.raises(RuntimeError, match="1 unexpected"):
+        load_backbone_weights(_CachedClassifier(5, cache_value=11.0), checkpoint, reset_head=True)
+
+
 def test_reset_head_includes_unchanged_zero_bias_owned_by_reset_classifier(
     tmp_path: Path,
 ) -> None:
