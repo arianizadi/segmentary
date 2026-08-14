@@ -10,7 +10,7 @@ This live comparison covers every shipped model recipe. Compatible results are r
 | 2 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | running | 82.74 (40,000/40,000) | — | — |
 | 3 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | running | 57.26 (40,000/40,000) | — | — |
 | 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | running | 81.03 (40,000/40,000) | 70.74 (40,000/40,000) | — |
-| 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | — | — | — |
+| 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | — | 71.95 (40,000/40,000) | — |
 | 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | running | — | — | — |
 | 7 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | queued | — | — | — |
 | 8 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | running | 78.46 (40,000/40,000) | — | 64.26 (20,000/20,000) |
@@ -56,7 +56,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | — | — | — | — | — | — | — |
 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | — | — | — | — | — | — | — |
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 80,887,221 | 308.6 MiB | 1235.0 MiB | 42.35 | 23.53 | 24.03 | 2.48 GiB |
-| [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | — | — | — | — | — | — | — |
+| [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | 84,609,493 | 322.8 MiB | 1292.9 MiB | 25.13 | 39.28 | 43.62 | 2.57 GiB |
 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | — | — | — | — | — | — | — |
 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — | — | — | — | — | — | — |
 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | — | — | — | — | — | — | — |
@@ -100,7 +100,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | 13h 26m 42s / 13.45 | — / — | — / — | 16.86 GiB |
 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | 14h 40m 07s / 14.67 | — / — | — / — | 19.53 GiB |
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 13h 28m 59s / 13.48 | 16h 57m 54s / 16.96 | — / — | 10.60 GiB |
-| [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | — / — | — / — | — / — | — |
+| [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | — / — | 19h 38m 19s / 19.64 | — / — | 16.94 GiB |
 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | — / — | — / — | — / — | — |
 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — / — | — / — | — / — | — |
 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | 7h 54m 19s / 7.91 | — / — | 6h 49m 53s / 6.83 | 6.85 GiB |
