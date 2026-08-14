@@ -19,6 +19,7 @@ from segmentary.taxonomy import load_space
 from segmentary.utils.results import RunRecord, write_results
 
 SHA = "a" * 40
+NEW_SHA = "b" * 40
 
 
 def _metric_payload(space_name: str) -> dict:
@@ -582,12 +583,98 @@ def test_interrupted_training_resumes_same_attempt_from_latest_checkpoint(
     final_job = final["jobs"][0]
     assert len(final_job["attempts"]) == 1
     assert commands[0][-2:] == ["--resume-checkpoint", str(checkpoint)]
+    expected_commands = campaign._commands(record, source, paths, resume_checkpoint=checkpoint)
+    assert final_job["attempts"][0]["train_command"] == expected_commands[0]
+    assert final_job["attempts"][0]["eval_command"] == expected_commands[1]
+    assert final_job["attempts"][0]["performance_command"] == expected_commands[2]
     assert final_job["attempts"][0]["resume"] == {
         "checkpoint": str(checkpoint),
         "checkpoint_sha256": digest,
         "global_step": 4_000,
         "resumed_at": final_job["attempts"][0]["resumes"][0]["resumed_at"],
     }
+
+
+def test_source_migration_requires_stopped_sessions_and_preserves_resume_proof(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    lane = record["lanes"][0]
+    source = next(job for job in record["jobs"] if job["lane"] == lane["id"])
+    lane["job_ids"] = [source["id"]]
+    record["lanes"] = [lane]
+    root = Path(record["campaign"])
+    root.mkdir(parents=True)
+    campaign.atomic_write_json(root / "campaign.json", record)
+    status = campaign._lane_status(record, lane)
+    job = status["jobs"][0]
+    attempt_dir = root / "jobs" / job["id"] / "attempt-001"
+    _, config = campaign._resolved_config(record, job, attempt_dir)
+    paths = campaign._attempt_paths(job, attempt_dir, config)
+    paths["config"].parent.mkdir(parents=True)
+    paths["config"].write_text(yaml.safe_dump(config))
+    checkpoint = paths["run_dir"] / job["final_stage"] / "step-00004000.ckpt"
+    checkpoint.parent.mkdir(parents=True)
+    checkpoint.write_bytes(b"full resume state")
+    train, evaluate, benchmark = campaign._commands(record, job, paths)
+    attempt = campaign._attempt_record(
+        1,
+        paths,
+        train,
+        evaluate,
+        benchmark,
+        campaign._job_environment(record, job, lane),
+    )
+    attempt["status"] = job["status"] = "training"
+    job["attempts"] = [attempt]
+    campaign.atomic_write_json(campaign._status_path(root, lane["id"]), status)
+
+    monkeypatch.setenv("TMUX", "/tmp/tmux")
+    monkeypatch.setattr(campaign, "check_source_provenance", lambda sha: sha)
+    monkeypatch.setattr(
+        campaign.subprocess,
+        "run",
+        lambda *_args, **_kwargs: type("Result", (), {"returncode": 0})(),
+    )
+    monkeypatch.setattr(
+        campaign,
+        "_latest_resume_checkpoint",
+        lambda *_args: (checkpoint, 4_000, "d" * 64),
+    )
+    monkeypatch.setattr(campaign, "_tmux_exists", lambda _session: True)
+    with pytest.raises(campaign.CampaignError, match="stop every managed tmux"):
+        campaign.migrate_campaign_source(
+            root,
+            from_sha=SHA,
+            to_sha=NEW_SHA,
+            reason="training-safe classifier handoff fix",
+        )
+    assert json.loads((root / "campaign.json").read_text())["source"]["expected_git_sha"] == SHA
+
+    monkeypatch.setattr(campaign, "_tmux_exists", lambda _session: False)
+    migration = campaign.migrate_campaign_source(
+        root,
+        from_sha=SHA,
+        to_sha=NEW_SHA,
+        reason="training-safe classifier handoff fix",
+    )
+
+    assert migration["resume_checkpoints"] == [
+        {
+            "lane": lane["id"],
+            "job_id": job["id"],
+            "checkpoint": str(checkpoint),
+            "checkpoint_sha256": "d" * 64,
+            "global_step": 4_000,
+        }
+    ]
+    migrated_record = json.loads((root / "campaign.json").read_text())
+    migrated_status = json.loads(campaign._status_path(root, lane["id"]).read_text())
+    assert migrated_record["source"]["expected_git_sha"] == NEW_SHA
+    assert migrated_record["reuse_policy"]["allowed_git_shas"] == [SHA, NEW_SHA]
+    assert migrated_record["source_migrations"][-1] == migration
+    assert migrated_status["expected_git_sha"] == NEW_SHA
+    assert migrated_status["source_migrations"][-1] == migration
 
 
 def test_dry_run_prints_named_tmux_sessions_without_mutation(
