@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import csv
+import io
 import json
 import pickle
 import sys
@@ -853,6 +855,96 @@ def test_comparison_records_start_empty_without_completed_cells(tmp_path: Path) 
         {},
     )
     assert records == {}
+
+
+def test_training_specifications_match_resolved_campaign_runtime(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    manifest = campaign.load_campaign_manifest()
+
+    specifications = campaign._model_training_specifications(manifest, record)
+
+    default = specifications["segformer_b2"]
+    assert default == {
+        **default,
+        "gpu_count": 1,
+        "crop_height": 1024,
+        "crop_width": 1024,
+        "batch_size_per_gpu": 2,
+        "gradient_accumulation": 8,
+        "effective_batch_size": 16,
+        "precision": "bf16-mixed",
+        "optimizer": "AdamW",
+        "backbone_lr": pytest.approx(6e-5),
+        "fresh_component_lr": pytest.approx(6e-4),
+        "head_lr_multiplier": pytest.approx(10.0),
+        "weight_decay": pytest.approx(0.05),
+        "llrd": pytest.approx(1.0),
+        "warmup_iterations": 1_500,
+        "warmup_ratio": pytest.approx(1e-6),
+        "poly_power": pytest.approx(0.9),
+        "gradient_clip": pytest.approx(1.0),
+        "ema_decay": pytest.approx(0.9998),
+        "validation_interval": 4_000,
+        "checkpoint_interval": 4_000,
+        "objective": "dense_semantic",
+    }
+
+    beit = specifications["hf_auto_beit_base_ade"]
+    assert (beit["crop_height"], beit["crop_width"]) == (640, 640)
+    assert beit["batch_size_per_gpu"] == 4
+    assert beit["gradient_accumulation"] == 4
+    assert beit["effective_batch_size"] == 16
+    assert beit["backbone_lr"] == pytest.approx(2e-5)
+    assert beit["llrd"] == pytest.approx(0.8)
+
+    eomt = specifications["eomt_dinov3_large"]
+    assert eomt["batch_size_per_gpu"] == 2
+    assert eomt["gradient_accumulation"] == 8
+    assert eomt["effective_batch_size"] == 16
+    assert eomt["backbone_lr"] == pytest.approx(1e-5)
+    assert eomt["llrd"] == pytest.approx(0.75)
+    assert eomt["objective"] == "hungarian_query"
+
+    assert specifications["deeplabv3plus_r101"] == specifications["smp_deeplabv3plus_resnet101"]
+
+
+def test_training_specifications_are_rendered_in_readme_and_csv(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    manifest = campaign.load_campaign_manifest()
+    monkeypatch.setattr(campaign, "_model_execution_states", lambda _record: {})
+
+    status = campaign._comparison_status(manifest, {}, record)
+    readme = campaign._central_readme(manifest, status, {}, SHA)
+    rows = list(csv.DictReader(io.StringIO(campaign._comparison_csv(status, {}))))
+
+    assert "## Training specification" in readme
+    assert "batch/GPU" in readme
+    assert "effective batch" in readme
+    assert "CPU data-loader workers per job" in readme
+    assert "final EMA, batch 1, 1024x1024 sliding window" in readme
+    assert "FPS can remain pending while Cityscapes mIoU is already available" in readme
+    assert "±" not in readme
+
+    by_model = {row["model"]: row for row in rows}
+    beit = by_model["hf_auto_beit_base_ade"]
+    assert beit["training_crop_height"] == "640"
+    assert beit["training_batch_size_per_gpu"] == "4"
+    assert beit["training_gradient_accumulation"] == "4"
+    assert beit["training_effective_batch_size"] == "16"
+    assert beit["training_backbone_lr"] == "2e-05"
+    assert beit["training_objective"] == "dense_semantic"
+
+    eomt = by_model["eomt_dinov3_large"]
+    assert eomt["training_batch_size_per_gpu"] == "2"
+    assert eomt["training_gradient_accumulation"] == "8"
+    assert eomt["training_effective_batch_size"] == "16"
+    assert eomt["training_objective"] == "hungarian_query"
 
 
 def test_legacy_confusion_derivation_uses_taxonomy_order() -> None:

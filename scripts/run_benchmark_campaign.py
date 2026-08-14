@@ -3755,6 +3755,12 @@ def _number(value: object, *, decimals: int = 2) -> str:
     )
 
 
+def _scientific(value: object) -> str:
+    if not isinstance(value, int | float) or isinstance(value, bool) or not math.isfinite(value):
+        return "—"
+    return f"{float(value):.1e}".replace("e-0", "e-").replace("e+0", "e+")
+
+
 def _duration(value: object) -> str:
     if not isinstance(value, int | float) or isinstance(value, bool) or value < 0:
         return "—"
@@ -4040,12 +4046,73 @@ def _model_execution_states(campaign_record: dict[str, Any] | None) -> dict[str,
     return output
 
 
+def _model_training_specifications(
+    manifest: CampaignManifest,
+    campaign_record: dict[str, Any] | None,
+) -> dict[str, dict[str, Any]]:
+    """Resolve the exact planned City-stage runtime contract for every model.
+
+    Runtime batch/worker overrides live in ``campaign.json`` while crop, learning
+    rate, LLRD, precision, EMA, cadence, and objective semantics are layered from
+    the committed configuration files.  Reusing ``_resolved_config`` keeps the
+    public comparison synchronized with the configuration actually launched.
+    """
+
+    if campaign_record is None:
+        return {}
+    city_jobs = {
+        str(job["model"]): job
+        for job in campaign_record["jobs"]
+        if job.get("protocol") == "cityscapes"
+    }
+    specifications: dict[str, dict[str, Any]] = {}
+    prototype_root = Path(campaign_record["campaign"]) / ".report-training-specification"
+    for model in manifest.models:
+        owner = model.alias_of or model.id
+        job = city_jobs.get(owner)
+        if job is None:
+            raise CampaignError(f"campaign is missing the Cityscapes specification for {owner}")
+        config, _ = _resolved_config(
+            campaign_record,
+            job,
+            prototype_root / model.id,
+        )
+        objective = "hungarian_query" if config.loss.query is not None else "dense_semantic"
+        specifications[model.id] = {
+            "gpu_count": 1,
+            "crop_height": config.aug.crop[0],
+            "crop_width": config.aug.crop[1],
+            "batch_size_per_gpu": config.train.batch_size,
+            "gradient_accumulation": config.train.accum,
+            "effective_batch_size": config.train.batch_size * config.train.accum,
+            "train_workers": config.train.num_workers,
+            "precision": config.train.precision,
+            "optimizer": "AdamW",
+            "backbone_lr": config.optim.backbone_lr,
+            "fresh_component_lr": config.optim.backbone_lr * config.optim.head_lr_mult,
+            "head_lr_multiplier": config.optim.head_lr_mult,
+            "weight_decay": config.optim.weight_decay,
+            "betas": list(config.optim.betas),
+            "llrd": config.optim.llrd,
+            "warmup_iterations": config.optim.warmup_iters,
+            "warmup_ratio": config.optim.warmup_ratio,
+            "poly_power": config.optim.poly_power,
+            "gradient_clip": config.optim.grad_clip,
+            "ema_decay": config.train.ema_decay,
+            "validation_interval": config.train.val_every,
+            "checkpoint_interval": config.train.ckpt_every,
+            "objective": objective,
+        }
+    return specifications
+
+
 def _comparison_status(
     manifest: CampaignManifest,
     records: dict[str, dict[str, Any]],
     campaign_record: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     execution_states = _model_execution_states(campaign_record)
+    training_specifications = _model_training_specifications(manifest, campaign_record)
     expected_performance = sum(model.alias_of is None for model in manifest.models)
     completed_performance = sum(
         record.get("model_profile", {}).get("standardized_inference", {}).get("status")
@@ -4107,8 +4174,13 @@ def _comparison_status(
                 "iteration_progress": progress,
                 "parameter_count": profile.get("parameter_count", {}),
                 "standardized_inference": inference,
+                "training_specification": training_specifications.get(model_id, {}),
             }
         )
+    specifications = list(training_specifications.values())
+    precisions = sorted({str(item["precision"]) for item in specifications})
+    effective_batches = sorted({int(item["effective_batch_size"]) for item in specifications})
+    train_workers = sorted({int(item["train_workers"]) for item in specifications})
     return {
         "schema_version": 2,
         "scope": {
@@ -4130,6 +4202,47 @@ def _comparison_status(
                 for protocol in REQUIRED_PROTOCOLS
             },
             "seed_policy": "missing cells use seed 0; compatible retained seeds are preserved",
+            "training": {
+                "hardware": "one NVIDIA L40S per physical job",
+                "gpu_count_per_job": 1,
+                "seeds": (
+                    list(campaign_record["execution"]["seeds"])
+                    if campaign_record is not None
+                    else []
+                ),
+                "deterministic_algorithms": (
+                    bool(campaign_record["execution"]["deterministic"])
+                    if campaign_record is not None
+                    else None
+                ),
+                "precisions": precisions,
+                "effective_batch_sizes": effective_batches,
+                "train_workers": train_workers,
+                "optimizer": "AdamW",
+                "schedule": "linear warmup followed by per-iteration polynomial decay",
+                "augmentation": (
+                    "random scale 0.5-2.0, crop, horizontal flip p=0.5, and color jitter p=0.5"
+                ),
+                "dense_objective": (
+                    "standalone Cityscapes CE; RailSem19-only and transfer adaptation "
+                    "CE + 0.5 Lovasz"
+                ),
+                "query_objective": (
+                    "Hungarian class/mask assignment with class/mask-BCE/Dice weights 2/5/5 "
+                    "and 8,192 matching points"
+                ),
+                "transfer": (
+                    "reuse the matching 40,000-iteration Cityscapes checkpoint, reset only "
+                    "the incompatible classifier, and train RailSem19 for 20,000 iterations "
+                    "at 0.1x learning rate"
+                ),
+                "evaluation": ("final EMA, batch 1, 1024x1024 sliding window, stride 768, no TTA"),
+                "resume_policy": (
+                    campaign_record["execution"]["resume_policy"]
+                    if campaign_record is not None
+                    else None
+                ),
+            },
             "standardized_inference": {
                 "status": (
                     "complete"
@@ -4181,6 +4294,28 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
         "priority",
         "model",
         "status",
+        "training_crop_height",
+        "training_crop_width",
+        "training_gpu_count",
+        "training_batch_size_per_gpu",
+        "training_gradient_accumulation",
+        "training_effective_batch_size",
+        "training_workers",
+        "training_precision",
+        "training_optimizer",
+        "training_backbone_lr",
+        "training_fresh_component_lr",
+        "training_head_lr_multiplier",
+        "training_weight_decay",
+        "training_llrd",
+        "training_warmup_iterations",
+        "training_warmup_ratio",
+        "training_poly_power",
+        "training_gradient_clip",
+        "training_ema_decay",
+        "training_validation_interval",
+        "training_checkpoint_interval",
+        "training_objective",
         *protocol_columns,
         "standardized_inference_fps",
         "standardized_inference_resident_parameter_bytes",
@@ -4201,6 +4336,33 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
             "model": row["model"],
             "status": row["status"],
         }
+        training = row.get("training_specification", {})
+        output.update(
+            {
+                "training_crop_height": training.get("crop_height", ""),
+                "training_crop_width": training.get("crop_width", ""),
+                "training_gpu_count": training.get("gpu_count", ""),
+                "training_batch_size_per_gpu": training.get("batch_size_per_gpu", ""),
+                "training_gradient_accumulation": training.get("gradient_accumulation", ""),
+                "training_effective_batch_size": training.get("effective_batch_size", ""),
+                "training_workers": training.get("train_workers", ""),
+                "training_precision": training.get("precision", ""),
+                "training_optimizer": training.get("optimizer", ""),
+                "training_backbone_lr": training.get("backbone_lr", ""),
+                "training_fresh_component_lr": training.get("fresh_component_lr", ""),
+                "training_head_lr_multiplier": training.get("head_lr_multiplier", ""),
+                "training_weight_decay": training.get("weight_decay", ""),
+                "training_llrd": training.get("llrd", ""),
+                "training_warmup_iterations": training.get("warmup_iterations", ""),
+                "training_warmup_ratio": training.get("warmup_ratio", ""),
+                "training_poly_power": training.get("poly_power", ""),
+                "training_gradient_clip": training.get("gradient_clip", ""),
+                "training_ema_decay": training.get("ema_decay", ""),
+                "training_validation_interval": training.get("validation_interval", ""),
+                "training_checkpoint_interval": training.get("checkpoint_interval", ""),
+                "training_objective": training.get("objective", ""),
+            }
+        )
         for protocol_id in REQUIRED_PROTOCOLS:
             protocol = protocols.get(protocol_id)
             progress = row["iteration_progress"][protocol_id]
@@ -4263,6 +4425,13 @@ def _central_readme(
     source_sha: str,
 ) -> str:
     models = {model.id: model for model in manifest.models}
+    training_contract = status["scope"]["training"]
+    seeds = ", ".join(str(seed) for seed in training_contract["seeds"])
+    deterministic = (
+        "forced"
+        if training_contract["deterministic_algorithms"]
+        else "not forced; fixed seeds and full provenance are retained"
+    )
     lines = [
         "# Model comparison: Cityscapes and RailSem19",
         "",
@@ -4270,11 +4439,66 @@ def _central_readme(
         "instead of retrained. `—` means evidence is unavailable, not zero or failure. Quality "
         "tables show one clean mean; individual seeds remain in machine records.",
         "",
-        "## Quality",
+        "## Training specification",
         "",
-        "| priority | model | status | Cityscapes mIoU (iterations) | RailSem19 mIoU (iterations) | Cityscapes → RailSem19 mIoU (iterations) |",
-        "|---:|---|---|---:|---:|---:|",
+        "These are the resolved settings used by this campaign, not generic model defaults. "
+        "Each physical job occupies one L40S and performs one optimizer update after the "
+        "listed number of accumulated micro-batches.",
+        "",
+        "| aspect | campaign setting |",
+        "|---|---|",
+        f"| GPU topology | {training_contract['hardware']} |",
+        f"| seed and determinism | seed {seeds}; deterministic algorithms {deterministic} |",
+        f"| precision | {', '.join(training_contract['precisions'])} |",
+        f"| input pipeline | {', '.join(str(value) for value in training_contract['train_workers'])} "
+        "CPU data-loader workers per job; model-specific crop and batching are below |",
+        "| optimizer | AdamW, betas 0.9/0.999, weight decay 0.05; backbone LR and "
+        "layer-wise decay are model-specific below; fresh task components use 10x LR |",
+        "| LR schedule | 1,500-iteration linear warmup from ratio 1e-6, then per-iteration "
+        "polynomial decay with power 0.9; gradient clipping 1.0 |",
+        "| EMA and cadence | EMA decay 0.9998; validation and periodic checkpoint every "
+        "4,000 optimizer iterations |",
+        f"| augmentation | {training_contract['augmentation']}; crop size is model-specific below |",
+        f"| dense objectives | {training_contract['dense_objective']} |",
+        f"| EoMT query objective | {training_contract['query_objective']} |",
+        "| protocol budgets | Cityscapes 40,000; RailSem19 40,000; transfer 20,000 "
+        "RailSem19 adaptation iterations |",
+        f"| transfer initialization | {training_contract['transfer']} |",
+        f"| interruption recovery | {training_contract['resume_policy']} |",
+        f"| final quality evaluation | {training_contract['evaluation']} |",
+        "",
+        "### Model-specific optimizer and batching settings",
+        "",
+        "The fresh-component LR is the initial LR for newly initialized heads or adapters. "
+        "Transfer adaptation applies the documented 0.1x stage multiplier to both backbone "
+        "and fresh-component groups.",
+        "",
+        "| model | train crop | batch/GPU | accumulation | effective batch | backbone LR | fresh-component LR | LLRD | objective |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
+    for row in status["models"]:
+        model = models[row["model"]]
+        link = "../../" + str(model.readme).removeprefix("docs/")
+        spec = row["training_specification"]
+        objective = (
+            "Hungarian query" if spec["objective"] == "hungarian_query" else "dense semantic"
+        )
+        lines.append(
+            f"| [{row['model']}]({link}) | {spec['crop_height']}x{spec['crop_width']} | "
+            f"{spec['batch_size_per_gpu']} | {spec['gradient_accumulation']} | "
+            f"{spec['effective_batch_size']} | {_scientific(spec['backbone_lr'])} | "
+            f"{_scientific(spec['fresh_component_lr'])} | "
+            f"{_number(spec['llrd'], decimals=2)} | {objective} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Quality",
+            "",
+            "| priority | model | status | Cityscapes mIoU (iterations) | RailSem19 mIoU (iterations) | Cityscapes → RailSem19 mIoU (iterations) |",
+            "|---:|---|---|---:|---:|---:|",
+        ]
+    )
     for row in status["models"]:
         model = models[row["model"]]
         link = "../../" + str(model.readme).removeprefix("docs/")
@@ -4302,6 +4526,9 @@ def _central_readme(
             "forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed "
             "iterations. It includes internal query-to-dense collapse and excludes I/O, "
             "preprocessing, sliding windows, argmax, and metrics.",
+            "The benchmark runs only after that model's RailSem19 training and final quality "
+            "evaluation succeed, so FPS can remain pending while Cityscapes mIoU is already "
+            "available.",
             "",
             "Weight memory is the resident parameter tensors; the resume checkpoint also "
             "contains optimizer and EMA state; peak VRAM is allocator-reserved memory excluding "
