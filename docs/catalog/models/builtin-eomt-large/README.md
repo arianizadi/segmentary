@@ -82,7 +82,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 82.74 | 90.29 | 90.11 | 90.18 | 99.79 | 96.62 | 93.69 | 88.48 |
 | RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
-| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+| Cityscapes → RailSem19 | 20,000 / 20,000 | 67.92 | 80.10 | 80.53 | 80.13 | 99.31 | 88.22 | 79.88 | 74.75 |
 
 ### Standardized model-only inference
 
@@ -100,7 +100,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | 13h 26m 42s | 13.45 | 16.86 GiB | 6.199 |
 | RailSem19 | — | — | — | — |
-| Cityscapes → RailSem19 | — | — | — | — |
+| Cityscapes → RailSem19 | 7h 17m 52s | 7.30 | 16.35 GiB | 4.525 |
 
 ### Cityscapes class IoU
 
@@ -126,11 +126,37 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | motorcycle | 74.29 |
 | bicycle | 80.00 |
 
+### RailSem19 class IoU
+
+| class | RailSem19 | Cityscapes → RailSem19 |
+|---|---:|---:|
+| road | — | 56.76 |
+| sidewalk | — | 60.42 |
+| construction | — | 77.12 |
+| fence | — | 54.58 |
+| pole | — | 63.98 |
+| traffic-light | — | 56.95 |
+| traffic-sign | — | 52.84 |
+| vegetation | — | 85.96 |
+| terrain | — | 64.85 |
+| sky | — | 95.08 |
+| human | — | 69.69 |
+| car | — | 83.74 |
+| truck | — | 49.97 |
+| motorcycle | — | — |
+| bicycle | — | — |
+| on-rails | — | 84.47 |
+| rail-track | — | 85.78 |
+| rail-raised | — | 67.24 |
+| rail-embedded | — | 47.27 |
+| tram-track | — | 62.82 |
+| trackbed | — | 70.99 |
+
 ### Provenance
 
 - Model recipe: `configs/models/eomt_large.yaml`
 - Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: Cityscapes: 0.
+- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0.
 - EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
