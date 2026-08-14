@@ -1,0 +1,3046 @@
+{
+  "counts": {
+    "complete_cells": 7,
+    "complete_models": 0,
+    "complete_performance_benchmarks": 1,
+    "physical_performance_benchmarks": 36,
+    "physical_training_cells": 108,
+    "reported_cells": 7,
+    "total_reported_cells": 111
+  },
+  "models": [
+    {
+      "alias_of": null,
+      "cityscapes_miou": "82.96",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 40000,
+          "final_verification": {
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
+          },
+          "stages": [
+            {
+              "current_iterations": 40000,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 40000,
+          "final_verification": {
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
+          },
+          "stages": [
+            {
+              "current_iterations": 40000,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "eomt_dinov3_large",
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": 314917910
+      },
+      "priority": 1,
+      "railsem19_miou": "71.42",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": 40.92472282497999,
+        "latency_ms": {
+          "mean": 24.43510746002197,
+          "p50": 24.242688179016113,
+          "p95": 25.567181015014647
+        },
+        "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
+        "note": "Model-only public forward measured once from the RailSem19-only 21-class EMA checkpoint and linked across this model's quality protocols.",
+        "parameter_dtype_counts": {
+          "float32": 314917910
+        },
+        "peak_reserved_bytes": 3359637504,
+        "peak_vram_bytes": 3359637504,
+        "protocol": {
+          "backend": "pytorch",
+          "entrypoint": "public model(image) dense-logits forward",
+          "gpu_model": "NVIDIA L40S",
+          "input_shape_nchw": [
+            1,
+            3,
+            1024,
+            1024
+          ],
+          "measured_iterations": 100,
+          "precision": "bf16_autocast",
+          "warmup_iterations": 20
+        },
+        "provenance": {
+          "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "checkpoint_bytes": 5039373562,
+          "checkpoint_global_step": 40000,
+          "checkpoint_sha256": "8ea5ae97baade3b62637a42dfc27240dc0a49ca21cad3cc317ea4b05d1919220",
+          "config_hash": "c13906682a09",
+          "config_sha256": "0fa3551a198b2cf61933fbeffd62638ffb946407114a5a6c9fddc5f318595b78",
+          "measured_job_id": "eomt_dinov3_large--railsem19--seed-0",
+          "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "result_seed": 0,
+          "result_sha256": "f0613bd730423ae03e14c4f903e1475556214ef2c3fdb3c94fa88c4318180909",
+          "result_stage": "eval:railsem19:val",
+          "weights": "ema"
+        },
+        "resident_parameter_bytes": 1259671640,
+        "status": "complete"
+      },
+      "status": "running"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "82.74",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 40000,
+          "final_verification": {
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
+          },
+          "stages": [
+            {
+              "current_iterations": 40000,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "eomt_large",
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": null
+      },
+      "priority": 2,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "note": "Pending the fixed RailSem19-only model benchmark.",
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "running"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "hf_auto_beit_base_ade",
+      "parameter_count": {},
+      "priority": 3,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "running"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "81.03",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 40000,
+          "final_verification": {
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
+          },
+          "stages": [
+            {
+              "current_iterations": 40000,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "upernet_convnext",
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": null
+      },
+      "priority": 4,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "note": "Pending the fixed RailSem19-only model benchmark.",
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "running"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "segformer_b5",
+      "parameter_count": {},
+      "priority": 5,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "running"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "hf_auto_upernet_swin_tiny",
+      "parameter_count": {},
+      "priority": 6,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "hrnet_w48_ocr",
+      "parameter_count": {},
+      "priority": 7,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "78.46",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 40000,
+          "final_verification": {
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
+          },
+          "stages": [
+            {
+              "current_iterations": 40000,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_resnet101_uper",
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": null
+      },
+      "priority": 8,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "note": "Pending the fixed RailSem19-only model benchmark.",
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "running"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "80.65",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 40000,
+          "final_verification": {
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
+          },
+          "stages": [
+            {
+              "current_iterations": 40000,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "segformer_b2",
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": null
+      },
+      "priority": 9,
+      "railsem19_miou": "\u2014",
+      "result_origin": "reused",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "note": "Pending the fixed RailSem19-only model benchmark.",
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "running"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_upernet_resnet101",
+      "parameter_count": {},
+      "priority": 10,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_deeplabv3plus_resnet101",
+      "parameter_count": {},
+      "priority": 11,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": "smp_deeplabv3plus_resnet101",
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "deeplabv3plus_r101",
+      "parameter_count": {},
+      "priority": 12,
+      "railsem19_miou": "\u2014",
+      "result_origin": "alias",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_convnext_tiny_uper",
+      "parameter_count": {},
+      "priority": 13,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_convnext_tiny_channelmapper_dpt",
+      "parameter_count": {},
+      "priority": 14,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_pan_resnext50",
+      "parameter_count": {},
+      "priority": 15,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_resnet50_deeplabv3plus",
+      "parameter_count": {},
+      "priority": 16,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "78.73",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 40000,
+          "final_verification": {
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
+          },
+          "stages": [
+            {
+              "current_iterations": 40000,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_resnet50_fpn_ocr",
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": null
+      },
+      "priority": 17,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "note": "Pending the fixed RailSem19-only model benchmark.",
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "running"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_resnet50_psp",
+      "parameter_count": {},
+      "priority": 18,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_resnet50_aspp",
+      "parameter_count": {},
+      "priority": 19,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_deeplabv3_resnet50",
+      "parameter_count": {},
+      "priority": 20,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_fpn_resnet50",
+      "parameter_count": {},
+      "priority": 21,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_upernet_mit_b0",
+      "parameter_count": {},
+      "priority": 22,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "segformer_b0",
+      "parameter_count": {},
+      "priority": 23,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "hf_auto_segformer_b0",
+      "parameter_count": {},
+      "priority": 24,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_unet_resnet34",
+      "parameter_count": {},
+      "priority": 25,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_unetplusplus_efficientnet_b0",
+      "parameter_count": {},
+      "priority": 26,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_manet_efficientnet_b0",
+      "parameter_count": {},
+      "priority": 27,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_efficientnet_b0_deeplabv3plus",
+      "parameter_count": {},
+      "priority": 28,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "hf_auto_mobilevitv2_deeplabv3",
+      "parameter_count": {},
+      "priority": 29,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "hf_auto_mobilevit_xxs_deeplabv3",
+      "parameter_count": {},
+      "priority": 30,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "hf_auto_mobilenetv2_deeplabv3",
+      "parameter_count": {},
+      "priority": 31,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_mobilenetv3_large_deeplabv3plus",
+      "parameter_count": {},
+      "priority": 32,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_mobilenetv3_large_lraspp",
+      "parameter_count": {},
+      "priority": 33,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_pspnet_mobilenet_v2",
+      "parameter_count": {},
+      "priority": 34,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "smp_linknet_mobilenet_v2",
+      "parameter_count": {},
+      "priority": 35,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_resnet18_fpn_segformer_aux",
+      "parameter_count": {},
+      "priority": 36,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    },
+    {
+      "alias_of": null,
+      "cityscapes_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "\u2014",
+      "iteration_progress": {
+        "cityscapes": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "Cityscapes",
+              "stage": "cityscapes",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        },
+        "cityscapes_to_railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19 adaptation",
+              "stage": "railsem19",
+              "target_iterations": 20000
+            }
+          ],
+          "target_iterations": 20000
+        },
+        "railsem19": {
+          "current_iterations": 0,
+          "final_verification": {
+            "checkpoint_available": false,
+            "checkpoint_global_step": null,
+            "checkpoint_verified": false,
+            "result_final_stage_iteration": null,
+            "result_total_iterations": null,
+            "result_verified": false
+          },
+          "stages": [
+            {
+              "current_iterations": 0,
+              "dataset": "RailSem19",
+              "stage": "railsem19",
+              "target_iterations": 40000
+            }
+          ],
+          "target_iterations": 40000
+        }
+      },
+      "model": "native_resnet18_fpn_fcn",
+      "parameter_count": {},
+      "priority": 37,
+      "railsem19_miou": "\u2014",
+      "result_origin": "trained",
+      "standardized_inference": {
+        "fps": null,
+        "latency_ms": null,
+        "peak_vram_bytes": null,
+        "status": "pending"
+      },
+      "status": "queued"
+    }
+  ],
+  "schema_version": 2,
+  "scope": {
+    "model_recipes": 37,
+    "protocol_targets": {
+      "cityscapes": {
+        "stages": [
+          {
+            "dataset": "Cityscapes",
+            "stage": "cityscapes",
+            "target_iterations": 40000
+          }
+        ],
+        "target_iterations": 40000
+      },
+      "cityscapes_to_railsem19": {
+        "stages": [
+          {
+            "dataset": "RailSem19 adaptation",
+            "stage": "railsem19",
+            "target_iterations": 20000
+          }
+        ],
+        "target_iterations": 20000
+      },
+      "railsem19": {
+        "stages": [
+          {
+            "dataset": "RailSem19",
+            "stage": "railsem19",
+            "target_iterations": 40000
+          }
+        ],
+        "target_iterations": 40000
+      }
+    },
+    "protocols": [
+      "cityscapes",
+      "railsem19",
+      "cityscapes_to_railsem19"
+    ],
+    "seed_policy": "missing cells use seed 0; compatible retained seeds are preserved",
+    "standardized_inference": {
+      "contract": "L40S, PyTorch eager BF16, batch 1, 1024x1024, 20 warmup, 100 timed",
+      "owner": "RailSem19-only 21-class EMA checkpoint, seed 0",
+      "status": "running"
+    },
+    "unique_training_choices": 36
+  }
+}

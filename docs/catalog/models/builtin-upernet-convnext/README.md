@@ -60,3 +60,66 @@ is claimed yet.
 
 See the [built-in model component](../../components/builtin-models/README.md)
 and [model comparison guide](../../../guides/models-and-tuning.md).
+
+<!-- segmentary:generated-city-rail-benchmark:start -->
+## Cityscapes and RailSem19 benchmark results
+
+Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+
+| protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Cityscapes | 40,000 / 40,000 | 81.03 | 87.64 | 90.64 | 89.04 | 99.78 | 96.46 | 93.38 | 87.36 |
+| RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+
+### Standardized model-only inference
+
+Pending one measurement from this model's RailSem19-only 21-class EMA checkpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+
+| parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
+|---:|---:|---:|---:|---:|---:|---:|
+| — | — | — | — | — | — | — |
+
+### Training and full-pipeline evaluation cost
+
+Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
+
+| protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
+|---|---:|---:|---:|---:|
+| Cityscapes | 13h 28m 59s | 13.48 | 10.60 GiB | 5.379 |
+| RailSem19 | — | — | — | — |
+| Cityscapes → RailSem19 | — | — | — | — |
+
+### Cityscapes class IoU
+
+| class | IoU |
+|---|---:|
+| road | 98.28 |
+| sidewalk | 86.21 |
+| building | 93.25 |
+| wall | 62.87 |
+| fence | 65.17 |
+| pole | 65.92 |
+| traffic-light | 72.96 |
+| traffic-sign | 81.48 |
+| vegetation | 92.80 |
+| terrain | 66.77 |
+| sky | 94.97 |
+| person | 83.59 |
+| rider | 65.93 |
+| car | 95.73 |
+| truck | 87.71 |
+| bus | 92.05 |
+| train | 84.96 |
+| motorcycle | 69.38 |
+| bicycle | 79.50 |
+
+### Provenance
+
+- Model recipe: `configs/models/upernet_convnext.yaml`
+- Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Retained seeds: Cityscapes: 0.
+- EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
+- Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
+
+<!-- segmentary:generated-city-rail-benchmark:end -->
