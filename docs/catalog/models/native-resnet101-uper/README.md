@@ -44,7 +44,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 78.46 | 86.42 | 88.49 | 87.35 | 99.75 | 95.99 | 92.58 | 84.70 |
 | RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
-| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+| Cityscapes → RailSem19 | 20,000 / 20,000 | 64.26 | 76.90 | 78.40 | 77.32 | 99.24 | 87.06 | 78.17 | 72.29 |
 
 ### Standardized model-only inference
 
@@ -62,7 +62,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | 7h 54m 19s | 7.91 | 6.61 GiB | 6.192 |
 | RailSem19 | — | — | — | — |
-| Cityscapes → RailSem19 | — | — | — | — |
+| Cityscapes → RailSem19 | 6h 49m 53s | 6.83 | 6.85 GiB | 5.251 |
 
 ### Cityscapes class IoU
 
@@ -88,11 +88,37 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | motorcycle | 67.35 |
 | bicycle | 78.21 |
 
+### RailSem19 class IoU
+
+| class | RailSem19 | Cityscapes → RailSem19 |
+|---|---:|---:|
+| road | — | 55.06 |
+| sidewalk | — | 54.80 |
+| construction | — | 76.13 |
+| fence | — | 51.11 |
+| pole | — | 60.52 |
+| traffic-light | — | 52.95 |
+| traffic-sign | — | 46.72 |
+| vegetation | — | 84.24 |
+| terrain | — | 61.49 |
+| sky | — | 95.34 |
+| human | — | 65.40 |
+| car | — | 78.28 |
+| truck | — | 40.87 |
+| motorcycle | — | — |
+| bicycle | — | — |
+| on-rails | — | 77.48 |
+| rail-track | — | 82.49 |
+| rail-raised | — | 65.65 |
+| rail-embedded | — | 46.69 |
+| tram-track | — | 56.13 |
+| trackbed | — | 69.67 |
+
 ### Provenance
 
 - Model recipe: `configs/models/native_resnet101_uper.yaml`
 - Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: Cityscapes: 0.
+- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0.
 - EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
