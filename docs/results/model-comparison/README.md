@@ -8,7 +8,7 @@ This live comparison covers every shipped model recipe. Compatible results are r
 |---:|---|---|---:|---:|---:|
 | 1 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | running | 82.96 (40,000/40,000) | 71.42 (40,000/40,000) | — |
 | 2 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | running | 82.74 (40,000/40,000) | — | — |
-| 3 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | running | — | — | — |
+| 3 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | running | 57.26 (40,000/40,000) | — | — |
 | 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | running | 81.03 (40,000/40,000) | — | — |
 | 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | — | — | — |
 | 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | queued | — | — | — |
@@ -98,7 +98,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 |---|---:|---:|---:|---:|
 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | 14h 06m 17s / 14.10 | 13h 41m 29s / 13.69 | — / — | 17.02 GiB |
 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | 13h 26m 42s / 13.45 | — / — | — / — | 16.86 GiB |
-| [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | — / — | — / — | — / — | — |
+| [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | 14h 40m 07s / 14.67 | — / — | — / — | 19.53 GiB |
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 13h 28m 59s / 13.48 | — / — | — / — | 10.60 GiB |
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | — / — | — / — | — / — | — |
 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | — / — | — / — | — / — | — |
