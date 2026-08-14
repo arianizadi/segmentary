@@ -1886,6 +1886,141 @@ def _latest_resume_checkpoint(
     return checkpoint, step, _sha256(checkpoint)
 
 
+def migrate_campaign_source(
+    campaign: Path,
+    *,
+    from_sha: str,
+    to_sha: str,
+    reason: str,
+) -> dict[str, Any]:
+    """Move an interrupted pre-result campaign to a descendant source revision.
+
+    This is deliberately narrower than a general campaign rewrite. Every worker
+    must be stopped, no job may have completed, and every active lane must have a
+    validated full-state periodic checkpoint. The next ordinary ``launch`` then
+    resumes the same attempts with optimiser, scheduler, EMA, callback, and
+    global-step state intact.
+    """
+    if not os.environ.get("TMUX"):
+        raise CampaignError("source migration must run inside a named tmux session")
+    campaign = campaign.expanduser().resolve()
+    if from_sha == to_sha:
+        raise CampaignError("source migration needs two different revisions")
+    check_source_provenance(to_sha)
+    ancestry = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", from_sha, to_sha],
+        cwd=REPO_ROOT,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if ancestry.returncode != 0:
+        raise CampaignError(f"target revision {to_sha} does not descend from {from_sha}")
+
+    campaign_path = campaign / "campaign.json"
+    record = _load_json_object(campaign_path)
+    if record.get("schema_version") != CAMPAIGN_SCHEMA_VERSION:
+        raise CampaignError("unsupported campaign.json schema")
+    actual_source = record.get("source", {}).get("expected_git_sha")
+    if actual_source != from_sha:
+        raise CampaignError(
+            f"campaign source is {actual_source!r}, expected migration source {from_sha!r}"
+        )
+    if not isinstance(reason, str) or not reason.strip() or reason != reason.strip():
+        raise CampaignError("migration reason must be a non-empty trimmed string")
+
+    changed_inputs = [
+        relative
+        for relative, expected in record.get("source", {}).get("files_sha256", {}).items()
+        if _sha256(REPO_ROOT / relative) != expected
+    ]
+    if changed_inputs:
+        raise CampaignError(
+            "campaign config/taxonomy inputs changed across source migration: "
+            f"{sorted(changed_inputs)}"
+        )
+
+    managed_sessions = [lane["tmux_session"] for lane in record["lanes"]]
+    for section in ("publisher", "progress", "preflight"):
+        value = record.get(section)
+        if isinstance(value, dict) and isinstance(value.get("tmux_session"), str):
+            managed_sessions.append(value["tmux_session"])
+    alive = sorted(session for session in managed_sessions if _tmux_exists(session))
+    if alive:
+        raise CampaignError(f"stop every managed tmux session before migration: {alive}")
+
+    statuses: list[tuple[Path, dict[str, Any]]] = []
+    checkpoints: list[dict[str, Any]] = []
+    for lane in record["lanes"]:
+        status_path = _status_path(campaign, lane["id"])
+        status = _load_json_object(status_path)
+        if status.get("expected_git_sha") != from_sha:
+            raise CampaignError(f"{status_path}: expected_git_sha does not match {from_sha}")
+        jobs = status.get("jobs")
+        if not isinstance(jobs, list):
+            raise CampaignError(f"{status_path}: jobs must be a list")
+        completed = [job.get("id") for job in jobs if job.get("status") in COMPLETED_STATUSES]
+        if completed:
+            raise CampaignError(
+                "source migration is restricted to campaigns with no completed jobs; "
+                f"{status_path} has {completed}"
+            )
+        active = [job for job in jobs if job.get("status") in {"training", "train_failed"}]
+        unexpected = [
+            (job.get("id"), job.get("status"))
+            for job in jobs
+            if job.get("status") not in {"pending", "training", "train_failed"}
+        ]
+        if len(active) != 1 or unexpected:
+            raise CampaignError(
+                f"{status_path}: expected one interrupted training job and otherwise pending "
+                f"jobs, got active={len(active)} unexpected={unexpected}"
+            )
+        job = active[0]
+        attempts = job.get("attempts")
+        if not isinstance(attempts, list) or not attempts or not isinstance(attempts[-1], dict):
+            raise CampaignError(f"{status_path}: active job has no attempt")
+        attempt = attempts[-1]
+        paths, _ = _attempt_path_objects(attempt)
+        try:
+            config = load_yaml(paths["config"])
+        except (OSError, ValueError, yaml.YAMLError) as exc:
+            raise CampaignError(f"cannot inspect interrupted {job.get('id')}: {exc}") from exc
+        latest = _latest_resume_checkpoint(paths, config)
+        if latest is None:
+            raise CampaignError(f"{job.get('id')} has no validated periodic resume checkpoint")
+        checkpoint, step, digest = latest
+        checkpoints.append(
+            {
+                "lane": lane["id"],
+                "job_id": job.get("id"),
+                "checkpoint": str(checkpoint),
+                "checkpoint_sha256": digest,
+                "global_step": step,
+            }
+        )
+        statuses.append((status_path, status))
+
+    migration = {
+        "from_git_sha": from_sha,
+        "to_git_sha": to_sha,
+        "migrated_at": _now(),
+        "reason": reason,
+        "resume_checkpoints": checkpoints,
+    }
+    for status_path, status in statuses:
+        status["expected_git_sha"] = to_sha
+        status.setdefault("source_migrations", []).append(copy.deepcopy(migration))
+        _persist_status(status_path, status)
+    record["source"]["expected_git_sha"] = to_sha
+    allowed = set(record["reuse_policy"]["allowed_git_shas"])
+    allowed.update((from_sha, to_sha))
+    record["reuse_policy"]["allowed_git_shas"] = sorted(allowed)
+    record.setdefault("source_migrations", []).append(migration)
+    atomic_write_json(campaign_path, record)
+    return migration
+
+
 def _commands(
     record: dict[str, Any],
     job: dict[str, Any],
@@ -2850,6 +2985,8 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             attempt["resume"] = resume_record
             attempt.setdefault("resumes", []).append(resume_record)
             attempt["train_command"] = train
+            attempt["eval_command"] = evaluate
+            attempt["performance_command"] = benchmark
             attempt["status"] = job["status"] = "training"
             attempt["failure"] = job["failure"] = None
             attempt["finished_at"] = job["finished_at"] = None
@@ -4638,6 +4775,15 @@ def build_parser() -> argparse.ArgumentParser:
     publisher.add_argument("--campaign", required=True, type=Path)
     publisher.add_argument("--once", action="store_true")
 
+    migrate = subparsers.add_parser(
+        "migrate-source",
+        help="resume a stopped pre-result campaign on a descendant source revision",
+    )
+    migrate.add_argument("--campaign", required=True, type=Path)
+    migrate.add_argument("--from-sha", required=True, type=_full_sha)
+    migrate.add_argument("--to-sha", required=True, type=_full_sha)
+    migrate.add_argument("--reason", required=True)
+
     report = subparsers.add_parser(
         "report", help="validate all cells and generate the central and per-model README tables"
     )
@@ -4674,6 +4820,19 @@ def main(argv: list[str] | None = None) -> int:
             return run_bootstrap(args.campaign)
         if args.command == "publisher":
             return run_publisher(args.campaign, once=args.once)
+        if args.command == "migrate-source":
+            migration = migrate_campaign_source(
+                args.campaign,
+                from_sha=args.from_sha,
+                to_sha=args.to_sha,
+                reason=args.reason,
+            )
+            print(
+                f"migrated {len(migration['resume_checkpoints'])} interrupted lanes from "
+                f"{args.from_sha} to {args.to_sha}; rerun the original launch command with "
+                f"--expected-sha {args.to_sha} and --reuse-sha {args.from_sha}"
+            )
+            return 0
         if args.command == "report":
             return report_campaign(
                 args.campaign,
