@@ -427,8 +427,13 @@ class QuerySegmentationLoss(nn.Module):
                 )
 
                 if query_indices.numel():
-                    resized = _resize_masks(mask_logits[sample_index], target.valid.shape)
-                    pred_masks = resized[query_indices][:, target.valid]
+                    # Bilinear interpolation treats every query plane
+                    # independently. Select the matched queries first so a
+                    # typical 15-mask target does not materialize all 200 EoMT
+                    # query masks at full label resolution.
+                    pred_masks = _resize_masks(
+                        mask_logits[sample_index][query_indices], target.valid.shape
+                    )[:, target.valid]
                     truth_masks = target.masks[target_indices][:, target.valid].to(
                         dtype=pred_masks.dtype
                     )

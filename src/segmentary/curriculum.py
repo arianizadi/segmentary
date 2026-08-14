@@ -322,6 +322,19 @@ def load_backbone_weights(
                     f"invalid EMA state in {ckpt}: params and buffers must be mappings"
                 )
             source_state = {**params, **buffers}
+            # EMA follows every named buffer, including upstream implementation
+            # caches registered with persistent=False. Those caches are rebuilt
+            # by the target model and intentionally absent from state_dict();
+            # exclude only exact non-persistent buffers that still exist on the
+            # target. An unknown persistent source key remains unexpected and
+            # therefore still fails closed below.
+            target_buffer_keys = {name for name, _ in model.named_buffers()}
+            nonpersistent_target_buffers = target_buffer_keys - set(target_state)
+            source_state = {
+                name: value
+                for name, value in source_state.items()
+                if name not in nonpersistent_target_buffers
+            }
         else:
             raw = state.get("state_dict", state)
             if not isinstance(raw, dict):
