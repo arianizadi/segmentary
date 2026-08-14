@@ -16,13 +16,12 @@ OCR first predicts soft class regions, pools an object representation for each
 region, lets every pixel attend to those representations, and classifies the
 refined features.
 
-## Important training deviation
+## OCR supervision
 
-The original OCR recipe normally applies a separate supervised loss to coarse
-auxiliary logits. Segmentary currently exposes one output and one dense loss. The
-coarse logits still learn indirectly through region pooling, but they do not
-receive the paper's separate deep-supervision loss. Treat this as Segmentary's
-HRNet/OCR variant, not an exact reproduction of an upstream OCR result.
+Training applies an explicit `0.4`-weighted auxiliary loss to the full-resolution
+coarse OCR logits. Public inference still returns only the refined logits, so the
+extra prediction is used for deep supervision without changing deployment or
+evaluation output.
 
 Pros:
 
@@ -34,7 +33,7 @@ Pros:
 Cons:
 
 - large W48 backbone and high-resolution activations;
-- missing auxiliary supervision changes the training recipe;
+- the auxiliary OCR objective increases training memory and computation;
 - export has not been validated;
 - no same-protocol Segmentary dataset-quality benchmark is recorded.
 

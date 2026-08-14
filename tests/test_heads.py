@@ -117,6 +117,14 @@ def test_mask_classification_reset_head():
     assert not torch.equal(model.model.class_predictor.weight.detach(), before)
 
 
+def test_mask_classification_declares_eomt_class_dependent_buffer():
+    model = _tiny_wrapper()
+    model.model.criterion = nn.Module()
+    model.model.criterion.register_buffer("empty_weight", torch.ones(NUM_CLASSES + 1))
+
+    assert model.reset_head_state_keys() == ("model.criterion.empty_weight",)
+
+
 # ---------------------------------------------------------------- OCR head
 
 

@@ -21,7 +21,7 @@ for its exact upstream module layout and behavior.
 | `eomt_large` | [EoMT-L](../../models/builtin-eomt-large/README.md) | native query objective available; dense default remains experimental | complete COCO panoptic checkpoint |
 | `eomt_dinov3_large` | [EoMT-DINOv3-L](../../models/builtin-eomt-dinov3-large/README.md) | native query objective available; dense default remains experimental | complete COCO panoptic checkpoint |
 | `mask2former_dinov3` | [Mask2Former/DINOv3](../../models/builtin-mask2former-dinov3/README.md) | deliberately blocked | none |
-| `hrnet_w48_ocr` | [HRNet-W48/OCR](../../models/builtin-hrnet-w48-ocr/README.md) | supported with a documented training deviation | ImageNet HRNet backbone |
+| `hrnet_w48_ocr` | [HRNet-W48/OCR](../../models/builtin-hrnet-w48-ocr/README.md) | supported with supervised coarse OCR logits | ImageNet HRNet backbone |
 | `deeplabv3plus_r101` | [DeepLabV3+/R101 alias](../../models/builtin-deeplabv3plus-r101-alias/README.md) | compatibility alias | ImageNet ResNet-101 encoder |
 | `upernet_r101` | [UPerNet/R101 alias](../../models/builtin-upernet-r101-alias/README.md) | compatibility alias | ImageNet ResNet-101 encoder |
 
@@ -39,9 +39,9 @@ The main advantage of a built-in is precision: Segmentary knows the exact
 backbone, head, checkpoint, and reset behavior instead of guessing an upstream
 layout. The tradeoff is less free composition than [`smp`](../smp/README.md)
 and a smaller checkpoint catalog than [`hf_auto`](../hf-auto/README.md).
-Architecture-specific deviations—such as EoMT trained through the default dense
-path or OCR without its native auxiliary objective—also require reading the
-selected model page before interpreting results. EoMT native query training is
+Architecture-specific choices—such as EoMT trained through the default dense
+path—also require reading the selected model page before interpreting results.
+EoMT native query training is
 an explicit [loss choice](../query-objectives/README.md), not a model-side switch.
 
 ## What is shared

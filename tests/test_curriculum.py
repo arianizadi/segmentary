@@ -402,6 +402,41 @@ def test_reset_head_includes_unchanged_zero_bias_owned_by_reset_classifier(
     assert torch.count_nonzero(target.classifier.bias) == 0
 
 
+def test_reset_head_preserves_declared_target_sized_classifier_buffer(tmp_path: Path) -> None:
+    class _BufferedClassifier(nn.Module):
+        def __init__(self, classes: int) -> None:
+            super().__init__()
+            self.backbone = nn.Linear(4, 4)
+            self.class_predictor = nn.Linear(4, classes + 1)
+            self.criterion = nn.Module()
+            self.criterion.register_buffer("empty_weight", torch.ones(classes + 1))
+            self.criterion.empty_weight[-1] = 0.1
+
+        def reset_head(self) -> None:
+            nn.init.normal_(self.class_predictor.weight)
+            nn.init.zeros_(self.class_predictor.bias)
+
+        def reset_head_state_keys(self) -> tuple[str, ...]:
+            return ("criterion.empty_weight",)
+
+    source = _BufferedClassifier(19)
+    with torch.no_grad():
+        source.backbone.weight.fill_(3.0)
+    checkpoint = tmp_path / "eomt-city.ckpt"
+    torch.save(
+        {"state_dict": {f"model.{name}": value for name, value in source.state_dict().items()}},
+        checkpoint,
+    )
+    target = _BufferedClassifier(21)
+
+    load_backbone_weights(target, checkpoint, reset_head=True)
+
+    assert torch.equal(target.backbone.weight, source.backbone.weight)
+    assert target.class_predictor.weight.shape[0] == 22
+    assert target.criterion.empty_weight.shape == (22,)
+    assert target.criterion.empty_weight[-1].item() == pytest.approx(0.1)
+
+
 def test_reset_head_still_rejects_non_classifier_shape_change(tmp_path: Path) -> None:
     source = _tiny_model(seed=22)
     checkpoint = tmp_path / "bad-backbone.ckpt"

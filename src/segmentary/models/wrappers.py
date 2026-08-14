@@ -178,6 +178,20 @@ class SegmentationModel(nn.Module, ABC):
     def reset_head(self) -> None:
         """Re-initialise the final classifier only, leaving the rest untouched."""
 
+    def reset_head_state_keys(self) -> tuple[str, ...]:
+        """Non-parameter state that belongs to the task classifier.
+
+        Most models keep all class-count-dependent state in Conv2d/Linear
+        classifier parameters, which :meth:`reset_head` discovers by mutation.
+        A wrapper may return exact additional ``state_dict`` keys here when an
+        upstream architecture stores class-count-dependent buffers outside that
+        classifier module.  Curriculum hand-off preserves the freshly built
+        target values for only these declared keys and still requires every
+        other checkpoint tensor to match exactly.
+        """
+
+        return ()
+
     def _check_output(self, logits: Tensor, pixel_values: Tensor) -> Tensor:
         if logits.shape[1] != self.output_channels:
             raise ValueError(
