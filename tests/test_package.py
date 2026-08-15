@@ -99,6 +99,7 @@ def test_packaged_indexes_do_not_link_to_an_unshipped_docs_tree(
         "segmentary-table",
         "segmentary-models",
         "segmentary-progress",
+        "segmentary-scene",
     ],
 )
 def test_installed_wheel_console_help(

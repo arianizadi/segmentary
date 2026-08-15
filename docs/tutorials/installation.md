@@ -75,6 +75,7 @@ segmentary-make-split
 segmentary-table
 segmentary-models
 segmentary-progress
+segmentary-scene
 ```
 
 Check the entry points without downloading a model:
@@ -90,6 +91,7 @@ segmentary-make-split --help
 segmentary-table --help
 segmentary-models --help
 segmentary-progress --help
+segmentary-scene --help
 ```
 
 For deployment/export support, install the optional extra only in a compatible

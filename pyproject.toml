@@ -78,6 +78,7 @@ segmentary-make-split = "segmentary.make_split:main"
 segmentary-table = "segmentary.results_table:main"
 segmentary-models = "segmentary.model_catalog:main"
 segmentary-progress = "segmentary.progress:main"
+segmentary-scene = "segmentary.scene:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
