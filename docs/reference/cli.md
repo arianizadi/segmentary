@@ -1,8 +1,9 @@
 # Command-line reference
 
-An installed package exposes ten commands. From a source checkout, the module
-forms (`python -m segmentary.train`, for example) are equivalent for train/eval/
-export; compatibility wrappers for repository helpers remain under `scripts/`.
+An installed package exposes eleven commands. From a source checkout, the module
+forms (`python -m segmentary.train`, for example) are equivalent for train, eval,
+deployment export, and scene export; compatibility wrappers for repository helpers
+remain under `scripts/`.
 
 ## Watch live training
 
@@ -226,6 +227,32 @@ that absolute mIoU is not model-quality evidence. `--int8-exclude-node NAME` is
 a repeatable, last-resort mixed-precision control for a specifically diagnosed
 TensorRT tactic failure. Record every excluded node and inspect the reported
 engine precision counts.
+
+## Export one comparison scene
+
+```bash
+segmentary-scene CONFIG [CONFIG ...] --ckpt PATH --name MODEL \
+  --out PATH (--frame-key KEY | --frame-index N) [options]
+```
+
+This is a semantic-prediction artifact exporter, not a deployment-model exporter.
+It loads the checkpoint through the same raw/EMA path as `segmentary-eval`, uses
+the same canonical mapping and evaluation transform, and runs the same native
+whole-image or sliding-window inference protocol without TTA. `--dataset NAME
+--root PATH` enables the same cross-dataset override pattern as evaluation;
+`--mapping`, `--loader`, `--loader-options`, `--variant`, `--split`, and
+`--split-file` further define that override. Without `--dataset`, `--stage`
+selects configured data and defaults to the final stage.
+
+The command writes lossless grayscale index masks, a canonical `config.json`, and
+a per-scene provenance manifest. It refuses a missing/duplicate frame key,
+dimension changes, invalid class IDs, a conflicting taxonomy/input/ground truth,
+multiple or conflicting `input.*` files, mismatched prediction protocols, a
+legacy `rs19-config.json`/manifest-free scene root, and an existing named
+prediction unless `--replace` is explicit. Always export into a new canonical
+root rather than an older native-ID viewer directory. See [Export a scene for
+inference-checker](../guides/scene-comparison.md) for the artifact contract and a
+two-checkpoint example.
 
 ## Create a group-safe split
 

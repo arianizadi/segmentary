@@ -60,6 +60,8 @@ evaluate an exact checkpoint
 - [Evaluation and results](guides/evaluation-and-results.md) explains native and
   common endpoints, EMA versus raw weights, final versus best checkpoints, TTA,
   multi-seed aggregation, and reproducible result records.
+- [Export a scene for inference-checker](guides/scene-comparison.md) creates one
+  canonical ground-truth/prediction bundle with checkpoint and protocol provenance.
 - [Interpreting results](tutorials/interpreting-results.md) gives the detailed
   metric and debugging tutorial.
 - [All-model Cityscapes and RailSem19 campaign](guides/all-model-city-rail-campaign.md)
@@ -76,8 +78,9 @@ fixed. Change one named variable at a time.
 
 ## Use Segmentary as a library
 
-- [CLI reference](reference/cli.md) lists `segmentary-init`, `segmentary-models`, `segmentary-progress`, `segmentary-verify`,
-  `segmentary-overfit`, `segmentary-train`, `segmentary-eval`, `segmentary-export`,
+- [CLI reference](reference/cli.md) lists `segmentary-init`, `segmentary-models`,
+  `segmentary-progress`, `segmentary-verify`, `segmentary-overfit`,
+  `segmentary-train`, `segmentary-eval`, `segmentary-export`, `segmentary-scene`,
   `segmentary-make-split`, and `segmentary-table`.
 - [Python API](reference/python-api.md) shows config, taxonomy, loader, model,
   loss, metrics, inference, curricula, and result-record APIs.
