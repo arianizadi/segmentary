@@ -72,7 +72,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | priority | model | status | Cityscapes mIoU (iterations) | RailSem19 mIoU (iterations) | Cityscapes → RailSem19 mIoU (iterations) |
 |---:|---|---|---:|---:|---:|
 | 1 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | complete | 82.96 (40,000/40,000) | 71.42 (40,000/40,000) | 66.61 (20,000/20,000) |
-| 2 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | running | 82.74 (40,000/40,000) | — | 67.92 (20,000/20,000) |
+| 2 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | complete | 82.74 (40,000/40,000) | 72.13 (40,000/40,000) | 67.92 (20,000/20,000) |
 | 3 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | running | 57.26 (40,000/40,000) | — | 49.89 (20,000/20,000) |
 | 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | complete | 81.03 (40,000/40,000) | 70.74 (40,000/40,000) | 67.97 (20,000/20,000) |
 | 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | — | 71.95 (40,000/40,000) | — |
@@ -119,7 +119,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | model | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak VRAM (reserved, excl. context) |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | 314,917,910 | 1201.3 MiB | 4805.9 MiB | 40.92 | 24.24 | 25.57 | 3.13 GiB |
-| [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | — | — | — | — | — | — | — |
+| [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | 316,580,886 | 1207.7 MiB | 4831.3 MiB | 45.34 | 22.00 | 22.42 | 3.12 GiB |
 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | — | — | — | — | — | — | — |
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 80,887,221 | 308.6 MiB | 1235.0 MiB | 42.35 | 23.53 | 24.03 | 2.48 GiB |
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | 84,609,493 | 322.8 MiB | 1292.9 MiB | 25.13 | 39.28 | 43.62 | 2.57 GiB |
@@ -163,7 +163,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | model | Cityscapes wall / GPU-h | RailSem19 wall / GPU-h | transfer wall / GPU-h | peak train VRAM |
 |---|---:|---:|---:|---:|
 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | 14h 06m 17s / 14.10 | 13h 41m 29s / 13.69 | 7h 41m 23s / 7.69 | 17.02 GiB |
-| [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | 13h 26m 42s / 13.45 | — / — | 7h 17m 52s / 7.30 | 16.86 GiB |
+| [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | 13h 26m 42s / 13.45 | 14h 39m 19s / 14.66 | 7h 17m 52s / 7.30 | 16.86 GiB |
 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | 14h 40m 07s / 14.67 | — / — | 11h 00m 38s / 11.01 | 19.53 GiB |
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 13h 28m 59s / 13.48 | 16h 57m 54s / 16.96 | 9h 25m 59s / 9.43 | 10.60 GiB |
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | — / — | 19h 38m 19s / 19.64 | — / — | 16.94 GiB |
