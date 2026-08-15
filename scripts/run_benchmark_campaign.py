@@ -657,6 +657,15 @@ def build_campaign_record(
 ) -> dict[str, Any]:
     logical_jobs = campaign_jobs(manifest, seeds)
     jobs = campaign_jobs(manifest, seeds, include_aliases=False)
+    protocol_iterations = {
+        protocol.id: _iteration_plan(
+            deep_merge(
+                load_yaml(REPO_ROOT / "configs/base.yaml"),
+                load_yaml(REPO_ROOT / protocol.curriculum),
+            )
+        )["total_target_iterations"]
+        for protocol in manifest.protocols.values()
+    }
     assignments = partition_jobs(jobs, gpus)
     lane_records = []
     all_jobs = []
@@ -723,7 +732,7 @@ def build_campaign_record(
                 "fresh attempt only when no recovery checkpoint exists"
             ),
             "planned_optimizer_iterations": sum(
-                20_000 if job.protocol.id == "cityscapes_to_railsem19" else 40_000 for job in jobs
+                protocol_iterations[job.protocol.id] for job in jobs
             ),
             "avoided_duplicate_city_iterations": sum(
                 40_000 for job in jobs if job.protocol.id == "cityscapes_to_railsem19"

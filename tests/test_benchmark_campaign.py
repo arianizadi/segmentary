@@ -291,20 +291,20 @@ def test_transfer_reuses_city_checkpoint_and_only_schedules_target_iterations(
     _, resolved = campaign._resolved_config(
         record, transfer, tmp_path / "transfer", dependency_checkpoint=checkpoint
     )
-    assert campaign._iteration_plan(resolved)["total_target_iterations"] == 20_000
+    assert campaign._iteration_plan(resolved)["total_target_iterations"] == 40_000
     assert resolved["stages"][0]["init_from"] == str(checkpoint)
     assert resolved["stages"][0]["reset_head"] is True
     assert resolved["stages"][0]["lr_scale"] == pytest.approx(0.1)
-    assert resolved["stages"][0]["head_group_lr_scale"] is None
+    assert resolved["stages"][0]["head_group_lr_scale"] == pytest.approx(1.0)
     assert campaign._iteration_plan(resolved)["stages"] == [
         {
             "stage": "railsem19",
-            "target_iterations": 20_000,
+            "target_iterations": 40_000,
             "learning_rate_scale": pytest.approx(0.1),
-            "head_group_learning_rate_scale": pytest.approx(0.1),
+            "head_group_learning_rate_scale": pytest.approx(1.0),
         }
     ]
-    assert record["execution"]["planned_optimizer_iterations"] == 3_600_000
+    assert record["execution"]["planned_optimizer_iterations"] == 4_320_000
     assert record["execution"]["avoided_duplicate_city_iterations"] == 1_440_000
 
 

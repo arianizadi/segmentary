@@ -70,7 +70,9 @@ protocols:
   cityscapes_to_railsem19:
     label: Cityscapes to RailSem19
     # Reuse the matching completed City checkpoint. Do not train City twice.
-    curriculum: configs/campaigns/city_checkpoint_rs.yaml
+    # Retain/evaluate the corrected Rail target at both 20k and 40k. The
+    # cumulative budgets are City40+Rail20=60k and City40+Rail40=80k.
+    curriculum: configs/campaigns/experiments/city_checkpoint_rs_full_adaptation_v2.yaml
     final_stage: railsem19
     evaluation_dataset: railsem19
     evaluation_mapping: railsem19
