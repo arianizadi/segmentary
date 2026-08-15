@@ -1,11 +1,11 @@
 {
   "counts": {
-    "complete_cells": 17,
+    "complete_cells": 18,
     "complete_models": 2,
-    "complete_performance_benchmarks": 3,
+    "complete_performance_benchmarks": 4,
     "physical_performance_benchmarks": 36,
     "physical_training_cells": 108,
-    "reported_cells": 17,
+    "reported_cells": 18,
     "total_reported_cells": 111
   },
   "models": [
@@ -1160,18 +1160,18 @@
           "target_iterations": 20000
         },
         "railsem19": {
-          "current_iterations": 0,
+          "current_iterations": 40000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
+              "current_iterations": 40000,
               "dataset": "RailSem19",
               "stage": "railsem19",
               "target_iterations": 40000
@@ -1181,15 +1181,57 @@
         }
       },
       "model": "smp_upernet_resnet101",
-      "parameter_count": {},
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": 56281941
+      },
       "priority": 10,
-      "railsem19_miou": "\u2014",
+      "railsem19_miou": "66.82",
       "result_origin": "trained",
       "standardized_inference": {
-        "fps": null,
-        "latency_ms": null,
-        "peak_vram_bytes": null,
-        "status": "pending"
+        "fps": 72.47648535394444,
+        "latency_ms": {
+          "mean": 13.797578554153443,
+          "p50": 13.702144145965576,
+          "p95": 14.301389169692992
+        },
+        "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
+        "note": "Model-only public forward measured once from the RailSem19-only 21-class EMA checkpoint and linked across this model's quality protocols.",
+        "parameter_dtype_counts": {
+          "float32": 56281941
+        },
+        "peak_reserved_bytes": 1549795328,
+        "peak_vram_bytes": 1549795328,
+        "protocol": {
+          "backend": "pytorch",
+          "entrypoint": "public model(image) dense-logits forward",
+          "gpu_model": "NVIDIA L40S",
+          "input_shape_nchw": [
+            1,
+            3,
+            1024,
+            1024
+          ],
+          "measured_iterations": 100,
+          "precision": "bf16_autocast",
+          "warmup_iterations": 20
+        },
+        "provenance": {
+          "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "checkpoint_bytes": 902186783,
+          "checkpoint_global_step": 40000,
+          "checkpoint_sha256": "786e3d81df9181457bb198b058bfd34662540be50b92ea3c4a9c4a3f361f8087",
+          "config_hash": "430b2128bb6d",
+          "config_sha256": "27806ce1094668967c9977ea657ff5b54c6a2101a52e988dc7d74918591b4b7c",
+          "measured_job_id": "smp_upernet_resnet101--railsem19--seed-0",
+          "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "result_seed": 0,
+          "result_sha256": "7dd3f16ea3c97e8db9e5e3ca42b40fd1b93673f7c4b8c196d19801bb11fec6b1",
+          "result_stage": "eval:railsem19:val",
+          "weights": "ema"
+        },
+        "resident_parameter_bytes": 225127764,
+        "status": "complete"
       },
       "status": "running",
       "training_specification": {
@@ -1512,7 +1554,7 @@
         "peak_vram_bytes": null,
         "status": "pending"
       },
-      "status": "queued",
+      "status": "running",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,
