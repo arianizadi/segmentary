@@ -78,7 +78,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | — | 71.95 (40,000/40,000) | — |
 | 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | running | — | — | — |
 | 7 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | running | — | — | — |
-| 8 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | running | 78.46 (40,000/40,000) | — | 64.26 (20,000/20,000) |
+| 8 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | complete | 78.46 (40,000/40,000) | 68.44 (40,000/40,000) | 64.26 (20,000/20,000) |
 | 9 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | running | 80.65 (40,000/40,000) | — | 65.71 (20,000/20,000) |
 | 10 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | running | — | 66.82 (40,000/40,000) | — |
 | 11 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | queued | — | — | — |
@@ -125,7 +125,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | 84,609,493 | 322.8 MiB | 1292.9 MiB | 25.13 | 39.28 | 43.62 | 2.57 GiB |
 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | — | — | — | — | — | — | — |
 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — | — | — | — | — | — | — |
-| [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | — | — | — | — | — | — | — |
+| [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | 61,323,093 | 233.9 MiB | 937.2 MiB | 63.80 | 15.61 | 16.73 | 1.31 GiB |
 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | — | — | — | — | — | — | — |
 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | 56,281,941 | 214.7 MiB | 860.4 MiB | 72.48 | 13.70 | 14.30 | 1.44 GiB |
 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | — | — | — | — | — | — | — |
@@ -169,7 +169,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | — / — | 19h 38m 19s / 19.64 | — / — | 16.94 GiB |
 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | — / — | — / — | — / — | — |
 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — / — | — / — | — / — | — |
-| [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | 7h 54m 19s / 7.91 | — / — | 6h 49m 53s / 6.83 | 6.85 GiB |
+| [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | 7h 54m 19s / 7.91 | 13h 39m 24s / 13.66 | 6h 49m 53s / 6.83 | 6.86 GiB |
 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | 8h 10m 00s / 8.17 | — / — | 7h 09m 12s / 7.15 | 12.12 GiB |
 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | — / — | 12h 55m 26s / 12.92 | — / — | 6.70 GiB |
 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | — / — | — / — | — / — | — |
