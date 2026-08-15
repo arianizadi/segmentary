@@ -76,7 +76,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 3 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | running | 57.26 (40,000/40,000) | — | 49.89 (20,000/20,000) |
 | 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | complete | 81.03 (40,000/40,000) | 70.74 (40,000/40,000) | 67.97 (20,000/20,000) |
 | 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | — | 71.95 (40,000/40,000) | — |
-| 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | running | — | 69.90 (40,000/40,000) | — |
+| 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | running | 78.90 (40,000/40,000) | 69.90 (40,000/40,000) | — |
 | 7 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | running | — | — | — |
 | 8 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | complete | 78.46 (40,000/40,000) | 68.44 (40,000/40,000) | 64.26 (20,000/20,000) |
 | 9 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | running | 80.65 (40,000/40,000) | — | 65.71 (20,000/20,000) |
@@ -167,7 +167,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | 14h 40m 07s / 14.67 | — / — | 11h 00m 38s / 11.01 | 19.53 GiB |
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 13h 28m 59s / 13.48 | 16h 57m 54s / 16.96 | 9h 25m 59s / 9.43 | 10.60 GiB |
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | — / — | 19h 38m 19s / 19.64 | — / — | 16.94 GiB |
-| [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | — / — | 17h 53m 41s / 17.89 | — / — | 8.88 GiB |
+| [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | 14h 21m 30s / 14.36 | 17h 53m 41s / 17.89 | — / — | 8.88 GiB |
 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — / — | — / — | — / — | — |
 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | 7h 54m 19s / 7.91 | 13h 39m 24s / 13.66 | 6h 49m 53s / 6.83 | 6.86 GiB |
 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | 8h 10m 00s / 8.17 | — / — | 7h 09m 12s / 7.15 | 12.12 GiB |

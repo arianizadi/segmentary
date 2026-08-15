@@ -67,7 +67,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| Cityscapes | 40,000 / 40,000 | 78.90 | 86.23 | 89.45 | 87.71 | 99.77 | 96.30 | 93.09 | 84.84 |
 | RailSem19 | 40,000 / 40,000 | 69.90 | 82.00 | 81.15 | 81.52 | 99.41 | 89.81 | 82.32 | 77.76 |
 | Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
 
@@ -85,9 +85,33 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | — | — | — | — |
+| Cityscapes | 14h 21m 30s | 14.36 | 8.85 GiB | 5.745 |
 | RailSem19 | 17h 53m 41s | 17.89 | 8.88 GiB | 4.482 |
 | Cityscapes → RailSem19 | — | — | — | — |
+
+### Cityscapes class IoU
+
+| class | IoU |
+|---|---:|
+| road | 98.25 |
+| sidewalk | 85.60 |
+| building | 92.99 |
+| wall | 64.23 |
+| fence | 62.99 |
+| pole | 64.47 |
+| traffic-light | 72.55 |
+| traffic-sign | 81.09 |
+| vegetation | 92.68 |
+| terrain | 64.69 |
+| sky | 95.08 |
+| person | 82.95 |
+| rider | 64.92 |
+| car | 95.20 |
+| truck | 79.23 |
+| bus | 85.27 |
+| train | 71.47 |
+| motorcycle | 66.87 |
+| bicycle | 78.68 |
 
 ### RailSem19 class IoU
 
@@ -119,7 +143,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 - Model recipe: `configs/models/hf_auto_upernet_swin_tiny.yaml`
 - Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: RailSem19: 0.
+- Retained seeds: RailSem19: 0; Cityscapes: 0.
 - EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
