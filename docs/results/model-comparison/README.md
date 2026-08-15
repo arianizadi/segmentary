@@ -90,9 +90,9 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 17 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | running | 78.73 (40,000/40,000) | — | 61.77 (20,000/20,000) |
 | 18 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | queued | — | — | — |
 | 19 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | running | — | — | — |
-| 20 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | running | — | — | — |
+| 20 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | running | — | 68.18 (40,000/40,000) | — |
 | 21 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | queued | — | — | — |
-| 22 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | queued | — | — | — |
+| 22 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | running | — | — | — |
 | 23 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | queued | — | — | — |
 | 24 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | queued | — | — | — |
 | 25 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | queued | — | — | — |
@@ -137,7 +137,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | — | — | — | — | — | — | — |
 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | — | — | — | — | — | — | — |
 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | — | — | — | — | — | — | — |
-| [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | — | — | — | — | — | — | — |
+| [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | 39,638,869 | 151.2 MiB | 605.7 MiB | 77.60 | 12.88 | 12.93 | 0.84 GiB |
 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | — | — | — | — | — | — | — |
 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | — | — | — | — | — | — | — |
 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | — | — | — | — | — | — | — |
@@ -181,7 +181,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | 12h 42m 58s / 12.72 | — / — | 11h 27m 30s / 11.46 | 8.59 GiB |
 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | — / — | — / — | — / — | — |
 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | — / — | — / — | — / — | — |
-| [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | — / — | — / — | — / — | — |
+| [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | — / — | 17h 40m 01s / 17.67 | — / — | 6.59 GiB |
 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | — / — | — / — | — / — | — |
 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | — / — | — / — | — / — | — |
 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | — / — | — / — | — / — | — |
