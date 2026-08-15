@@ -19,6 +19,7 @@ joint transfer something fair to beat.
 | `init_from: <checkpoint>` | exact weight warm start; optimizer/scheduler do not resume |
 | `iters` | stage optimizer-step budget; overrides `train.iters` |
 | `lr_scale` | positive multiplier on every stage LR |
+| `head_group_lr_scale` | optional positive multiplier for model-declared decoder/head groups; omitted inherits `lr_scale` |
 | `reset_head` | reset final classifier only after weight load |
 | `freeze` | freeze every parameter whose qualified name contains the string; zero matches fail |
 | `sample_weights` | positive relative dataset shares for a mixed stage; keys must exactly match every data name |
@@ -26,6 +27,8 @@ joint transfer something fair to beat.
 The first stage cannot use `previous`. One canonical label space applies to the
 whole curriculum. A stage result lives in its own directory with periodic,
 best, and true-final checkpoints plus `results.json`.
+`head_group_lr_scale` is an optimizer ablation, not a classifier-only control:
+the exact parameter set comes from each model's `head_patterns()` contract.
 
 ## Shipped choices
 

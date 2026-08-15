@@ -392,6 +392,27 @@ def test_stage_rejects_invalid_schedule_fields(kwargs: dict[str, Any], message: 
         StageConfig(name="stage", data=[_data()], **kwargs)
 
 
+@pytest.mark.parametrize("value", [0.0, -1.0, float("nan"), float("inf"), True, "1.0"])
+def test_stage_rejects_invalid_head_group_lr_scale(value: object) -> None:
+    with pytest.raises(ConfigError, match="head_group_lr_scale must be a positive finite"):
+        StageConfig(
+            name="stage",
+            data=[_data()],
+            head_group_lr_scale=value,  # type: ignore[arg-type]
+        )
+
+
+def test_head_group_scale_is_generic_and_has_no_classifier_only_floor() -> None:
+    stage = StageConfig(
+        name="target",
+        data=[_data()],
+        reset_head=True,
+        lr_scale=0.1,
+        head_group_lr_scale=0.05,
+    )
+    assert to_dict(stage)["head_group_lr_scale"] == pytest.approx(0.05)
+
+
 def test_experiment_requires_at_least_one_stage() -> None:
     with pytest.raises(ConfigError, match="defines no stages"):
         ExperimentConfig(name="empty", space="toy", model=ModelConfig(arch="toy"))

@@ -211,6 +211,9 @@ def test_probe_runs_two_shapes_real_objective_gradients_and_optimizer(
     tmp_path: Path, monkeypatch
 ) -> None:
     config = _experiment(tmp_path)
+    raw = yaml.safe_load(config.read_text(encoding="utf-8"))
+    raw["stages"][0].update({"lr_scale": 0.1, "head_group_lr_scale": 0.5})
+    _write_yaml(config, raw)
     monkeypatch.setattr(
         "segmentary.model_catalog.build_model",
         lambda _cfg, num_classes: _TinyDenseModel(num_classes),
@@ -233,6 +236,13 @@ def test_probe_runs_two_shapes_real_objective_gradients_and_optimizer(
     assert all(item["gradients"]["all_present"] for item in record["step_checks"])
     assert all(item["gradients"]["all_finite"] for item in record["step_checks"])
     assert record["model"]["changed_tracked_tensors"]
+    provenance = record["experiment"]["optimizer_provenance"]
+    assert provenance["declared"]["backbone_lr"] == pytest.approx(0.01)
+    assert provenance["stage_lr_scale"] == pytest.approx(0.1)
+    assert provenance["stage_head_group_lr_scale"] == pytest.approx(0.5)
+    assert provenance["effective_head_group_lr_scale"] == pytest.approx(0.5)
+    assert record["experiment"]["optimizer"]["backbone_lr"] == pytest.approx(0.001)
+    assert record["experiment"]["optimizer"]["head_lr_mult"] == pytest.approx(5.0)
     assert record["checks"]["production_objective_backward"] is True
     assert record["protocol"]["quality_benchmark"] is False
 

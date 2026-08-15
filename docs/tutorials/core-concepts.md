@@ -238,6 +238,23 @@ Resetting the head is an experimental variable, not a repair for a mismatched
 label space. All stages in one experiment must still share the same canonical
 output meaning.
 
+For a separately named optimizer ablation, model-declared decoder/head groups
+can use a different stage scale:
+
+```yaml
+reset_head: true
+lr_scale: 0.1
+head_group_lr_scale: 1.0
+```
+
+This is not classifier-only. The override applies to every path returned by the
+model's `head_patterns()` contract, which commonly includes reused decoder
+parameters as well as the reset classifier. Keep it out of an unchanged
+published protocol unless that optimizer ablation is explicitly versioned.
+The unreferenced
+[`city_checkpoint_rs_head_group_lr_v1.yaml`](../../configs/campaigns/experiments/city_checkpoint_rs_head_group_lr_v1.yaml)
+file is a concrete versioned example; the public campaign manifest does not use it.
+
 ## 6. Exact checkpoint handoff and EMA
 
 At the end of every stage, Segmentary explicitly saves:

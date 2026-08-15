@@ -8,6 +8,7 @@ SegFormer-B0, real Cityscapes/RailSem19 samples, and one GPU.
 from __future__ import annotations
 
 import json
+from dataclasses import asdict
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -40,10 +41,12 @@ from segmentary.curriculum import (
     load_backbone_weights,
     prepare_stage_model,
     resolve_init,
+    stage_optim_config,
 )
 from segmentary.engine.ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma
 from segmentary.engine.losses import LossConfig, SegmentationLoss
 from segmentary.engine.module import SegLitModule
+from segmentary.engine.optim import build_optimizer
 from segmentary.models.tuning import apply_tuning
 from segmentary.models.wrappers import HFDenseWrapper
 
@@ -168,6 +171,48 @@ def _fill_distinct(model: nn.Module) -> None:
     with torch.no_grad():
         for index, parameter in enumerate(model.parameters(), start=1):
             parameter.fill_(float(index))
+
+
+def test_stage_optimizer_can_scale_declared_head_groups_independently() -> None:
+    base = OptimConfig(
+        backbone_lr=1e-4,
+        head_lr_mult=10.0,
+        llrd=1.0,
+        warmup_iters=1_500,
+    )
+    stage = StageConfig(
+        name="target",
+        data=[DataConfig(name="railsem19", root="/unused")],
+        reset_head=True,
+        lr_scale=0.1,
+        head_group_lr_scale=1.0,
+        iters=20_000,
+    )
+    resolved = stage_optim_config(base, stage, 20_000)
+    model = _tiny_model(seed=1)
+    optimizer = build_optimizer(model, resolved, model.head_patterns())
+    head_lrs = {float(group["lr"]) for group in optimizer.param_groups if group["is_head"]}
+    feature_lrs = {float(group["lr"]) for group in optimizer.param_groups if not group["is_head"]}
+
+    assert resolved.backbone_lr == pytest.approx(1e-5)
+    assert resolved.head_lr_mult == pytest.approx(100.0)
+    assert sorted(feature_lrs) == pytest.approx([1e-5])
+    assert sorted(head_lrs) == pytest.approx([1e-3])
+
+
+def test_omitted_head_scale_preserves_historical_all_group_scaling() -> None:
+    base = OptimConfig(backbone_lr=1e-4, head_lr_mult=10.0, llrd=1.0)
+    stage = StageConfig(
+        name="target",
+        data=[DataConfig(name="railsem19", root="/unused")],
+        lr_scale=0.1,
+    )
+
+    resolved = stage_optim_config(base, stage, 20_000)
+
+    assert resolved.backbone_lr == pytest.approx(1e-5)
+    assert resolved.head_lr_mult == pytest.approx(10.0)
+    assert resolved.backbone_lr * resolved.head_lr_mult == pytest.approx(1e-4)
 
 
 def _save_lightning_checkpoint(path: Path, model: nn.Module, *, omit: str | None = None) -> None:
@@ -562,6 +607,7 @@ def test_resume_checkpoint_requires_full_optimizer_scheduler_ema_and_stage_state
     tmp_path: Path,
 ) -> None:
     train = TrainConfig(iters=100, ema_decay=0.9)
+    optim = OptimConfig()
     checkpoint = tmp_path / "step-00000040.ckpt"
     state = {
         "global_step": 40,
@@ -572,6 +618,7 @@ def test_resume_checkpoint_requires_full_optimizer_scheduler_ema_and_stage_state
         TRAINING_RESUME_KEY: {
             "schema_version": TRAINING_RESUME_SCHEMA_VERSION,
             "stage_name": "cityscapes",
+            "optim": asdict(optim),
         },
     }
     torch.save(state, checkpoint)
@@ -581,6 +628,7 @@ def test_resume_checkpoint_requires_full_optimizer_scheduler_ema_and_stage_state
             checkpoint,
             stage=_stage(name="cityscapes"),
             train_cfg=train,
+            optim_cfg=optim,
         )
         == 40
     )
@@ -600,10 +648,20 @@ def test_resume_checkpoint_requires_full_optimizer_scheduler_ema_and_stage_state
                 broken,
                 stage=_stage(name="cityscapes"),
                 train_cfg=train,
+                optim_cfg=optim,
             )
+
+    with pytest.raises(RuntimeError, match="optimizer configuration does not match"):
+        curriculum.validate_resume_checkpoint(
+            checkpoint,
+            stage=_stage(name="cityscapes"),
+            train_cfg=train,
+            optim_cfg=OptimConfig(backbone_lr=optim.backbone_lr * 0.1),
+        )
 
 
 def test_resume_checkpoint_rejects_cross_stage_and_misaligned_ema(tmp_path: Path) -> None:
+    optim = OptimConfig()
     checkpoint = tmp_path / "step.ckpt"
     state = {
         "global_step": 20,
@@ -614,6 +672,7 @@ def test_resume_checkpoint_rejects_cross_stage_and_misaligned_ema(tmp_path: Path
         TRAINING_RESUME_KEY: {
             "schema_version": TRAINING_RESUME_SCHEMA_VERSION,
             "stage_name": "railsem19",
+            "optim": asdict(optim),
         },
     }
     torch.save(state, checkpoint)
@@ -622,6 +681,7 @@ def test_resume_checkpoint_rejects_cross_stage_and_misaligned_ema(tmp_path: Path
             checkpoint,
             stage=_stage(name="cityscapes"),
             train_cfg=TrainConfig(iters=100),
+            optim_cfg=optim,
         )
     state[TRAINING_RESUME_KEY]["stage_name"] = "cityscapes"
     torch.save(state, checkpoint)
@@ -630,6 +690,7 @@ def test_resume_checkpoint_rejects_cross_stage_and_misaligned_ema(tmp_path: Path
             checkpoint,
             stage=_stage(name="cityscapes"),
             train_cfg=TrainConfig(iters=100),
+            optim_cfg=optim,
         )
 
 

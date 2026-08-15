@@ -204,7 +204,12 @@ stages:
 | `reset_head: true` | reinitialize classifier after loading backbone | label-space/head-reset ablation | discards useful classifier knowledge |
 | `freeze: <prefix>` | freeze matching parameter names | partial fine-tuning | a bad prefix raises instead of silently doing nothing |
 | `lr_scale` | multiply all stage learning rates | gentler later-domain adaptation | too small prevents learning; too large accelerates forgetting |
+| `head_group_lr_scale` | independently multiply model-declared head-group rates; omitted inherits `lr_scale` | optimizer ablations that treat the reused feature extractor and decoder/head groups differently | applies to every path matched by `head_patterns()`, often a complete decoder rather than only the final classifier |
 | `iters` | override global iteration budget | compare fixed compute per stage | unequal totals must be disclosed |
+
+`head_group_lr_scale` is deliberately generic. It does not prove that only a
+reset classifier receives the override; inspect the model's head patterns and
+name the resulting run as a separate optimizer ablation.
 
 ### Mixed stages
 
