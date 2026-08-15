@@ -73,6 +73,7 @@ protocols:
     # Retain/evaluate the corrected Rail target at both 20k and 40k. The
     # cumulative budgets are City40+Rail20=60k and City40+Rail40=80k.
     curriculum: configs/campaigns/experiments/city_checkpoint_rs_full_adaptation_v2.yaml
+    evaluation_milestones: [20000]
     final_stage: railsem19
     evaluation_dataset: railsem19
     evaluation_mapping: railsem19

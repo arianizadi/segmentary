@@ -307,6 +307,61 @@ def test_transfer_reuses_city_checkpoint_and_only_schedules_target_iterations(
     assert record["execution"]["planned_optimizer_iterations"] == 4_320_000
     assert record["execution"]["avoided_duplicate_city_iterations"] == 1_440_000
 
+    paths = campaign._attempt_paths(transfer, tmp_path / "attempt", resolved)
+    assert paths["milestone_checkpoints"] == {
+        "20000": paths["run_dir"] / "railsem19" / "step-00020000.ckpt"
+    }
+    commands = campaign._milestone_evaluation_commands(record, transfer, paths)
+    assert list(commands) == ["20000"]
+    assert commands["20000"][commands["20000"].index("--ckpt") + 1] == str(
+        paths["milestone_checkpoints"]["20000"]
+    )
+    assert commands["20000"][commands["20000"].index("--out") + 1] == str(
+        paths["milestone_results"]["20000"]
+    )
+
+
+def test_transfer_milestone_result_is_bound_to_exact_20k_checkpoint(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    job = next(item for item in record["jobs"] if item["protocol"] == "cityscapes_to_railsem19")
+    _, resolved = campaign._resolved_config(record, job, tmp_path / "prototype")
+    paths = campaign._attempt_paths(job, tmp_path / "attempt", resolved)
+    checkpoint = paths["milestone_checkpoints"]["20000"]
+    checkpoint.parent.mkdir(parents=True)
+    with zipfile.ZipFile(checkpoint, "w") as archive:
+        archive.writestr("archive/data.pkl", pickle.dumps({"global_step": 20_000}))
+    result_path = paths["milestone_results"]["20000"]
+    write_results(
+        result_path,
+        RunRecord(
+            name=job["experiment_name"],
+            stage="eval:railsem19:val",
+            config_hash=config_hash(resolved),
+            git_sha=SHA,
+            git_dirty=False,
+            seed=0,
+            finished_at="2026-08-15T00:00:00+00:00",
+            wall_clock_s=1.0,
+            metrics=_metric_payload("rail_union"),
+            config=resolved,
+            env={"gpu_count": 1},
+            notes=f"checkpoint={checkpoint} ema=True tta=False",
+        ),
+    )
+    attempt = campaign._attempt_record(1, paths, [], [], [], {})
+
+    validated = campaign.validate_milestone_evaluation_artifact(
+        record, job, attempt, resolved, "20000"
+    )
+    assert validated["metrics"]["miou"] == pytest.approx(0.5)
+
+    with zipfile.ZipFile(checkpoint, "w") as archive:
+        archive.writestr("archive/data.pkl", pickle.dumps({"global_step": 19_999}))
+    with pytest.raises(campaign.CampaignError, match="expected global_step=20000"):
+        campaign.validate_milestone_evaluation_artifact(record, job, attempt, resolved, "20000")
+
 
 def test_transfer_dependency_requires_unchanged_completed_city_checkpoint(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -377,7 +432,8 @@ def test_public_transfer_provenance_keeps_hash_but_redacts_server_path(
         "classifier_policy": "reset incompatible target classifier only",
     }
     assert protocol["training"] == (
-        "reused matching 40,000-step Cityscapes checkpoint; 20,000 RailSem19 steps"
+        "reused matching 40,000-step Cityscapes checkpoint; 40,000 RailSem19 steps; "
+        "retained evaluations at 20,000 and final"
     )
 
     legacy_plan = copy.deepcopy(attempt["iteration_plan"])
@@ -889,6 +945,69 @@ def test_reporting_only_city_source_stays_queued_when_transfer_needs_checkpoint(
     assert "source training remains queued" in audit["rejected_examples"][-1]["reason"]
 
 
+def test_reuse_scan_requires_and_retains_exact_transfer_milestone(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    job = next(
+        item
+        for item in record["jobs"]
+        if item["model"] == "segformer_b2" and item["protocol"] == "cityscapes_to_railsem19"
+    )
+    _, resolved = campaign._resolved_config(record, job, tmp_path / "prototype")
+    reuse_root = tmp_path / "prior"
+    stage_root = reuse_root / "jobs" / job["id"] / "railsem19"
+    final_checkpoint = stage_root / "last.ckpt"
+    milestone_checkpoint = stage_root / "step-00020000.ckpt"
+    for checkpoint, step in ((final_checkpoint, 40_000), (milestone_checkpoint, 20_000)):
+        checkpoint.parent.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(checkpoint, "w") as archive:
+            archive.writestr("archive/data.pkl", pickle.dumps({"global_step": step}))
+
+    evaluation_root = reuse_root / "jobs" / job["id"] / "evaluation"
+    final_result = evaluation_root / "railsem19" / "results.json"
+    milestone_result = evaluation_root / "railsem19-step20000" / "results.json"
+    for result_path, checkpoint in (
+        (final_result, final_checkpoint),
+        (milestone_result, milestone_checkpoint),
+    ):
+        write_results(
+            result_path,
+            RunRecord(
+                name=job["experiment_name"],
+                stage="eval:railsem19:val",
+                config_hash=config_hash(resolved),
+                git_sha=SHA,
+                git_dirty=False,
+                seed=0,
+                finished_at="2026-08-15T00:00:00+00:00",
+                wall_clock_s=1.0,
+                metrics=_metric_payload("rail_union"),
+                config=resolved,
+                env={"gpu_count": 1},
+                notes=f"checkpoint={checkpoint} ema=True tta=False",
+            ),
+        )
+    record["reuse_policy"]["roots"] = [str(reuse_root)]
+
+    audit = campaign.scan_reusable_cells(record)
+
+    accepted = next(item for item in audit["accepted"] if item["job_id"] == job["id"])
+    assert accepted["checkpoint"] == str(final_checkpoint)
+    assert accepted["checkpoint_step"] == 40_000
+    assert accepted["milestones"]["20000"] == {
+        **accepted["milestones"]["20000"],
+        "source_result": str(milestone_result),
+        "checkpoint": str(milestone_checkpoint),
+        "checkpoint_step": 20_000,
+    }
+
+    milestone_result.unlink()
+    missing = campaign.scan_reusable_cells(record)
+    assert all(item["job_id"] != job["id"] for item in missing["accepted"])
+    assert missing["counts"]["missing_milestone_evidence"] >= 1
+
+
 def test_lane_status_json_is_strict_json(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     record = _record(tmp_path, monkeypatch)
     lane = record["lanes"][0]
@@ -919,6 +1038,33 @@ def test_comparison_records_start_empty_without_completed_cells(tmp_path: Path) 
         {},
     )
     assert records == {}
+
+
+def test_existing_low_head_lr_transfer_is_preserved_as_historical(tmp_path: Path) -> None:
+    source = campaign.REPO_ROOT / "docs/results/model-comparison/records/segformer_b2.json"
+    existing = json.loads(source.read_text(encoding="utf-8"))
+    assert (
+        existing["protocols"]["cityscapes_to_railsem19"]["iteration_progress"]["target_iterations"]
+        == 20_000
+    )
+    destination = tmp_path / "docs/results/model-comparison/records/segformer_b2.json"
+    destination.parent.mkdir(parents=True)
+    destination.write_text(json.dumps(existing), encoding="utf-8")
+
+    records = campaign._comparison_records(
+        tmp_path,
+        campaign.load_campaign_manifest(),
+        {},
+        {},
+    )
+
+    migrated = records["segformer_b2"]
+    assert "cityscapes_to_railsem19" not in migrated["protocols"]
+    historical = migrated["historical_protocols"]["cityscapes_to_railsem19_low_head_lr_20k"]
+    assert (
+        historical["aggregate"]["miou"]
+        == existing["protocols"]["cityscapes_to_railsem19"]["aggregate"]["miou"]
+    )
 
 
 def test_training_specifications_match_resolved_campaign_runtime(

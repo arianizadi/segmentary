@@ -154,6 +154,7 @@ class ProtocolSpec:
     evaluation_split: str
     evaluation_space: str
     evaluation_split_file: Path | None = None
+    evaluation_milestones: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -302,6 +303,20 @@ def load_campaign_manifest(path: Path | str = DEFAULT_MANIFEST) -> CampaignManif
             if not isinstance(field_value, str) or not field_value:
                 raise CampaignError(f"protocols.{protocol_id}.{field_name} must be non-empty")
         split_file = row.get("evaluation_split_file")
+        milestone_values = row.get("evaluation_milestones", [])
+        if (
+            not isinstance(milestone_values, list)
+            or any(
+                isinstance(step, bool) or not isinstance(step, int) or step < 1
+                for step in milestone_values
+            )
+            or len(set(milestone_values)) != len(milestone_values)
+            or milestone_values != sorted(milestone_values)
+        ):
+            raise CampaignError(
+                f"protocols.{protocol_id}.evaluation_milestones must be sorted distinct "
+                "positive integers"
+            )
         protocols[protocol_id] = ProtocolSpec(
             id=protocol_id,
             label=label,
@@ -318,6 +333,7 @@ def load_campaign_manifest(path: Path | str = DEFAULT_MANIFEST) -> CampaignManif
                 if split_file is not None
                 else None
             ),
+            evaluation_milestones=tuple(milestone_values),
         )
 
     model_rows = root.get("models")
@@ -621,6 +637,7 @@ def _job_spec(job: Job, lane: str) -> dict[str, Any]:
             else None
         ),
         "evaluation_space": job.protocol.evaluation_space,
+        "evaluation_milestones": list(job.protocol.evaluation_milestones),
         "seed": job.seed,
         "experiment_name": job.experiment_name,
         "lane": lane,
@@ -657,15 +674,40 @@ def build_campaign_record(
 ) -> dict[str, Any]:
     logical_jobs = campaign_jobs(manifest, seeds)
     jobs = campaign_jobs(manifest, seeds, include_aliases=False)
-    protocol_iterations = {
-        protocol.id: _iteration_plan(
-            deep_merge(
-                load_yaml(REPO_ROOT / "configs/base.yaml"),
-                load_yaml(REPO_ROOT / protocol.curriculum),
-            )
-        )["total_target_iterations"]
+    protocol_configs = {
+        protocol.id: deep_merge(
+            load_yaml(REPO_ROOT / "configs/base.yaml"),
+            load_yaml(REPO_ROOT / protocol.curriculum),
+        )
         for protocol in manifest.protocols.values()
     }
+    protocol_iterations = {
+        protocol_id: _iteration_plan(config)["total_target_iterations"]
+        for protocol_id, config in protocol_configs.items()
+    }
+    for protocol in manifest.protocols.values():
+        config = protocol_configs[protocol.id]
+        final_step = _expected_final_step(config, protocol.final_stage)
+        checkpoint_every = config.get("train", {}).get("ckpt_every")
+        if (
+            isinstance(checkpoint_every, bool)
+            or not isinstance(checkpoint_every, int)
+            or checkpoint_every < 1
+        ):
+            raise CampaignError(
+                f"protocol {protocol.id} has invalid checkpoint cadence {checkpoint_every!r}"
+            )
+        for milestone in protocol.evaluation_milestones:
+            if milestone >= final_step:
+                raise CampaignError(
+                    f"protocol {protocol.id} milestone {milestone} must precede final "
+                    f"step {final_step}"
+                )
+            if milestone % checkpoint_every:
+                raise CampaignError(
+                    f"protocol {protocol.id} milestone {milestone} is not aligned to "
+                    f"checkpoint cadence {checkpoint_every}"
+                )
     assignments = partition_jobs(jobs, gpus)
     lane_records = []
     all_jobs = []
@@ -810,10 +852,26 @@ def _new_job_status(spec: dict[str, Any], accepted: dict[str, Any] | None = None
                             "source_results": accepted["source_result"],
                             "config": accepted["bundle_config"],
                             "performance": accepted["bundle_performance"],
+                            "milestone_results": {
+                                step: milestone["bundle_result"]
+                                for step, milestone in accepted.get("milestones", {}).items()
+                            },
+                            "milestone_checkpoints": {
+                                step: milestone["checkpoint"]
+                                for step, milestone in accepted.get("milestones", {}).items()
+                            },
                         },
                         "sha256": {
                             "common_results": accepted["result_sha256"],
                             "checkpoint": accepted["checkpoint_sha256"],
+                            "milestone_results": {
+                                step: milestone["result_sha256"]
+                                for step, milestone in accepted.get("milestones", {}).items()
+                            },
+                            "milestone_checkpoints": {
+                                step: milestone["checkpoint_sha256"]
+                                for step, milestone in accepted.get("milestones", {}).items()
+                            },
                         },
                         "record_kind": accepted["record_kind"],
                         "source_git_sha": accepted["source_git_sha"],
@@ -946,6 +1004,19 @@ def _materialize_reused_results(record: dict[str, Any], campaign: Path) -> None:
             raise CampaignError(f"accepted checkpoint changed after preflight: {checkpoint}")
         destination = Path(accepted["bundle_result"])
         atomic_write_text(destination, source.read_text(encoding="utf-8"))
+        for milestone in accepted.get("milestones", {}).values():
+            milestone_source = Path(milestone["source_result"])
+            milestone_checkpoint = Path(milestone["checkpoint"])
+            if _sha256(milestone_source) != milestone["result_sha256"]:
+                raise CampaignError(
+                    f"accepted milestone result changed after preflight: {milestone_source}"
+                )
+            if _sha256(milestone_checkpoint) != milestone["checkpoint_sha256"]:
+                raise CampaignError(
+                    f"accepted milestone checkpoint changed after preflight: {milestone_checkpoint}"
+                )
+            milestone_destination = Path(milestone["bundle_result"])
+            atomic_write_text(milestone_destination, milestone_source.read_text(encoding="utf-8"))
         job = _job_by_id(record, accepted["job_id"])
         _, resolved = _resolved_config(record, job, destination.parent)
         config_path = destination.parent / "resolved-config.yaml"
@@ -968,6 +1039,7 @@ def _materialize_reused_results(record: dict[str, Any], campaign: Path) -> None:
                 "source_git_sha": accepted["source_git_sha"],
                 "record_kind": accepted["record_kind"],
                 "compatibility_sha256": accepted["compatibility_sha256"],
+                "milestones": accepted.get("milestones", {}),
                 "accepted_at": accepted["accepted_at"],
             },
         )
@@ -1732,6 +1804,53 @@ def scan_reusable_cells(record: dict[str, Any]) -> dict[str, Any]:
             counts["metric_or_schema_failure"] += 1
             rejected.append({"path": str(path), "reason": str(exc)})
             continue
+        milestones: dict[str, dict[str, Any]] = {}
+        if job.get("evaluation_milestones"):
+            if kind != "evaluation" or checkpoint is None:
+                counts["missing_milestone_evidence"] += 1
+                continue
+            evaluation_root = path.parent.parent
+            milestone_failed = False
+            for step in job["evaluation_milestones"]:
+                step_key = str(step)
+                milestone_checkpoint = checkpoint.parent / f"step-{step:08d}.ckpt"
+                milestone_result = (
+                    evaluation_root / f"{job['evaluation_dataset']}-step{step}" / "results.json"
+                )
+                try:
+                    if (
+                        not milestone_checkpoint.is_file()
+                        or _checkpoint_global_step(milestone_checkpoint) != step
+                    ):
+                        raise CampaignError(
+                            f"missing exact step-{step} checkpoint {milestone_checkpoint}"
+                        )
+                    milestone_record = validate_result(
+                        milestone_result,
+                        expected_sha=result["git_sha"],
+                        job=job,
+                        expected_config=expected_config,
+                        evaluation=True,
+                        require_campaign_name=False,
+                    )
+                    if str(milestone_checkpoint) not in str(milestone_record.get("notes", "")):
+                        raise CampaignError(
+                            f"{milestone_result}: notes do not identify {milestone_checkpoint}"
+                        )
+                except CampaignError as exc:
+                    counts["missing_milestone_evidence"] += 1
+                    rejected.append({"path": str(path), "reason": str(exc)})
+                    milestone_failed = True
+                    break
+                milestones[step_key] = {
+                    "source_result": str(milestone_result),
+                    "result_sha256": _sha256(milestone_result),
+                    "checkpoint": str(milestone_checkpoint),
+                    "checkpoint_sha256": _sha256(milestone_checkpoint),
+                    "checkpoint_step": step,
+                }
+            if milestone_failed:
+                continue
         candidates[job["id"]].append(
             {
                 "job_id": job["id"],
@@ -1755,6 +1874,7 @@ def scan_reusable_cells(record: dict[str, Any]) -> dict[str, Any]:
                     _checkpoint_global_step(checkpoint) if checkpoint is not None else None
                 ),
                 "iteration_plan": _iteration_plan(config),
+                "milestones": milestones,
             }
         )
         counts["compatible_candidates"] += 1
@@ -1772,7 +1892,17 @@ def scan_reusable_cells(record: dict[str, Any]) -> dict[str, Any]:
 
         best_rank = min(map(rank, items))
         top = [item for item in items if rank(item) == best_rank]
-        unique = {(item["result_sha256"], item["checkpoint_sha256"]) for item in top}
+        unique = {
+            (
+                item["result_sha256"],
+                item["checkpoint_sha256"],
+                tuple(
+                    (step, value["result_sha256"], value["checkpoint_sha256"])
+                    for step, value in sorted(item.get("milestones", {}).items())
+                ),
+            )
+            for item in top
+        }
         if len(unique) != 1:
             ambiguous.append(
                 {
@@ -1825,6 +1955,15 @@ def scan_reusable_cells(record: dict[str, Any]) -> dict[str, Any]:
         chosen["bundle_result"] = str(
             Path(record["campaign"]) / "accepted" / job_id / "results.json"
         )
+        for step, milestone in chosen.get("milestones", {}).items():
+            milestone["bundle_result"] = str(
+                Path(record["campaign"])
+                / "accepted"
+                / job_id
+                / "milestones"
+                / step
+                / "results.json"
+            )
         accepted.append(chosen)
 
     accepted_ids = {item["job_id"] for item in accepted}
@@ -1858,6 +1997,17 @@ def _attempt_paths(
         if isinstance(stages, list)
         else {job["final_stage"]: training_results}
     )
+    milestone_checkpoints = {
+        str(step): run_dir / job["final_stage"] / f"step-{step:08d}.ckpt"
+        for step in job.get("evaluation_milestones", [])
+    }
+    milestone_results = {
+        str(step): attempt
+        / "evaluation"
+        / f"{job['evaluation_dataset']}-step{step}"
+        / "results.json"
+        for step in job.get("evaluation_milestones", [])
+    }
     return {
         "attempt_dir": attempt,
         "config": attempt / "resolved-config.yaml",
@@ -1866,6 +2016,8 @@ def _attempt_paths(
         "training_results": training_results,
         "common_results": common_results,
         "stage_results": stage_results,
+        "milestone_checkpoints": milestone_checkpoints,
+        "milestone_results": milestone_results,
         "performance": attempt / "performance.json",
         "log": attempt / "job.log",
     }
@@ -2058,6 +2210,63 @@ def migrate_campaign_source(
     return migration
 
 
+def _evaluation_command(
+    record: dict[str, Any],
+    job: dict[str, Any],
+    *,
+    config: Path | str,
+    checkpoint: Path | str,
+    output: Path | str,
+) -> list[str]:
+    command = [
+        record["execution"]["python"],
+        "-m",
+        "segmentary.eval",
+        str(config),
+        "--ckpt",
+        str(checkpoint),
+        "--ema",
+        "--seed",
+        str(job["seed"]),
+        "--dataset",
+        job["evaluation_dataset"],
+        "--mapping",
+        job["evaluation_mapping"],
+        "--root",
+        record["datasets"][job["evaluation_dataset"]],
+        "--split",
+        job["evaluation_split"],
+        "--out",
+        str(output),
+        "--device",
+        "cuda:0",
+        "--num-workers",
+        str(record["execution"]["eval_workers"]),
+    ]
+    if job.get("evaluation_split_file"):
+        command.extend(["--split-file", str((REPO_ROOT / job["evaluation_split_file"]).resolve())])
+    return command
+
+
+def _milestone_evaluation_commands(
+    record: dict[str, Any], job: dict[str, Any], paths: dict[str, Any]
+) -> dict[str, list[str]]:
+    checkpoints = paths.get("milestone_checkpoints", {})
+    results = paths.get("milestone_results", {})
+    if set(checkpoints) != set(results):
+        raise CampaignError(f"{job['id']} milestone checkpoint/result keys differ")
+    return {
+        step: _evaluation_command(
+            record,
+            job,
+            config=paths["config"],
+            checkpoint=checkpoints[step],
+            output=results[step],
+        )
+        for step in checkpoints
+    }
+
+
 def _commands(
     record: dict[str, Any],
     job: dict[str, Any],
@@ -2074,33 +2283,13 @@ def _commands(
         train.extend(["--resume-checkpoint", str(resume_checkpoint)])
     if record["execution"]["deterministic"]:
         train.append("--deterministic")
-    evaluate = [
-        python,
-        "-m",
-        "segmentary.eval",
-        config,
-        "--ckpt",
-        str(paths["checkpoint"]),
-        "--ema",
-        "--seed",
-        str(job["seed"]),
-        "--dataset",
-        job["evaluation_dataset"],
-        "--mapping",
-        job["evaluation_mapping"],
-        "--root",
-        record["datasets"][job["evaluation_dataset"]],
-        "--split",
-        job["evaluation_split"],
-        "--out",
-        str(paths["common_results"]),
-        "--device",
-        "cuda:0",
-        "--num-workers",
-        str(record["execution"]["eval_workers"]),
-    ]
-    if job.get("evaluation_split_file"):
-        evaluate.extend(["--split-file", str((REPO_ROOT / job["evaluation_split_file"]).resolve())])
+    evaluate = _evaluation_command(
+        record,
+        job,
+        config=config,
+        checkpoint=paths["checkpoint"],
+        output=paths["common_results"],
+    )
     applies_to = _performance_applies_to(record, job)
     benchmark = [
         python,
@@ -2277,7 +2466,7 @@ def validate_result(
     return record
 
 
-def _attempt_path_objects(attempt: dict[str, Any]) -> tuple[dict[str, Path], dict[str, Path]]:
+def _attempt_path_objects(attempt: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Path]]:
     raw_paths = attempt["paths"]
     if not isinstance(raw_paths, dict):
         raise CampaignError("attempt paths must be a mapping")
@@ -2286,6 +2475,16 @@ def _attempt_path_objects(attempt: dict[str, Any]) -> tuple[dict[str, Path], dic
         for key, value in raw_paths.items()
         if value is not None and not isinstance(value, dict)
     }
+    for key in ("milestone_checkpoints", "milestone_results"):
+        raw_named = raw_paths.get(key)
+        paths[key] = (
+            {name: Path(path) for name, path in raw_named.items()}
+            if isinstance(raw_named, dict)
+            and all(
+                isinstance(name, str) and isinstance(path, str) for name, path in raw_named.items()
+            )
+            else {}
+        )
     raw_stages = raw_paths.get("stage_results")
     stage_paths = (
         {name: Path(path) for name, path in raw_stages.items()}
@@ -2351,12 +2550,66 @@ def validate_evaluation_artifact(
     )
 
 
+def validate_milestone_evaluation_artifact(
+    record: dict[str, Any],
+    job: dict[str, Any],
+    attempt: dict[str, Any],
+    resolved: dict[str, Any],
+    raw_step: str,
+) -> dict[str, Any]:
+    paths, _ = _attempt_path_objects(attempt)
+    checkpoints = paths.get("milestone_checkpoints", {})
+    results = paths.get("milestone_results", {})
+    expected = {str(step) for step in job.get("evaluation_milestones", [])}
+    if set(checkpoints) != expected or set(results) != expected:
+        raise CampaignError(
+            f"{job['id']} milestone paths differ from the declared steps {sorted(expected)}"
+        )
+    if raw_step not in expected:
+        raise CampaignError(f"{job['id']} has no declared evaluation milestone {raw_step}")
+    final_step = _expected_final_step(resolved, job["final_stage"])
+    step = int(raw_step)
+    if step >= final_step:
+        raise CampaignError(
+            f"{job['id']} evaluation milestone {step} must precede final step {final_step}"
+        )
+    checkpoint = checkpoints[raw_step]
+    result_path = results[raw_step]
+    if not checkpoint.is_file() or checkpoint.stat().st_size == 0:
+        raise CampaignError(f"missing milestone checkpoint: {checkpoint}")
+    if _checkpoint_global_step(checkpoint) != step:
+        raise CampaignError(f"{checkpoint}: expected global_step={step}")
+    result = validate_result(
+        result_path,
+        expected_sha=record["source"]["expected_git_sha"],
+        job=job,
+        expected_config=resolved,
+        evaluation=True,
+    )
+    if str(checkpoint) not in str(result.get("notes", "")):
+        raise CampaignError(f"{result_path}: notes do not identify {checkpoint}")
+    return result
+
+
+def validate_milestone_evaluation_artifacts(
+    record: dict[str, Any],
+    job: dict[str, Any],
+    attempt: dict[str, Any],
+    resolved: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    return {
+        str(step): validate_milestone_evaluation_artifact(record, job, attempt, resolved, str(step))
+        for step in job.get("evaluation_milestones", [])
+    }
+
+
 def validate_success(
     record: dict[str, Any], job: dict[str, Any], attempt: dict[str, Any]
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     paths, _ = _attempt_path_objects(attempt)
     _validate_attempt_dependency(attempt)
     resolved, stage_records = validate_training_artifacts(record, job, attempt)
+    validate_milestone_evaluation_artifacts(record, job, attempt, resolved)
     evaluation = validate_evaluation_artifact(record, job, attempt, resolved)
     if job.get("performance_owner"):
         validate_performance(
@@ -2375,6 +2628,12 @@ def validate_success(
         "checkpoint": _sha256(paths["checkpoint"]),
         "stage_results": {
             name: _sha256(path) for name, path in _attempt_path_objects(attempt)[1].items()
+        },
+        "milestone_checkpoints": {
+            name: _sha256(path) for name, path in paths.get("milestone_checkpoints", {}).items()
+        },
+        "milestone_results": {
+            name: _sha256(path) for name, path in paths.get("milestone_results", {}).items()
         },
         "common_results": _sha256(paths["common_results"]),
         "performance": _sha256(paths["performance"]) if job.get("performance_owner") else None,
@@ -2575,7 +2834,7 @@ def validate_performance(
 def validate_reused(
     record: dict[str, Any], job: dict[str, Any], attempt: dict[str, Any]
 ) -> dict[str, Any]:
-    paths = {key: Path(value) for key, value in attempt["paths"].items() if value is not None}
+    paths, _ = _attempt_path_objects(attempt)
     result_path = paths["common_results"]
     source_path = paths["source_results"]
     checkpoint = paths.get("checkpoint")
@@ -2606,6 +2865,39 @@ def validate_reused(
     expected_signature = compatibility_sha256(expected_config)
     if actual_signature != expected_signature:
         raise CampaignError(f"reused result no longer matches campaign job {job['id']}")
+    milestone_results = paths.get("milestone_results", {})
+    milestone_checkpoints = paths.get("milestone_checkpoints", {})
+    expected_milestones = {str(step) for step in job.get("evaluation_milestones", [])}
+    if (
+        set(milestone_results) != expected_milestones
+        or set(milestone_checkpoints) != expected_milestones
+    ):
+        raise CampaignError(f"reused milestone evidence is incomplete for {job['id']}")
+    for step in sorted(expected_milestones, key=int):
+        milestone_result = milestone_results[step]
+        milestone_checkpoint = milestone_checkpoints[step]
+        if _sha256(milestone_result) != expected_hashes.get("milestone_results", {}).get(step):
+            raise CampaignError(f"reused milestone result changed: {milestone_result}")
+        if _sha256(milestone_checkpoint) != expected_hashes.get("milestone_checkpoints", {}).get(
+            step
+        ):
+            raise CampaignError(f"reused milestone checkpoint changed: {milestone_checkpoint}")
+        if _checkpoint_global_step(milestone_checkpoint) != int(step):
+            raise CampaignError(
+                f"reused milestone checkpoint has wrong step: {milestone_checkpoint}"
+            )
+        milestone_record = validate_result(
+            milestone_result,
+            expected_sha=attempt["source_git_sha"],
+            job=job,
+            expected_config=expected_config,
+            evaluation=True,
+            require_campaign_name=False,
+        )
+        if str(milestone_checkpoint) not in str(milestone_record.get("notes", "")):
+            raise CampaignError(
+                f"reused milestone result does not name its checkpoint: {milestone_result}"
+            )
     return validate_result(
         result_path,
         expected_sha=attempt["source_git_sha"],
@@ -2929,6 +3221,9 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             and attempts
             and job.get("status")
             in {
+                "milestone_evaluating",
+                "milestone_eval_failed",
+                "milestone_eval_artifact_failed",
                 "evaluating",
                 "eval_failed",
                 "eval_artifact_failed",
@@ -2981,6 +3276,9 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             atomic_write_text(paths["config"], yaml.safe_dump(config_dict, sort_keys=False))
             train, evaluate, benchmark = _commands(record, job, paths)
             attempt = _attempt_record(number, paths, train, evaluate, benchmark, env)
+            milestone_commands = _milestone_evaluation_commands(record, job, paths)
+            attempt["milestone_eval_commands"] = milestone_commands
+            attempt["milestone_eval_returncodes"] = {step: None for step in milestone_commands}
             if dependency is not None:
                 attempt["dependency"] = dependency
             job["attempt"] = number
@@ -3024,6 +3322,11 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             attempt["train_command"] = train
             attempt["eval_command"] = evaluate
             attempt["performance_command"] = benchmark
+            milestone_commands = _milestone_evaluation_commands(record, job, paths)
+            attempt["milestone_eval_commands"] = milestone_commands
+            attempt.setdefault(
+                "milestone_eval_returncodes", {step: None for step in milestone_commands}
+            )
             attempt["status"] = job["status"] = "training"
             attempt["failure"] = job["failure"] = None
             attempt["finished_at"] = job["finished_at"] = None
@@ -3040,6 +3343,11 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             except (OSError, ValueError, yaml.YAMLError) as exc:
                 raise CampaignError(f"cannot resume {job['id']}: {exc}") from exc
             train, evaluate, benchmark = _commands(record, job, paths)
+            milestone_commands = _milestone_evaluation_commands(record, job, paths)
+            attempt["milestone_eval_commands"] = milestone_commands
+            attempt.setdefault(
+                "milestone_eval_returncodes", {step: None for step in milestone_commands}
+            )
             train_code = 0
         try:
             check_source_provenance(expected_sha)
@@ -3068,6 +3376,46 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             attempt["failure"] = job["failure"] = str(exc)
             attempt["finished_at"] = job["finished_at"] = _now()
             _persist_status(status_path, status)
+            continue
+
+        milestone_failed = False
+        for milestone_step, milestone_command in milestone_commands.items():
+            try:
+                validate_milestone_evaluation_artifact(
+                    record, job, attempt, resolved, milestone_step
+                )
+                milestone_code = 0
+            except CampaignError:
+                attempt["status"] = job["status"] = "milestone_evaluating"
+                _persist_status(status_path, status)
+                milestone_code = run_logged(milestone_command, env, paths["log"])
+                attempt["milestone_eval_returncodes"][milestone_step] = milestone_code
+            if milestone_code != 0:
+                failures += 1
+                message = (
+                    f"milestone evaluation at step {milestone_step} exited with "
+                    f"status {milestone_code}"
+                )
+                attempt["status"] = job["status"] = "milestone_eval_failed"
+                attempt["failure"] = job["failure"] = message
+                attempt["finished_at"] = job["finished_at"] = _now()
+                _persist_status(status_path, status)
+                milestone_failed = True
+                break
+            try:
+                validate_milestone_evaluation_artifact(
+                    record, job, attempt, resolved, milestone_step
+                )
+                check_source_provenance(expected_sha)
+            except CampaignError as exc:
+                failures += 1
+                attempt["status"] = job["status"] = "milestone_eval_artifact_failed"
+                attempt["failure"] = job["failure"] = str(exc)
+                attempt["finished_at"] = job["finished_at"] = _now()
+                _persist_status(status_path, status)
+                milestone_failed = True
+                break
+        if milestone_failed:
             continue
 
         try:
@@ -3151,6 +3499,12 @@ def run_worker(campaign: Path, lane_id: str) -> int:
             "checkpoint": _sha256(paths["checkpoint"]),
             "stage_results": {
                 name: _sha256(path) for name, path in _attempt_path_objects(attempt)[1].items()
+            },
+            "milestone_checkpoints": {
+                name: _sha256(path) for name, path in paths.get("milestone_checkpoints", {}).items()
+            },
+            "milestone_results": {
+                name: _sha256(path) for name, path in paths.get("milestone_results", {}).items()
             },
             "common_results": _sha256(paths["common_results"]),
             "performance": (
@@ -3390,6 +3744,36 @@ def _normalised_individual(
         source_hashes.get("checkpoint") or _sha256(checkpoint) if checkpoint_available else None
     )
     training_stages = _training_stage_evidence(attempt) if attempt.get("kind") != "reused" else []
+    raw_milestone_results = attempt.get("paths", {}).get("milestone_results", {})
+    raw_milestone_checkpoints = attempt.get("paths", {}).get("milestone_checkpoints", {})
+    milestone_hashes = source_hashes.get("milestone_results", {})
+    milestone_checkpoint_hashes = source_hashes.get("milestone_checkpoints", {})
+    milestones: dict[str, Any] = {}
+    if isinstance(raw_milestone_results, dict) and isinstance(raw_milestone_checkpoints, dict):
+        for step, raw_result in sorted(
+            raw_milestone_results.items(), key=lambda item: int(item[0])
+        ):
+            raw_checkpoint = raw_milestone_checkpoints.get(step)
+            if not isinstance(raw_result, str) or not isinstance(raw_checkpoint, str):
+                raise CampaignError(f"{job['id']}: malformed milestone paths for step {step}")
+            milestone_result_path = Path(raw_result)
+            milestone_checkpoint = Path(raw_checkpoint)
+            milestone_record = load_results(milestone_result_path).to_dict()
+            milestone_metrics = _complete_metrics(milestone_record["metrics"], names)
+            milestones[step] = {
+                "target_stage_iterations": int(step),
+                "cumulative_iterations": 40_000 + int(step),
+                "metrics": {
+                    **{key: milestone_metrics.get(key) for key, _ in AGGREGATE_METRICS},
+                    "boundary_macro_f1": milestone_metrics["boundary"].get("macro_f1"),
+                },
+                "source": {
+                    "result_sha256": milestone_hashes.get(step) or _sha256(milestone_result_path),
+                    "checkpoint_sha256": milestone_checkpoint_hashes.get(step)
+                    or _sha256(milestone_checkpoint),
+                    "checkpoint_size_bytes": milestone_checkpoint.stat().st_size,
+                },
+            }
     evaluation_wall = result.get("wall_clock_s")
     sizes = result.get("dataset_sizes")
     evaluation_images = sizes.get("eval") if isinstance(sizes, dict) else None
@@ -3429,6 +3813,7 @@ def _normalised_individual(
             "training_stages": training_stages,
             "full_validation_pipeline": pipeline,
         },
+        "milestones": milestones,
     }
 
 
@@ -3450,6 +3835,31 @@ def _aggregate_protocol(protocol: dict[str, Any]) -> None:
         raise CampaignError("retained seed records disagree on validation class support")
     protocol["aggregate"] = aggregate
     protocol["support"] = supports[0]
+    milestone_steps = sorted(
+        {step for item in individuals for step in item.get("milestones", {})}, key=int
+    )
+    protocol["milestones"] = {}
+    for step in milestone_steps:
+        rows = [item["milestones"].get(step) for item in individuals]
+        if any(row is None for row in rows):
+            raise CampaignError(f"retained seed records disagree on milestone step {step}")
+        concrete = [row for row in rows if isinstance(row, dict)]
+        protocol["milestones"][step] = {
+            "target_stage_iterations": int(step),
+            "cumulative_iterations": concrete[0]["cumulative_iterations"],
+            "aggregate": {
+                key: _summary(row["metrics"].get(key) for row in concrete)
+                for key, _ in RECORD_METRICS
+            },
+            "individual": [
+                {
+                    "seed": item["seed"],
+                    "metrics": row["metrics"],
+                    "source": row["source"],
+                }
+                for item, row in zip(individuals, concrete, strict=True)
+            ],
+        }
 
 
 def _protocol_resource_evidence(
@@ -3553,13 +3963,17 @@ def _new_protocol(
         if isinstance(dependency, dict)
         else None
     )
+    target_iterations = plan["stages"][-1]["target_iterations"]
+    milestone_text = ", ".join(f"{step:,}" for step in job.get("evaluation_milestones", []))
     return {
         "status": "complete",
         "label": job["protocol_label"],
         "dataset": f"{'Cityscapes' if job['protocol'] == 'cityscapes' else 'RailSem19'} val",
         "taxonomy": job["evaluation_space"],
         "training": (
-            "reused matching 40,000-step Cityscapes checkpoint; 20,000 RailSem19 steps"
+            "reused matching 40,000-step Cityscapes checkpoint; "
+            f"{target_iterations:,} RailSem19 steps"
+            + (f"; retained evaluations at {milestone_text} and final" if milestone_text else "")
             if job["protocol"] == "cityscapes_to_railsem19"
             else "40,000 steps from pretrained weights"
         ),
@@ -3583,6 +3997,7 @@ def _new_protocol(
         "aggregate": {},
         "support": {},
         "individual": [],
+        "milestones": {},
         "derived_metrics": ["mprecision", "mdice", "mspecificity"],
         "derivation": (
             "Derived from each retained confusion matrix when absent; all other metrics "
@@ -3658,6 +4073,17 @@ def _comparison_records(
     campaign_record: dict[str, Any],
 ) -> dict[str, dict[str, Any]]:
     records = _load_existing_records(publish_root)
+    for existing in records.values():
+        transfer = existing.get("protocols", {}).get("cityscapes_to_railsem19")
+        if (
+            isinstance(transfer, dict)
+            and transfer.get("iteration_progress", {}).get("target_iterations") == 20_000
+        ):
+            historical = existing.setdefault("historical_protocols", {})
+            historical.setdefault(
+                "cityscapes_to_railsem19_low_head_lr_20k", copy.deepcopy(transfer)
+            )
+            del existing["protocols"]["cityscapes_to_railsem19"]
     by_model = {model.id: model for model in manifest.models}
     for job_id, (job, result) in sorted(cells.items()):
         if job.get("status") == "alias":
@@ -3687,6 +4113,19 @@ def _comparison_records(
         if record.get("schema_version") != 2:
             raise CampaignError(f"{model.id} normalized record is not schema version 2")
         protocol = record["protocols"].get(job["protocol"])
+        if protocol is not None and job["protocol"] == "cityscapes_to_railsem19":
+            existing_target = protocol.get("iteration_progress", {}).get("target_iterations")
+            candidate_target = _iteration_plan(result["config"])["total_target_iterations"]
+            if existing_target == 20_000 and candidate_target == 40_000:
+                historical_key = "cityscapes_to_railsem19_low_head_lr_20k"
+                historical = record.setdefault("historical_protocols", {})
+                if historical_key in historical and historical[historical_key] != protocol:
+                    raise CampaignError(
+                        f"{model.id} has conflicting preserved historical transfer evidence"
+                    )
+                historical[historical_key] = copy.deepcopy(protocol)
+                protocol = _new_protocol(job, result, attempt)
+                record["protocols"][job["protocol"]] = protocol
         if protocol is None:
             protocol = _new_protocol(job, result, attempt)
             record["protocols"][job["protocol"]] = protocol
@@ -3829,6 +4268,28 @@ def _record_metric(record: dict[str, Any], protocol: str, metric: str) -> object
     )
 
 
+def _milestone_metric(record: dict[str, Any], protocol: str, step: int, metric: str) -> object:
+    return (
+        record.get("protocols", {})
+        .get(protocol, {})
+        .get("milestones", {})
+        .get(str(step), {})
+        .get("aggregate", {})
+        .get(metric, {})
+        .get("mean")
+    )
+
+
+def _historical_metric(record: dict[str, Any], protocol: str, metric: str) -> object:
+    return (
+        record.get("historical_protocols", {})
+        .get(protocol, {})
+        .get("aggregate", {})
+        .get(metric, {})
+        .get("mean")
+    )
+
+
 def _model_generated_section(record: dict[str, Any]) -> str:
     protocols = record.get("protocols", {})
     lines = [
@@ -3864,6 +4325,52 @@ def _model_generated_section(record: dict[str, Any]) -> str:
             ],
         ]
         lines.append("| " + " | ".join(values) + " |")
+
+    transfer = protocols.get("cityscapes_to_railsem19", {})
+    corrected_20 = transfer.get("milestones", {}).get("20000", {})
+    historical_20 = record.get("historical_protocols", {}).get(
+        "cityscapes_to_railsem19_low_head_lr_20k", {}
+    )
+    transfer_rows = [
+        (
+            "historical 0.1x backbone + 0.1x head groups",
+            20_000,
+            60_000,
+            historical_20.get("aggregate", {}),
+        ),
+        (
+            "corrected 0.1x backbone + 1.0x head groups",
+            20_000,
+            60_000,
+            corrected_20.get("aggregate", {}),
+        ),
+        (
+            "corrected 0.1x backbone + 1.0x head groups",
+            40_000,
+            80_000,
+            transfer.get("aggregate", {}),
+        ),
+    ]
+    lines.extend(
+        [
+            "",
+            "### Transfer checkpoints",
+            "",
+            "The cumulative count includes the reused 40,000-step Cityscapes source. The "
+            "historical row is retained as a baseline and is not mixed with corrected runs.",
+            "",
+            "| optimizer contract | Rail iterations | cumulative iterations | mIoU | boundary F1 |",
+            "|---|---:|---:|---:|---:|",
+        ]
+    )
+    for contract, rail_iterations, cumulative, aggregate in transfer_rows:
+        miou = aggregate.get("miou", {}).get("mean")
+        boundary = aggregate.get("boundary_macro_f1", {}).get("mean")
+        lines.append(
+            f"| {contract} | {rail_iterations:,} | {cumulative:,} | "
+            f"{_number(miou * 100 if miou is not None else None)} | "
+            f"{_number(boundary * 100 if boundary is not None else None)} |"
+        )
 
     performance = record.get("model_profile", {}).get("standardized_inference", {})
     latency = performance.get("latency_ms") or {}
@@ -4017,7 +4524,7 @@ def _empty_progress(protocol_id: str) -> dict[str, Any]:
         "cityscapes": [("cityscapes", "Cityscapes", 40_000)],
         "railsem19": [("railsem19", "RailSem19", 40_000)],
         "cityscapes_to_railsem19": [
-            ("railsem19", "RailSem19 adaptation", 20_000),
+            ("railsem19", "RailSem19 adaptation", 40_000),
         ],
     }[protocol_id]
     total = sum(item[2] for item in targets)
@@ -4208,6 +4715,32 @@ def _comparison_status(
                     )
                     for protocol_id in REQUIRED_PROTOCOLS
                 },
+                "transfer_miou_corrected_20k": (
+                    _percent([_milestone_metric(record, "cityscapes_to_railsem19", 20_000, "miou")])
+                    if record
+                    and _milestone_metric(record, "cityscapes_to_railsem19", 20_000, "miou")
+                    is not None
+                    else "—"
+                ),
+                "transfer_miou_historical_low_head_lr_20k": (
+                    _percent(
+                        [
+                            _historical_metric(
+                                record,
+                                "cityscapes_to_railsem19_low_head_lr_20k",
+                                "miou",
+                            )
+                        ]
+                    )
+                    if record
+                    and _historical_metric(
+                        record,
+                        "cityscapes_to_railsem19_low_head_lr_20k",
+                        "miou",
+                    )
+                    is not None
+                    else "—"
+                ),
                 "iteration_progress": progress,
                 "parameter_count": profile.get("parameter_count", {}),
                 "standardized_inference": inference,
@@ -4270,8 +4803,9 @@ def _comparison_status(
                 ),
                 "transfer": (
                     "reuse the matching 40,000-iteration Cityscapes checkpoint, reset only "
-                    "the incompatible classifier, and train RailSem19 for 20,000 iterations "
-                    "at 0.1x learning rate"
+                    "the incompatible classifier, and train RailSem19 for 40,000 iterations; "
+                    "use 0.1x for backbone groups and 1.0x for model-declared head groups; "
+                    "retain common evaluations at Rail 20,000 and 40,000"
                 ),
                 "evaluation": ("final EMA, batch 1, 1024x1024 sliding window, stride 768, no TTA"),
                 "resume_policy": (
@@ -4354,6 +4888,11 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
         "training_checkpoint_interval",
         "training_objective",
         *protocol_columns,
+        "transfer_historical_low_head_lr_20k_miou",
+        "transfer_corrected_20k_miou",
+        "transfer_corrected_40k_miou",
+        "transfer_corrected_20k_cumulative_iterations",
+        "transfer_corrected_40k_cumulative_iterations",
         "standardized_inference_fps",
         "standardized_inference_resident_parameter_bytes",
         "standardized_inference_latency_ms",
@@ -4430,6 +4969,32 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
                     or "",
                 }
             )
+        transfer = protocols.get("cityscapes_to_railsem19", {})
+        corrected_20 = transfer.get("milestones", {}).get("20000", {})
+        historical_20 = (
+            record.get("historical_protocols", {}).get(
+                "cityscapes_to_railsem19_low_head_lr_20k", {}
+            )
+            if record
+            else {}
+        )
+        output.update(
+            {
+                "transfer_historical_low_head_lr_20k_miou": historical_20.get("aggregate", {})
+                .get("miou", {})
+                .get("mean", ""),
+                "transfer_corrected_20k_miou": corrected_20.get("aggregate", {})
+                .get("miou", {})
+                .get("mean", ""),
+                "transfer_corrected_40k_miou": transfer.get("aggregate", {})
+                .get("miou", {})
+                .get("mean", ""),
+                "transfer_corrected_20k_cumulative_iterations": (
+                    corrected_20.get("cumulative_iterations", "")
+                ),
+                "transfer_corrected_40k_cumulative_iterations": (80_000 if transfer else ""),
+            }
+        )
         inference = row["standardized_inference"]
         latency = inference.get("latency_ms") or {}
         output.update(
@@ -4498,8 +5063,8 @@ def _central_readme(
         f"| augmentation | {training_contract['augmentation']}; crop size is model-specific below |",
         f"| dense objectives | {training_contract['dense_objective']} |",
         f"| EoMT query objective | {training_contract['query_objective']} |",
-        "| protocol budgets | Cityscapes 40,000; RailSem19 40,000; transfer 20,000 "
-        "RailSem19 adaptation iterations |",
+        "| protocol budgets | Cityscapes 40,000; RailSem19 40,000; transfer reuses City40 "
+        "and reports Rail20 (60,000 cumulative) plus Rail40 (80,000 cumulative) |",
         f"| transfer initialization | {training_contract['transfer']} |",
         f"| interruption recovery | {training_contract['resume_policy']} |",
         f"| final quality evaluation | {training_contract['evaluation']} |",
@@ -4507,8 +5072,9 @@ def _central_readme(
         "### Model-specific optimizer and batching settings",
         "",
         "The fresh-component LR is the initial LR for newly initialized heads or adapters. "
-        "Transfer adaptation applies the documented 0.1x stage multiplier to both backbone "
-        "and fresh-component groups.",
+        "Corrected transfer adaptation applies 0.1x to backbone groups and 1.0x to the "
+        "model-declared decoder/head groups. The preserved historical 20k baseline used "
+        "0.1x for both groups.",
         "",
         "| model | train crop | batch/GPU | accumulation | effective batch | backbone LR | fresh-component LR | LLRD | objective |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---|",
@@ -4532,22 +5098,20 @@ def _central_readme(
             "",
             "## Quality",
             "",
-            "| priority | model | status | Cityscapes mIoU (iterations) | RailSem19 mIoU (iterations) | Cityscapes → RailSem19 mIoU (iterations) |",
-            "|---:|---|---|---:|---:|---:|",
+            "| priority | model | status | City mIoU (40k) | Rail mIoU (40k) | transfer historical Rail20 / total60 | transfer corrected Rail20 / total60 | transfer corrected Rail40 / total80 |",
+            "|---:|---|---|---:|---:|---:|---:|---:|",
         ]
     )
     for row in status["models"]:
         model = models[row["model"]]
         link = "../../" + str(model.readme).removeprefix("docs/")
-        values = []
-        for protocol_id in REQUIRED_PROTOCOLS:
-            progress = row["iteration_progress"][protocol_id]
-            metric = row[f"{protocol_id}_miou"]
-            values.append(
-                "—"
-                if metric == "—"
-                else f"{metric} ({progress['current_iterations']:,}/{progress['target_iterations']:,})"
-            )
+        values = [
+            row["cityscapes_miou"],
+            row["railsem19_miou"],
+            row["transfer_miou_historical_low_head_lr_20k"],
+            row["transfer_miou_corrected_20k"],
+            row["cityscapes_to_railsem19_miou"],
+        ]
         lines.append(
             f"| {row['priority']} | [{row['model']}]({link}) | {row['status']} | "
             + " | ".join(values)
@@ -4629,8 +5193,9 @@ def _central_readme(
             "",
             "- Cityscapes: 40,000 iterations, standard 19-class 500-image validation.",
             "- RailSem19: 40,000 iterations, `rail_union`, fixed 850-image validation.",
-            "- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint, then run "
-            "20,000 RailSem19 adaptation iterations; Cityscapes is never trained twice.",
+            "- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint, evaluate "
+            "the corrected run at Rail 20,000 (60,000 cumulative), then continue to Rail "
+            "40,000 (80,000 cumulative); Cityscapes is never trained twice.",
             "- Transfer warm-starts every compatible learned tensor and reinitialises only the "
             "19-class to `rail_union` classifier mismatch.",
             "- Quality evaluation: EMA, 1024x1024 sliding window, stride 768, no TTA.",
