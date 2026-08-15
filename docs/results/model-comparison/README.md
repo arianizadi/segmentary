@@ -87,10 +87,10 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 14 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | running | — | — | — |
 | 15 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | queued | — | — | — |
 | 16 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | queued | — | — | — |
-| 17 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | running | 78.73 (40,000/40,000) | — | — |
+| 17 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | running | 78.73 (40,000/40,000) | — | 61.77 (20,000/20,000) |
 | 18 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | queued | — | — | — |
 | 19 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | queued | — | — | — |
-| 20 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | queued | — | — | — |
+| 20 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | running | — | — | — |
 | 21 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | queued | — | — | — |
 | 22 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | queued | — | — | — |
 | 23 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | queued | — | — | — |
@@ -178,7 +178,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | — / — | — / — | — / — | — |
 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | — / — | — / — | — / — | — |
 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | — / — | — / — | — / — | — |
-| [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | 12h 42m 58s / 12.72 | — / — | — / — | 7.09 GiB |
+| [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | 12h 42m 58s / 12.72 | — / — | 11h 27m 30s / 11.46 | 8.59 GiB |
 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | — / — | — / — | — / — | — |
 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | — / — | — / — | — / — | — |
 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | — / — | — / — | — / — | — |
