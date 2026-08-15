@@ -445,10 +445,9 @@ def campaign_jobs(
 
 
 def _job_cost(job: Job) -> float:
-    # City->Rail is now only the 20k target adaptation; its 40k City source is
-    # the ordinary Cityscapes job and is never trained twice.
-    protocol_scale = 0.5 if job.protocol.id == "cityscapes_to_railsem19" else 1.0
-    return MODEL_COST_WEIGHTS[job.model.id] * protocol_scale
+    # Every physical protocol now contains 40k optimizer steps. Transfer reuses
+    # the ordinary City checkpoint, so only its 40k Rail target stage is priced.
+    return MODEL_COST_WEIGHTS[job.model.id]
 
 
 def partition_jobs(jobs: Sequence[Job], gpus: Sequence[int]) -> dict[int, tuple[Job, ...]]:

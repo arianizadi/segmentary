@@ -282,6 +282,11 @@ def test_transfer_reuses_city_checkpoint_and_only_schedules_target_iterations(
     record = _record(tmp_path, monkeypatch)
     transfer = next(job for job in record["jobs"] if job["protocol"] == "cityscapes_to_railsem19")
     source = next(job for job in record["jobs"] if job["id"] == transfer["depends_on"])
+    manifest = campaign.load_campaign_manifest()
+    model = next(item for item in manifest.models if item.id == transfer["model"])
+    assert campaign._job_cost(campaign.Job(model, manifest.protocols["cityscapes"], 0)) == (
+        campaign._job_cost(campaign.Job(model, manifest.protocols["cityscapes_to_railsem19"], 0))
+    )
     assert source["lane"] == transfer["lane"]
     lane = next(item for item in record["lanes"] if item["id"] == transfer["lane"])
     assert lane["job_ids"].index(transfer["id"]) == lane["job_ids"].index(source["id"]) + 1
