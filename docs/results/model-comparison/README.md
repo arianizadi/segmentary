@@ -80,7 +80,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 7 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | running | — | — | — |
 | 8 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | complete | 78.46 (40,000/40,000) | 68.44 (40,000/40,000) | 64.26 (20,000/20,000) |
 | 9 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | running | 80.65 (40,000/40,000) | — | 65.71 (20,000/20,000) |
-| 10 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | running | — | 66.82 (40,000/40,000) | — |
+| 10 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | running | 78.57 (40,000/40,000) | 66.82 (40,000/40,000) | — |
 | 11 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | queued | — | — | — |
 | 12 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | queued | — | — | — |
 | 13 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | running | 81.48 (40,000/40,000) | — | — |
@@ -171,7 +171,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — / — | — / — | — / — | — |
 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | 7h 54m 19s / 7.91 | 13h 39m 24s / 13.66 | 6h 49m 53s / 6.83 | 6.86 GiB |
 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | 8h 10m 00s / 8.17 | — / — | 7h 09m 12s / 7.15 | 12.12 GiB |
-| [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | — / — | 12h 55m 26s / 12.92 | — / — | 6.70 GiB |
+| [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | 9h 21m 34s / 9.36 | 12h 55m 26s / 12.92 | — / — | 6.70 GiB |
 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | — / — | — / — | — / — | — |
 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | — / — | — / — | — / — | — |
 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | 9h 12m 18s / 9.21 | — / — | — / — | 5.86 GiB |
