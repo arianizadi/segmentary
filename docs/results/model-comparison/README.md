@@ -89,7 +89,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 16 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | running | — | — | — |
 | 17 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | running | 78.73 (40,000/40,000) | — | 61.77 (20,000/20,000) |
 | 18 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | queued | — | — | — |
-| 19 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | running | — | — | — |
+| 19 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | running | 71.87 (40,000/40,000) | — | — |
 | 20 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | running | — | 68.18 (40,000/40,000) | — |
 | 21 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | queued | — | — | — |
 | 22 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | running | — | — | — |
@@ -180,7 +180,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | — / — | — / — | — / — | — |
 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | 12h 42m 58s / 12.72 | — / — | 11h 27m 30s / 11.46 | 8.59 GiB |
 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | — / — | — / — | — / — | — |
-| [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | — / — | — / — | — / — | — |
+| [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | 8h 00m 50s / 8.01 | — / — | — / — | 3.66 GiB |
 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | — / — | 17h 40m 01s / 17.67 | — / — | 6.59 GiB |
 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | — / — | — / — | — / — | — |
 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | — / — | — / — | — / — | — |
