@@ -238,6 +238,32 @@ Resetting the head is an experimental variable, not a repair for a mismatched
 label space. All stages in one experiment must still share the same canonical
 output meaning.
 
+For a separately named optimizer ablation, model-declared decoder/head groups
+can use a different stage scale:
+
+```yaml
+reset_head: true
+lr_scale: 0.1
+head_group_lr_scale: 1.0
+```
+
+This is not classifier-only. The override applies to every path returned by the
+model's `head_patterns()` contract, which commonly includes reused decoder
+parameters as well as the reset classifier. Keep it out of an unchanged
+published protocol unless that optimizer ablation is explicitly versioned.
+The unreferenced
+[`city_checkpoint_rs_head_group_lr_v1.yaml`](../../configs/campaigns/experiments/city_checkpoint_rs_head_group_lr_v1.yaml)
+file is a concrete versioned example; the public campaign manifest does not use it.
+
+For a quality-oriented comparison after a standard 19-class Cityscapes run,
+[`city_checkpoint_rs_full_adaptation_v2.yaml`](../../configs/campaigns/experiments/city_checkpoint_rs_full_adaptation_v2.yaml)
+uses a 40,000-iteration RailSem19 ceiling with the reused backbone at `0.1x`
+and the model-declared decoder/head group at its normal task-training rate.
+Retain and evaluate its Rail checkpoints at 20,000 and 40,000 iterations: those
+correspond to 60,000 and 80,000 cumulative iterations after the reused 40,000
+Cityscapes source iterations. This is distinct from the original 20,000-step
+low-LR adaptation, so their measurements must not be silently combined.
+
 ## 6. Exact checkpoint handoff and EMA
 
 At the end of every stage, Segmentary explicitly saves:

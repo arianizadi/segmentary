@@ -9,8 +9,9 @@ Staging rules are explicit here rather than implied by config:
   reset_head: true        re-initialise the unified classifier for this stage;
                           the backbone still carries over
   freeze: <spec>          freeze matching parameters for this stage
-  lr_scale                multiplies the stage's learning rates; later stages
-                          conventionally use 0.1
+  lr_scale                multiplies all stage learning rates
+  head_group_lr_scale     optionally scales model-declared decoder/head groups
+                          independently; omitted inherits lr_scale
   iters                   per-stage schedule length; later stages are shorter
 
 Each stage writes its own results.json under runs/<experiment>/<stage>/, so a
@@ -21,7 +22,7 @@ that hides where the gain came from.
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, replace
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from typing import Any, cast
 
@@ -36,7 +37,7 @@ from .checkpoints import (
     checkpoint_uses_lora,
     read_checkpoint,
 )
-from .config import ExperimentConfig, StageConfig, TrainConfig, config_hash, to_dict
+from .config import ExperimentConfig, OptimConfig, StageConfig, TrainConfig, config_hash, to_dict
 from .data.base import SegDataset
 from .data.loaders import (
     build_train_loader,
@@ -85,6 +86,32 @@ def validate_training_contract(cfg: ExperimentConfig) -> None:
         )
 
 
+def stage_optim_config(
+    base: OptimConfig,
+    stage: StageConfig,
+    total_iters: int,
+) -> OptimConfig:
+    """Resolve independent stage scales into backbone and declared-head rates.
+
+    ``build_param_groups`` represents the head rate as a multiplier on the
+    backbone rate.  Convert the two user-facing absolute scales back into that
+    representation so an omitted ``head_group_lr_scale`` retains the historical
+    behavior. Model ``head_patterns`` frequently cover a complete decoder as
+    well as its classifier, so this is deliberately not classifier-only.
+    """
+    head_scale = stage.lr_scale if stage.head_group_lr_scale is None else stage.head_group_lr_scale
+    return replace(
+        base,
+        backbone_lr=base.backbone_lr * stage.lr_scale,
+        head_lr_mult=base.head_lr_mult * head_scale / stage.lr_scale,
+        warmup_iters=min(
+            base.warmup_iters,
+            max(1, total_iters // 10),
+            total_iters - 1,
+        ),
+    )
+
+
 def validate_data_task_contract(
     cfg: ExperimentConfig,
     space: LabelSpace,
@@ -120,6 +147,7 @@ def validate_resume_checkpoint(
     *,
     stage: StageConfig,
     train_cfg: TrainConfig,
+    optim_cfg: OptimConfig,
 ) -> int:
     """Require a complete, compatible Lightning training state before resuming."""
     if not checkpoint.is_file():
@@ -145,6 +173,13 @@ def validate_resume_checkpoint(
         raise RuntimeError(
             f"resume checkpoint stage {metadata.get('stage_name')!r} does not match "
             f"configured stage {stage.name!r}"
+        )
+    expected_optim = asdict(optim_cfg)
+    if metadata.get("optim") != expected_optim:
+        raise RuntimeError(
+            "resume checkpoint optimizer configuration does not match the resolved "
+            "stage optimizer; refusing to restore optimizer state under different "
+            "learning-rate or schedule settings"
         )
     optimizer_states = state.get("optimizer_states")
     if not isinstance(optimizer_states, list) or not optimizer_states:
@@ -431,16 +466,7 @@ def run_stage(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     train_cfg = replace(cfg.train, iters=stage.iters or cfg.train.iters)
-    # The scheduler requires warmup < total; a literal one-step smoke therefore uses zero.
-    optim_cfg = replace(
-        cfg.optim,
-        backbone_lr=cfg.optim.backbone_lr * stage.lr_scale,
-        warmup_iters=min(
-            cfg.optim.warmup_iters,
-            max(1, train_cfg.iters // 10),
-            train_cfg.iters - 1,
-        ),
-    )
+    optim_cfg = stage_optim_config(cfg.optim, stage, train_cfg.iters)
 
     model = build_model(cfg.model, space.num_classes)
     if cfg.loss.query is not None and not getattr(model, "supports_query_objective", False):
@@ -497,6 +523,7 @@ def run_stage(
             resume_checkpoint,
             stage=stage,
             train_cfg=train_cfg,
+            optim_cfg=optim_cfg,
         )
 
     checkpoint_callbacks = _checkpoint_callbacks(out_dir, train_cfg)
@@ -529,7 +556,9 @@ def run_stage(
     print(
         f"\n=== stage {stage.name}: {train_cfg.iters} iters, "
         f"init={stage.init_from}, reset_head={stage.reset_head}, "
-        f"lr={optim_cfg.backbone_lr:.2e}, trainable={trainable / 1e6:.1f}M/{total / 1e6:.1f}M"
+        f"backbone_lr={optim_cfg.backbone_lr:.2e}, "
+        f"head_group_lr={optim_cfg.backbone_lr * optim_cfg.head_lr_mult:.2e}, "
+        f"trainable={trainable / 1e6:.1f}M/{total / 1e6:.1f}M"
         f"{f', frozen {n_frozen} tensors' if n_frozen else ''} ==="
     )
     print(f"TensorBoard: tensorboard --logdir {out_root}")

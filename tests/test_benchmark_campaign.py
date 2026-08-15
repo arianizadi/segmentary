@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import copy
 import csv
 import io
 import json
 import pickle
 import sys
 import zipfile
+from dataclasses import asdict
 from pathlib import Path
 
 import pytest
@@ -157,6 +159,7 @@ def test_legacy_b2_config_normalizes_to_current_semantics(
         data.pop("loader")
         data.pop("loader_options")
         data.pop("mapping")
+    legacy["stages"][0].pop("head_group_lr_scale")
 
     assert campaign.compatibility_sha256(
         legacy, runtime_device_count=8
@@ -187,9 +190,22 @@ def test_latest_resume_checkpoint_selects_newest_stage_state_and_wires_cli(
     }
     attempt = tmp_path / "attempt-001"
     config = {
+        "name": "resume-test",
+        "model": {"arch": "segformer_b0"},
+        "space": "cityscapes19",
         "train": {"iters": 100},
-        "stages": [{"name": "cityscapes", "iters": None}],
+        "stages": [
+            {
+                "name": "cityscapes",
+                "iters": None,
+                "data": [{"name": "cityscapes", "root": "/unused"}],
+            }
+        ],
     }
+    typed = campaign.from_dict(campaign.ExperimentConfig, config)
+    expected_optim = asdict(
+        campaign.stage_optim_config(typed.optim, typed.stages[0], typed.train.iters)
+    )
     paths = campaign._attempt_paths(job, attempt, config)
     paths["config"].parent.mkdir(parents=True, exist_ok=True)
     paths["config"].write_text(yaml.safe_dump(config))
@@ -202,6 +218,7 @@ def test_latest_resume_checkpoint_selects_newest_stage_state_and_wires_cli(
                 TRAINING_RESUME_KEY: {
                     "schema_version": TRAINING_RESUME_SCHEMA_VERSION,
                     "stage_name": "cityscapes",
+                    "optim": expected_optim,
                 },
             },
             stage_dir / f"step-{step:08d}.ckpt",
@@ -211,6 +228,12 @@ def test_latest_resume_checkpoint_selects_newest_stage_state_and_wires_cli(
     assert checkpoint == stage_dir / "step-00000040.ckpt"
     assert step == 40
     assert digest == campaign._sha256(checkpoint)
+
+    state = torch.load(checkpoint, weights_only=True)
+    state[TRAINING_RESUME_KEY]["optim"]["backbone_lr"] *= 0.1
+    torch.save(state, checkpoint)
+    with pytest.raises(campaign.CampaignError, match="optimizer configuration does not match"):
+        campaign._latest_resume_checkpoint(paths, config)
 
     record = {
         "execution": {
@@ -271,6 +294,16 @@ def test_transfer_reuses_city_checkpoint_and_only_schedules_target_iterations(
     assert campaign._iteration_plan(resolved)["total_target_iterations"] == 20_000
     assert resolved["stages"][0]["init_from"] == str(checkpoint)
     assert resolved["stages"][0]["reset_head"] is True
+    assert resolved["stages"][0]["lr_scale"] == pytest.approx(0.1)
+    assert resolved["stages"][0]["head_group_lr_scale"] is None
+    assert campaign._iteration_plan(resolved)["stages"] == [
+        {
+            "stage": "railsem19",
+            "target_iterations": 20_000,
+            "learning_rate_scale": pytest.approx(0.1),
+            "head_group_learning_rate_scale": pytest.approx(0.1),
+        }
+    ]
     assert record["execution"]["planned_optimizer_iterations"] == 3_600_000
     assert record["execution"]["avoided_duplicate_city_iterations"] == 1_440_000
 
@@ -343,6 +376,21 @@ def test_public_transfer_provenance_keeps_hash_but_redacts_server_path(
         "checkpoint_sha256": "a" * 64,
         "classifier_policy": "reset incompatible target classifier only",
     }
+    assert protocol["training"] == (
+        "reused matching 40,000-step Cityscapes checkpoint; 20,000 RailSem19 steps"
+    )
+
+    legacy_plan = copy.deepcopy(attempt["iteration_plan"])
+    for stage in legacy_plan["stages"]:
+        stage.pop("head_group_learning_rate_scale")
+    legacy_attempt = {**attempt, "iteration_plan": legacy_plan}
+    legacy_protocol = campaign._new_protocol(
+        transfer,
+        {"config": resolved, "dataset_sizes": {"eval": 850}},
+        legacy_attempt,
+    )
+    assert legacy_protocol["training"] == protocol["training"]
+    assert legacy_protocol["iteration_progress"] == protocol["iteration_progress"]
 
 
 @pytest.mark.parametrize("model_id", ["eomt_large", "eomt_dinov3_large"])
@@ -466,6 +514,22 @@ def test_stage_iters_none_uses_train_default() -> None:
     assert campaign._iteration_plan(config)["total_target_iterations"] == 60_000
     assert campaign._expected_final_step(config, "cityscapes") == 40_000
     assert campaign._expected_final_step(config, "railsem19") == 20_000
+
+
+def test_iteration_plan_preserves_legacy_inherited_head_group_scale() -> None:
+    config = {
+        "train": {"iters": 40_000},
+        "stages": [{"name": "railsem19", "iters": 20_000, "lr_scale": 0.1}],
+    }
+
+    assert campaign._iteration_plan(config)["stages"] == [
+        {
+            "stage": "railsem19",
+            "target_iterations": 20_000,
+            "learning_rate_scale": pytest.approx(0.1),
+            "head_group_learning_rate_scale": pytest.approx(0.1),
+        }
+    ]
 
 
 def test_worker_refuses_to_run_outside_tmux(

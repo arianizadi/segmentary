@@ -1,0 +1,20 @@
+# Experimental transfer optimizer ablation. This file is deliberately not
+# referenced by all_models_cityscapes_railsem19.yaml and does not redefine the
+# published campaign protocol.
+#
+# The launcher may replace the checkpoint placeholder with a verified matching
+# Cityscapes checkpoint. `head_group_lr_scale` applies to every parameter matched
+# by the model's head_patterns contract. For many models that includes a reused
+# decoder, not only the reset final classifier.
+name: city_checkpoint_rs_head_group_lr_v1
+space: rail_union
+loss: {aux: lovasz, aux_weight: 0.5}
+stages:
+  - name: railsem19
+    data:
+      - {name: railsem19, root: data/railsem19, split_file: splits/railsem19_seed0.json}
+    init_from: /dependency/cityscapes/last.ckpt
+    reset_head: true
+    iters: 20000
+    lr_scale: 0.1
+    head_group_lr_scale: 1.0

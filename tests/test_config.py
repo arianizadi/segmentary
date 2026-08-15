@@ -8,6 +8,7 @@ import os
 import subprocess
 import sys
 from collections.abc import Iterator
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -390,6 +391,44 @@ def test_mixed_stage_validates_weight_identity_and_values() -> None:
 def test_stage_rejects_invalid_schedule_fields(kwargs: dict[str, Any], message: str) -> None:
     with pytest.raises(ConfigError, match=message):
         StageConfig(name="stage", data=[_data()], **kwargs)
+
+
+@pytest.mark.parametrize("value", [0.0, -1.0, float("nan"), float("inf"), True, "1.0"])
+def test_stage_rejects_invalid_head_group_lr_scale(value: object) -> None:
+    with pytest.raises(ConfigError, match="head_group_lr_scale must be a positive finite"):
+        StageConfig(
+            name="stage",
+            data=[_data()],
+            head_group_lr_scale=value,  # type: ignore[arg-type]
+        )
+
+
+def test_head_group_scale_is_generic_and_has_no_classifier_only_floor() -> None:
+    stage = StageConfig(
+        name="target",
+        data=[_data()],
+        reset_head=True,
+        lr_scale=0.1,
+        head_group_lr_scale=0.05,
+    )
+    assert to_dict(stage)["head_group_lr_scale"] == pytest.approx(0.05)
+
+
+def test_full_transfer_v2_has_distinct_20k_and_40k_evidence_budget() -> None:
+    path = (
+        Path(__file__).parents[1]
+        / "configs/campaigns/experiments/city_checkpoint_rs_full_adaptation_v2.yaml"
+    )
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    stage = raw["stages"][0]
+
+    assert stage["init_from"] == "/dependency/cityscapes/last.ckpt"
+    assert stage["reset_head"] is True
+    assert stage["iters"] == 40_000
+    assert stage["lr_scale"] == pytest.approx(0.1)
+    assert stage["head_group_lr_scale"] == pytest.approx(1.0)
+    assert 20_000 % 4_000 == 0
+    assert stage["iters"] % 4_000 == 0
 
 
 def test_experiment_requires_at_least_one_stage() -> None:

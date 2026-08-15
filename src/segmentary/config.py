@@ -1319,7 +1319,10 @@ class StageConfig:
     name: str
     data: list[DataConfig]
     iters: int | None = None  # overrides TrainConfig.iters
-    lr_scale: float = 1.0  # later stages typically 0.1
+    lr_scale: float = 1.0  # stage-wide scale; later stages typically 0.1
+    # Optional override for model-declared head groups (often complete decoders,
+    # not only the final classifier). Omitted preserves the stage-wide scale.
+    head_group_lr_scale: float | None = None
     init_from: str = "pretrained"  # "pretrained" | "<path/to.ckpt>" | "previous"
     reset_head: bool = False
     freeze: str | None = None  # e.g. "backbone", "backbone.stages.0"
@@ -1339,6 +1342,16 @@ class StageConfig:
             raise ConfigError(f"stage {self.name!r} iters must be positive, got {self.iters}")
         if self.lr_scale <= 0:
             raise ConfigError(f"stage {self.name!r} lr_scale must be positive, got {self.lr_scale}")
+        if self.head_group_lr_scale is not None and (
+            isinstance(self.head_group_lr_scale, bool)
+            or not isinstance(self.head_group_lr_scale, (int, float))
+            or not math.isfinite(self.head_group_lr_scale)
+            or self.head_group_lr_scale <= 0
+        ):
+            raise ConfigError(
+                f"stage {self.name!r} head_group_lr_scale must be a positive finite "
+                f"number, got {self.head_group_lr_scale!r}"
+            )
         if not isinstance(self.init_from, str) or not self.init_from.strip():
             raise ConfigError(f"stage {self.name!r} init_from must be a non-empty string")
         if self.sample_weights is not None:

@@ -41,7 +41,7 @@ import time
 import zipfile
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -64,6 +64,7 @@ from segmentary.config import (
     load_yaml,
     to_dict,
 )
+from segmentary.curriculum import stage_optim_config
 from segmentary.taxonomy import load_space
 from segmentary.utils.results import load_results
 
@@ -1447,6 +1448,11 @@ def _normalised_compatibility_config(
     for stage in stages:
         if not isinstance(stage, dict) or not isinstance(stage.get("data"), list):
             raise CampaignError("compatible config contains malformed stage data")
+        if stage.get("head_group_lr_scale") is None:
+            # An omitted head-group scale inherits lr_scale. Removing its serialized
+            # null preserves compatibility with results written before the
+            # independent group-scale field existed.
+            stage.pop("head_group_lr_scale", None)
         for data in stage["data"]:
             if not isinstance(data, dict) or not isinstance(data.get("name"), str):
                 raise CampaignError("compatible config contains malformed dataset config")
@@ -1589,6 +1595,11 @@ def _iteration_plan(config: dict[str, Any]) -> dict[str, Any]:
                 "stage": stage["name"],
                 "target_iterations": target,
                 "learning_rate_scale": stage.get("lr_scale", 1.0),
+                "head_group_learning_rate_scale": (
+                    stage.get("lr_scale", 1.0)
+                    if stage.get("head_group_lr_scale") is None
+                    else stage["head_group_lr_scale"]
+                ),
             }
         )
         total += target
@@ -1883,6 +1894,23 @@ def _latest_resume_checkpoint(
     metadata = state.get(TRAINING_RESUME_KEY)
     if not isinstance(metadata, dict) or metadata.get("stage_name") != checkpoint.parent.name:
         raise CampaignError(f"checkpoint is not a compatible Segmentary resume state: {checkpoint}")
+    try:
+        cfg = from_dict(ExperimentConfig, config)
+    except (TypeError, ValueError) as exc:
+        raise CampaignError(f"resolved training config is invalid for resume: {exc}") from exc
+    matching_stages = [stage for stage in cfg.stages if stage.name == checkpoint.parent.name]
+    if len(matching_stages) != 1:
+        raise CampaignError(
+            f"resume checkpoint stage {checkpoint.parent.name!r} matches "
+            f"{len(matching_stages)} resolved stages"
+        )
+    stage = matching_stages[0]
+    expected_optim = asdict(stage_optim_config(cfg.optim, stage, stage.iters or cfg.train.iters))
+    if metadata.get("optim") != expected_optim:
+        raise CampaignError(
+            "checkpoint optimizer configuration does not match the resolved stage; "
+            "refusing to resume with different learning-rate or schedule settings"
+        )
     return checkpoint, step, _sha256(checkpoint)
 
 

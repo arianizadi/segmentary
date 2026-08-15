@@ -29,7 +29,10 @@ optim:
   and layer-scale parameters automatically receive zero weight decay.
 - The scheduler warms from `warmup_ratio` to 1, then follows polynomial decay
   toward `min_lr_ratio` with exponent `poly_power`.
-- Every stage multiplies the backbone and head base rates by `stage.lr_scale`.
+- Every stage multiplies all rates by `stage.lr_scale`. An experimental stage
+  may instead set `stage.head_group_lr_scale` to scale model-declared head groups
+  independently. Those groups often include a complete decoder, not only a
+  final classifier.
 - A stage caps requested warmup to roughly its first 10 percent
   (`min(warmup_iters, max(1, iters // 10))`).
 
@@ -58,6 +61,8 @@ frozen weights and LoRA base weights do not consume Adam moments.
 
 `stage.init_from: /path/to.ckpt` is a weight warm start, not optimizer/scheduler
 resume. The new stage constructs a fresh optimizer and its own step schedule.
+`head_group_lr_scale` multiplies the configured head-group rate
+(`backbone_lr * head_lr_mult`); it does not replace `head_lr_mult`.
 
 ## Evidence and benchmark boundary
 

@@ -31,10 +31,14 @@ from .config import (
     deep_merge,
     from_dict,
     load_yaml,
-    replace,
     to_dict,
 )
-from .curriculum import apply_freeze, prepare_stage_model, validate_training_contract
+from .curriculum import (
+    apply_freeze,
+    prepare_stage_model,
+    stage_optim_config,
+    validate_training_contract,
+)
 from .data.loaders import input_normalization
 from .engine.losses import LossConfig, SegmentationLoss
 from .engine.module import dense_training_objective
@@ -621,11 +625,7 @@ def probe_configs(
         objective_name = "segmentary.engine.module.dense_training_objective"
         objective_kind = "dense"
     train_iters = stage.iters or cfg.train.iters
-    optim_cfg = replace(
-        cfg.optim,
-        backbone_lr=cfg.optim.backbone_lr * stage.lr_scale,
-        warmup_iters=min(cfg.optim.warmup_iters, max(1, train_iters // 10)),
-    )
+    optim_cfg = stage_optim_config(cfg.optim, stage, train_iters)
     head_patterns = tuple(model.head_patterns()) if hasattr(model, "head_patterns") else ()
     optimizer = build_optimizer(model, optim_cfg, head_patterns)
     tracked = _tracked_parameters(model)
@@ -755,6 +755,16 @@ def probe_configs(
             "model": to_dict(cfg.model),
             "loss": to_dict(cfg.loss),
             "optimizer": to_dict(optim_cfg),
+            "optimizer_provenance": {
+                "declared": to_dict(cfg.optim),
+                "stage_lr_scale": stage.lr_scale,
+                "stage_head_group_lr_scale": stage.head_group_lr_scale,
+                "effective_head_group_lr_scale": (
+                    stage.lr_scale
+                    if stage.head_group_lr_scale is None
+                    else stage.head_group_lr_scale
+                ),
+            },
         },
         "model": {
             "arch": cfg.model.arch,
