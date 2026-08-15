@@ -65,7 +65,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| Cityscapes | 40,000 / 40,000 | 82.40 | 89.06 | 90.98 | 89.96 | 99.80 | 96.73 | 93.87 | 88.23 |
 | RailSem19 | 40,000 / 40,000 | 71.95 | 82.46 | 83.76 | 83.02 | 99.44 | 90.51 | 83.29 | 80.07 |
 | Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
 
@@ -83,9 +83,33 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | — | — | — | — |
+| Cityscapes | 17h 59m 42s | 17.99 | 16.31 GiB | 4.783 |
 | RailSem19 | 19h 38m 19s | 19.64 | 16.94 GiB | 3.478 |
 | Cityscapes → RailSem19 | — | — | — | — |
+
+### Cityscapes class IoU
+
+| class | IoU |
+|---|---:|
+| road | 98.54 |
+| sidewalk | 87.92 |
+| building | 93.65 |
+| wall | 69.71 |
+| fence | 66.49 |
+| pole | 68.21 |
+| traffic-light | 75.11 |
+| traffic-sign | 81.69 |
+| vegetation | 93.12 |
+| terrain | 67.10 |
+| sky | 95.46 |
+| person | 84.70 |
+| rider | 67.94 |
+| car | 95.84 |
+| truck | 89.15 |
+| bus | 91.54 |
+| train | 85.56 |
+| motorcycle | 73.64 |
+| bicycle | 80.25 |
 
 ### RailSem19 class IoU
 
@@ -117,7 +141,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 - Model recipe: `configs/models/segformer_b5.yaml`
 - Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: RailSem19: 0.
+- Retained seeds: RailSem19: 0; Cityscapes: 0.
 - EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
