@@ -1,11 +1,11 @@
 {
   "counts": {
-    "complete_cells": 30,
+    "complete_cells": 31,
     "complete_models": 6,
-    "complete_performance_benchmarks": 11,
+    "complete_performance_benchmarks": 12,
     "physical_performance_benchmarks": 36,
     "physical_training_cells": 108,
-    "reported_cells": 30,
+    "reported_cells": 31,
     "total_reported_cells": 111
   },
   "models": [
@@ -2084,18 +2084,18 @@
           "target_iterations": 20000
         },
         "railsem19": {
-          "current_iterations": 0,
+          "current_iterations": 40000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
+              "current_iterations": 40000,
               "dataset": "RailSem19",
               "stage": "railsem19",
               "target_iterations": 40000
@@ -2105,15 +2105,57 @@
         }
       },
       "model": "native_resnet50_deeplabv3plus",
-      "parameter_count": {},
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": 40351925
+      },
       "priority": 16,
-      "railsem19_miou": "\u2014",
+      "railsem19_miou": "66.41",
       "result_origin": "trained",
       "standardized_inference": {
-        "fps": null,
-        "latency_ms": null,
-        "peak_vram_bytes": null,
-        "status": "pending"
+        "fps": 128.06797647146894,
+        "latency_ms": {
+          "mean": 7.8083532476425175,
+          "p50": 7.379456043243408,
+          "p95": 9.293463706970215
+        },
+        "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
+        "note": "Model-only public forward measured once from the RailSem19-only 21-class EMA checkpoint and linked across this model's quality protocols.",
+        "parameter_dtype_counts": {
+          "float32": 40351925
+        },
+        "peak_reserved_bytes": 878706688,
+        "peak_vram_bytes": 878706688,
+        "protocol": {
+          "backend": "pytorch",
+          "entrypoint": "public model(image) dense-logits forward",
+          "gpu_model": "NVIDIA L40S",
+          "input_shape_nchw": [
+            1,
+            3,
+            1024,
+            1024
+          ],
+          "measured_iterations": 100,
+          "precision": "bf16_autocast",
+          "warmup_iterations": 20
+        },
+        "provenance": {
+          "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "checkpoint_bytes": 646455664,
+          "checkpoint_global_step": 40000,
+          "checkpoint_sha256": "e5cba336d47eefa437c7b0dfd6391c82bccdb83e927d1f70b9032d8e6cd608f3",
+          "config_hash": "c09c72d3bee9",
+          "config_sha256": "d261fd3b131237650e30a2f92e8ea7ce3498e4ff1da487aab1bd6cae13d36e3e",
+          "measured_job_id": "native_resnet50_deeplabv3plus--railsem19--seed-0",
+          "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "result_seed": 0,
+          "result_sha256": "37fa738b0a83d054fd6818930279aa0034358f0330e78982bb08c800fed7ac3d",
+          "result_stage": "eval:railsem19:val",
+          "weights": "ema"
+        },
+        "resident_parameter_bytes": 161407700,
+        "status": "complete"
       },
       "status": "running",
       "training_specification": {
@@ -3235,7 +3277,7 @@
         "peak_vram_bytes": null,
         "status": "pending"
       },
-      "status": "queued",
+      "status": "running",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,
