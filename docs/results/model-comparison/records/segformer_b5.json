@@ -10,11 +10,11 @@
     },
     "standardized_inference": {
       "status": "complete",
-      "fps": 25.129898088611768,
+      "fps": 26.74247741707274,
       "latency_ms": {
-        "mean": 39.793237380981445,
-        "p50": 39.27500915527344,
-        "p95": 43.62245292663574
+        "mean": 37.393693351745604,
+        "p50": 37.00172805786133,
+        "p95": 39.55256195068359
       },
       "peak_vram_bytes": 2755657728,
       "peak_reserved_bytes": 2755657728,
@@ -40,9 +40,9 @@
       },
       "provenance": {
         "measured_job_id": "segformer_b5--railsem19--seed-0",
-        "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
-        "config_hash": "29313db26c31",
-        "config_sha256": "13e8acd7f88deeab13680fb12abef93c077777b42851b67c063656bc20c9191f",
+        "campaign_git_sha": "b9eb3e1f390b70aad63e78b2e723bd79b5266471",
+        "config_hash": "f22b36a85035",
+        "config_sha256": "1dd71696f6edab1faf0146d749fa6a2a250365ee73959fdecbaa5ffcf72777d3",
         "checkpoint_sha256": "7ecee01e5337241e3e2d864a36e5ad717ac57365a8fa50747fd19ff25d7debe1",
         "checkpoint_global_step": 40000,
         "checkpoint_bytes": 1355711482,

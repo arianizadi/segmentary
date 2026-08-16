@@ -10,11 +10,11 @@
     },
     "standardized_inference": {
       "status": "complete",
-      "fps": 42.35403881512641,
+      "fps": 43.06300350975865,
       "latency_ms": {
-        "mean": 23.610499210357666,
-        "p50": 23.532544136047363,
-        "p95": 24.033893871307374
+        "mean": 23.22178943634033,
+        "p50": 23.1910400390625,
+        "p95": 23.350426483154298
       },
       "peak_vram_bytes": 2663383040,
       "peak_reserved_bytes": 2663383040,
@@ -40,9 +40,9 @@
       },
       "provenance": {
         "measured_job_id": "upernet_convnext--railsem19--seed-0",
-        "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
-        "config_hash": "844a2332cd91",
-        "config_sha256": "ae75e159f6e5a2a389861b01e2c0d7a3af3c8629dd3b9445df6a37aadcd10c88",
+        "campaign_git_sha": "b9eb3e1f390b70aad63e78b2e723bd79b5266471",
+        "config_hash": "780d7d7d7a38",
+        "config_sha256": "5c56c7b834eb0e2e019f70f8df64139d64c4d41af71b6af19c0bffd2e1dcfe4f",
         "checkpoint_sha256": "6e246e8e61f02c4359f944d776168359392cec5c1c750d4ba29c6637f80b9f3a",
         "checkpoint_global_step": 40000,
         "checkpoint_bytes": 1294962563,
