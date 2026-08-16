@@ -424,6 +424,7 @@ def test_public_transfer_provenance_keeps_hash_but_redacts_server_path(
     record = _record(tmp_path, monkeypatch)
     transfer = next(job for job in record["jobs"] if job["protocol"] == "cityscapes_to_railsem19")
     _, resolved = campaign._resolved_config(record, transfer, tmp_path / "transfer")
+    resolved["evaluation"] = {"weights": "ema"}
     attempt = {
         "kind": "reused",
         "iteration_plan": campaign._iteration_plan(resolved),
@@ -454,6 +455,16 @@ def test_public_transfer_provenance_keeps_hash_but_redacts_server_path(
         "reused matching 40,000-step Cityscapes checkpoint; 40,000 RailSem19 steps; "
         "retained evaluations at 20,000 and final"
     )
+    assert protocol["evaluation"]["weights"] == "ema"
+
+    raw_resolved = copy.deepcopy(resolved)
+    raw_resolved["evaluation"]["weights"] = "raw"
+    raw_protocol = campaign._new_protocol(
+        transfer,
+        {"config": raw_resolved, "dataset_sizes": {"eval": 850}},
+        attempt,
+    )
+    assert raw_protocol["evaluation"]["weights"] == "raw"
 
     legacy_plan = copy.deepcopy(attempt["iteration_plan"])
     for stage in legacy_plan["stages"]:
@@ -1159,7 +1170,10 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert "batch/GPU" in readme
     assert "effective batch" in readme
     assert "CPU data-loader workers per job" in readme
-    assert "final EMA, batch 1, 1024x1024 sliding window" in readme
+    assert "raw for running-stat BatchNorm; EMA otherwise" in readme
+    assert "| model | weights | parameters" in readme
+    assert "Quality evaluation: EMA" not in readme
+    assert "exact recorded `raw` or `ema` endpoint" in readme
     assert "FPS can remain pending while Cityscapes mIoU is already available" in readme
     assert "±" not in readme
 
@@ -1177,6 +1191,136 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert eomt["training_gradient_accumulation"] == "8"
     assert eomt["training_effective_batch_size"] == "16"
     assert eomt["training_objective"] == "hungarian_query"
+
+
+def test_transfer_reporting_never_labels_legacy_20k_as_corrected_40k() -> None:
+    aggregate = {
+        "miou": {"mean": 0.66},
+        "boundary_macro_f1": {"mean": 0.72},
+    }
+    progress_20k = {
+        "target_iterations": 20_000,
+        "current_iterations": 20_000,
+        "stages": [],
+        "final_verification": {
+            "result_verified": True,
+            "result_total_iterations": 20_000,
+            "result_final_stage_iteration": 20_000,
+            "checkpoint_available": True,
+            "checkpoint_verified": True,
+            "checkpoint_global_step": 20_000,
+        },
+    }
+    transfer_20k = {
+        "aggregate": aggregate,
+        "iteration_progress": progress_20k,
+        "milestones": {},
+        "seed_count": 1,
+        "seeds": [0],
+        "resource_evidence": {
+            "training": {
+                "wall_clock_s_mean": 3_600,
+                "gpu_hours_mean": 1.0,
+                "peak_vram_bytes_per_device": 1_073_741_824,
+            },
+            "full_validation_pipeline": {"images_per_s_mean": 2.0},
+        },
+        "evaluation": {"weights": "ema"},
+        "individual": [{"source": {"git_sha": SHA}}],
+    }
+    legacy = {
+        "model_id": "probe",
+        "model_config": "configs/models/probe.yaml",
+        "protocols": {"cityscapes_to_railsem19": transfer_20k},
+        "historical_protocols": {
+            "cityscapes_to_railsem19_low_head_lr_20k": {"aggregate": aggregate}
+        },
+        "model_profile": {},
+    }
+
+    historical, corrected_20, corrected_40 = campaign._transfer_reporting_aggregates(legacy)
+    assert historical["aggregate"]["miou"]["mean"] == pytest.approx(0.66)
+    assert corrected_20 == {}
+    assert corrected_40 == {}
+
+    empty = {
+        protocol: campaign._empty_progress(protocol) for protocol in campaign.REQUIRED_PROTOCOLS
+    }
+    row = {
+        "priority": 1,
+        "model": "probe",
+        "status": "running",
+        "iteration_progress": empty,
+        "standardized_inference": {"status": "pending"},
+        "training_specification": {},
+    }
+    csv_row = next(
+        csv.DictReader(io.StringIO(campaign._comparison_csv({"models": [row]}, {"probe": legacy})))
+    )
+    assert csv_row["transfer_historical_low_head_lr_20k_miou"] == "0.66"
+    assert csv_row["transfer_corrected_40k_miou"] == ""
+    assert csv_row["transfer_corrected_40k_cumulative_iterations"] == ""
+
+    generated = campaign._model_generated_section(legacy)
+    assert (
+        "| historical 0.1x backbone + 0.1x head groups | 20,000 | 60,000 | 66.00 | 72.00 |"
+        in generated
+    )
+    assert "| corrected 0.1x backbone + 1.0x head groups | 40,000 | 80,000 | — | — |" in generated
+    assert "| Cityscapes → RailSem19 | — | — | — | — |" in generated
+    assert "Retained seeds: none yet" in generated
+    assert "1h 00m" not in generated
+
+    complete_shape_only = copy.deepcopy(legacy)
+    complete_shape_only["protocols"].update({"cityscapes": {}, "railsem19": {}})
+    assert campaign._model_record_status(complete_shape_only) == "running"
+
+
+def test_transfer_reporting_accepts_only_verified_corrected_40k_final() -> None:
+    progress = {
+        "target_iterations": 40_000,
+        "current_iterations": 40_000,
+        "final_verification": {
+            "result_verified": True,
+            "result_total_iterations": 40_000,
+            "result_final_stage_iteration": 40_000,
+        },
+    }
+    transfer = {
+        "aggregate": {"miou": {"mean": 0.71}},
+        "iteration_progress": progress,
+        "milestones": {
+            "20000": {
+                "aggregate": {"miou": {"mean": 0.69}},
+                "cumulative_iterations": 60_000,
+            }
+        },
+    }
+    record = {"protocols": {"cityscapes_to_railsem19": transfer}}
+
+    _, corrected_20, corrected_40 = campaign._transfer_reporting_aggregates(record)
+    assert corrected_20["aggregate"]["miou"]["mean"] == pytest.approx(0.69)
+    assert corrected_40["aggregate"]["miou"]["mean"] == pytest.approx(0.71)
+
+    for field, value in (
+        ("current_iterations", 39_999),
+        ("target_iterations", 20_000),
+    ):
+        invalid = copy.deepcopy(record)
+        invalid["protocols"]["cityscapes_to_railsem19"]["iteration_progress"][field] = value
+        assert campaign._corrected_transfer_final(invalid) == {}
+    invalid = copy.deepcopy(record)
+    invalid["protocols"]["cityscapes_to_railsem19"]["iteration_progress"]["final_verification"][
+        "result_verified"
+    ] = False
+    assert campaign._corrected_transfer_final(invalid) == {}
+
+
+def test_public_weight_source_rejects_legacy_unverified_ema_label() -> None:
+    assert campaign._recorded_evaluation_weights({"evaluation": {"weights": "raw"}}) == "raw"
+    assert campaign._recorded_evaluation_weights({"evaluation": {"weights": "ema"}}) == "ema"
+    assert campaign._recorded_evaluation_weights({"evaluation": {"weights": "EMA"}}) is None
+    assert campaign._recorded_evaluation_weights({"evaluation": {}}) is None
 
 
 def test_legacy_confusion_derivation_uses_taxonomy_order() -> None:
