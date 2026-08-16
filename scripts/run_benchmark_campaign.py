@@ -5229,12 +5229,14 @@ def _public_privacy_check(planned: dict[Path, str]) -> None:
 def report_campaign(campaign: Path, *, write: bool, publisher_root: Path | None = None) -> int:
     campaign = campaign.expanduser().resolve()
     record = _load_json_object(campaign / "campaign.json")
-    manifest = load_campaign_manifest(Path(record["source"]["manifest"]))
     publish_root = (
         publisher_root.expanduser().resolve() if publisher_root is not None else REPO_ROOT
     )
     if not (publish_root / ".git").exists():
         raise CampaignError(f"publisher root is not a Git worktree: {publish_root}")
+    manifest = load_campaign_manifest(
+        publish_root / "configs/campaigns" / Path(record["source"]["manifest"]).name
+    )
     if publish_root == REPO_ROOT and write:
         raise CampaignError(
             "refusing to edit the frozen training worktree; pass --publisher-root to a "
