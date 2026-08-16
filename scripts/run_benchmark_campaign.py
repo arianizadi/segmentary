@@ -2602,6 +2602,14 @@ def validate_milestone_evaluation_artifacts(
     }
 
 
+def _normalised_success_hashes(value: dict[str, Any]) -> dict[str, Any]:
+    """Add empty milestone maps omitted by pre-milestone campaign records."""
+    normalised = copy.deepcopy(value)
+    normalised.setdefault("milestone_checkpoints", {})
+    normalised.setdefault("milestone_results", {})
+    return normalised
+
+
 def validate_success(
     record: dict[str, Any], job: dict[str, Any], attempt: dict[str, Any]
 ) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -2622,6 +2630,7 @@ def validate_success(
     expected_hashes = attempt.get("sha256")
     if not isinstance(expected_hashes, dict):
         raise CampaignError(f"successful attempt for {job['id']} has no artifact hashes")
+    expected_hashes = _normalised_success_hashes(expected_hashes)
     actual_hashes: dict[str, Any] = {
         "resolved_config": _sha256(paths["config"]),
         "checkpoint": _sha256(paths["checkpoint"]),

@@ -326,6 +326,18 @@ def test_transfer_reuses_city_checkpoint_and_only_schedules_target_iterations(
     )
 
 
+def test_legacy_success_hashes_omit_empty_milestone_maps() -> None:
+    hashes = {"checkpoint": "abc", "stage_results": {"cityscapes": "def"}}
+
+    assert campaign._normalised_success_hashes(hashes) == {
+        "checkpoint": "abc",
+        "stage_results": {"cityscapes": "def"},
+        "milestone_checkpoints": {},
+        "milestone_results": {},
+    }
+    assert "milestone_checkpoints" not in hashes
+
+
 def test_transfer_milestone_result_is_bound_to_exact_20k_checkpoint(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
