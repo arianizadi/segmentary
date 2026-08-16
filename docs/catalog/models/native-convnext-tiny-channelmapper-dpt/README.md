@@ -133,7 +133,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| Cityscapes | 40,000 / 40,000 | 80.72 | 87.20 | 90.79 | 88.87 | 99.78 | 96.41 | 93.28 | 86.58 |
 | RailSem19 | 40,000 / 40,000 | 70.70 | 80.84 | 83.58 | 82.01 | 99.43 | 90.25 | 82.91 | 79.22 |
 | Cityscapes → RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
 
@@ -161,9 +161,33 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | — | — | — | — |
+| Cityscapes | — | — | — | 4.773 |
 | RailSem19 | 22h 57m 26s | 22.96 | 11.42 GiB | 3.334 |
 | Cityscapes → RailSem19 | — | — | — | — |
+
+### Cityscapes class IoU
+
+| class | IoU |
+|---|---:|
+| road | 98.22 |
+| sidewalk | 85.56 |
+| building | 93.18 |
+| wall | 63.08 |
+| fence | 66.25 |
+| pole | 65.41 |
+| traffic-light | 74.49 |
+| traffic-sign | 82.15 |
+| vegetation | 92.70 |
+| terrain | 65.11 |
+| sky | 95.21 |
+| person | 84.27 |
+| rider | 68.14 |
+| car | 95.66 |
+| truck | 83.61 |
+| bus | 91.15 |
+| train | 82.09 |
+| motorcycle | 67.42 |
+| bicycle | 80.00 |
 
 ### RailSem19 class IoU
 
@@ -194,10 +218,11 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 ### Provenance
 
 - Model recipe: `configs/models/native_convnext_tiny_channelmapper_dpt.yaml`
-- Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: RailSem19: 0.
-- Quality evaluation weights: RailSem19: —.
+- Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7, db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Retained seeds: RailSem19: 0; Cityscapes: 0.
+- Quality evaluation weights: RailSem19: —; Cityscapes: ema.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
+- Caveat: Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone ema-weight validation evidence are retained.
 
 <!-- segmentary:generated-city-rail-benchmark:end -->
