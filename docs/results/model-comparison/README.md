@@ -18,14 +18,14 @@ These are the resolved settings used by this campaign, not generic model default
 | augmentation | random scale 0.5-2.0, crop, horizontal flip p=0.5, and color jitter p=0.5; crop size is model-specific below |
 | dense objectives | standalone Cityscapes CE; RailSem19-only and transfer adaptation CE + 0.5 Lovasz |
 | EoMT query objective | Hungarian class/mask assignment with class/mask-BCE/Dice weights 2/5/5 and 8,192 matching points |
-| protocol budgets | Cityscapes 40,000; RailSem19 40,000; transfer 20,000 RailSem19 adaptation iterations |
-| transfer initialization | reuse the matching 40,000-iteration Cityscapes checkpoint, reset only the incompatible classifier, and train RailSem19 for 20,000 iterations at 0.1x learning rate |
+| protocol budgets | Cityscapes 40,000; RailSem19 40,000; transfer reuses City40 and reports Rail20 (60,000 cumulative) plus Rail40 (80,000 cumulative) |
+| transfer initialization | reuse the matching 40,000-iteration Cityscapes checkpoint, reset only the incompatible classifier, and train RailSem19 for 40,000 iterations; use 0.1x for backbone groups and 1.0x for model-declared head groups; retain common evaluations at Rail 20,000 and 40,000 |
 | interruption recovery | same-attempt full-state resume from newest validated periodic checkpoint; fresh attempt only when no recovery checkpoint exists |
 | final quality evaluation | final EMA, batch 1, 1024x1024 sliding window, stride 768, no TTA |
 
 ### Model-specific optimizer and batching settings
 
-The fresh-component LR is the initial LR for newly initialized heads or adapters. Transfer adaptation applies the documented 0.1x stage multiplier to both backbone and fresh-component groups.
+The fresh-component LR is the initial LR for newly initialized heads or adapters. Corrected transfer adaptation applies 0.1x to backbone groups and 1.0x to the model-declared decoder/head groups. The preserved historical 20k baseline used 0.1x for both groups.
 
 | model | train crop | batch/GPU | accumulation | effective batch | backbone LR | fresh-component LR | LLRD | objective |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -69,45 +69,45 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 
 ## Quality
 
-| priority | model | status | Cityscapes mIoU (iterations) | RailSem19 mIoU (iterations) | Cityscapes → RailSem19 mIoU (iterations) |
-|---:|---|---|---:|---:|---:|
-| 1 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | complete | 82.96 (40,000/40,000) | 71.42 (40,000/40,000) | 66.61 (20,000/20,000) |
-| 2 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | complete | 82.74 (40,000/40,000) | 72.13 (40,000/40,000) | 67.92 (20,000/20,000) |
-| 3 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | complete | 57.26 (40,000/40,000) | 53.98 (40,000/40,000) | 49.89 (20,000/20,000) |
-| 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | complete | 81.03 (40,000/40,000) | 70.74 (40,000/40,000) | 67.97 (20,000/20,000) |
-| 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | 82.40 (40,000/40,000) | 71.95 (40,000/40,000) | — |
-| 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | running | 78.90 (40,000/40,000) | 69.90 (40,000/40,000) | — |
-| 7 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | running | — | 68.62 (40,000/40,000) | — |
-| 8 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | complete | 78.46 (40,000/40,000) | 68.44 (40,000/40,000) | 64.26 (20,000/20,000) |
-| 9 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | complete | 80.65 (40,000/40,000) | 70.39 (40,000/40,000) | 65.71 (20,000/20,000) |
-| 10 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | running | 78.57 (40,000/40,000) | 66.82 (40,000/40,000) | — |
-| 11 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | running | — | — | — |
-| 12 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | running | — | — | — |
-| 13 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | running | 81.48 (40,000/40,000) | — | — |
-| 14 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | running | — | 70.70 (40,000/40,000) | — |
-| 15 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | queued | — | — | — |
-| 16 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | running | — | 66.41 (40,000/40,000) | — |
-| 17 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | running | 78.73 (40,000/40,000) | — | 61.77 (20,000/20,000) |
-| 18 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | running | — | — | — |
-| 19 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | running | 71.87 (40,000/40,000) | — | — |
-| 20 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | running | — | 68.18 (40,000/40,000) | — |
-| 21 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | queued | — | — | — |
-| 22 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | running | — | — | — |
-| 23 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | queued | — | — | — |
-| 24 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | queued | — | — | — |
-| 25 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | queued | — | — | — |
-| 26 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | running | — | — | — |
-| 27 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | queued | — | — | — |
-| 28 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | queued | — | — | — |
-| 29 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | queued | — | — | — |
-| 30 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | queued | — | — | — |
-| 31 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | queued | — | — | — |
-| 32 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | queued | — | — | — |
-| 33 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | queued | — | — | — |
-| 34 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | queued | — | — | — |
-| 35 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | queued | — | — | — |
-| 36 | [native_resnet18_fpn_segformer_aux](../../catalog/models/native-resnet18-fpn-segformer-aux/README.md) | queued | — | — | — |
-| 37 | [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | queued | — | — | — |
+| priority | model | status | City mIoU (40k) | Rail mIoU (40k) | transfer historical Rail20 / total60 | transfer corrected Rail20 / total60 | transfer corrected Rail40 / total80 |
+|---:|---|---|---:|---:|---:|---:|---:|
+| 1 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | complete | 82.96 | 71.42 | 66.61 | — | 66.61 |
+| 2 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | complete | 82.74 | 72.13 | 67.92 | — | 67.92 |
+| 3 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | complete | 57.26 | 53.98 | 49.89 | — | 49.89 |
+| 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | complete | 81.03 | 70.74 | 67.97 | — | 67.97 |
+| 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | 82.40 | 71.95 | — | — | — |
+| 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | running | 78.90 | 69.90 | — | — | — |
+| 7 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | running | — | 68.62 | — | — | — |
+| 8 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | complete | 78.46 | 68.44 | 64.26 | — | 64.26 |
+| 9 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | complete | 80.65 | 70.39 | 65.71 | — | 65.71 |
+| 10 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | running | 78.57 | 66.82 | — | — | — |
+| 11 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | running | 78.99 | — | — | — | — |
+| 12 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | running | 78.99 | — | — | — | — |
+| 13 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | running | 81.48 | — | — | — | — |
+| 14 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | running | — | 70.70 | — | — | — |
+| 15 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | queued | — | — | — | — | — |
+| 16 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | running | — | 66.41 | — | — | — |
+| 17 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | running | 78.73 | — | 61.77 | — | 61.77 |
+| 18 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | running | — | — | — | — | — |
+| 19 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | running | 71.87 | — | — | — | — |
+| 20 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | running | — | 68.18 | — | — | — |
+| 21 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | queued | — | — | — | — | — |
+| 22 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | running | — | — | — | — | — |
+| 23 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | queued | — | — | — | — | — |
+| 24 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | queued | — | — | — | — | — |
+| 25 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | queued | — | — | — | — | — |
+| 26 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | running | — | — | — | — | — |
+| 27 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | queued | — | — | — | — | — |
+| 28 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | queued | — | — | — | — | — |
+| 29 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | queued | — | — | — | — | — |
+| 30 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | queued | — | — | — | — | — |
+| 31 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | queued | — | — | — | — | — |
+| 32 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | queued | — | — | — | — | — |
+| 33 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | queued | — | — | — | — | — |
+| 34 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | queued | — | — | — | — | — |
+| 35 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | queued | — | — | — | — | — |
+| 36 | [native_resnet18_fpn_segformer_aux](../../catalog/models/native-resnet18-fpn-segformer-aux/README.md) | queued | — | — | — | — | — |
+| 37 | [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | queued | — | — | — | — | — |
 
 ## Standardized model-only inference
 
@@ -204,7 +204,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 
 - Cityscapes: 40,000 iterations, standard 19-class 500-image validation.
 - RailSem19: 40,000 iterations, `rail_union`, fixed 850-image validation.
-- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint, then run 20,000 RailSem19 adaptation iterations; Cityscapes is never trained twice.
+- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint, evaluate the corrected run at Rail 20,000 (60,000 cumulative), then continue to Rail 40,000 (80,000 cumulative); Cityscapes is never trained twice.
 - Transfer warm-starts every compatible learned tensor and reinitialises only the 19-class to `rail_union` classifier mismatch.
 - Quality evaluation: EMA, 1024x1024 sliding window, stride 768, no TTA.
 - [`results.csv`](results.csv): spreadsheet-friendly mean metrics, iterations, and resources.

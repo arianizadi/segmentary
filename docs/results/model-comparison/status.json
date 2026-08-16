@@ -1,11 +1,11 @@
 {
   "counts": {
-    "complete_cells": 32,
+    "complete_cells": 34,
     "complete_models": 6,
     "complete_performance_benchmarks": 13,
     "physical_performance_benchmarks": 36,
     "physical_training_cells": 108,
-    "reported_cells": 32,
+    "reported_cells": 34,
     "total_reported_cells": 111
   },
   "models": [
@@ -156,7 +156,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "66.61"
     },
     {
       "alias_of": null,
@@ -305,7 +307,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "67.92"
     },
     {
       "alias_of": null,
@@ -454,7 +458,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "49.89"
     },
     {
       "alias_of": null,
@@ -603,7 +609,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "67.97"
     },
     {
       "alias_of": null,
@@ -645,10 +653,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 40000,
@@ -752,7 +760,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -794,10 +804,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 40000,
@@ -901,7 +911,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -943,10 +955,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 40000,
@@ -1050,7 +1062,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -1199,7 +1213,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "64.26"
     },
     {
       "alias_of": null,
@@ -1348,7 +1364,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "65.71"
     },
     {
       "alias_of": null,
@@ -1390,10 +1408,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 40000,
@@ -1497,26 +1515,28 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "\u2014",
+      "cityscapes_miou": "78.99",
       "cityscapes_to_railsem19_miou": "\u2014",
       "iteration_progress": {
         "cityscapes": {
-          "current_iterations": 0,
+          "current_iterations": 40000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
+              "current_iterations": 40000,
               "dataset": "Cityscapes",
               "stage": "cityscapes",
               "target_iterations": 40000
@@ -1539,10 +1559,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -1566,13 +1586,17 @@
         }
       },
       "model": "smp_deeplabv3plus_resnet101",
-      "parameter_count": {},
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": null
+      },
       "priority": 11,
       "railsem19_miou": "\u2014",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": null,
         "latency_ms": null,
+        "note": "Pending the fixed RailSem19-only model benchmark.",
         "peak_vram_bytes": null,
         "status": "pending"
       },
@@ -1604,26 +1628,28 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": "smp_deeplabv3plus_resnet101",
-      "cityscapes_miou": "\u2014",
+      "cityscapes_miou": "78.99",
       "cityscapes_to_railsem19_miou": "\u2014",
       "iteration_progress": {
         "cityscapes": {
-          "current_iterations": 0,
+          "current_iterations": 40000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
+              "current_iterations": 40000,
               "dataset": "Cityscapes",
               "stage": "cityscapes",
               "target_iterations": 40000
@@ -1646,10 +1672,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -1673,13 +1699,17 @@
         }
       },
       "model": "deeplabv3plus_r101",
-      "parameter_count": {},
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": null
+      },
       "priority": 12,
       "railsem19_miou": "\u2014",
       "result_origin": "alias",
       "standardized_inference": {
         "fps": null,
         "latency_ms": null,
+        "note": "Pending the fixed RailSem19-only model benchmark.",
         "peak_vram_bytes": null,
         "status": "pending"
       },
@@ -1711,7 +1741,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -1753,10 +1785,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -1822,7 +1854,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -1864,10 +1898,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 40000,
@@ -1971,7 +2005,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -2013,10 +2049,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -2078,7 +2114,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -2120,10 +2158,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 40000,
@@ -2227,7 +2265,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -2338,7 +2378,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "61.77"
     },
     {
       "alias_of": null,
@@ -2380,10 +2422,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -2445,7 +2487,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -2487,10 +2531,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -2556,7 +2600,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -2598,10 +2644,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 40000,
@@ -2705,7 +2751,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -2747,10 +2795,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -2812,7 +2860,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -2854,10 +2904,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -2919,7 +2969,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -2961,10 +3013,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -3026,7 +3078,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -3068,10 +3122,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -3133,7 +3187,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -3175,10 +3231,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -3240,7 +3296,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -3282,10 +3340,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -3347,7 +3405,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -3389,10 +3449,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -3454,7 +3514,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -3496,10 +3558,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -3561,7 +3623,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -3603,10 +3667,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -3668,7 +3732,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -3710,10 +3776,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -3775,7 +3841,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -3817,10 +3885,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -3882,7 +3950,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -3924,10 +3994,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -3989,7 +4059,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -4031,10 +4103,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -4096,7 +4168,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -4138,10 +4212,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -4203,7 +4277,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -4245,10 +4321,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -4310,7 +4386,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -4352,10 +4430,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -4417,7 +4495,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     },
     {
       "alias_of": null,
@@ -4459,10 +4539,10 @@
               "current_iterations": 0,
               "dataset": "RailSem19 adaptation",
               "stage": "railsem19",
-              "target_iterations": 20000
+              "target_iterations": 40000
             }
           ],
-          "target_iterations": 20000
+          "target_iterations": 40000
         },
         "railsem19": {
           "current_iterations": 0,
@@ -4524,7 +4604,9 @@
         "warmup_iterations": 1500,
         "warmup_ratio": 1e-06,
         "weight_decay": 0.05
-      }
+      },
+      "transfer_miou_corrected_20k": "\u2014",
+      "transfer_miou_historical_low_head_lr_20k": "\u2014"
     }
   ],
   "schema_version": 2,
@@ -4546,10 +4628,10 @@
           {
             "dataset": "RailSem19 adaptation",
             "stage": "railsem19",
-            "target_iterations": 20000
+            "target_iterations": 40000
           }
         ],
-        "target_iterations": 20000
+        "target_iterations": 40000
       },
       "railsem19": {
         "stages": [
@@ -4596,7 +4678,7 @@
       "train_workers": [
         8
       ],
-      "transfer": "reuse the matching 40,000-iteration Cityscapes checkpoint, reset only the incompatible classifier, and train RailSem19 for 20,000 iterations at 0.1x learning rate"
+      "transfer": "reuse the matching 40,000-iteration Cityscapes checkpoint, reset only the incompatible classifier, and train RailSem19 for 40,000 iterations; use 0.1x for backbone groups and 1.0x for model-declared head groups; retain common evaluations at Rail 20,000 and 40,000"
     },
     "unique_training_choices": 36
   }

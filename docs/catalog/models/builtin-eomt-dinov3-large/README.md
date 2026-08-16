@@ -68,6 +68,16 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 | RailSem19 | 40,000 / 40,000 | 71.42 | 82.65 | 82.87 | 82.67 | 99.41 | 89.96 | 82.44 | 78.12 |
 | Cityscapes → RailSem19 | 20,000 / 20,000 | 66.61 | 78.32 | 80.60 | 79.04 | 99.29 | 87.83 | 79.27 | 73.78 |
 
+### Transfer checkpoints
+
+The cumulative count includes the reused 40,000-step Cityscapes source. The historical row is retained as a baseline and is not mixed with corrected runs.
+
+| optimizer contract | Rail iterations | cumulative iterations | mIoU | boundary F1 |
+|---|---:|---:|---:|---:|
+| historical 0.1x backbone + 0.1x head groups | 20,000 | 60,000 | 66.61 | 73.78 |
+| corrected 0.1x backbone + 1.0x head groups | 20,000 | 60,000 | — | — |
+| corrected 0.1x backbone + 1.0x head groups | 40,000 | 80,000 | 66.61 | 73.78 |
+
 ### Standardized model-only inference
 
 Measured once from this model's RailSem19-only 21-class EMA checkpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.

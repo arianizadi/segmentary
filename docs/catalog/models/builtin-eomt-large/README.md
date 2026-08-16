@@ -84,6 +84,16 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 | RailSem19 | 40,000 / 40,000 | 72.13 | 82.80 | 83.89 | 83.20 | 99.42 | 90.18 | 82.76 | 78.92 |
 | Cityscapes → RailSem19 | 20,000 / 20,000 | 67.92 | 80.10 | 80.53 | 80.13 | 99.31 | 88.22 | 79.88 | 74.75 |
 
+### Transfer checkpoints
+
+The cumulative count includes the reused 40,000-step Cityscapes source. The historical row is retained as a baseline and is not mixed with corrected runs.
+
+| optimizer contract | Rail iterations | cumulative iterations | mIoU | boundary F1 |
+|---|---:|---:|---:|---:|
+| historical 0.1x backbone + 0.1x head groups | 20,000 | 60,000 | 67.92 | 74.75 |
+| corrected 0.1x backbone + 1.0x head groups | 20,000 | 60,000 | — | — |
+| corrected 0.1x backbone + 1.0x head groups | 40,000 | 80,000 | 67.92 | 74.75 |
+
 ### Standardized model-only inference
 
 Measured once from this model's RailSem19-only 21-class EMA checkpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
@@ -156,7 +166,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 - Model recipe: `configs/models/eomt_large.yaml`
 - Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0; RailSem19: 0.
+- Retained seeds: Cityscapes: 0; RailSem19: 0; Cityscapes → RailSem19: 0.
 - EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
