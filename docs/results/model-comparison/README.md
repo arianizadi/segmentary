@@ -120,7 +120,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | ema | 314,917,910 | 1201.3 MiB | 4805.9 MiB | 41.23 | 24.12 | 24.77 | 3.13 GiB |
 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | ema | 316,580,886 | 1207.7 MiB | 4831.3 MiB | 45.91 | 21.76 | 21.86 | 3.12 GiB |
-| [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | ema | 161,500,245 | 616.1 MiB | 2355.5 MiB | 2.51 | 396.55 | 413.88 | 3.77 GiB |
+| [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | ema | 161,500,245 | 616.1 MiB | 2355.5 MiB | 2.52 | 394.46 | 411.51 | 3.77 GiB |
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | ema | 80,887,221 | 308.6 MiB | 1235.0 MiB | 43.06 | 23.19 | 23.35 | 2.48 GiB |
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | ema | 84,609,493 | 322.8 MiB | 1292.9 MiB | 26.74 | 37.00 | 39.55 | 2.57 GiB |
 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | ema | 58,953,423 | 224.9 MiB | 900.3 MiB | 42.33 | 23.48 | 24.47 | 2.41 GiB |
@@ -139,7 +139,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | — | — | — | — | — | — | — | — |
 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | ema | 39,638,869 | 151.2 MiB | 605.7 MiB | 77.60 | 12.88 | 12.93 | 0.84 GiB |
 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | — | — | — | — | — | — | — | — |
-| [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | ema | 10,737,525 | 41.0 MiB | 164.2 MiB | 54.02 | 18.46 | 18.75 | 1.09 GiB |
+| [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | ema | 10,737,525 | 41.0 MiB | 164.2 MiB | 54.28 | 18.39 | 18.66 | 1.09 GiB |
 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | — | — | — | — | — | — | — | — |
 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | — | — | — | — | — | — | — | — |
 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | — | — | — | — | — | — | — | — |
