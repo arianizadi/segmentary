@@ -4093,6 +4093,34 @@ def _load_existing_records(root: Path) -> dict[str, dict[str, Any]]:
     return records
 
 
+def _is_trusted_weight_source_correction(
+    protocol: dict[str, Any],
+    existing: dict[str, Any],
+    candidate: dict[str, Any],
+    result: dict[str, Any],
+    attempt: dict[str, Any],
+) -> bool:
+    """Admit only a provenance-identical EMA-to-raw BatchNorm correction."""
+    existing_weights = protocol.get("evaluation", {}).get("weights")
+    result_config = result.get("config")
+    evaluation = result_config.get("evaluation") if isinstance(result_config, dict) else None
+    candidate_weights = evaluation.get("weights") if isinstance(evaluation, dict) else None
+    if str(existing_weights).lower() != "ema" or candidate_weights != "raw":
+        return False
+    if attempt.get("kind") != "reused" or attempt.get("record_kind") != "evaluation":
+        return False
+    if "raw-weight" not in str(attempt.get("caveat", "")).lower():
+        return False
+    source = existing.get("source")
+    candidate_source = candidate.get("source")
+    if not isinstance(source, dict) or not isinstance(candidate_source, dict):
+        return False
+    for key in ("git_sha", "checkpoint_sha256", "checkpoint_step"):
+        if source.get(key) is None or candidate_source.get(key) != source.get(key):
+            return False
+    return bool(source.get("result_sha256")) and bool(candidate_source.get("result_sha256"))
+
+
 def _comparison_records(
     publish_root: Path,
     manifest: CampaignManifest,
@@ -4174,9 +4202,26 @@ def _comparison_records(
             candidate = _normalised_individual(job, result, attempt)
             existing = existing_by_seed[job["seed"]]
             if existing.get("metrics") != candidate.get("metrics"):
-                raise CampaignError(
-                    f"normalized seed {job_id} conflicts with preserved public metrics"
+                if not _is_trusted_weight_source_correction(
+                    protocol, existing, candidate, result, attempt
+                ):
+                    raise CampaignError(
+                        f"normalized seed {job_id} conflicts with preserved public metrics"
+                    )
+                previous_resources = copy.deepcopy(protocol.get("resource_evidence", {}))
+                protocol = _new_protocol(job, result, attempt)
+                protocol["individual"].append(candidate)
+                _aggregate_protocol(protocol)
+                taxonomy_key = "cityscapes19" if job["protocol"] == "cityscapes" else "rail_union"
+                parameter_count = record["model_profile"]["parameter_count"].get(taxonomy_key)
+                protocol["resource_evidence"] = _protocol_resource_evidence(
+                    protocol["individual"], parameter_count=parameter_count
                 )
+                for key, value in previous_resources.items():
+                    if not protocol["resource_evidence"].get(key) and value:
+                        protocol["resource_evidence"][key] = value
+                record["protocols"][job["protocol"]] = protocol
+                existing = candidate
             source = existing.get("source", {})
             candidate_source = candidate.get("source", {})
             for key in ("result_sha256", "git_sha", "checkpoint_sha256", "checkpoint_step"):
