@@ -1,0 +1,394 @@
+{
+  "schema_version": 2,
+  "model_id": "smp_upernet_mit_b0",
+  "model_config": "configs/models/smp_upernet_mit_b0.yaml",
+  "status": "running",
+  "model_profile": {
+    "parameter_count": {
+      "cityscapes19": null,
+      "rail_union": 10737525
+    },
+    "standardized_inference": {
+      "status": "complete",
+      "fps": 54.01791412267686,
+      "latency_ms": {
+        "mean": 18.512377166748045,
+        "p50": 18.46062469482422,
+        "p95": 18.749904823303222
+      },
+      "peak_vram_bytes": 1172307968,
+      "peak_reserved_bytes": 1172307968,
+      "resident_parameter_bytes": 42950100,
+      "parameter_dtype_counts": {
+        "float32": 10737525
+      },
+      "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
+      "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
+      "protocol": {
+        "gpu_model": "NVIDIA L40S",
+        "backend": "pytorch",
+        "precision": "bf16_autocast",
+        "input_shape_nchw": [
+          1,
+          3,
+          1024,
+          1024
+        ],
+        "warmup_iterations": 20,
+        "measured_iterations": 100,
+        "entrypoint": "public model(image) dense-logits forward"
+      },
+      "provenance": {
+        "measured_job_id": "smp_upernet_mit_b0--railsem19--seed-0",
+        "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+        "config_hash": "0667143fa837",
+        "config_sha256": "e7bfd7ea025f865872c6c28d332c4447cbb67a6264f8ef062b70a16174da275a",
+        "checkpoint_sha256": "014d1285f36704422cc145d728c43946d5418e9af260e276a081ef26b2cf6c8f",
+        "checkpoint_global_step": 40000,
+        "checkpoint_bytes": 172225271,
+        "result_sha256": "80acc32e96900cad634b48b13c83942a6ed510ee25f72adc524702bbf3a55dd4",
+        "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+        "result_stage": "eval:railsem19:val",
+        "result_seed": 0,
+        "weights": "ema"
+      }
+    }
+  },
+  "protocols": {
+    "railsem19": {
+      "status": "complete",
+      "label": "RailSem19",
+      "dataset": "RailSem19 val",
+      "taxonomy": "rail_union",
+      "training": "40,000 steps from pretrained weights",
+      "source_checkpoint": null,
+      "iteration_progress": {
+        "target_iterations": 40000,
+        "current_iterations": 40000,
+        "stages": [
+          {
+            "stage": "railsem19",
+            "dataset": "RailSem19",
+            "target_iterations": 40000,
+            "current_iterations": 40000
+          }
+        ],
+        "final_verification": {
+          "result_verified": true,
+          "result_total_iterations": 40000,
+          "result_final_stage_iteration": 40000,
+          "checkpoint_available": true,
+          "checkpoint_verified": true,
+          "checkpoint_global_step": 40000
+        }
+      },
+      "resource_evidence": {
+        "parameter_count": 10737525,
+        "final_checkpoint": {
+          "available": true,
+          "size_bytes": 172225271
+        },
+        "training": {
+          "seed_count": 1,
+          "gpu_model": "NVIDIA L40S",
+          "gpus_per_run": 1,
+          "wall_clock_s_mean": 52512.34418872744,
+          "gpu_hours_mean": 14.58676227464651,
+          "peak_vram_bytes_per_device": 7180648448
+        },
+        "full_validation_pipeline": {
+          "seed_count": 1,
+          "images": 850,
+          "wall_clock_s_mean": 175.65764377638698,
+          "images_per_s_mean": 4.838958224226519,
+          "scope": "loader, sliding-window inference, and metrics"
+        }
+      },
+      "evaluation": {
+        "split": "val",
+        "images": 850,
+        "weights": "ema",
+        "sliding_window": [
+          1024,
+          1024
+        ],
+        "stride": [
+          768,
+          768
+        ],
+        "tta": false
+      },
+      "seed_count": 1,
+      "seeds": [
+        0
+      ],
+      "aggregate": {
+        "miou": {
+          "mean": 0.6656356198877775,
+          "sample_std": null,
+          "count": 1
+        },
+        "macc": {
+          "mean": 0.8017566108370566,
+          "sample_std": null,
+          "count": 1
+        },
+        "mprecision": {
+          "mean": 0.7780455522449427,
+          "sample_std": null,
+          "count": 1
+        },
+        "mdice": {
+          "mean": 0.7887126141387876,
+          "sample_std": null,
+          "count": 1
+        },
+        "mspecificity": {
+          "mean": 0.993557729386596,
+          "sample_std": null,
+          "count": 1
+        },
+        "pixel_accuracy": {
+          "mean": 0.8902196875783983,
+          "sample_std": null,
+          "count": 1
+        },
+        "freqw_iou": {
+          "mean": 0.8107809853520022,
+          "sample_std": null,
+          "count": 1
+        },
+        "boundary_macro_f1": {
+          "mean": 0.7418562599469818,
+          "sample_std": null,
+          "count": 1
+        },
+        "per_class_iou": {
+          "road": {
+            "mean": 0.5859535614120077,
+            "sample_std": null,
+            "count": 1
+          },
+          "sidewalk": {
+            "mean": 0.5939770086163612,
+            "sample_std": null,
+            "count": 1
+          },
+          "construction": {
+            "mean": 0.7776004955008695,
+            "sample_std": null,
+            "count": 1
+          },
+          "fence": {
+            "mean": 0.5479150211926315,
+            "sample_std": null,
+            "count": 1
+          },
+          "pole": {
+            "mean": 0.6056502384824345,
+            "sample_std": null,
+            "count": 1
+          },
+          "traffic-light": {
+            "mean": 0.49129429029349647,
+            "sample_std": null,
+            "count": 1
+          },
+          "traffic-sign": {
+            "mean": 0.44923873207045917,
+            "sample_std": null,
+            "count": 1
+          },
+          "vegetation": {
+            "mean": 0.8681314279206972,
+            "sample_std": null,
+            "count": 1
+          },
+          "terrain": {
+            "mean": 0.6845692058497741,
+            "sample_std": null,
+            "count": 1
+          },
+          "sky": {
+            "mean": 0.9556763709513628,
+            "sample_std": null,
+            "count": 1
+          },
+          "human": {
+            "mean": 0.6162359900818561,
+            "sample_std": null,
+            "count": 1
+          },
+          "car": {
+            "mean": 0.767014250815126,
+            "sample_std": null,
+            "count": 1
+          },
+          "truck": {
+            "mean": 0.3466631627153819,
+            "sample_std": null,
+            "count": 1
+          },
+          "motorcycle": {
+            "mean": null,
+            "sample_std": null,
+            "count": 0
+          },
+          "bicycle": {
+            "mean": null,
+            "sample_std": null,
+            "count": 0
+          },
+          "on-rails": {
+            "mean": 0.7797412074408117,
+            "sample_std": null,
+            "count": 1
+          },
+          "rail-track": {
+            "mean": 0.8883797104802946,
+            "sample_std": null,
+            "count": 1
+          },
+          "rail-raised": {
+            "mean": 0.7207510865026163,
+            "sample_std": null,
+            "count": 1
+          },
+          "rail-embedded": {
+            "mean": 0.5293285350265388,
+            "sample_std": null,
+            "count": 1
+          },
+          "tram-track": {
+            "mean": 0.6920824221144314,
+            "sample_std": null,
+            "count": 1
+          },
+          "trackbed": {
+            "mean": 0.7468740604006213,
+            "sample_std": null,
+            "count": 1
+          }
+        }
+      },
+      "support": {
+        "road": 54009198,
+        "sidewalk": 43195352,
+        "construction": 211159490,
+        "fence": 34251332,
+        "pole": 50041193,
+        "traffic-light": 2615942,
+        "traffic-sign": 2122857,
+        "vegetation": 402646423,
+        "terrain": 131996892,
+        "sky": 381700703,
+        "human": 2330754,
+        "car": 5737615,
+        "truck": 2056079,
+        "motorcycle": 0,
+        "bicycle": 0,
+        "on-rails": 28041273,
+        "rail-track": 107579830,
+        "rail-raised": 42580652,
+        "rail-embedded": 4402852,
+        "tram-track": 13504729,
+        "trackbed": 179892583
+      },
+      "individual": [
+        {
+          "seed": 0,
+          "metrics": {
+            "miou": 0.6656356198877775,
+            "macc": 0.8017566108370566,
+            "mprecision": 0.7780455522449427,
+            "mdice": 0.7887126141387876,
+            "mspecificity": 0.993557729386596,
+            "pixel_accuracy": 0.8902196875783983,
+            "freqw_iou": 0.8107809853520022,
+            "boundary_macro_f1": 0.7418562599469818,
+            "per_class_iou": {
+              "road": 0.5859535614120077,
+              "sidewalk": 0.5939770086163612,
+              "construction": 0.7776004955008695,
+              "fence": 0.5479150211926315,
+              "pole": 0.6056502384824345,
+              "traffic-light": 0.49129429029349647,
+              "traffic-sign": 0.44923873207045917,
+              "vegetation": 0.8681314279206972,
+              "terrain": 0.6845692058497741,
+              "sky": 0.9556763709513628,
+              "human": 0.6162359900818561,
+              "car": 0.767014250815126,
+              "truck": 0.3466631627153819,
+              "motorcycle": null,
+              "bicycle": null,
+              "on-rails": 0.7797412074408117,
+              "rail-track": 0.8883797104802946,
+              "rail-raised": 0.7207510865026163,
+              "rail-embedded": 0.5293285350265388,
+              "tram-track": 0.6920824221144314,
+              "trackbed": 0.7468740604006213
+            },
+            "support": {
+              "road": 54009198,
+              "sidewalk": 43195352,
+              "construction": 211159490,
+              "fence": 34251332,
+              "pole": 50041193,
+              "traffic-light": 2615942,
+              "traffic-sign": 2122857,
+              "vegetation": 402646423,
+              "terrain": 131996892,
+              "sky": 381700703,
+              "human": 2330754,
+              "car": 5737615,
+              "truck": 2056079,
+              "motorcycle": 0,
+              "bicycle": 0,
+              "on-rails": 28041273,
+              "rail-track": 107579830,
+              "rail-raised": 42580652,
+              "rail-embedded": 4402852,
+              "tram-track": 13504729,
+              "trackbed": 179892583
+            }
+          },
+          "source": {
+            "result_sha256": "80acc32e96900cad634b48b13c83942a6ed510ee25f72adc524702bbf3a55dd4",
+            "git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+            "git_dirty": false,
+            "checkpoint_available": true,
+            "checkpoint_sha256": "014d1285f36704422cc145d728c43946d5418e9af260e276a081ef26b2cf6c8f",
+            "checkpoint_step": 40000,
+            "checkpoint_size_bytes": 172225271,
+            "training_stages": [
+              {
+                "stage": "railsem19",
+                "wall_clock_s": 52512.34418872744,
+                "gpu_count": 1,
+                "gpu_hours": 14.58676227464651,
+                "peak_vram_bytes_per_device": 7180648448,
+                "result_sha256": "aade0ee6c833ad1b4b62061d53f7515a30d41e9a056c9d5353eba9aefc5ce3f1"
+              }
+            ],
+            "full_validation_pipeline": {
+              "images": 850,
+              "wall_clock_s": 175.65764377638698,
+              "images_per_s": 4.838958224226519,
+              "scope": "loader, sliding-window inference, and metrics"
+            }
+          },
+          "milestones": {}
+        }
+      ],
+      "milestones": {},
+      "derived_metrics": [
+        "mprecision",
+        "mdice",
+        "mspecificity"
+      ],
+      "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
+      "caveats": []
+    }
+  }
+}
