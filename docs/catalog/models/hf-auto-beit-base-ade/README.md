@@ -75,17 +75,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 57.26 | 66.22 | 78.55 | 70.28 | 99.45 | 91.60 | 85.00 | 64.72 |
 | RailSem19 | 40,000 / 40,000 | 53.98 | 66.41 | 73.14 | 68.73 | 98.92 | 82.06 | 70.72 | 61.72 |
-| Cityscapes → RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
-
-### Transfer checkpoints
-
-The cumulative count includes the reused 40,000-step Cityscapes source. The historical row is retained as a baseline and is not mixed with corrected runs.
-
-| optimizer contract | Rail iterations | cumulative iterations | mIoU | boundary F1 |
-|---|---:|---:|---:|---:|
-| historical 0.1x backbone + 0.1x head groups | 20,000 | 60,000 | 49.89 | 58.35 |
-| corrected 0.1x backbone + 1.0x head groups | 20,000 | 60,000 | — | — |
-| corrected 0.1x backbone + 1.0x head groups | 40,000 | 80,000 | — | — |
+| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
 
 ### Standardized model-only inference
 
