@@ -5235,7 +5235,7 @@ def report_campaign(campaign: Path, *, write: bool, publisher_root: Path | None 
     if not (publish_root / ".git").exists():
         raise CampaignError(f"publisher root is not a Git worktree: {publish_root}")
     manifest = load_campaign_manifest(
-        publish_root / "configs/campaigns" / Path(record["source"]["manifest"]).name
+        Path("configs/campaigns") / Path(record["source"]["manifest"]).name
     )
     if publish_root == REPO_ROOT and write:
         raise CampaignError(
