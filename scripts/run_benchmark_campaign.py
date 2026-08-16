@@ -4129,16 +4129,8 @@ def _comparison_records(
 ) -> dict[str, dict[str, Any]]:
     records = _load_existing_records(publish_root)
     for existing in records.values():
-        transfer = existing.get("protocols", {}).get("cityscapes_to_railsem19")
-        if (
-            isinstance(transfer, dict)
-            and transfer.get("iteration_progress", {}).get("target_iterations") == 20_000
-        ):
-            historical = existing.setdefault("historical_protocols", {})
-            historical.setdefault(
-                "cityscapes_to_railsem19_low_head_lr_20k", copy.deepcopy(transfer)
-            )
-            del existing["protocols"]["cityscapes_to_railsem19"]
+        existing.pop("historical_protocols", None)
+        existing.get("protocols", {}).pop("cityscapes_to_railsem19", None)
     by_model = {model.id: model for model in manifest.models}
     for job_id, (job, result) in sorted(cells.items()):
         if job.get("status") == "alias":
@@ -4167,20 +4159,16 @@ def _comparison_records(
         )
         if record.get("schema_version") != 2:
             raise CampaignError(f"{model.id} normalized record is not schema version 2")
+        if job["protocol"] == "cityscapes_to_railsem19":
+            plan = _iteration_plan(result["config"])
+            stage = plan["stages"][-1]
+            if (
+                plan["total_target_iterations"] != 20_000
+                or stage["learning_rate_scale"] != 0.1
+                or stage["head_group_learning_rate_scale"] != 1.0
+            ):
+                continue
         protocol = record["protocols"].get(job["protocol"])
-        if protocol is not None and job["protocol"] == "cityscapes_to_railsem19":
-            existing_target = protocol.get("iteration_progress", {}).get("target_iterations")
-            candidate_target = _iteration_plan(result["config"])["total_target_iterations"]
-            if existing_target == 20_000 and candidate_target == 40_000:
-                historical_key = "cityscapes_to_railsem19_low_head_lr_20k"
-                historical = record.setdefault("historical_protocols", {})
-                if historical_key in historical and historical[historical_key] != protocol:
-                    raise CampaignError(
-                        f"{model.id} has conflicting preserved historical transfer evidence"
-                    )
-                historical[historical_key] = copy.deepcopy(protocol)
-                protocol = _new_protocol(job, result, attempt)
-                record["protocols"][job["protocol"]] = protocol
         if protocol is None:
             protocol = _new_protocol(job, result, attempt)
             record["protocols"][job["protocol"]] = protocol
@@ -4334,36 +4322,8 @@ def _record_metric(record: dict[str, Any], protocol: str, metric: str) -> object
     )
 
 
-def _milestone_metric(record: dict[str, Any], protocol: str, step: int, metric: str) -> object:
-    return (
-        record.get("protocols", {})
-        .get(protocol, {})
-        .get("milestones", {})
-        .get(str(step), {})
-        .get("aggregate", {})
-        .get(metric, {})
-        .get("mean")
-    )
-
-
-def _historical_metric(record: dict[str, Any], protocol: str, metric: str) -> object:
-    return (
-        record.get("historical_protocols", {})
-        .get(protocol, {})
-        .get("aggregate", {})
-        .get(metric, {})
-        .get("mean")
-    )
-
-
-def _corrected_transfer_final(record: dict[str, Any] | None) -> dict[str, Any]:
-    """Return only a verified corrected 40k Rail adaptation result.
-
-    Historical campaign records can contain a 20k transfer protocol whose
-    aggregate is also preserved as the low-head-LR baseline.  That aggregate
-    must never be presented as the corrected 40k/80k-cumulative result merely
-    because a transfer protocol object exists.
-    """
+def _transfer_final(record: dict[str, Any] | None) -> dict[str, Any]:
+    """Return only a verified 20k Rail adaptation result."""
     if not isinstance(record, dict):
         return {}
     transfer = record.get("protocols", {}).get("cityscapes_to_railsem19")
@@ -4376,11 +4336,11 @@ def _corrected_transfer_final(record: dict[str, Any] | None) -> dict[str, Any]:
     if not isinstance(verification, dict):
         return {}
     if (
-        progress.get("target_iterations") != 40_000
-        or progress.get("current_iterations") != 40_000
+        progress.get("target_iterations") != 20_000
+        or progress.get("current_iterations") != 20_000
         or verification.get("result_verified") is not True
-        or verification.get("result_total_iterations") != 40_000
-        or verification.get("result_final_stage_iteration") != 40_000
+        or verification.get("result_total_iterations") != 20_000
+        or verification.get("result_final_stage_iteration") != 20_000
     ):
         return {}
     return transfer
@@ -4393,7 +4353,7 @@ def _model_record_status(record: dict[str, Any]) -> str:
     return (
         "complete"
         if all(protocol in protocols for protocol in ("cityscapes", "railsem19"))
-        and bool(_corrected_transfer_final(record))
+        and bool(_transfer_final(record))
         else "running"
     )
 
@@ -4403,26 +4363,10 @@ def _recorded_evaluation_weights(protocol: dict[str, Any]) -> str | None:
     return weights if weights in ("raw", "ema") else None
 
 
-def _transfer_reporting_aggregates(
-    record: dict[str, Any] | None,
-) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
-    if not isinstance(record, dict):
-        return {}, {}, {}
-    transfer = record.get("protocols", {}).get("cityscapes_to_railsem19", {})
-    historical = record.get("historical_protocols", {}).get(
-        "cityscapes_to_railsem19_low_head_lr_20k", {}
-    )
-    corrected_20 = (
-        transfer.get("milestones", {}).get("20000", {}) if isinstance(transfer, dict) else {}
-    )
-    return historical, corrected_20, _corrected_transfer_final(record)
-
-
 def _model_generated_section(record: dict[str, Any]) -> str:
     protocols = record.get("protocols", {})
-    historical_20, corrected_20, corrected_40 = _transfer_reporting_aggregates(record)
     visible_protocols = dict(protocols)
-    if not corrected_40:
+    if not _transfer_final(record):
         visible_protocols.pop("cityscapes_to_railsem19", None)
     lines = [
         REPORT_START,
@@ -4457,47 +4401,6 @@ def _model_generated_section(record: dict[str, Any]) -> str:
             ],
         ]
         lines.append("| " + " | ".join(values) + " |")
-
-    transfer_rows = [
-        (
-            "historical 0.1x backbone + 0.1x head groups",
-            20_000,
-            60_000,
-            historical_20.get("aggregate", {}),
-        ),
-        (
-            "corrected 0.1x backbone + 1.0x head groups",
-            20_000,
-            60_000,
-            corrected_20.get("aggregate", {}),
-        ),
-        (
-            "corrected 0.1x backbone + 1.0x head groups",
-            40_000,
-            80_000,
-            corrected_40.get("aggregate", {}),
-        ),
-    ]
-    lines.extend(
-        [
-            "",
-            "### Transfer checkpoints",
-            "",
-            "The cumulative count includes the reused 40,000-step Cityscapes source. The "
-            "historical row is retained as a baseline and is not mixed with corrected runs.",
-            "",
-            "| optimizer contract | Rail iterations | cumulative iterations | mIoU | boundary F1 |",
-            "|---|---:|---:|---:|---:|",
-        ]
-    )
-    for contract, rail_iterations, cumulative, aggregate in transfer_rows:
-        miou = aggregate.get("miou", {}).get("mean")
-        boundary = aggregate.get("boundary_macro_f1", {}).get("mean")
-        lines.append(
-            f"| {contract} | {rail_iterations:,} | {cumulative:,} | "
-            f"{_number(miou * 100 if miou is not None else None)} | "
-            f"{_number(boundary * 100 if boundary is not None else None)} |"
-        )
 
     performance = record.get("model_profile", {}).get("standardized_inference", {})
     latency = performance.get("latency_ms") or {}
@@ -4581,7 +4484,7 @@ def _model_generated_section(record: dict[str, Any]) -> str:
             value = summary["mean"]
             lines.append(f"| {name} | {_number(value * 100 if value is not None else None)} |")
     rail = visible_protocols.get("railsem19")
-    transfer = corrected_40 or None
+    transfer = _transfer_final(record) or None
     if isinstance(rail, dict) or isinstance(transfer, dict):
         source = rail or transfer
         lines.extend(
@@ -4667,7 +4570,7 @@ def _empty_progress(protocol_id: str) -> dict[str, Any]:
         "cityscapes": [("cityscapes", "Cityscapes", 40_000)],
         "railsem19": [("railsem19", "RailSem19", 40_000)],
         "cityscapes_to_railsem19": [
-            ("railsem19", "RailSem19 adaptation", 40_000),
+            ("railsem19", "RailSem19 adaptation", 20_000),
         ],
     }[protocol_id]
     total = sum(item[2] for item in targets)
@@ -4813,7 +4716,7 @@ def _comparison_status(
         model = next(item for item in manifest.models if item.id == model_id)
         record = records.get(model_id)
         protocols = dict(record.get("protocols", {})) if record else {}
-        if record and not _corrected_transfer_final(record):
+        if record and not _transfer_final(record):
             protocols.pop("cityscapes_to_railsem19", None)
         complete_cells += len(protocols)
         progress = {
@@ -4860,44 +4763,6 @@ def _comparison_status(
                     )
                     for protocol_id in REQUIRED_PROTOCOLS
                 },
-                "transfer_miou_corrected_20k": (
-                    _percent([_milestone_metric(record, "cityscapes_to_railsem19", 20_000, "miou")])
-                    if record
-                    and _milestone_metric(record, "cityscapes_to_railsem19", 20_000, "miou")
-                    is not None
-                    else "—"
-                ),
-                "transfer_miou_historical_low_head_lr_20k": (
-                    _percent(
-                        [
-                            _historical_metric(
-                                record,
-                                "cityscapes_to_railsem19_low_head_lr_20k",
-                                "miou",
-                            )
-                        ]
-                    )
-                    if record
-                    and _historical_metric(
-                        record,
-                        "cityscapes_to_railsem19_low_head_lr_20k",
-                        "miou",
-                    )
-                    is not None
-                    else "—"
-                ),
-                "transfer_miou_corrected_40k": (
-                    _percent(
-                        [
-                            _corrected_transfer_final(record)
-                            .get("aggregate", {})
-                            .get("miou", {})
-                            .get("mean")
-                        ]
-                    )
-                    if _corrected_transfer_final(record)
-                    else "—"
-                ),
                 "iteration_progress": progress,
                 "parameter_count": profile.get("parameter_count", {}),
                 "standardized_inference": inference,
@@ -4960,9 +4825,9 @@ def _comparison_status(
                 ),
                 "transfer": (
                     "reuse the matching 40,000-iteration Cityscapes checkpoint, reset only "
-                    "the incompatible classifier, and train RailSem19 for 40,000 iterations; "
+                    "the incompatible classifier, and train RailSem19 for 20,000 iterations; "
                     "use 0.1x for backbone groups and 1.0x for model-declared head groups; "
-                    "retain common evaluations at Rail 20,000 and 40,000"
+                    "retain the final common evaluation at Rail 20,000"
                 ),
                 "evaluation": (
                     "automatic recorded weights (raw for running-stat BatchNorm; EMA otherwise), "
@@ -5051,11 +4916,6 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
         "training_checkpoint_interval",
         "training_objective",
         *protocol_columns,
-        "transfer_historical_low_head_lr_20k_miou",
-        "transfer_corrected_20k_miou",
-        "transfer_corrected_40k_miou",
-        "transfer_corrected_20k_cumulative_iterations",
-        "transfer_corrected_40k_cumulative_iterations",
         "standardized_inference_fps",
         "standardized_inference_resident_parameter_bytes",
         "standardized_inference_latency_ms",
@@ -5071,8 +4931,7 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
         record = records.get(row["model"])
         raw_protocols = record.get("protocols", {}) if record else {}
         protocols = dict(raw_protocols)
-        historical_20, corrected_20, corrected_40 = _transfer_reporting_aggregates(record)
-        if not corrected_40:
+        if not _transfer_final(record):
             protocols.pop("cityscapes_to_railsem19", None)
         output: dict[str, Any] = {
             "priority": row["priority"],
@@ -5136,23 +4995,6 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
                     or "",
                 }
             )
-        output.update(
-            {
-                "transfer_historical_low_head_lr_20k_miou": historical_20.get("aggregate", {})
-                .get("miou", {})
-                .get("mean", ""),
-                "transfer_corrected_20k_miou": corrected_20.get("aggregate", {})
-                .get("miou", {})
-                .get("mean", ""),
-                "transfer_corrected_40k_miou": corrected_40.get("aggregate", {})
-                .get("miou", {})
-                .get("mean", ""),
-                "transfer_corrected_20k_cumulative_iterations": (
-                    corrected_20.get("cumulative_iterations", "")
-                ),
-                "transfer_corrected_40k_cumulative_iterations": (80_000 if corrected_40 else ""),
-            }
-        )
         inference = row["standardized_inference"]
         latency = inference.get("latency_ms") or {}
         output.update(
@@ -5222,7 +5064,7 @@ def _central_readme(
         f"| dense objectives | {training_contract['dense_objective']} |",
         f"| EoMT query objective | {training_contract['query_objective']} |",
         "| protocol budgets | Cityscapes 40,000; RailSem19 40,000; transfer reuses City40 "
-        "and reports Rail20 (60,000 cumulative) plus Rail40 (80,000 cumulative) |",
+        "and trains RailSem19 for 20,000 iterations (60,000 cumulative) |",
         f"| transfer initialization | {training_contract['transfer']} |",
         f"| interruption recovery | {training_contract['resume_policy']} |",
         f"| final quality evaluation | {training_contract['evaluation']} |",
@@ -5230,9 +5072,8 @@ def _central_readme(
         "### Model-specific optimizer and batching settings",
         "",
         "The fresh-component LR is the initial LR for newly initialized heads or adapters. "
-        "Corrected transfer adaptation applies 0.1x to backbone groups and 1.0x to the "
-        "model-declared decoder/head groups. The preserved historical 20k baseline used "
-        "0.1x for both groups.",
+        "Transfer adaptation applies 0.1x to backbone groups and 1.0x to the "
+        "model-declared decoder/head groups.",
         "",
         "| model | train crop | batch/GPU | accumulation | effective batch | backbone LR | fresh-component LR | LLRD | objective |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---|",
@@ -5256,8 +5097,8 @@ def _central_readme(
             "",
             "## Quality",
             "",
-            "| priority | model | status | City mIoU (40k) | Rail mIoU (40k) | transfer historical Rail20 / total60 | transfer corrected Rail20 / total60 | transfer corrected Rail40 / total80 |",
-            "|---:|---|---|---:|---:|---:|---:|---:|",
+            "| priority | model | status | City mIoU (40k) | Rail mIoU (40k) | City → Rail mIoU (Rail20 / total60) |",
+            "|---:|---|---|---:|---:|---:|",
         ]
     )
     for row in status["models"]:
@@ -5266,9 +5107,7 @@ def _central_readme(
         values = [
             row["cityscapes_miou"],
             row["railsem19_miou"],
-            row["transfer_miou_historical_low_head_lr_20k"],
-            row["transfer_miou_corrected_20k"],
-            row["transfer_miou_corrected_40k"],
+            row["cityscapes_to_railsem19_miou"],
         ]
         lines.append(
             f"| {row['priority']} | [{row['model']}]({link}) | {row['status']} | "
@@ -5277,14 +5116,6 @@ def _central_readme(
         )
     lines.extend(
         [
-            "",
-            "## RailSem19 extension decision",
-            "",
-            "A bounded three-model study found that continuing corrected transfer from "
-            "Rail20 to Rail40 produced two lower endpoints and one small 0.45-point gain. "
-            "Further extension was stopped because the benefit was marginal and "
-            "inconsistent. The retained measurements and stopping rationale are in the "
-            "[RailSem19 adaptation extension study](railsem-extension-study.md).",
             "",
             "## Standardized model-only inference",
             "",
@@ -5362,9 +5193,9 @@ def _central_readme(
             "",
             "- Cityscapes: 40,000 iterations, standard 19-class 500-image validation.",
             "- RailSem19: 40,000 iterations, `rail_union`, fixed 850-image validation.",
-            "- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint, evaluate "
-            "the corrected run at Rail 20,000 (60,000 cumulative), then continue to Rail "
-            "40,000 (80,000 cumulative); Cityscapes is never trained twice.",
+            "- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint and train "
+            "RailSem19 for 20,000 iterations (60,000 cumulative); Cityscapes is never "
+            "trained twice.",
             "- Transfer warm-starts every compatible learned tensor and reinitialises only the "
             "19-class to `rail_union` classifier mismatch.",
             "- Quality evaluation: the exact recorded `raw` or `ema` endpoint for each "

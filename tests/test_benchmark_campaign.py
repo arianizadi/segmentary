@@ -296,7 +296,7 @@ def test_transfer_reuses_city_checkpoint_and_only_schedules_target_iterations(
     _, resolved = campaign._resolved_config(
         record, transfer, tmp_path / "transfer", dependency_checkpoint=checkpoint
     )
-    assert campaign._iteration_plan(resolved)["total_target_iterations"] == 40_000
+    assert campaign._iteration_plan(resolved)["total_target_iterations"] == 20_000
     assert resolved["stages"][0]["init_from"] == str(checkpoint)
     assert resolved["stages"][0]["reset_head"] is True
     assert resolved["stages"][0]["lr_scale"] == pytest.approx(0.1)
@@ -304,28 +304,17 @@ def test_transfer_reuses_city_checkpoint_and_only_schedules_target_iterations(
     assert campaign._iteration_plan(resolved)["stages"] == [
         {
             "stage": "railsem19",
-            "target_iterations": 40_000,
+            "target_iterations": 20_000,
             "learning_rate_scale": pytest.approx(0.1),
             "head_group_learning_rate_scale": pytest.approx(1.0),
         }
     ]
-    assert record["execution"]["planned_optimizer_iterations"] == 4_320_000
+    assert record["execution"]["planned_optimizer_iterations"] == 3_600_000
     assert record["execution"]["avoided_duplicate_city_iterations"] == 1_440_000
 
     paths = campaign._attempt_paths(transfer, tmp_path / "attempt", resolved)
-    assert paths["milestone_checkpoints"] == {
-        "20000": paths["run_dir"] / "railsem19" / "step-00020000.ckpt"
-    }
-    commands = campaign._milestone_evaluation_commands(record, transfer, paths)
-    assert list(commands) == ["20000"]
-    assert "--auto-weights" in commands["20000"]
-    assert "--ema" not in commands["20000"]
-    assert commands["20000"][commands["20000"].index("--ckpt") + 1] == str(
-        paths["milestone_checkpoints"]["20000"]
-    )
-    assert commands["20000"][commands["20000"].index("--out") + 1] == str(
-        paths["milestone_results"]["20000"]
-    )
+    assert paths["milestone_checkpoints"] == {}
+    assert campaign._milestone_evaluation_commands(record, transfer, paths) == {}
 
 
 def test_legacy_success_hashes_omit_empty_milestone_maps() -> None:
@@ -338,48 +327,6 @@ def test_legacy_success_hashes_omit_empty_milestone_maps() -> None:
         "milestone_results": {},
     }
     assert "milestone_checkpoints" not in hashes
-
-
-def test_transfer_milestone_result_is_bound_to_exact_20k_checkpoint(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    record = _record(tmp_path, monkeypatch)
-    job = next(item for item in record["jobs"] if item["protocol"] == "cityscapes_to_railsem19")
-    _, resolved = campaign._resolved_config(record, job, tmp_path / "prototype")
-    paths = campaign._attempt_paths(job, tmp_path / "attempt", resolved)
-    checkpoint = paths["milestone_checkpoints"]["20000"]
-    checkpoint.parent.mkdir(parents=True)
-    with zipfile.ZipFile(checkpoint, "w") as archive:
-        archive.writestr("archive/data.pkl", pickle.dumps({"global_step": 20_000}))
-    result_path = paths["milestone_results"]["20000"]
-    write_results(
-        result_path,
-        RunRecord(
-            name=job["experiment_name"],
-            stage="eval:railsem19:val",
-            config_hash=config_hash(resolved),
-            git_sha=SHA,
-            git_dirty=False,
-            seed=0,
-            finished_at="2026-08-15T00:00:00+00:00",
-            wall_clock_s=1.0,
-            metrics=_metric_payload("rail_union"),
-            config=resolved,
-            env={"gpu_count": 1},
-            notes=f"checkpoint={checkpoint} ema=True tta=False",
-        ),
-    )
-    attempt = campaign._attempt_record(1, paths, [], [], [], {})
-
-    validated = campaign.validate_milestone_evaluation_artifact(
-        record, job, attempt, resolved, "20000"
-    )
-    assert validated["metrics"]["miou"] == pytest.approx(0.5)
-
-    with zipfile.ZipFile(checkpoint, "w") as archive:
-        archive.writestr("archive/data.pkl", pickle.dumps({"global_step": 19_999}))
-    with pytest.raises(campaign.CampaignError, match="expected global_step=20000"):
-        campaign.validate_milestone_evaluation_artifact(record, job, attempt, resolved, "20000")
 
 
 def test_transfer_dependency_requires_unchanged_completed_city_checkpoint(
@@ -452,8 +399,7 @@ def test_public_transfer_provenance_keeps_hash_but_redacts_server_path(
         "classifier_policy": "reset incompatible target classifier only",
     }
     assert protocol["training"] == (
-        "reused matching 40,000-step Cityscapes checkpoint; 40,000 RailSem19 steps; "
-        "retained evaluations at 20,000 and final"
+        "reused matching 40,000-step Cityscapes checkpoint; 20,000 RailSem19 steps"
     )
     assert protocol["evaluation"]["weights"] == "ema"
 
@@ -978,7 +924,7 @@ def test_reporting_only_city_source_stays_queued_when_transfer_needs_checkpoint(
     assert "source training remains queued" in audit["rejected_examples"][-1]["reason"]
 
 
-def test_reuse_scan_requires_and_retains_exact_transfer_milestone(
+def test_reuse_scan_accepts_exact_20k_transfer_final(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     record = _record(tmp_path, monkeypatch)
@@ -991,54 +937,41 @@ def test_reuse_scan_requires_and_retains_exact_transfer_milestone(
     reuse_root = tmp_path / "prior"
     stage_root = reuse_root / "jobs" / job["id"] / "railsem19"
     final_checkpoint = stage_root / "last.ckpt"
-    milestone_checkpoint = stage_root / "step-00020000.ckpt"
-    for checkpoint, step in ((final_checkpoint, 40_000), (milestone_checkpoint, 20_000)):
-        checkpoint.parent.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(checkpoint, "w") as archive:
-            archive.writestr("archive/data.pkl", pickle.dumps({"global_step": step}))
+    final_checkpoint.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(final_checkpoint, "w") as archive:
+        archive.writestr("archive/data.pkl", pickle.dumps({"global_step": 20_000}))
 
     evaluation_root = reuse_root / "jobs" / job["id"] / "evaluation"
     final_result = evaluation_root / "railsem19" / "results.json"
-    milestone_result = evaluation_root / "railsem19-step20000" / "results.json"
-    for result_path, checkpoint in (
-        (final_result, final_checkpoint),
-        (milestone_result, milestone_checkpoint),
-    ):
-        write_results(
-            result_path,
-            RunRecord(
-                name=job["experiment_name"],
-                stage="eval:railsem19:val",
-                config_hash=config_hash(resolved),
-                git_sha=SHA,
-                git_dirty=False,
-                seed=0,
-                finished_at="2026-08-15T00:00:00+00:00",
-                wall_clock_s=1.0,
-                metrics=_metric_payload("rail_union"),
-                config=resolved,
-                env={"gpu_count": 1},
-                notes=f"checkpoint={checkpoint} ema=True tta=False",
-            ),
-        )
+    write_results(
+        final_result,
+        RunRecord(
+            name=job["experiment_name"],
+            stage="eval:railsem19:val",
+            config_hash=config_hash(resolved),
+            git_sha=SHA,
+            git_dirty=False,
+            seed=0,
+            finished_at="2026-08-15T00:00:00+00:00",
+            wall_clock_s=1.0,
+            metrics=_metric_payload("rail_union"),
+            config=resolved,
+            env={"gpu_count": 1},
+            notes=f"checkpoint={final_checkpoint} ema=True tta=False",
+        ),
+    )
     record["reuse_policy"]["roots"] = [str(reuse_root)]
 
     audit = campaign.scan_reusable_cells(record)
 
     accepted = next(item for item in audit["accepted"] if item["job_id"] == job["id"])
     assert accepted["checkpoint"] == str(final_checkpoint)
-    assert accepted["checkpoint_step"] == 40_000
-    assert accepted["milestones"]["20000"] == {
-        **accepted["milestones"]["20000"],
-        "source_result": str(milestone_result),
-        "checkpoint": str(milestone_checkpoint),
-        "checkpoint_step": 20_000,
-    }
+    assert accepted["checkpoint_step"] == 20_000
+    assert accepted["milestones"] == {}
 
-    milestone_result.unlink()
+    final_result.unlink()
     missing = campaign.scan_reusable_cells(record)
     assert all(item["job_id"] != job["id"] for item in missing["accepted"])
-    assert missing["counts"]["missing_milestone_evidence"] >= 1
 
 
 def test_lane_status_json_is_strict_json(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1073,13 +1006,15 @@ def test_comparison_records_start_empty_without_completed_cells(tmp_path: Path) 
     assert records == {}
 
 
-def test_existing_low_head_lr_transfer_is_preserved_as_historical(tmp_path: Path) -> None:
-    source = campaign.REPO_ROOT / "docs/results/model-comparison/records/segformer_b2.json"
-    existing = json.loads(source.read_text(encoding="utf-8"))
-    assert (
-        existing["protocols"]["cityscapes_to_railsem19"]["iteration_progress"]["target_iterations"]
-        == 20_000
-    )
+def test_existing_obsolete_transfer_evidence_is_removed(tmp_path: Path) -> None:
+    existing = {
+        "schema_version": 2,
+        "model_id": "segformer_b2",
+        "model_config": "configs/models/segformer_b2.yaml",
+        "protocols": {"cityscapes_to_railsem19": {"obsolete": True}},
+        "historical_protocols": {"old_transfer": {"obsolete": True}},
+        "model_profile": {},
+    }
     destination = tmp_path / "docs/results/model-comparison/records/segformer_b2.json"
     destination.parent.mkdir(parents=True)
     destination.write_text(json.dumps(existing), encoding="utf-8")
@@ -1093,11 +1028,7 @@ def test_existing_low_head_lr_transfer_is_preserved_as_historical(tmp_path: Path
 
     migrated = records["segformer_b2"]
     assert "cityscapes_to_railsem19" not in migrated["protocols"]
-    historical = migrated["historical_protocols"]["cityscapes_to_railsem19_low_head_lr_20k"]
-    assert (
-        historical["aggregate"]["miou"]
-        == existing["protocols"]["cityscapes_to_railsem19"]["aggregate"]["miou"]
-    )
+    assert "historical_protocols" not in migrated
 
 
 def test_trusted_weight_source_correction_is_narrow_and_provenance_identical() -> None:
@@ -1213,9 +1144,10 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert "Quality evaluation: EMA" not in readme
     assert "exact recorded `raw` or `ema` endpoint" in readme
     assert "FPS can remain pending while Cityscapes mIoU is already available" in readme
-    assert "## RailSem19 extension decision" in readme
-    assert "Further extension was stopped" in readme
-    assert "railsem-extension-study.md" in readme
+    assert "City → Rail mIoU (Rail20 / total60)" in readme
+    assert "Rail40" not in readme
+    assert "historical" not in readme.lower()
+    assert "corrected" not in readme.lower()
     assert "±" not in readme
 
     by_model = {row["model"]: row for row in rows}
@@ -1234,11 +1166,11 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert eomt["training_objective"] == "hungarian_query"
 
 
-def test_transfer_reporting_never_labels_legacy_20k_as_corrected_40k() -> None:
-    aggregate = {
-        "miou": {"mean": 0.66},
-        "boundary_macro_f1": {"mean": 0.72},
-    }
+def test_transfer_reporting_accepts_only_verified_20k_final() -> None:
+    aggregate = {key: {"mean": 0.5} for key, _ in campaign.RECORD_METRICS}
+    aggregate["miou"] = {"mean": 0.66}
+    aggregate["boundary_macro_f1"] = {"mean": 0.72}
+    aggregate["per_class_iou"] = {}
     progress_20k = {
         "target_iterations": 20_000,
         "current_iterations": 20_000,
@@ -1269,20 +1201,14 @@ def test_transfer_reporting_never_labels_legacy_20k_as_corrected_40k() -> None:
         "evaluation": {"weights": "ema"},
         "individual": [{"source": {"git_sha": SHA}}],
     }
-    legacy = {
+    record = {
         "model_id": "probe",
         "model_config": "configs/models/probe.yaml",
         "protocols": {"cityscapes_to_railsem19": transfer_20k},
-        "historical_protocols": {
-            "cityscapes_to_railsem19_low_head_lr_20k": {"aggregate": aggregate}
-        },
         "model_profile": {},
     }
 
-    historical, corrected_20, corrected_40 = campaign._transfer_reporting_aggregates(legacy)
-    assert historical["aggregate"]["miou"]["mean"] == pytest.approx(0.66)
-    assert corrected_20 == {}
-    assert corrected_40 == {}
+    assert campaign._transfer_final(record)["aggregate"]["miou"]["mean"] == pytest.approx(0.66)
 
     empty = {
         protocol: campaign._empty_progress(protocol) for protocol in campaign.REQUIRED_PROTOCOLS
@@ -1296,65 +1222,33 @@ def test_transfer_reporting_never_labels_legacy_20k_as_corrected_40k() -> None:
         "training_specification": {},
     }
     csv_row = next(
-        csv.DictReader(io.StringIO(campaign._comparison_csv({"models": [row]}, {"probe": legacy})))
+        csv.DictReader(io.StringIO(campaign._comparison_csv({"models": [row]}, {"probe": record})))
     )
-    assert csv_row["transfer_historical_low_head_lr_20k_miou"] == "0.66"
-    assert csv_row["transfer_corrected_40k_miou"] == ""
-    assert csv_row["transfer_corrected_40k_cumulative_iterations"] == ""
+    assert csv_row["cityscapes_to_railsem19_miou_mean"] == "0.66"
+    assert csv_row["cityscapes_to_railsem19_iterations_target"] == "20000"
 
-    generated = campaign._model_generated_section(legacy)
-    assert (
-        "| historical 0.1x backbone + 0.1x head groups | 20,000 | 60,000 | 66.00 | 72.00 |"
-        in generated
-    )
-    assert "| corrected 0.1x backbone + 1.0x head groups | 40,000 | 80,000 | — | — |" in generated
-    assert "| Cityscapes → RailSem19 | — | — | — | — |" in generated
-    assert "Retained seeds: none yet" in generated
-    assert "1h 00m" not in generated
+    generated = campaign._model_generated_section(record)
+    assert "| Cityscapes → RailSem19 | 20,000 / 20,000 | 66.00 |" in generated
+    assert "historical" not in generated.lower()
+    assert "corrected" not in generated.lower()
+    assert "40,000 / 40,000 | 66.00" not in generated
 
-    complete_shape_only = copy.deepcopy(legacy)
+    complete_shape_only = copy.deepcopy(record)
     complete_shape_only["protocols"].update({"cityscapes": {}, "railsem19": {}})
-    assert campaign._model_record_status(complete_shape_only) == "running"
-
-
-def test_transfer_reporting_accepts_only_verified_corrected_40k_final() -> None:
-    progress = {
-        "target_iterations": 40_000,
-        "current_iterations": 40_000,
-        "final_verification": {
-            "result_verified": True,
-            "result_total_iterations": 40_000,
-            "result_final_stage_iteration": 40_000,
-        },
-    }
-    transfer = {
-        "aggregate": {"miou": {"mean": 0.71}},
-        "iteration_progress": progress,
-        "milestones": {
-            "20000": {
-                "aggregate": {"miou": {"mean": 0.69}},
-                "cumulative_iterations": 60_000,
-            }
-        },
-    }
-    record = {"protocols": {"cityscapes_to_railsem19": transfer}}
-
-    _, corrected_20, corrected_40 = campaign._transfer_reporting_aggregates(record)
-    assert corrected_20["aggregate"]["miou"]["mean"] == pytest.approx(0.69)
-    assert corrected_40["aggregate"]["miou"]["mean"] == pytest.approx(0.71)
+    assert campaign._model_record_status(complete_shape_only) == "complete"
 
     for field, value in (
-        ("current_iterations", 39_999),
-        ("target_iterations", 20_000),
+        ("current_iterations", 19_999),
+        ("target_iterations", 40_000),
     ):
         invalid = copy.deepcopy(record)
         invalid["protocols"]["cityscapes_to_railsem19"]["iteration_progress"][field] = value
-        assert campaign._corrected_transfer_final(invalid) == {}
+        assert campaign._transfer_final(invalid) == {}
     invalid = copy.deepcopy(record)
     invalid["protocols"]["cityscapes_to_railsem19"]["iteration_progress"]["final_verification"][
         "result_verified"
     ] = False
-    assert campaign._corrected_transfer_final(invalid) == {}
+    assert campaign._transfer_final(invalid) == {}
 
 
 def test_public_weight_source_rejects_legacy_unverified_ema_label() -> None:

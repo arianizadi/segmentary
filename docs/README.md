@@ -67,9 +67,6 @@ evaluate an exact checkpoint
 - [All-model Cityscapes and RailSem19 campaign](guides/all-model-city-rail-campaign.md)
   documents reuse-first scheduling, named tmux lanes, frozen training provenance,
   and incremental model README publication.
-- [RailSem19 adaptation extension study](results/model-comparison/railsem-extension-study.md)
-  records the 20,000-versus-40,000 target-iteration stopping evidence without
-  scheduling more training.
 - [Export and deployment](guides/export-and-deployment.md) covers the explicitly
   supported ONNX, ONNX Runtime, TensorRT FP16, and TensorRT INT8 path, including
   parity and truthful accuracy/latency reporting.
