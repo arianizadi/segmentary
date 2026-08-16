@@ -46,3 +46,77 @@ larger minimum smoke shape explicit.
 No protocol-comparable accuracy benchmark exists for this recipe. The minimum
 shape finding is a compatibility result, not an accuracy result. See the
 [SMP component guide](../../components/smp/README.md).
+
+<!-- segmentary:generated-city-rail-benchmark:start -->
+## Cityscapes and RailSem19 benchmark results
+
+Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+
+| protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Cityscapes | 40,000 / 40,000 | 67.25 | 74.43 | 86.00 | 78.24 | 99.69 | 95.03 | 90.85 | 78.36 |
+| RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| Cityscapes → RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
+
+### Transfer checkpoints
+
+The cumulative count includes the reused 40,000-step Cityscapes source. The historical row is retained as a baseline and is not mixed with corrected runs.
+
+| optimizer contract | Rail iterations | cumulative iterations | mIoU | boundary F1 |
+|---|---:|---:|---:|---:|
+| historical 0.1x backbone + 0.1x head groups | 20,000 | 60,000 | — | — |
+| corrected 0.1x backbone + 1.0x head groups | 20,000 | 60,000 | — | — |
+| corrected 0.1x backbone + 1.0x head groups | 40,000 | 80,000 | — | — |
+
+### Standardized model-only inference
+
+Pending one measurement from this model's RailSem19-only 21-class EMA checkpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+
+| parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
+|---:|---:|---:|---:|---:|---:|---:|
+| — | — | — | — | — | — | — |
+
+### Training and full-pipeline evaluation cost
+
+Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
+
+| protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
+|---|---:|---:|---:|---:|
+| Cityscapes | — | — | — | 7.034 |
+| RailSem19 | — | — | — | — |
+| Cityscapes → RailSem19 | — | — | — | — |
+
+### Cityscapes class IoU
+
+| class | IoU |
+|---|---:|
+| road | 97.63 |
+| sidewalk | 82.51 |
+| building | 90.98 |
+| wall | 28.50 |
+| fence | 52.26 |
+| pole | 60.48 |
+| traffic-light | 68.90 |
+| traffic-sign | 77.00 |
+| vegetation | 91.47 |
+| terrain | 61.04 |
+| sky | 94.06 |
+| person | 79.42 |
+| rider | 53.96 |
+| car | 91.23 |
+| truck | 28.31 |
+| bus | 51.96 |
+| train | 33.09 |
+| motorcycle | 58.44 |
+| bicycle | 76.55 |
+
+### Provenance
+
+- Model recipe: `configs/models/smp_pan_resnext50.yaml`
+- Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7`
+- Retained seeds: Cityscapes: 0.
+- EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
+- Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
+- Caveat: Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone raw-weight validation evidence are retained.
+
+<!-- segmentary:generated-city-rail-benchmark:end -->
