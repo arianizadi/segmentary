@@ -15,3 +15,5 @@ stages:
     reset_head: true
     iters: 20000
     lr_scale: 0.1
+    # Give the newly initialized/model-declared head groups their normal task LR.
+    head_group_lr_scale: 1.0

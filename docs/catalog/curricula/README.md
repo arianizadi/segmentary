@@ -29,12 +29,10 @@ whole curriculum. A stage result lives in its own directory with periodic,
 best, and true-final checkpoints plus `results.json`.
 `head_group_lr_scale` is an optimizer ablation, not a classifier-only control:
 the exact parameter set comes from each model's `head_patterns()` contract.
-The versioned
-`configs/campaigns/experiments/city_checkpoint_rs_full_adaptation_v2.yaml`
-recipe is the 40k quality-oriented transfer protocol. It reuses the City
-checkpoint, resets the incompatible classifier, keeps the backbone at `0.1x`,
-and trains the declared head group at its normal rate. Its Rail 20k and 40k
-checkpoints represent 60k and 80k cumulative optimizer iterations.
+`configs/campaigns/city_checkpoint_rs.yaml` is the campaign transfer protocol.
+It reuses the City checkpoint, resets the incompatible classifier, keeps the
+backbone at `0.1x`, trains the declared head group at its normal rate, and stops
+after 20k Rail iterations (60k cumulative optimizer iterations).
 
 ## Shipped choices
 
