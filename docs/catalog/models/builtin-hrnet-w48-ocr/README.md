@@ -79,7 +79,7 @@ Measured once from this model's RailSem19-only 21-class ema endpoint on an NVIDI
 
 | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
 |---:|---:|---:|---:|---:|---:|---:|
-| 73,168,490 | 279.1 MiB | 1119.2 MiB | 29.24 | 33.89 ms | 36.02 ms | 1.26 GiB |
+| 73,168,490 | 279.1 MiB | 1119.2 MiB | 30.75 | 32.11 ms | 34.73 ms | 1.26 GiB |
 
 ### Training and full-pipeline evaluation cost
 

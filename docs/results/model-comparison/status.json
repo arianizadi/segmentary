@@ -233,11 +233,11 @@
       "railsem19_miou": "72.13",
       "result_origin": "trained",
       "standardized_inference": {
-        "fps": 45.77599018284661,
+        "fps": 45.912213962035025,
         "latency_ms": {
-          "mean": 21.845513248443602,
-          "p50": 21.761024475097656,
-          "p95": 22.315417098999024
+          "mean": 21.780696544647217,
+          "p50": 21.76255989074707,
+          "p95": 21.861530780792236
         },
         "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
         "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
@@ -261,12 +261,12 @@
           "warmup_iterations": 20
         },
         "provenance": {
-          "campaign_git_sha": "9d98ef1df2e4f1f3000422f237a751d6e0058d89",
+          "campaign_git_sha": "b9eb3e1f390b70aad63e78b2e723bd79b5266471",
           "checkpoint_bytes": 5066029946,
           "checkpoint_global_step": 40000,
           "checkpoint_sha256": "bb69373c9ee71051db4f35323b5f398f57e3ef71a71a88f23286df71fe0a0dbd",
-          "config_hash": "5b9fc6264d51",
-          "config_sha256": "cbbf8b453457592f41a325674843766ed4507cf26e089387a5f38432f7e2952b",
+          "config_hash": "d342dcad3813",
+          "config_sha256": "216c5b873dd8a9778ae2a96a3c309cca2f9950375c59b1c25b31ce462abbbe95",
           "measured_job_id": "eomt_large--railsem19--seed-0",
           "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
           "result_seed": 0,
@@ -978,11 +978,11 @@
       "railsem19_miou": "68.62",
       "result_origin": "trained",
       "standardized_inference": {
-        "fps": 29.23909831963021,
+        "fps": 30.752609785116793,
         "latency_ms": {
-          "mean": 34.20078105926514,
-          "p50": 33.88825607299805,
-          "p95": 36.02083740234375
+          "mean": 32.517565402984616,
+          "p50": 32.10798454284668,
+          "p95": 34.727420234680174
         },
         "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
         "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
@@ -1006,12 +1006,12 @@
           "warmup_iterations": 20
         },
         "provenance": {
-          "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "campaign_git_sha": "b9eb3e1f390b70aad63e78b2e723bd79b5266471",
           "checkpoint_bytes": 1173541055,
           "checkpoint_global_step": 40000,
           "checkpoint_sha256": "0331c7ee6a029ad5e05837084fbb02cfe48f29dcf82ae3d4edef249af3990510",
-          "config_hash": "3c939e0415e4",
-          "config_sha256": "a7ebade6d0a1fe0f7f20d05c828129cc46107d292806e95e6ae657a442640d6b",
+          "config_hash": "7c4b55f08930",
+          "config_sha256": "fe383095f69620ca98b7fd592f1e1c7adf4fdd7768e4b71fa5a2e31b9ba2cee8",
           "measured_job_id": "hrnet_w48_ocr--railsem19--seed-0",
           "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
           "result_seed": 0,
@@ -1127,19 +1127,19 @@
       "railsem19_miou": "68.44",
       "result_origin": "trained",
       "standardized_inference": {
-        "fps": 63.800118752833725,
+        "fps": 65.19736083299836,
         "latency_ms": {
-          "mean": 15.673952016830444,
-          "p50": 15.610880374908447,
-          "p95": 16.72939453125
+          "mean": 15.338044166564941,
+          "p50": 15.191023826599121,
+          "p95": 16.647610187530518
         },
         "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
         "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
         "parameter_dtype_counts": {
           "float32": 61323093
         },
-        "peak_reserved_bytes": 1405091840,
-        "peak_vram_bytes": 1405091840,
+        "peak_reserved_bytes": 1461714944,
+        "peak_vram_bytes": 1461714944,
         "protocol": {
           "backend": "pytorch",
           "entrypoint": "public model(image) dense-logits forward",
@@ -1155,12 +1155,12 @@
           "warmup_iterations": 20
         },
         "provenance": {
-          "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "campaign_git_sha": "b9eb3e1f390b70aad63e78b2e723bd79b5266471",
           "checkpoint_bytes": 982771328,
           "checkpoint_global_step": 40000,
           "checkpoint_sha256": "cc281f26902e994dc44ecc9be89ae89bc49c62fbca7504b77767379156685e4b",
-          "config_hash": "6ee26c70f8c0",
-          "config_sha256": "b490a64841a5fa25446d924925eb7e702491d8cada4be6cb99a44881a70452ee",
+          "config_hash": "8c7d0691bf85",
+          "config_sha256": "79b864eeea74da9d56bc125f16c2aef5a26061c5a5808d3e38e0050da3dd0115",
           "measured_job_id": "native_resnet101_uper--railsem19--seed-0",
           "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
           "result_seed": 0,
@@ -1276,11 +1276,11 @@
       "railsem19_miou": "70.39",
       "result_origin": "reused",
       "standardized_inference": {
-        "fps": 50.94611902098348,
+        "fps": 53.259860255199456,
         "latency_ms": {
-          "mean": 19.628580532073975,
-          "p50": 19.21280002593994,
-          "p95": 22.725970458984374
+          "mean": 18.775866012573243,
+          "p50": 18.62912082672119,
+          "p95": 19.413040447235108
         },
         "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
         "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
@@ -1304,12 +1304,12 @@
           "warmup_iterations": 20
         },
         "provenance": {
-          "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "campaign_git_sha": "b9eb3e1f390b70aad63e78b2e723bd79b5266471",
           "checkpoint_bytes": 438445298,
           "checkpoint_global_step": 40000,
           "checkpoint_sha256": "a017480f6fc66e45651f83f3103f582591fa2f5f82b7dc048429508393ccfc20",
-          "config_hash": "1e86551a83bf",
-          "config_sha256": "01ea408a60cef5cf6e5268550509ff60e5b55bd3d9dd11d0a05e41a63eb74751",
+          "config_hash": "0b15200157c1",
+          "config_sha256": "2f20188b10c6b076e1814f8bef255272dcf8ac62381c9353b5592c0aab3e9c85",
           "measured_job_id": "segformer_b2--railsem19--seed-0",
           "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
           "result_seed": 0,
@@ -2167,19 +2167,19 @@
       "railsem19_miou": "66.41",
       "result_origin": "trained",
       "standardized_inference": {
-        "fps": 128.06797647146894,
+        "fps": 136.37291155601733,
         "latency_ms": {
-          "mean": 7.8083532476425175,
-          "p50": 7.379456043243408,
-          "p95": 9.293463706970215
+          "mean": 7.3328345680236815,
+          "p50": 7.301119804382324,
+          "p95": 7.606169581413269
         },
         "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
         "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
         "parameter_dtype_counts": {
           "float32": 40351925
         },
-        "peak_reserved_bytes": 878706688,
-        "peak_vram_bytes": 878706688,
+        "peak_reserved_bytes": 838860800,
+        "peak_vram_bytes": 838860800,
         "protocol": {
           "backend": "pytorch",
           "entrypoint": "public model(image) dense-logits forward",
@@ -2195,12 +2195,12 @@
           "warmup_iterations": 20
         },
         "provenance": {
-          "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "campaign_git_sha": "b9eb3e1f390b70aad63e78b2e723bd79b5266471",
           "checkpoint_bytes": 646455664,
           "checkpoint_global_step": 40000,
           "checkpoint_sha256": "e5cba336d47eefa437c7b0dfd6391c82bccdb83e927d1f70b9032d8e6cd608f3",
-          "config_hash": "c09c72d3bee9",
-          "config_sha256": "d261fd3b131237650e30a2f92e8ea7ce3498e4ff1da487aab1bd6cae13d36e3e",
+          "config_hash": "95078049b8a9",
+          "config_sha256": "17fab45ee9ce6680e3a8a41c1be739e34dc226113c99164747fa5b9ff3f54461",
           "measured_job_id": "native_resnet50_deeplabv3plus--railsem19--seed-0",
           "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
           "result_seed": 0,
