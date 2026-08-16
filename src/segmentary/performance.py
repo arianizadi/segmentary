@@ -9,7 +9,8 @@ statistics provide peak inference memory.
 
 The output is a strict, immutable ``performance.json`` evidence record. It is
 model-level data measured exactly once from the model's RailSem19-only 21-class
-EMA checkpoint and linked to its three quality protocols. The public forward
+recorded endpoint (raw for running-stat BatchNorm, EMA otherwise) and linked to
+its three quality protocols. The public forward
 includes any model-internal query-to-dense semantic collapse; external image
 I/O, preprocessing, sliding-window stitching, argmax, and metrics are excluded.
 """

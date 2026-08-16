@@ -3983,6 +3983,15 @@ def _new_protocol(
     )
     target_iterations = plan["stages"][-1]["target_iterations"]
     milestone_text = ", ".join(f"{step:,}" for step in job.get("evaluation_milestones", []))
+    result_config = result.get("config")
+    evaluation_config = result_config.get("evaluation") if isinstance(result_config, dict) else None
+    evaluation_weights = (
+        evaluation_config.get("weights") if isinstance(evaluation_config, dict) else None
+    )
+    if evaluation_weights not in ("raw", "ema"):
+        raise CampaignError(
+            f"validated result for {job['id']} records no trusted raw/ema weight source"
+        )
     return {
         "status": "complete",
         "label": job["protocol_label"],
@@ -4005,7 +4014,7 @@ def _new_protocol(
         "evaluation": {
             "split": "val",
             "images": images,
-            "weights": "EMA",
+            "weights": evaluation_weights,
             "sliding_window": [1024, 1024],
             "stride": [768, 768],
             "tta": False,
@@ -4043,8 +4052,8 @@ def _sanitised_performance(payload: dict[str, Any]) -> dict[str, Any]:
         "parameter_dtype_counts": payload["model"]["parameter_dtype_counts"],
         "memory_kind": payload["measurements"]["memory_kind"],
         "note": (
-            "Model-only public forward measured once from the RailSem19-only 21-class EMA "
-            "checkpoint and linked across this model's quality protocols."
+            "Model-only public forward measured once from the RailSem19-only 21-class "
+            f"{source['weights']} endpoint and linked across this model's quality protocols."
         ),
         "protocol": {
             "gpu_model": payload["hardware"]["gpu_name"],
@@ -4218,13 +4227,7 @@ def _comparison_records(
     # Performance validation needs the immutable campaign record; it is applied
     # in report_campaign after this preservation-first metric merge.
     for record in records.values():
-        record["status"] = (
-            "complete"
-            if all(protocol in record.get("protocols", {}) for protocol in REQUIRED_PROTOCOLS)
-            else "running"
-            if record.get("protocols")
-            else "queued"
-        )
+        record["status"] = _model_record_status(record)
     # Synthesize aliases only after the canonical record is complete/partial.
     for model in manifest.models:
         if model.alias_of is None or model.alias_of not in records:
@@ -4308,8 +4311,74 @@ def _historical_metric(record: dict[str, Any], protocol: str, metric: str) -> ob
     )
 
 
+def _corrected_transfer_final(record: dict[str, Any] | None) -> dict[str, Any]:
+    """Return only a verified corrected 40k Rail adaptation result.
+
+    Historical campaign records can contain a 20k transfer protocol whose
+    aggregate is also preserved as the low-head-LR baseline.  That aggregate
+    must never be presented as the corrected 40k/80k-cumulative result merely
+    because a transfer protocol object exists.
+    """
+    if not isinstance(record, dict):
+        return {}
+    transfer = record.get("protocols", {}).get("cityscapes_to_railsem19")
+    if not isinstance(transfer, dict):
+        return {}
+    progress = transfer.get("iteration_progress")
+    if not isinstance(progress, dict):
+        return {}
+    verification = progress.get("final_verification")
+    if not isinstance(verification, dict):
+        return {}
+    if (
+        progress.get("target_iterations") != 40_000
+        or progress.get("current_iterations") != 40_000
+        or verification.get("result_verified") is not True
+        or verification.get("result_total_iterations") != 40_000
+        or verification.get("result_final_stage_iteration") != 40_000
+    ):
+        return {}
+    return transfer
+
+
+def _model_record_status(record: dict[str, Any]) -> str:
+    protocols = record.get("protocols", {})
+    if not protocols:
+        return "queued"
+    return (
+        "complete"
+        if all(protocol in protocols for protocol in ("cityscapes", "railsem19"))
+        and bool(_corrected_transfer_final(record))
+        else "running"
+    )
+
+
+def _recorded_evaluation_weights(protocol: dict[str, Any]) -> str | None:
+    weights = protocol.get("evaluation", {}).get("weights")
+    return weights if weights in ("raw", "ema") else None
+
+
+def _transfer_reporting_aggregates(
+    record: dict[str, Any] | None,
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    if not isinstance(record, dict):
+        return {}, {}, {}
+    transfer = record.get("protocols", {}).get("cityscapes_to_railsem19", {})
+    historical = record.get("historical_protocols", {}).get(
+        "cityscapes_to_railsem19_low_head_lr_20k", {}
+    )
+    corrected_20 = (
+        transfer.get("milestones", {}).get("20000", {}) if isinstance(transfer, dict) else {}
+    )
+    return historical, corrected_20, _corrected_transfer_final(record)
+
+
 def _model_generated_section(record: dict[str, Any]) -> str:
     protocols = record.get("protocols", {})
+    historical_20, corrected_20, corrected_40 = _transfer_reporting_aggregates(record)
+    visible_protocols = dict(protocols)
+    if not corrected_40:
+        visible_protocols.pop("cityscapes_to_railsem19", None)
     lines = [
         REPORT_START,
         "## Cityscapes and RailSem19 benchmark results",
@@ -4326,7 +4395,7 @@ def _model_generated_section(record: dict[str, Any]) -> str:
         "cityscapes_to_railsem19": "Cityscapes → RailSem19",
     }
     for protocol_id in REQUIRED_PROTOCOLS:
-        protocol = protocols.get(protocol_id)
+        protocol = visible_protocols.get(protocol_id)
         if not isinstance(protocol, dict):
             progress = _empty_progress(protocol_id)
             values = [labels[protocol_id], f"0 / {progress['target_iterations']:,}", *(["—"] * 8)]
@@ -4344,11 +4413,6 @@ def _model_generated_section(record: dict[str, Any]) -> str:
         ]
         lines.append("| " + " | ".join(values) + " |")
 
-    transfer = protocols.get("cityscapes_to_railsem19", {})
-    corrected_20 = transfer.get("milestones", {}).get("20000", {})
-    historical_20 = record.get("historical_protocols", {}).get(
-        "cityscapes_to_railsem19_low_head_lr_20k", {}
-    )
     transfer_rows = [
         (
             "historical 0.1x backbone + 0.1x head groups",
@@ -4366,7 +4430,7 @@ def _model_generated_section(record: dict[str, Any]) -> str:
             "corrected 0.1x backbone + 1.0x head groups",
             40_000,
             80_000,
-            transfer.get("aggregate", {}),
+            corrected_40.get("aggregate", {}),
         ),
     ]
     lines.extend(
@@ -4392,15 +4456,21 @@ def _model_generated_section(record: dict[str, Any]) -> str:
 
     performance = record.get("model_profile", {}).get("standardized_inference", {})
     latency = performance.get("latency_ms") or {}
+    performance_weights = performance.get("provenance", {}).get("weights")
+    performance_endpoint = (
+        f"{performance_weights} endpoint"
+        if performance_weights in ("raw", "ema")
+        else "recorded raw/EMA endpoint"
+    )
     lines.extend(
         [
             "",
             "### Standardized model-only inference",
             "",
             (
-                "Measured once from this model's RailSem19-only 21-class EMA checkpoint on an "
+                f"Measured once from this model's RailSem19-only 21-class {performance_endpoint} on an "
                 if performance.get("status") == "complete"
-                else "Pending one measurement from this model's RailSem19-only 21-class EMA checkpoint on an "
+                else "Pending one measurement from this model's RailSem19-only 21-class recorded raw/EMA endpoint on an "
             )
             + "NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, "
             "20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal "
@@ -4448,7 +4518,7 @@ def _model_generated_section(record: dict[str, Any]) -> str:
         ]
     )
     for protocol_id in REQUIRED_PROTOCOLS:
-        protocol = protocols.get(protocol_id)
+        protocol = visible_protocols.get(protocol_id)
         evidence = protocol.get("resource_evidence", {}) if isinstance(protocol, dict) else {}
         training = evidence.get("training", {})
         pipeline = evidence.get("full_validation_pipeline", {})
@@ -4459,14 +4529,14 @@ def _model_generated_section(record: dict[str, Any]) -> str:
             f"{_number(pipeline.get('images_per_s_mean'), decimals=3)} |"
         )
 
-    city = protocols.get("cityscapes")
+    city = visible_protocols.get("cityscapes")
     if isinstance(city, dict):
         lines.extend(["", "### Cityscapes class IoU", "", "| class | IoU |", "|---|---:|"])
         for name, summary in city["aggregate"]["per_class_iou"].items():
             value = summary["mean"]
             lines.append(f"| {name} | {_number(value * 100 if value is not None else None)} |")
-    rail = protocols.get("railsem19")
-    transfer = protocols.get("cityscapes_to_railsem19")
+    rail = visible_protocols.get("railsem19")
+    transfer = corrected_40 or None
     if isinstance(rail, dict) or isinstance(transfer, dict):
         source = rail or transfer
         lines.extend(
@@ -4488,24 +4558,33 @@ def _model_generated_section(record: dict[str, Any]) -> str:
     revisions = sorted(
         {
             individual["source"]["git_sha"]
-            for protocol in protocols.values()
+            for protocol in visible_protocols.values()
             for individual in protocol["individual"]
         }
     )
     caveats = sorted(
-        {caveat for protocol in protocols.values() for caveat in protocol.get("caveats", [])}
+        {
+            caveat
+            for protocol in visible_protocols.values()
+            for caveat in protocol.get("caveats", [])
+        }
     )
     retained_seeds = "; ".join(
         f"{labels[protocol_id]}: {', '.join(map(str, protocol['seeds']))}"
-        for protocol_id, protocol in protocols.items()
+        for protocol_id, protocol in visible_protocols.items()
         if protocol_id in labels and protocol.get("seeds")
     )
     derivations = sorted(
         {
             protocol.get("derivation")
-            for protocol in protocols.values()
+            for protocol in visible_protocols.values()
             if isinstance(protocol.get("derivation"), str)
         }
+    )
+    evaluation_weights = "; ".join(
+        f"{labels[protocol_id]}: {_recorded_evaluation_weights(protocol) or '—'}"
+        for protocol_id, protocol in visible_protocols.items()
+        if protocol_id in labels
     )
     lines.extend(
         [
@@ -4515,7 +4594,8 @@ def _model_generated_section(record: dict[str, Any]) -> str:
             f"- Model recipe: `{record['model_config']}`",
             f"- Source revisions: `{', '.join(revisions)}`",
             f"- Retained seeds: {retained_seeds or 'none yet'}.",
-            "- EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.",
+            f"- Quality evaluation weights: {evaluation_weights or 'none yet'}.",
+            "- Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.",
             *(f"- Metric derivation: {derivation}" for derivation in derivations),
             *(f"- Caveat: {caveat}" for caveat in caveats),
             "",
@@ -4572,7 +4652,7 @@ def _empty_progress(protocol_id: str) -> dict[str, Any]:
 def _status_label(record: dict[str, Any] | None, model: ModelSpec) -> str:
     if record is None:
         return "queued"
-    return "complete" if record.get("status") == "complete" else "running"
+    return _model_record_status(record)
 
 
 def _model_execution_states(campaign_record: dict[str, Any] | None) -> dict[str, str]:
@@ -4687,7 +4767,9 @@ def _comparison_status(
     for priority, model_id in enumerate(manifest.priority_order, start=1):
         model = next(item for item in manifest.models if item.id == model_id)
         record = records.get(model_id)
-        protocols = record.get("protocols", {}) if record else {}
+        protocols = dict(record.get("protocols", {})) if record else {}
+        if record and not _corrected_transfer_final(record):
+            protocols.pop("cityscapes_to_railsem19", None)
         complete_cells += len(protocols)
         progress = {
             protocol_id: (
@@ -4707,7 +4789,7 @@ def _comparison_status(
         canonical_state = execution_states.get(model.alias_of or model_id, "queued")
         public_status = (
             "complete"
-            if record and record.get("status") == "complete"
+            if all(protocol in protocols for protocol in REQUIRED_PROTOCOLS)
             else canonical_state
             if canonical_state in {"queued", "running", "failed"}
             else "running"
@@ -4757,6 +4839,18 @@ def _comparison_status(
                         "miou",
                     )
                     is not None
+                    else "—"
+                ),
+                "transfer_miou_corrected_40k": (
+                    _percent(
+                        [
+                            _corrected_transfer_final(record)
+                            .get("aggregate", {})
+                            .get("miou", {})
+                            .get("mean")
+                        ]
+                    )
+                    if _corrected_transfer_final(record)
                     else "—"
                 ),
                 "iteration_progress": progress,
@@ -4825,7 +4919,10 @@ def _comparison_status(
                     "use 0.1x for backbone groups and 1.0x for model-declared head groups; "
                     "retain common evaluations at Rail 20,000 and 40,000"
                 ),
-                "evaluation": ("final EMA, batch 1, 1024x1024 sliding window, stride 768, no TTA"),
+                "evaluation": (
+                    "automatic recorded weights (raw for running-stat BatchNorm; EMA otherwise), "
+                    "batch 1, 1024x1024 sliding window, stride 768, no TTA"
+                ),
                 "resume_policy": (
                     campaign_record["execution"]["resume_policy"]
                     if campaign_record is not None
@@ -4840,7 +4937,10 @@ def _comparison_status(
                     if completed_performance
                     else "queued"
                 ),
-                "owner": "RailSem19-only 21-class EMA checkpoint, seed 0",
+                "owner": (
+                    "RailSem19-only 21-class recorded endpoint, seed 0; raw for running-stat "
+                    "BatchNorm and EMA otherwise"
+                ),
                 "contract": "L40S, PyTorch eager BF16, batch 1, 1024x1024, 20 warmup, 100 timed",
             },
         },
@@ -4924,7 +5024,11 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
     writer.writeheader()
     for row in status["models"]:
         record = records.get(row["model"])
-        protocols = record.get("protocols", {}) if record else {}
+        raw_protocols = record.get("protocols", {}) if record else {}
+        protocols = dict(raw_protocols)
+        historical_20, corrected_20, corrected_40 = _transfer_reporting_aggregates(record)
+        if not corrected_40:
+            protocols.pop("cityscapes_to_railsem19", None)
         output: dict[str, Any] = {
             "priority": row["priority"],
             "model": row["model"],
@@ -4987,15 +5091,6 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
                     or "",
                 }
             )
-        transfer = protocols.get("cityscapes_to_railsem19", {})
-        corrected_20 = transfer.get("milestones", {}).get("20000", {})
-        historical_20 = (
-            record.get("historical_protocols", {}).get(
-                "cityscapes_to_railsem19_low_head_lr_20k", {}
-            )
-            if record
-            else {}
-        )
         output.update(
             {
                 "transfer_historical_low_head_lr_20k_miou": historical_20.get("aggregate", {})
@@ -5004,13 +5099,13 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
                 "transfer_corrected_20k_miou": corrected_20.get("aggregate", {})
                 .get("miou", {})
                 .get("mean", ""),
-                "transfer_corrected_40k_miou": transfer.get("aggregate", {})
+                "transfer_corrected_40k_miou": corrected_40.get("aggregate", {})
                 .get("miou", {})
                 .get("mean", ""),
                 "transfer_corrected_20k_cumulative_iterations": (
                     corrected_20.get("cumulative_iterations", "")
                 ),
-                "transfer_corrected_40k_cumulative_iterations": (80_000 if transfer else ""),
+                "transfer_corrected_40k_cumulative_iterations": (80_000 if corrected_40 else ""),
             }
         )
         inference = row["standardized_inference"]
@@ -5128,7 +5223,7 @@ def _central_readme(
             row["railsem19_miou"],
             row["transfer_miou_historical_low_head_lr_20k"],
             row["transfer_miou_corrected_20k"],
-            row["cityscapes_to_railsem19_miou"],
+            row["transfer_miou_corrected_40k"],
         ]
         lines.append(
             f"| {row['priority']} | [{row['model']}]({link}) | {row['status']} | "
@@ -5141,7 +5236,8 @@ def _central_readme(
             "## Standardized model-only inference",
             "",
             "Each unique physical model is measured exactly once from its RailSem19-only "
-            "21-class final EMA checkpoint. Contract: NVIDIA L40S, PyTorch eager public "
+            "21-class recorded final endpoint (raw for running-stat BatchNorm; EMA otherwise). "
+            "Contract: NVIDIA L40S, PyTorch eager public "
             "forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed "
             "iterations. It includes internal query-to-dense collapse and excludes I/O, "
             "preprocessing, sliding windows, argmax, and metrics.",
@@ -5153,8 +5249,8 @@ def _central_readme(
             "contains optimizer and EMA state; peak VRAM is allocator-reserved memory excluding "
             "the CUDA context.",
             "",
-            "| model | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak VRAM (reserved, excl. context) |",
-            "|---|---:|---:|---:|---:|---:|---:|---:|",
+            "| model | weights | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak VRAM (reserved, excl. context) |",
+            "|---|---|---:|---:|---:|---:|---:|---:|---:|",
         ]
     )
     for row in status["models"]:
@@ -5165,11 +5261,13 @@ def _central_readme(
         checkpoint = resource.get("final_checkpoint", {})
         inference = row["standardized_inference"]
         latency = inference.get("latency_ms") or {}
+        inference_weights = inference.get("provenance", {}).get("weights")
+        weights_text = inference_weights if inference_weights in ("raw", "ema") else "—"
         link = "../../" + str(models[row["model"]].readme).removeprefix("docs/")
         parameter_count = resource.get("parameter_count")
         parameter_text = f"{parameter_count:,}" if isinstance(parameter_count, int) else "—"
         lines.append(
-            f"| [{row['model']}]({link}) | "
+            f"| [{row['model']}]({link}) | {weights_text} | "
             f"{parameter_text} | {_mib(inference.get('resident_parameter_bytes'))} | "
             f"{_mib(checkpoint.get('size_bytes'))} | {_number(inference.get('fps'))} | "
             f"{_number(latency.get('p50'))} | {_number(latency.get('p95'))} | "
@@ -5216,7 +5314,8 @@ def _central_readme(
             "40,000 (80,000 cumulative); Cityscapes is never trained twice.",
             "- Transfer warm-starts every compatible learned tensor and reinitialises only the "
             "19-class to `rail_union` classifier mismatch.",
-            "- Quality evaluation: EMA, 1024x1024 sliding window, stride 768, no TTA.",
+            "- Quality evaluation: the exact recorded `raw` or `ema` endpoint for each "
+            "protocol, 1024x1024 sliding window, stride 768, no TTA.",
             "- [`results.csv`](results.csv): spreadsheet-friendly mean metrics, iterations, and resources.",
             "- [`status.json`](status.json): machine-readable scope and completion state.",
             "- [`records/`](records/): full class IoUs, retained seeds, resources, and provenance.",
