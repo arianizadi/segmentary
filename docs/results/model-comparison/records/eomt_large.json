@@ -10,11 +10,11 @@
     },
     "standardized_inference": {
       "status": "complete",
-      "fps": 45.340467969879555,
+      "fps": 45.77599018284661,
       "latency_ms": {
-        "mean": 22.055352420806884,
-        "p50": 22.00166416168213,
-        "p95": 22.41704931259155
+        "mean": 21.845513248443602,
+        "p50": 21.761024475097656,
+        "p95": 22.315417098999024
       },
       "peak_vram_bytes": 3351248896,
       "peak_reserved_bytes": 3351248896,
@@ -40,9 +40,9 @@
       },
       "provenance": {
         "measured_job_id": "eomt_large--railsem19--seed-0",
-        "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
-        "config_hash": "98851c9f021f",
-        "config_sha256": "e6264fc4145aa61bf5309372be346ea0cc4c971c0a265ce06583558327645f9c",
+        "campaign_git_sha": "9d98ef1df2e4f1f3000422f237a751d6e0058d89",
+        "config_hash": "5b9fc6264d51",
+        "config_sha256": "cbbf8b453457592f41a325674843766ed4507cf26e089387a5f38432f7e2952b",
         "checkpoint_sha256": "bb69373c9ee71051db4f35323b5f398f57e3ef71a71a88f23286df71fe0a0dbd",
         "checkpoint_global_step": 40000,
         "checkpoint_bytes": 5066029946,

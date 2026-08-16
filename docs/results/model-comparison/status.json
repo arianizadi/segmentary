@@ -233,11 +233,11 @@
       "railsem19_miou": "72.13",
       "result_origin": "trained",
       "standardized_inference": {
-        "fps": 45.340467969879555,
+        "fps": 45.77599018284661,
         "latency_ms": {
-          "mean": 22.055352420806884,
-          "p50": 22.00166416168213,
-          "p95": 22.41704931259155
+          "mean": 21.845513248443602,
+          "p50": 21.761024475097656,
+          "p95": 22.315417098999024
         },
         "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
         "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
@@ -261,12 +261,12 @@
           "warmup_iterations": 20
         },
         "provenance": {
-          "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "campaign_git_sha": "9d98ef1df2e4f1f3000422f237a751d6e0058d89",
           "checkpoint_bytes": 5066029946,
           "checkpoint_global_step": 40000,
           "checkpoint_sha256": "bb69373c9ee71051db4f35323b5f398f57e3ef71a71a88f23286df71fe0a0dbd",
-          "config_hash": "98851c9f021f",
-          "config_sha256": "e6264fc4145aa61bf5309372be346ea0cc4c971c0a265ce06583558327645f9c",
+          "config_hash": "5b9fc6264d51",
+          "config_sha256": "cbbf8b453457592f41a325674843766ed4507cf26e089387a5f38432f7e2952b",
           "measured_job_id": "eomt_large--railsem19--seed-0",
           "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
           "result_seed": 0,
@@ -1022,7 +1022,7 @@
         "resident_parameter_bytes": 292673960,
         "status": "complete"
       },
-      "status": "running",
+      "status": "failed",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,
@@ -1171,7 +1171,7 @@
         "resident_parameter_bytes": 245292372,
         "status": "complete"
       },
-      "status": "running",
+      "status": "failed",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,
@@ -1320,7 +1320,7 @@
         "resident_parameter_bytes": 109451092,
         "status": "complete"
       },
-      "status": "running",
+      "status": "failed",
       "training_specification": {
         "backbone_lr": 6e-05,
         "batch_size_per_gpu": 2,
@@ -2211,7 +2211,7 @@
         "resident_parameter_bytes": 161407700,
         "status": "complete"
       },
-      "status": "running",
+      "status": "failed",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,
