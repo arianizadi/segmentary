@@ -5278,6 +5278,14 @@ def _central_readme(
     lines.extend(
         [
             "",
+            "## RailSem19 extension decision",
+            "",
+            "A bounded three-model study found that continuing corrected transfer from "
+            "Rail20 to Rail40 produced two lower endpoints and one small 0.45-point gain. "
+            "Further extension was stopped because the benefit was marginal and "
+            "inconsistent. The retained measurements and stopping rationale are in the "
+            "[RailSem19 adaptation extension study](railsem-extension-study.md).",
+            "",
             "## Standardized model-only inference",
             "",
             "Each unique physical model is measured exactly once from its RailSem19-only "

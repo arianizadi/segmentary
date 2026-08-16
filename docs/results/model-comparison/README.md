@@ -109,6 +109,10 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 36 | [native_resnet18_fpn_segformer_aux](../../catalog/models/native-resnet18-fpn-segformer-aux/README.md) | queued | — | — | — | — | — |
 | 37 | [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | queued | — | — | — | — | — |
 
+## RailSem19 extension decision
+
+A bounded three-model study found that continuing corrected transfer from Rail20 to Rail40 produced two lower endpoints and one small 0.45-point gain. Further extension was stopped because the benefit was marginal and inconsistent. The retained measurements and stopping rationale are in the [RailSem19 adaptation extension study](railsem-extension-study.md).
+
 ## Standardized model-only inference
 
 Each unique physical model is measured exactly once from its RailSem19-only 21-class recorded final endpoint (raw for running-stat BatchNorm; EMA otherwise). Contract: NVIDIA L40S, PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes internal query-to-dense collapse and excludes I/O, preprocessing, sliding windows, argmax, and metrics.

@@ -1213,6 +1213,9 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert "Quality evaluation: EMA" not in readme
     assert "exact recorded `raw` or `ema` endpoint" in readme
     assert "FPS can remain pending while Cityscapes mIoU is already available" in readme
+    assert "## RailSem19 extension decision" in readme
+    assert "Further extension was stopped" in readme
+    assert "railsem-extension-study.md" in readme
     assert "±" not in readme
 
     by_model = {row["model"]: row for row in rows}
