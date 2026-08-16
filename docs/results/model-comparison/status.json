@@ -1,11 +1,11 @@
 {
   "counts": {
-    "complete_cells": 38,
+    "complete_cells": 39,
     "complete_models": 2,
     "complete_performance_benchmarks": 14,
     "physical_performance_benchmarks": 36,
     "physical_training_cells": 108,
-    "reported_cells": 38,
+    "reported_cells": 39,
     "total_reported_cells": 111
   },
   "models": [
@@ -2836,22 +2836,22 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "\u2014",
+      "cityscapes_miou": "75.47",
       "cityscapes_to_railsem19_miou": "\u2014",
       "iteration_progress": {
         "cityscapes": {
-          "current_iterations": 0,
+          "current_iterations": 40000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
+              "current_iterations": 40000,
               "dataset": "Cityscapes",
               "stage": "cityscapes",
               "target_iterations": 40000
