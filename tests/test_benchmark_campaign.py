@@ -1100,6 +1100,44 @@ def test_existing_low_head_lr_transfer_is_preserved_as_historical(tmp_path: Path
     )
 
 
+def test_trusted_weight_source_correction_is_narrow_and_provenance_identical() -> None:
+    source = {
+        "result_sha256": "old-result",
+        "git_sha": "a" * 40,
+        "checkpoint_sha256": "checkpoint",
+        "checkpoint_step": 40_000,
+    }
+    candidate_source = {**source, "result_sha256": "new-result"}
+    protocol = {"evaluation": {"weights": "EMA"}}
+    existing = {"source": source}
+    candidate = {"source": candidate_source}
+    result = {"config": {"evaluation": {"weights": "raw"}}}
+    attempt = {
+        "kind": "reused",
+        "record_kind": "evaluation",
+        "caveat": "Standalone raw-weight validation evidence is retained.",
+    }
+
+    assert campaign._is_trusted_weight_source_correction(
+        protocol, existing, candidate, result, attempt
+    )
+
+    mutations = [
+        ({"evaluation": {"weights": "raw"}}, existing, candidate, result, attempt),
+        (protocol, existing, candidate, {"config": {"evaluation": {"weights": "ema"}}}, attempt),
+        (protocol, existing, candidate, result, {**attempt, "caveat": "ordinary reuse"}),
+        (
+            protocol,
+            existing,
+            {"source": {**candidate_source, "checkpoint_sha256": "different"}},
+            result,
+            attempt,
+        ),
+    ]
+    for arguments in mutations:
+        assert not campaign._is_trusted_weight_source_correction(*arguments)
+
+
 def test_training_specifications_match_resolved_campaign_runtime(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
