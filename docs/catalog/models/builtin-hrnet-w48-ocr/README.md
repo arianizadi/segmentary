@@ -61,3 +61,68 @@ number is claimed until a complete result record exists.
 
 See the [built-in model component](../../components/builtin-models/README.md)
 and [`hrnet_ocr.py`](../../../../src/segmentary/models/hrnet_ocr.py).
+
+<!-- segmentary:generated-city-rail-benchmark:start -->
+## Cityscapes and RailSem19 benchmark results
+
+Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+
+| protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Cityscapes | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| RailSem19 | 40,000 / 40,000 | 68.62 | 80.86 | 80.14 | 80.21 | 99.39 | 89.42 | 81.86 | 78.23 |
+| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+
+### Standardized model-only inference
+
+Measured once from this model's RailSem19-only 21-class EMA checkpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+
+| parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
+|---:|---:|---:|---:|---:|---:|---:|
+| 73,168,490 | 279.1 MiB | 1119.2 MiB | 29.24 | 33.89 ms | 36.02 ms | 1.26 GiB |
+
+### Training and full-pipeline evaluation cost
+
+Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
+
+| protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
+|---|---:|---:|---:|---:|
+| Cityscapes | — | — | — | — |
+| RailSem19 | 27h 48m 14s | 27.80 | 17.35 GiB | 3.529 |
+| Cityscapes → RailSem19 | — | — | — | — |
+
+### RailSem19 class IoU
+
+| class | RailSem19 | Cityscapes → RailSem19 |
+|---|---:|---:|
+| road | 61.80 | — |
+| sidewalk | 62.78 | — |
+| construction | 78.87 | — |
+| fence | 58.53 | — |
+| pole | 63.99 | — |
+| traffic-light | 56.43 | — |
+| traffic-sign | 52.48 | — |
+| vegetation | 86.94 | — |
+| terrain | 69.81 | — |
+| sky | 94.81 | — |
+| human | 65.61 | — |
+| car | 82.60 | — |
+| truck | 23.22 | — |
+| motorcycle | — | — |
+| bicycle | — | — |
+| on-rails | 72.47 | — |
+| rail-track | 90.97 | — |
+| rail-raised | 74.89 | — |
+| rail-embedded | 56.90 | — |
+| tram-track | 75.04 | — |
+| trackbed | 75.69 | — |
+
+### Provenance
+
+- Model recipe: `configs/models/hrnet_w48_ocr.yaml`
+- Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Retained seeds: RailSem19: 0.
+- EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
+- Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
+
+<!-- segmentary:generated-city-rail-benchmark:end -->

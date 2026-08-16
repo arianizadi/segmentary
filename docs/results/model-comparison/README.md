@@ -77,7 +77,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | complete | 81.03 (40,000/40,000) | 70.74 (40,000/40,000) | 67.97 (20,000/20,000) |
 | 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | 82.40 (40,000/40,000) | 71.95 (40,000/40,000) | — |
 | 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | running | 78.90 (40,000/40,000) | 69.90 (40,000/40,000) | — |
-| 7 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | running | — | — | — |
+| 7 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | running | — | 68.62 (40,000/40,000) | — |
 | 8 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | complete | 78.46 (40,000/40,000) | 68.44 (40,000/40,000) | 64.26 (20,000/20,000) |
 | 9 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | complete | 80.65 (40,000/40,000) | 70.39 (40,000/40,000) | 65.71 (20,000/20,000) |
 | 10 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | running | 78.57 (40,000/40,000) | 66.82 (40,000/40,000) | — |
@@ -124,7 +124,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 80,887,221 | 308.6 MiB | 1235.0 MiB | 42.35 | 23.53 | 24.03 | 2.48 GiB |
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | 84,609,493 | 322.8 MiB | 1292.9 MiB | 25.13 | 39.28 | 43.62 | 2.57 GiB |
 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | 58,953,423 | 224.9 MiB | 900.3 MiB | 42.16 | 23.48 | 24.69 | 2.41 GiB |
-| [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | 73,168,490 | 279.1 MiB | 1119.2 MiB | 29.24 | 33.89 | 36.02 | 1.26 GiB |
 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | 61,323,093 | 233.9 MiB | 937.2 MiB | 63.80 | 15.61 | 16.73 | 1.31 GiB |
 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | 27,362,773 | 104.4 MiB | 418.1 MiB | 50.95 | 19.21 | 22.73 | 2.25 GiB |
 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | 56,281,941 | 214.7 MiB | 860.4 MiB | 72.48 | 13.70 | 14.30 | 1.44 GiB |
@@ -168,7 +168,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 13h 28m 59s / 13.48 | 16h 57m 54s / 16.96 | 9h 25m 59s / 9.43 | 10.60 GiB |
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | 17h 59m 42s / 17.99 | 19h 38m 19s / 19.64 | — / — | 16.94 GiB |
 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | 14h 21m 30s / 14.36 | 17h 53m 41s / 17.89 | — / — | 8.88 GiB |
-| [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — / — | — / — | — / — | — |
+| [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — / — | 27h 48m 14s / 27.80 | — / — | 17.35 GiB |
 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | 7h 54m 19s / 7.91 | 13h 39m 24s / 13.66 | 6h 49m 53s / 6.83 | 6.86 GiB |
 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | 8h 10m 00s / 8.17 | 14h 17m 34s / 14.29 | 7h 09m 12s / 7.15 | 12.12 GiB |
 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | 9h 21m 34s / 9.36 | 12h 55m 26s / 12.92 | — / — | 6.70 GiB |
