@@ -36,6 +36,7 @@ import numpy as np
 import torch
 
 from .config import ExperimentConfig, config_hash, from_dict, load_yaml, to_dict
+from .engine.ema import ema_evaluation_safe
 from .eval import load_configured_checkpoint
 from .models.factory import build_model
 from .taxonomy import load_space
@@ -279,7 +280,8 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
 
     space = load_space(cfg.taxonomy_root, cfg.space)
     model = build_model(cfg.model, space.num_classes)
-    model = load_configured_checkpoint(model, cfg, args.ckpt, args.ema)
+    use_ema = bool(args.ema or (args.auto_weights and ema_evaluation_safe(model)))
+    model = load_configured_checkpoint(model, cfg, args.ckpt, use_ema)
     parameter_count = sum(parameter.numel() for parameter in model.parameters())
     trainable_parameter_count = sum(
         parameter.numel() for parameter in model.parameters() if parameter.requires_grad
@@ -324,7 +326,7 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
             "checkpoint_global_step": args.checkpoint_global_step,
             "checkpoint_bytes": checkpoint_bytes,
             "checkpoint_kind": "resume checkpoint with optimizer and EMA state",
-            "weights": "ema" if args.ema else "raw",
+            "weights": "ema" if use_ema else "raw",
             "measured_checkpoint_job_id": args.measured_job_id,
             "result_sha256": _sha256(args.result),
             "result_git_sha": result["git_sha"],
@@ -388,7 +390,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--expected-result-stage", required=True)
     parser.add_argument("--expected-seed", required=True, type=int)
     parser.add_argument("--checkpoint-global-step", required=True, type=int)
-    parser.add_argument("--ema", action="store_true")
+    weights = parser.add_mutually_exclusive_group()
+    weights.add_argument("--ema", action="store_true")
+    weights.add_argument("--auto-weights", action="store_true")
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--height", type=int, default=1024)
     parser.add_argument("--width", type=int, default=1024)

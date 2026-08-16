@@ -65,6 +65,39 @@ def test_cli_fixes_the_public_batch_one_l40s_bf16_contract() -> None:
     assert args.required_gpu_name == "NVIDIA L40S"
     assert args.device == "cuda:0"
     assert args.ema is True
+    assert args.auto_weights is False
+
+
+def test_cli_auto_weights_is_mutually_exclusive_with_explicit_ema() -> None:
+    parser = performance.build_parser()
+    required = [
+        "/runs/resolved.yaml",
+        "--model-id",
+        "model",
+        "--measured-job-id",
+        "job",
+        "--applies-to",
+        "job",
+        "--ckpt",
+        "/runs/last.ckpt",
+        "--result",
+        "/runs/results.json",
+        "--out",
+        "/runs/performance.json",
+        "--expected-git-sha",
+        "a" * 40,
+        "--expected-result-git-sha",
+        "b" * 40,
+        "--expected-result-stage",
+        "eval:railsem19:val",
+        "--expected-seed",
+        "0",
+        "--checkpoint-global-step",
+        "40000",
+    ]
+    assert parser.parse_args([*required, "--auto-weights"]).auto_weights is True
+    with pytest.raises(SystemExit):
+        parser.parse_args([*required, "--auto-weights", "--ema"])
 
 
 @pytest.mark.parametrize("raw", [None, "", "0,1", "  "])

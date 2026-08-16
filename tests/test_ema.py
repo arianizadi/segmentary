@@ -16,7 +16,13 @@ import torch
 from torch import nn
 
 from segmentary.config import EvalConfig, OptimConfig, TrainConfig
-from segmentary.engine.ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma, effective_decay
+from segmentary.engine.ema import (
+    EMA_CHECKPOINT_KEY,
+    EmaConfig,
+    ModelEma,
+    effective_decay,
+    ema_evaluation_safe,
+)
 from segmentary.engine.module import SegLitModule
 
 
@@ -29,6 +35,19 @@ def _fill(model: nn.Module, value: float) -> None:
     with torch.no_grad():
         for p in model.parameters():
             p.fill_(value)
+
+
+def test_ema_evaluation_safety_detects_running_stat_batchnorm() -> None:
+    assert not ema_evaluation_safe(_toy())
+    assert ema_evaluation_safe(nn.Sequential(nn.Conv2d(3, 4, 3), nn.GroupNorm(2, 4)))
+    assert ema_evaluation_safe(nn.BatchNorm2d(4, track_running_stats=False))
+
+
+def test_lightning_validation_uses_raw_weights_for_running_batchnorm() -> None:
+    with pytest.warns(UserWarning, match="validation uses raw weights"):
+        module = _lit()
+    assert module.ema is not None
+    assert module.validation_weights == "raw"
 
 
 def _lit(seed: int = 0, *, ema_decay: float | None = 0.9) -> SegLitModule:

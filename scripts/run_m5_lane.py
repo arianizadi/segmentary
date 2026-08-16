@@ -224,7 +224,7 @@ def eval_command(
         *_config_paths(job),
         "--ckpt",
         str(checkpoint_path(campaign, job)),
-        "--ema",
+        "--auto-weights",
         "--seed",
         str(job.seed),
         *_config_overrides(campaign),
