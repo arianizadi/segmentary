@@ -69,7 +69,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 78.90 | 86.23 | 89.45 | 87.71 | 99.77 | 96.30 | 93.09 | 84.84 |
 | RailSem19 | 40,000 / 40,000 | 69.90 | 82.00 | 81.15 | 81.52 | 99.41 | 89.81 | 82.32 | 77.76 |
-| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+| Cityscapes → RailSem19 | 20,000 / 20,000 | 67.90 | 80.29 | 80.38 | 80.16 | 99.37 | 88.00 | 80.15 | 75.19 |
 
 ### Standardized model-only inference
 
@@ -87,7 +87,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | 14h 21m 30s | 14.36 | 8.85 GiB | 5.745 |
 | RailSem19 | 17h 53m 41s | 17.89 | 8.88 GiB | 4.482 |
-| Cityscapes → RailSem19 | — | — | — | — |
+| Cityscapes → RailSem19 | — | — | — | 4.523 |
 
 ### Cityscapes class IoU
 
@@ -117,34 +117,34 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | 61.93 | — |
-| sidewalk | 62.68 | — |
-| construction | 79.62 | — |
-| fence | 57.10 | — |
-| pole | 63.45 | — |
-| traffic-light | 57.19 | — |
-| traffic-sign | 49.37 | — |
-| vegetation | 87.18 | — |
-| terrain | 70.59 | — |
-| sky | 95.90 | — |
-| human | 66.62 | — |
-| car | 81.51 | — |
-| truck | 44.39 | — |
+| road | 61.93 | 59.46 |
+| sidewalk | 62.68 | 61.41 |
+| construction | 79.62 | 78.64 |
+| fence | 57.10 | 55.51 |
+| pole | 63.45 | 62.53 |
+| traffic-light | 57.19 | 56.00 |
+| traffic-sign | 49.37 | 48.15 |
+| vegetation | 87.18 | 85.55 |
+| terrain | 70.59 | 69.06 |
+| sky | 95.90 | 92.42 |
+| human | 66.62 | 64.07 |
+| car | 81.51 | 82.52 |
+| truck | 44.39 | 47.70 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | 79.34 | — |
-| rail-track | 90.19 | — |
-| rail-raised | 73.86 | — |
-| rail-embedded | 56.51 | — |
-| tram-track | 74.98 | — |
-| trackbed | 75.66 | — |
+| on-rails | 79.34 | 77.27 |
+| rail-track | 90.19 | 87.24 |
+| rail-raised | 73.86 | 70.66 |
+| rail-embedded | 56.51 | 52.18 |
+| tram-track | 74.98 | 65.98 |
+| trackbed | 75.66 | 73.66 |
 
 ### Provenance
 
 - Model recipe: `configs/models/hf_auto_upernet_swin_tiny.yaml`
-- Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: RailSem19: 0; Cityscapes: 0.
-- Quality evaluation weights: RailSem19: —; Cityscapes: —.
+- Source revisions: `57f686737f3aa22db9a92e9880b1862227160dfd, db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Retained seeds: RailSem19: 0; Cityscapes: 0; Cityscapes → RailSem19: 0.
+- Quality evaluation weights: RailSem19: —; Cityscapes: —; Cityscapes → RailSem19: ema.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 

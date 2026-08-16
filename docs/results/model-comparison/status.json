@@ -1,11 +1,11 @@
 {
   "counts": {
-    "complete_cells": 35,
-    "complete_models": 0,
+    "complete_cells": 38,
+    "complete_models": 2,
     "complete_performance_benchmarks": 14,
     "physical_performance_benchmarks": 36,
     "physical_training_cells": 108,
-    "reported_cells": 35,
+    "reported_cells": 38,
     "total_reported_cells": 111
   },
   "models": [
@@ -84,11 +84,11 @@
       "railsem19_miou": "71.42",
       "result_origin": "trained",
       "standardized_inference": {
-        "fps": 40.92472282497999,
+        "fps": 41.27441231797539,
         "latency_ms": {
-          "mean": 24.43510746002197,
-          "p50": 24.242688179016113,
-          "p95": 25.567181015014647
+          "mean": 24.22808572769165,
+          "p50": 24.156160354614258,
+          "p95": 24.548605728149415
         },
         "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
         "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
@@ -112,12 +112,12 @@
           "warmup_iterations": 20
         },
         "provenance": {
-          "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "campaign_git_sha": "9d98ef1df2e4f1f3000422f237a751d6e0058d89",
           "checkpoint_bytes": 5039373562,
           "checkpoint_global_step": 40000,
           "checkpoint_sha256": "8ea5ae97baade3b62637a42dfc27240dc0a49ca21cad3cc317ea4b05d1919220",
-          "config_hash": "c13906682a09",
-          "config_sha256": "0fa3551a198b2cf61933fbeffd62638ffb946407114a5a6c9fddc5f318595b78",
+          "config_hash": "f83cdfa6e848",
+          "config_sha256": "319a6bf110c173e6fc85285ffd1a3a023de17ab5a123a32b7c4ba612fffeeedb",
           "measured_job_id": "eomt_dinov3_large--railsem19--seed-0",
           "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
           "result_seed": 0,
@@ -575,7 +575,7 @@
         "resident_parameter_bytes": 323548884,
         "status": "complete"
       },
-      "status": "running",
+      "status": "failed",
       "training_specification": {
         "backbone_lr": 6e-05,
         "batch_size_per_gpu": 2,
@@ -724,7 +724,7 @@
         "resident_parameter_bytes": 338437972,
         "status": "complete"
       },
-      "status": "running",
+      "status": "failed",
       "training_specification": {
         "backbone_lr": 6e-05,
         "batch_size_per_gpu": 2,
@@ -757,7 +757,7 @@
     {
       "alias_of": null,
       "cityscapes_miou": "78.90",
-      "cityscapes_to_railsem19_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "67.90",
       "iteration_progress": {
         "cityscapes": {
           "current_iterations": 40000,
@@ -780,19 +780,19 @@
           "target_iterations": 40000
         },
         "cityscapes_to_railsem19": {
-          "current_iterations": 0,
+          "current_iterations": 20000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 20000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 20000,
+            "result_total_iterations": 20000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
-              "dataset": "RailSem19 adaptation",
+              "current_iterations": 20000,
+              "dataset": "RailSem19",
               "stage": "railsem19",
               "target_iterations": 20000
             }
@@ -873,7 +873,7 @@
         "resident_parameter_bytes": 235813692,
         "status": "complete"
       },
-      "status": "running",
+      "status": "complete",
       "training_specification": {
         "backbone_lr": 6e-05,
         "batch_size_per_gpu": 2,
@@ -1353,7 +1353,7 @@
     {
       "alias_of": null,
       "cityscapes_miou": "78.57",
-      "cityscapes_to_railsem19_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "66.06",
       "iteration_progress": {
         "cityscapes": {
           "current_iterations": 40000,
@@ -1376,19 +1376,19 @@
           "target_iterations": 40000
         },
         "cityscapes_to_railsem19": {
-          "current_iterations": 0,
+          "current_iterations": 20000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 20000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 20000,
+            "result_total_iterations": 20000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
-              "dataset": "RailSem19 adaptation",
+              "current_iterations": 20000,
+              "dataset": "RailSem19",
               "stage": "railsem19",
               "target_iterations": 20000
             }
@@ -1469,7 +1469,7 @@
         "resident_parameter_bytes": 225127764,
         "status": "complete"
       },
-      "status": "running",
+      "status": "complete",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,
@@ -1724,7 +1724,7 @@
     {
       "alias_of": null,
       "cityscapes_miou": "81.48",
-      "cityscapes_to_railsem19_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "70.22",
       "iteration_progress": {
         "cityscapes": {
           "current_iterations": 40000,
@@ -1747,19 +1747,19 @@
           "target_iterations": 40000
         },
         "cityscapes_to_railsem19": {
-          "current_iterations": 0,
+          "current_iterations": 20000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 20000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 20000,
+            "result_total_iterations": 20000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
-              "dataset": "RailSem19 adaptation",
+              "current_iterations": 20000,
+              "dataset": "RailSem19",
               "stage": "railsem19",
               "target_iterations": 20000
             }
@@ -1907,11 +1907,11 @@
       "railsem19_miou": "70.70",
       "result_origin": "trained",
       "standardized_inference": {
-        "fps": 28.85274255981078,
+        "fps": 29.195113504852138,
         "latency_ms": {
-          "mean": 34.65875030517578,
-          "p50": 34.6515998840332,
-          "p95": 34.73520278930664
+          "mean": 34.25230731964111,
+          "p50": 34.2476806640625,
+          "p95": 34.322743797302245
         },
         "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
         "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
@@ -1935,12 +1935,12 @@
           "warmup_iterations": 20
         },
         "provenance": {
-          "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
+          "campaign_git_sha": "9d98ef1df2e4f1f3000422f237a751d6e0058d89",
           "checkpoint_bytes": 612082966,
           "checkpoint_global_step": 40000,
           "checkpoint_sha256": "55a44b2d5007d4d837a0cab332ae783de7d0d5625ec3c8077c4f910bc81c2da3",
-          "config_hash": "a5731a3a1a26",
-          "config_sha256": "bbe4db21ee5776b3166b1c23d0d619d93951de0e896e923d6923df75bc72dfdf",
+          "config_hash": "b8bba2966958",
+          "config_sha256": "b0a23f7aa20487a794934c986a04335bd218fae54eceb50ea2f381a9ad97e727",
           "measured_job_id": "native_convnext_tiny_channelmapper_dpt--railsem19--seed-0",
           "result_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
           "result_seed": 0,
@@ -3385,7 +3385,7 @@
         "peak_vram_bytes": null,
         "status": "pending"
       },
-      "status": "running",
+      "status": "queued",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,

@@ -74,16 +74,16 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 1 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | running | 82.96 | 71.42 | — |
 | 2 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | running | 82.74 | 72.13 | — |
 | 3 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | running | 57.26 | 53.98 | — |
-| 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | running | 81.03 | 70.74 | — |
-| 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | 82.40 | 71.95 | — |
-| 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | running | 78.90 | 69.90 | — |
+| 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | failed | 81.03 | 70.74 | — |
+| 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | failed | 82.40 | 71.95 | — |
+| 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | complete | 78.90 | 69.90 | 67.90 |
 | 7 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | running | 80.75 | 68.62 | — |
 | 8 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | running | 78.46 | 68.44 | — |
 | 9 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | running | 80.65 | 70.39 | — |
-| 10 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | running | 78.57 | 66.82 | — |
+| 10 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | complete | 78.57 | 66.82 | 66.06 |
 | 11 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | running | 79.18 | — | — |
 | 12 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | running | 79.18 | — | — |
-| 13 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | running | 81.48 | — | — |
+| 13 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | running | 81.48 | — | 70.22 |
 | 14 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | running | 80.72 | 70.70 | — |
 | 15 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | running | 67.25 | — | — |
 | 16 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | running | 76.31 | 66.41 | — |
@@ -96,7 +96,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 23 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | running | 74.81 | — | — |
 | 24 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | queued | — | — | — |
 | 25 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | queued | — | — | — |
-| 26 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | running | — | — | — |
+| 26 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | queued | — | — | — |
 | 27 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | queued | — | — | — |
 | 28 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | queued | — | — | — |
 | 29 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | queued | — | — | — |
@@ -118,7 +118,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 
 | model | weights | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak VRAM (reserved, excl. context) |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | ema | 314,917,910 | 1201.3 MiB | 4805.9 MiB | 40.92 | 24.24 | 25.57 | 3.13 GiB |
+| [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | ema | 314,917,910 | 1201.3 MiB | 4805.9 MiB | 41.27 | 24.16 | 24.55 | 3.13 GiB |
 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | ema | 316,580,886 | 1207.7 MiB | 4831.3 MiB | 45.34 | 22.00 | 22.42 | 3.12 GiB |
 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | ema | 161,500,245 | 616.1 MiB | 2355.5 MiB | 2.51 | 396.55 | 413.88 | 3.77 GiB |
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | ema | 80,887,221 | 308.6 MiB | 1235.0 MiB | 42.35 | 23.53 | 24.03 | 2.48 GiB |
@@ -131,7 +131,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | — | — | — | — | — | — | — | — |
 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | — | — | — | — | — | — | — | — |
 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | — | — | — | — | — | — | — | — |
-| [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | ema | 38,230,389 | 145.8 MiB | 583.7 MiB | 28.85 | 34.65 | 34.74 | 1.95 GiB |
+| [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | ema | 38,230,389 | 145.8 MiB | 583.7 MiB | 29.20 | 34.25 | 34.32 | 1.95 GiB |
 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | — | — | — | — | — | — | — | — |
 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | ema | 40,351,925 | 153.9 MiB | 616.5 MiB | 128.07 | 7.38 | 9.29 | 0.82 GiB |
 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | — | — | — | — | — | — | — | — |
@@ -211,4 +211,4 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 - [`status.json`](status.json): machine-readable scope and completion state.
 - [`records/`](records/): full class IoUs, retained seeds, resources, and provenance.
 
-Campaign source SHA: `db1e951f289fc6c09294e9a019945695ad2d94d2`.
+Campaign source SHA: `9d98ef1df2e4f1f3000422f237a751d6e0058d89`.

@@ -10,11 +10,11 @@
     },
     "standardized_inference": {
       "status": "complete",
-      "fps": 28.85274255981078,
+      "fps": 29.195113504852138,
       "latency_ms": {
-        "mean": 34.65875030517578,
-        "p50": 34.6515998840332,
-        "p95": 34.73520278930664
+        "mean": 34.25230731964111,
+        "p50": 34.2476806640625,
+        "p95": 34.322743797302245
       },
       "peak_vram_bytes": 2090860544,
       "peak_reserved_bytes": 2090860544,
@@ -40,9 +40,9 @@
       },
       "provenance": {
         "measured_job_id": "native_convnext_tiny_channelmapper_dpt--railsem19--seed-0",
-        "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
-        "config_hash": "a5731a3a1a26",
-        "config_sha256": "bbe4db21ee5776b3166b1c23d0d619d93951de0e896e923d6923df75bc72dfdf",
+        "campaign_git_sha": "9d98ef1df2e4f1f3000422f237a751d6e0058d89",
+        "config_hash": "b8bba2966958",
+        "config_sha256": "b0a23f7aa20487a794934c986a04335bd218fae54eceb50ea2f381a9ad97e727",
         "checkpoint_sha256": "55a44b2d5007d4d837a0cab332ae783de7d0d5625ec3c8077c4f910bc81c2da3",
         "checkpoint_global_step": 40000,
         "checkpoint_bytes": 612082966,
