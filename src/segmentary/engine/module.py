@@ -9,9 +9,10 @@ Two things worth knowing before editing:
 
   * Training is driven by ``max_steps``, never epochs. Datasets can contain very
     different numbers of samples, so epoch budgets would make stages incomparable.
-  * Validation runs at native resolution through sliding-window inference, using
-    EMA weights when EMA is enabled. Native validation images may be larger than
-    training crops; scoring only on crops would report a different task.
+  * Validation runs at native resolution through sliding-window inference. EMA
+    weights are used only when the model has no running-stat BatchNorm state;
+    otherwise raw weights avoid pairing EMA parameters with incompatible live
+    BN statistics. Native validation images may be larger than training crops.
 """
 
 from __future__ import annotations
@@ -31,7 +32,7 @@ from ..models.outputs import SegmentationOutput
 from ..tasks import active_for_loss, validate_canonical_active, validate_task_space
 from ..taxonomy import LabelSpace
 from .boundary import BoundaryConfig, BoundaryF1
-from .ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma
+from .ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma, ema_evaluation_safe
 from .inference import InferenceConfig, inference, prediction_from_inference
 from .losses import SegmentationLoss
 from .metrics import ConfusionMatrix
@@ -188,6 +189,15 @@ class SegLitModule(L.LightningModule):
         self.ema: ModelEma | None = None
         if train_cfg.ema_decay is not None:
             self.ema = ModelEma(model, EmaConfig(decay=train_cfg.ema_decay))
+        self.validation_weights = (
+            "ema" if self.ema is not None and ema_evaluation_safe(model) else "raw"
+        )
+        if self.ema is not None and self.validation_weights == "raw":
+            warnings.warn(
+                "model contains running-stat BatchNorm; validation uses raw weights because "
+                "the saved EMA parameters have no separately recalibrated BN statistics",
+                stacklevel=2,
+            )
 
         self._cm: ConfusionMatrix | None = None
         self._bf1: BoundaryF1 | None = None
@@ -383,9 +393,13 @@ class SegLitModule(L.LightningModule):
             task=task,
             threshold=self.eval_cfg.threshold,
         )
-        # EMA weights are the ones we report; swapped() restores on exit even if
-        # inference raises.
-        context = self.ema.swapped(self.model) if self.ema is not None else _null_context()
+        # EMA parameters are safe only when the model has no running-stat BN.
+        # swapped() restores on exit even if inference raises.
+        context = (
+            self.ema.swapped(self.model)
+            if self.ema is not None and self.validation_weights == "ema"
+            else _null_context()
+        )
         with context:
             logits = inference(self.model, batch["image"], self.space.num_classes, infer_cfg)
 

@@ -165,7 +165,8 @@ def test_commands_record_effective_batch_16_unique_outputs_and_common_eval(tmp_p
         assert values["train.devices"] * values["train.batch_size"] * values["train.accum"] == 16
 
         assert evaluate[:3] == [sys.executable, "-m", "segmentary.eval"]
-        assert "--ema" in evaluate
+        assert "--auto-weights" in evaluate
+        assert "--ema" not in evaluate
         assert _set_values(evaluate) == overrides
         assert _option(evaluate, "--dataset") == "railsem19"
         assert _option(evaluate, "--root") == str(RAILSEM19_ROOT)

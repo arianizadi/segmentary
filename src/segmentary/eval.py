@@ -44,7 +44,7 @@ from .data.loaders import aug_from_spec, build_dataset, input_normalization, loa
 from .data.mixed import collate
 from .data.transforms import build_eval_transform
 from .engine.boundary import BoundaryConfig, BoundaryF1
-from .engine.ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma
+from .engine.ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma, ema_evaluation_safe
 from .engine.inference import InferenceConfig, inference, prediction_from_inference
 from .engine.metrics import ConfusionMatrix
 from .models.factory import build_model
@@ -153,7 +153,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--stage", default=None, help="which stage's data to use (default: last)")
     ap.add_argument("--tta", action="store_true", help="multi-scale + flip; a reported variant")
     ap.add_argument("--scales", type=float, nargs="+", default=[0.75, 1.0, 1.25, 1.5])
-    ap.add_argument("--ema", action="store_true", help="score the EMA weights")
+    weights = ap.add_mutually_exclusive_group()
+    weights.add_argument("--ema", action="store_true", help="explicitly score EMA weights")
+    weights.add_argument(
+        "--auto-weights",
+        action="store_true",
+        help="use EMA unless running-stat BatchNorm requires raw weights",
+    )
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--device", default="cuda:0")
     ap.add_argument("--limit", type=int, default=None)
@@ -235,7 +241,8 @@ def main(argv: list[str] | None = None) -> int:
 
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     model = build_model(cfg.model, space.num_classes)
-    model = load_configured_checkpoint(model, cfg, args.ckpt, args.ema)
+    use_ema = bool(args.ema or (args.auto_weights and ema_evaluation_safe(model)))
+    model = load_configured_checkpoint(model, cfg, args.ckpt, use_ema)
     model = model.to(device).eval()
 
     transform = build_eval_transform(aug_from_spec(cfg.aug, model))
@@ -301,7 +308,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"evaluating {args.ckpt}")
     print(f"  dataset : {dataset.describe()}  split={split}")
     print(
-        f"  weights : {'EMA' if args.ema else 'raw'}   TTA: {'on ' + str(args.scales) if args.tta else 'off'}"
+        f"  weights : {'EMA' if use_ema else 'raw'}   TTA: {'on ' + str(args.scales) if args.tta else 'off'}"
     )
     print(
         f"  protocol: {'sliding window ' + str(infer_cfg.window) + ' stride ' + str(infer_cfg.stride) if infer_cfg.sliding_window else 'whole image'}"
@@ -343,7 +350,7 @@ def main(argv: list[str] | None = None) -> int:
         "data": to_dict(data),
         "split": split,
         "num_workers": num_workers,
-        "weights": "ema" if args.ema else "raw",
+        "weights": "ema" if use_ema else "raw",
         "tta": {
             "enabled": bool(args.tta),
             "scales": list(infer_cfg.scales),
@@ -377,7 +384,7 @@ def main(argv: list[str] | None = None) -> int:
             config=record_config,
             env=record_env,
             dataset_sizes={"eval": len(dataset)},
-            notes=f"checkpoint={args.ckpt} ema={args.ema} tta={args.tta}",
+            notes=f"checkpoint={args.ckpt} ema={use_ema} tta={args.tta}",
         ),
     )
     print(f"\nwrote {out}")

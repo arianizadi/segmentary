@@ -2224,7 +2224,7 @@ def _evaluation_command(
         str(config),
         "--ckpt",
         str(checkpoint),
-        "--ema",
+        "--auto-weights",
         "--seed",
         str(job["seed"]),
         "--dataset",
@@ -2317,7 +2317,7 @@ def _commands(
         str(job["seed"]),
         "--checkpoint-global-step",
         str(_expected_final_step(load_yaml(paths["config"]), job["final_stage"])),
-        "--ema",
+        "--auto-weights",
         "--device",
         "cuda:0",
     ]
@@ -2674,6 +2674,16 @@ def validate_performance(
     latency = measurements.get("latency") if isinstance(measurements, dict) else None
     environment = payload.get("environment")
     applies_to = _performance_applies_to(record, job)
+    evaluation_result = load_results(common_results).to_dict()
+    result_config = evaluation_result.get("config")
+    evaluation_config = result_config.get("evaluation") if isinstance(result_config, dict) else None
+    expected_weights = (
+        evaluation_config.get("weights") if isinstance(evaluation_config, dict) else None
+    )
+    if expected_weights not in ("raw", "ema"):
+        raise CampaignError(
+            f"evaluation result {common_results} records no trusted raw/ema weight source"
+        )
     expected = {
         "schema_version": (payload.get("schema_version"), 1),
         "status": (payload.get("status"), "complete"),
@@ -2721,7 +2731,7 @@ def validate_performance(
         ),
         "source.result_git_sha": (
             source.get("result_git_sha") if isinstance(source, dict) else None,
-            load_results(common_results).to_dict()["git_sha"],
+            evaluation_result["git_sha"],
         ),
         "source.result_stage": (
             source.get("result_stage") if isinstance(source, dict) else None,
@@ -2733,7 +2743,7 @@ def validate_performance(
         ),
         "source.weights": (
             source.get("weights") if isinstance(source, dict) else None,
-            "ema",
+            expected_weights,
         ),
         "hardware.gpu_name": (
             hardware.get("gpu_name") if isinstance(hardware, dict) else None,

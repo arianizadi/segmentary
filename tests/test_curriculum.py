@@ -261,6 +261,34 @@ def test_load_backbone_weights_prefers_the_reported_ema_shadow(tmp_path: Path):
     assert all(parameter.eq(9.0).all() for parameter in target.parameters())
 
 
+def test_load_backbone_weights_uses_raw_state_for_running_batchnorm(tmp_path: Path):
+    raw = _tiny_model(seed=1)
+    raw.model.backbone.norm = nn.BatchNorm2d(4)
+    _fill_distinct(raw)
+    shadow_source = _tiny_model(seed=2)
+    shadow_source.model.backbone.norm = nn.BatchNorm2d(4)
+    with torch.no_grad():
+        for parameter in shadow_source.parameters():
+            parameter.fill_(9.0)
+    state = {f"model.{name}": tensor.detach().clone() for name, tensor in raw.state_dict().items()}
+    checkpoint = tmp_path / "batchnorm-stage-one.ckpt"
+    torch.save(
+        {
+            "state_dict": state,
+            EMA_CHECKPOINT_KEY: ModelEma(shadow_source, EmaConfig()).state_dict(),
+        },
+        checkpoint,
+    )
+    target = _tiny_model(seed=3)
+    target.model.backbone.norm = nn.BatchNorm2d(4)
+
+    load_backbone_weights(target, checkpoint, reset_head=False)
+
+    assert all(
+        torch.equal(tensor, raw.state_dict()[name]) for name, tensor in target.state_dict().items()
+    )
+
+
 def test_load_backbone_weights_rejects_any_uninitialised_parameter(tmp_path: Path):
     source = _tiny_model(seed=3)
     checkpoint = tmp_path / "incomplete.ckpt"

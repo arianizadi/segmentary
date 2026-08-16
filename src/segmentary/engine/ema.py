@@ -1,8 +1,11 @@
 """Exponential moving average of model weights, with a ramped decay.
 
-The EMA weights are what we actually evaluate and ship: on segmentation they are
-worth roughly half a point of mIoU for free, and they make val curves readable
-instead of noisy. Two details decide whether that happens:
+EMA weights can improve segmentation models whose inference state is fully
+represented by their parameters. Models with running-stat BatchNorm are a
+different case: the live BN statistics are calibrated for the live parameters,
+not for a long-horizon EMA parameter shadow. Segmentary therefore evaluates
+those models with raw weights unless their BN statistics are recalibrated by an
+explicit external procedure. Two details decide whether ordinary EMA works:
 
 * The decay is ramped from ~0 at step 0 (see :func:`effective_decay`). A constant
   0.9998 has a ~5000-step horizon, so for the first few thousand iterations the
@@ -84,13 +87,29 @@ def effective_decay(cfg: EmaConfig, step: int) -> float:
 def _unwrap(model: nn.Module) -> nn.Module:
     inner = model
     while True:
-        if isinstance(inner, (nn.parallel.DistributedDataParallel, nn.DataParallel)):
+        if isinstance(inner, nn.parallel.DistributedDataParallel | nn.DataParallel):
             inner = inner.module
         elif hasattr(inner, "_orig_mod"):  # torch.compile's OptimizedModule
             # nn.Module.__getattr__ is typed Tensor | Module; this one is a Module.
             inner = cast(nn.Module, inner._orig_mod)
         else:
             return inner
+
+
+def ema_evaluation_safe(model: nn.Module) -> bool:
+    """Whether the EMA shadow can be evaluated without state recalibration.
+
+    BatchNorm running statistics are accumulated under the live parameters.
+    Installing long-horizon EMA parameters beside those short-horizon buffers
+    can severely depress otherwise healthy validation metrics. Explicit EMA
+    evaluation remains available to research callers, but unattended training,
+    transfer, and benchmarking use raw weights for such models.
+    """
+    inner = _unwrap(model)
+    return not any(
+        isinstance(module, nn.modules.batchnorm._BatchNorm) and module.track_running_stats
+        for module in inner.modules()
+    )
 
 
 _HALF_WRITTEN = "writing anyway would leave the model half-EMA, half-live"

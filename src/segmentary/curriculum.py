@@ -47,7 +47,7 @@ from .data.loaders import (
     validation_active_mask,
 )
 from .data.mixed import MixedDataset, as_dataset
-from .engine.ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma
+from .engine.ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma, ema_evaluation_safe
 from .engine.losses import LossConfig, SegmentationLoss
 from .engine.module import SegLitModule
 from .engine.query_loss import QuerySegmentationLoss
@@ -297,9 +297,9 @@ def load_backbone_weights(
     """Load the weights a previous stage evaluated, then optionally reset its head.
 
     New checkpoints carry a separate EMA shadow because it is not an nn.Module.
-    That shadow is the model training validates and reports, so it is also the
-    correct state to hand to the next stage.  Raw loading remains as an explicit
-    compatibility path for legacy checkpoints produced before EMA persistence.
+    It is preferred only when it can be evaluated without BatchNorm-statistic
+    recalibration. Running-stat BatchNorm models use their raw state, matching
+    training validation and avoiding an EMA-parameter/live-buffer mismatch.
     """
     state = read_checkpoint(ckpt) if checkpoint_state is None else checkpoint_state
     if reset_head:
@@ -346,7 +346,7 @@ def load_backbone_weights(
                 )
             reset_keys.update(extra_reset_keys)
 
-        if EMA_CHECKPOINT_KEY in state:
+        if EMA_CHECKPOINT_KEY in state and ema_evaluation_safe(model):
             ema_state = state[EMA_CHECKPOINT_KEY]
             if not isinstance(ema_state, dict):
                 raise RuntimeError(f"invalid EMA state in {ckpt}: expected a mapping")
@@ -402,7 +402,7 @@ def load_backbone_weights(
             )
         return
 
-    if EMA_CHECKPOINT_KEY in state:
+    if EMA_CHECKPOINT_KEY in state and ema_evaluation_safe(model):
         ema = ModelEma(model, EmaConfig())
         try:
             ema.load_state_dict(state[EMA_CHECKPOINT_KEY])
@@ -583,6 +583,7 @@ def run_stage(
     record_config = to_dict(cfg)
     record_env = collect_env()
     record_env["input_normalization"] = input_normalization(model)
+    record_env["validation_weights"] = lit.validation_weights
     record = RunRecord(
         name=cfg.name,
         stage=stage.name,
@@ -604,7 +605,10 @@ def run_stage(
             # this field dict[str, int] and the table generator reads it as one.
             **{f"train:{d.name}": len(d) for d in _members(train_dataset)},
         },
-        notes=f"stage {stage.name} of curriculum {cfg.name}",
+        notes=(
+            f"stage {stage.name} of curriculum {cfg.name}; "
+            f"validation_weights={lit.validation_weights}"
+        ),
     )
     results_path = out_dir / "results.json"
     if trainer.is_global_zero:

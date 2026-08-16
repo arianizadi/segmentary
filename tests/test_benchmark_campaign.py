@@ -318,6 +318,8 @@ def test_transfer_reuses_city_checkpoint_and_only_schedules_target_iterations(
     }
     commands = campaign._milestone_evaluation_commands(record, transfer, paths)
     assert list(commands) == ["20000"]
+    assert "--auto-weights" in commands["20000"]
+    assert "--ema" not in commands["20000"]
     assert commands["20000"][commands["20000"].index("--ckpt") + 1] == str(
         paths["milestone_checkpoints"]["20000"]
     )
@@ -574,6 +576,9 @@ def test_exactly_one_rail_performance_owner_per_physical_model(
         }
         benchmark = campaign._commands(record, job, paths)[2]
         assert bool(benchmark) is bool(job["performance_owner"])
+        if benchmark:
+            assert "--auto-weights" in benchmark
+            assert "--ema" not in benchmark
 
 
 def test_stage_iters_none_uses_train_default() -> None:
