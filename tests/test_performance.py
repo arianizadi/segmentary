@@ -100,6 +100,48 @@ def test_cli_auto_weights_is_mutually_exclusive_with_explicit_ema() -> None:
         parser.parse_args([*required, "--auto-weights", "--ema"])
 
 
+@pytest.mark.parametrize(
+    ("recorded", "expected"),
+    [("raw", False), ("ema", True)],
+)
+def test_auto_weights_uses_the_exact_recorded_evaluation_endpoint(
+    recorded: str, expected: bool
+) -> None:
+    result = {"config": {"evaluation": {"weights": recorded}}}
+
+    assert (
+        performance.benchmark_uses_ema(
+            result,
+            explicit_ema=not expected,
+            auto_weights=True,
+        )
+        is expected
+    )
+
+
+@pytest.mark.parametrize(
+    "result",
+    [
+        {},
+        {"config": None},
+        {"config": {}},
+        {"config": {"evaluation": None}},
+        {"config": {"evaluation": {}}},
+        {"config": {"evaluation": {"weights": "auto"}}},
+    ],
+)
+def test_auto_weights_rejects_missing_or_untrusted_result_endpoint(
+    result: dict[str, object],
+) -> None:
+    with pytest.raises(performance.PerformanceError, match=r"config\.evaluation\.weights"):
+        performance.benchmark_uses_ema(result, explicit_ema=False, auto_weights=True)
+
+
+def test_explicit_weight_choice_does_not_require_evaluation_metadata() -> None:
+    assert performance.benchmark_uses_ema({}, explicit_ema=True, auto_weights=False)
+    assert not performance.benchmark_uses_ema({}, explicit_ema=False, auto_weights=False)
+
+
 @pytest.mark.parametrize("raw", [None, "", "0,1", "  "])
 def test_physical_visibility_requires_one_isolated_gpu(
     monkeypatch: pytest.MonkeyPatch, raw: str | None

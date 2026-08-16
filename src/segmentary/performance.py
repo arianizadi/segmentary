@@ -37,7 +37,6 @@ import numpy as np
 import torch
 
 from .config import ExperimentConfig, config_hash, from_dict, load_yaml, to_dict
-from .engine.ema import ema_evaluation_safe
 from .eval import load_configured_checkpoint
 from .models.factory import build_model
 from .taxonomy import load_space
@@ -217,6 +216,26 @@ def _gpu_uuid(physical_token: str) -> str | None:
     return value or None
 
 
+def benchmark_uses_ema(result: dict[str, Any], *, explicit_ema: bool, auto_weights: bool) -> bool:
+    """Resolve the benchmark endpoint without reinterpreting evaluation policy.
+
+    ``--auto-weights`` means "benchmark the exact endpoint reported by the
+    quality evaluation."  Inferring again from the constructed model can drift
+    from that immutable record, especially when a model contains BatchNorm but
+    its accepted evaluation explicitly used EMA parameters.
+    """
+    if not auto_weights:
+        return explicit_ema
+    config = result.get("config")
+    evaluation = config.get("evaluation") if isinstance(config, dict) else None
+    weights = evaluation.get("weights") if isinstance(evaluation, dict) else None
+    if weights not in {"raw", "ema"}:
+        raise PerformanceError(
+            "--auto-weights requires config.evaluation.weights to be exactly 'raw' or 'ema'"
+        )
+    return weights == "ema"
+
+
 def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
     if not args.config.is_file():
         raise PerformanceError(f"config does not exist: {args.config}")
@@ -281,7 +300,11 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
 
     space = load_space(cfg.taxonomy_root, cfg.space)
     model = build_model(cfg.model, space.num_classes)
-    use_ema = bool(args.ema or (args.auto_weights and ema_evaluation_safe(model)))
+    use_ema = benchmark_uses_ema(
+        result,
+        explicit_ema=bool(args.ema),
+        auto_weights=bool(args.auto_weights),
+    )
     model = load_configured_checkpoint(model, cfg, args.ckpt, use_ema)
     parameter_count = sum(parameter.numel() for parameter in model.parameters())
     trainable_parameter_count = sum(
