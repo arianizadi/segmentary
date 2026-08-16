@@ -53,16 +53,16 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 80.65 | 87.77 | 90.05 | 88.83 | 99.78 | 96.46 | 93.40 | 86.77 |
-| RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| RailSem19 | 40,000 / 40,000 | 70.39 | 81.73 | 82.20 | 81.90 | 99.41 | 90.06 | 82.61 | 78.41 |
 | Cityscapes → RailSem19 | 20,000 / 20,000 | 65.71 | 79.16 | 78.16 | 78.43 | 99.29 | 87.97 | 79.51 | 73.56 |
 
 ### Standardized model-only inference
 
-Pending one measurement from this model's RailSem19-only 21-class EMA checkpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+Measured once from this model's RailSem19-only 21-class EMA checkpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
 
 | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
 |---:|---:|---:|---:|---:|---:|---:|
-| — | — | — | — | — | — | — |
+| 27,362,773 | 104.4 MiB | 418.1 MiB | 50.95 | 19.21 ms | 22.73 ms | 2.25 GiB |
 
 ### Training and full-pipeline evaluation cost
 
@@ -71,7 +71,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
 | Cityscapes | 8h 10m 00s | 8.17 | 12.12 GiB | 6.331 |
-| RailSem19 | — | — | — | — |
+| RailSem19 | 14h 17m 34s | 14.29 | 11.73 GiB | 5.037 |
 | Cityscapes → RailSem19 | 7h 09m 12s | 7.15 | 11.73 GiB | 5.042 |
 
 ### Cityscapes class IoU
@@ -102,33 +102,33 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | — | 56.11 |
-| sidewalk | — | 58.40 |
-| construction | — | 77.50 |
-| fence | — | 53.43 |
-| pole | — | 61.67 |
-| traffic-light | — | 52.79 |
-| traffic-sign | — | 48.60 |
-| vegetation | — | 86.02 |
-| terrain | — | 64.99 |
-| sky | — | 95.43 |
-| human | — | 65.52 |
-| car | — | 79.81 |
-| truck | — | 41.99 |
+| road | 62.31 | 56.11 |
+| sidewalk | 62.97 | 58.40 |
+| construction | 79.76 | 77.50 |
+| fence | 58.21 | 53.43 |
+| pole | 63.84 | 61.67 |
+| traffic-light | 56.91 | 52.79 |
+| traffic-sign | 51.03 | 48.60 |
+| vegetation | 87.76 | 86.02 |
+| terrain | 70.36 | 64.99 |
+| sky | 96.00 | 95.43 |
+| human | 66.07 | 65.52 |
+| car | 81.16 | 79.81 |
+| truck | 46.89 | 41.99 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | — | 79.10 |
-| rail-track | — | 84.14 |
-| rail-raised | — | 65.82 |
-| rail-embedded | — | 48.76 |
-| tram-track | — | 57.99 |
-| trackbed | — | 70.51 |
+| on-rails | 83.29 | 79.10 |
+| rail-track | 90.26 | 84.14 |
+| rail-raised | 73.44 | 65.82 |
+| rail-embedded | 56.68 | 48.76 |
+| tram-track | 74.63 | 57.99 |
+| trackbed | 75.83 | 70.51 |
 
 ### Provenance
 
 - Model recipe: `configs/models/segformer_b2.yaml`
 - Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0.
+- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0; RailSem19: 0.
 - EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
