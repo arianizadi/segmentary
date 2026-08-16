@@ -390,7 +390,7 @@
       "evaluation": {
         "split": "val",
         "images": 850,
-        "weights": "EMA",
+        "weights": "ema",
         "sliding_window": [
           1024,
           1024

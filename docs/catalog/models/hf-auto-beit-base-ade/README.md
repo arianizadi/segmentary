@@ -75,7 +75,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 57.26 | 66.22 | 78.55 | 70.28 | 99.45 | 91.60 | 85.00 | 64.72 |
 | RailSem19 | 40,000 / 40,000 | 53.98 | 66.41 | 73.14 | 68.73 | 98.92 | 82.06 | 70.72 | 61.72 |
-| Cityscapes → RailSem19 | 20,000 / 20,000 | 49.89 | 63.55 | 69.82 | 65.05 | 98.80 | 79.78 | 67.98 | 58.35 |
+| Cityscapes → RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
 
 ### Transfer checkpoints
 
@@ -85,11 +85,11 @@ The cumulative count includes the reused 40,000-step Cityscapes source. The hist
 |---|---:|---:|---:|---:|
 | historical 0.1x backbone + 0.1x head groups | 20,000 | 60,000 | 49.89 | 58.35 |
 | corrected 0.1x backbone + 1.0x head groups | 20,000 | 60,000 | — | — |
-| corrected 0.1x backbone + 1.0x head groups | 40,000 | 80,000 | 49.89 | 58.35 |
+| corrected 0.1x backbone + 1.0x head groups | 40,000 | 80,000 | — | — |
 
 ### Standardized model-only inference
 
-Measured once from this model's RailSem19-only 21-class EMA checkpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+Measured once from this model's RailSem19-only 21-class ema endpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
 
 | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
 |---:|---:|---:|---:|---:|---:|---:|
@@ -103,7 +103,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | 14h 40m 07s | 14.67 | 19.53 GiB | 0.775 |
 | RailSem19 | 21h 55m 28s | 21.92 | 16.06 GiB | 0.406 |
-| Cityscapes → RailSem19 | 11h 00m 38s | 11.01 | 16.06 GiB | 0.407 |
+| Cityscapes → RailSem19 | — | — | — | — |
 
 ### Cityscapes class IoU
 
@@ -133,34 +133,35 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | 48.45 | 43.54 |
-| sidewalk | 47.34 | 40.01 |
-| construction | 67.81 | 66.15 |
-| fence | 29.28 | 30.75 |
-| pole | 46.77 | 43.63 |
-| traffic-light | 37.47 | 39.00 |
-| traffic-sign | 30.69 | 30.85 |
-| vegetation | 78.95 | 79.77 |
-| terrain | 54.67 | 55.04 |
-| sky | 93.75 | 92.85 |
-| human | 50.08 | 53.64 |
-| car | 69.29 | 62.98 |
-| truck | 37.94 | 27.89 |
+| road | 48.45 | — |
+| sidewalk | 47.34 | — |
+| construction | 67.81 | — |
+| fence | 29.28 | — |
+| pole | 46.77 | — |
+| traffic-light | 37.47 | — |
+| traffic-sign | 30.69 | — |
+| vegetation | 78.95 | — |
+| terrain | 54.67 | — |
+| sky | 93.75 | — |
+| human | 50.08 | — |
+| car | 69.29 | — |
+| truck | 37.94 | — |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | 65.34 | 60.12 |
-| rail-track | 63.72 | 45.69 |
-| rail-raised | 57.77 | 51.42 |
-| rail-embedded | 39.28 | 38.54 |
-| tram-track | 49.41 | 34.33 |
-| trackbed | 57.56 | 51.74 |
+| on-rails | 65.34 | — |
+| rail-track | 63.72 | — |
+| rail-raised | 57.77 | — |
+| rail-embedded | 39.28 | — |
+| tram-track | 49.41 | — |
+| trackbed | 57.56 | — |
 
 ### Provenance
 
 - Model recipe: `configs/models/hf_auto_beit_base_ade.yaml`
 - Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: Cityscapes: 0; RailSem19: 0; Cityscapes → RailSem19: 0.
-- EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
+- Retained seeds: Cityscapes: 0; RailSem19: 0.
+- Quality evaluation weights: Cityscapes: —; RailSem19: —.
+- Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
 <!-- segmentary:generated-city-rail-benchmark:end -->

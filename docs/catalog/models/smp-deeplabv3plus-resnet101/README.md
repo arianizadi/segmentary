@@ -71,7 +71,7 @@ The cumulative count includes the reused 40,000-step Cityscapes source. The hist
 
 ### Standardized model-only inference
 
-Pending one measurement from this model's RailSem19-only 21-class EMA checkpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+Pending one measurement from this model's RailSem19-only 21-class recorded raw/EMA endpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
 
 | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
 |---:|---:|---:|---:|---:|---:|---:|
@@ -116,7 +116,8 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 - Model recipe: `configs/models/smp_deeplabv3plus_resnet101.yaml`
 - Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7`
 - Retained seeds: Cityscapes: 0.
-- EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
+- Quality evaluation weights: Cityscapes: —.
+- Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 - Caveat: Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final EMA checkpoint and standalone validation evidence are retained.
 

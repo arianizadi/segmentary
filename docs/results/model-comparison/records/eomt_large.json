@@ -2,7 +2,7 @@
   "schema_version": 2,
   "model_id": "eomt_large",
   "model_config": "configs/models/eomt_large.yaml",
-  "status": "complete",
+  "status": "running",
   "model_profile": {
     "parameter_count": {
       "cityscapes19": null,
@@ -23,7 +23,7 @@
         "float32": 316580886
       },
       "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
-      "note": "Model-only public forward measured once from the RailSem19-only 21-class EMA checkpoint and linked across this model's quality protocols.",
+      "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
       "protocol": {
         "gpu_model": "NVIDIA L40S",
         "backend": "pytorch",
@@ -761,7 +761,7 @@
       "evaluation": {
         "split": "val",
         "images": 850,
-        "weights": "EMA",
+        "weights": "ema",
         "sliding_window": [
           1024,
           1024

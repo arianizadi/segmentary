@@ -193,7 +193,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 78.73 | 86.46 | 88.78 | 87.51 | 99.75 | 95.92 | 92.44 | 84.09 |
 | RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
-| Cityscapes → RailSem19 | 20,000 / 20,000 | 61.77 | 74.98 | 76.84 | 75.05 | 99.20 | 86.42 | 77.18 | 70.52 |
+| Cityscapes → RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
 
 ### Transfer checkpoints
 
@@ -203,11 +203,11 @@ The cumulative count includes the reused 40,000-step Cityscapes source. The hist
 |---|---:|---:|---:|---:|
 | historical 0.1x backbone + 0.1x head groups | 20,000 | 60,000 | 61.77 | 70.52 |
 | corrected 0.1x backbone + 1.0x head groups | 20,000 | 60,000 | — | — |
-| corrected 0.1x backbone + 1.0x head groups | 40,000 | 80,000 | 61.77 | 70.52 |
+| corrected 0.1x backbone + 1.0x head groups | 40,000 | 80,000 | — | — |
 
 ### Standardized model-only inference
 
-Pending one measurement from this model's RailSem19-only 21-class EMA checkpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+Pending one measurement from this model's RailSem19-only 21-class recorded raw/EMA endpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
 
 | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
 |---:|---:|---:|---:|---:|---:|---:|
@@ -221,7 +221,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | 12h 42m 58s | 12.72 | 7.09 GiB | 5.398 |
 | RailSem19 | — | — | — | — |
-| Cityscapes → RailSem19 | 11h 27m 30s | 11.46 | 8.59 GiB | 4.452 |
+| Cityscapes → RailSem19 | — | — | — | — |
 
 ### Cityscapes class IoU
 
@@ -247,38 +247,13 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | motorcycle | 66.80 |
 | bicycle | 77.68 |
 
-### RailSem19 class IoU
-
-| class | RailSem19 | Cityscapes → RailSem19 |
-|---|---:|---:|
-| road | — | 53.09 |
-| sidewalk | — | 55.68 |
-| construction | — | 74.31 |
-| fence | — | 49.79 |
-| pole | — | 58.44 |
-| traffic-light | — | 49.86 |
-| traffic-sign | — | 45.74 |
-| vegetation | — | 84.41 |
-| terrain | — | 61.81 |
-| sky | — | 94.98 |
-| human | — | 63.45 |
-| car | — | 75.94 |
-| truck | — | 23.09 |
-| motorcycle | — | — |
-| bicycle | — | — |
-| on-rails | — | 74.96 |
-| rail-track | — | 79.45 |
-| rail-raised | — | 65.49 |
-| rail-embedded | — | 46.11 |
-| tram-track | — | 50.13 |
-| trackbed | — | 66.85 |
-
 ### Provenance
 
 - Model recipe: `configs/models/native_resnet50_fpn_ocr.yaml`
 - Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0.
-- EMA quality evaluation uses 1024x1024 sliding windows, stride 768, no TTA.
+- Retained seeds: Cityscapes: 0.
+- Quality evaluation weights: Cityscapes: —.
+- Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
 <!-- segmentary:generated-city-rail-benchmark:end -->

@@ -23,7 +23,7 @@
         "float32": 39638869
       },
       "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
-      "note": "Model-only public forward measured once from the RailSem19-only 21-class EMA checkpoint and linked across this model's quality protocols.",
+      "note": "Model-only public forward measured once from the RailSem19-only 21-class ema endpoint and linked across this model's quality protocols.",
       "protocol": {
         "gpu_model": "NVIDIA L40S",
         "backend": "pytorch",
