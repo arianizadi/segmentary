@@ -85,7 +85,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 12 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | complete | 79.18 | 67.82 | 67.25 |
 | 13 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | running | 81.48 | — | 70.22 |
 | 14 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | complete | 80.72 | 70.70 | 70.31 |
-| 15 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | running | 67.25 | — | 56.02 |
+| 15 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | complete | 67.25 | 60.17 | 56.02 |
 | 16 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | complete | 76.31 | 66.41 | 64.68 |
 | 17 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | running | 78.73 | — | 66.31 |
 | 18 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | running | 72.45 | 64.56 | — |
@@ -132,7 +132,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | raw | 45,674,853 | 174.2 MiB | 698.5 MiB | 112.74 | 8.69 | 9.70 | 0.66 GiB |
 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | — | — | — | — | — | — | — | — |
 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | ema | 38,230,389 | 145.8 MiB | 583.7 MiB | 29.15 | 34.30 | 34.38 | 1.95 GiB |
-| [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | — | — | — | — | — | — | — | — |
+| [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | raw | 23,737,468 | 90.6 MiB | 363.2 MiB | 184.06 | 5.40 | 5.73 | 0.40 GiB |
 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | ema | 40,351,925 | 153.9 MiB | 616.5 MiB | 136.37 | 7.30 | 7.61 | 0.78 GiB |
 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | — | — | — | — | — | — | — | — |
 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | raw | 37,149,525 | 141.7 MiB | 567.6 MiB | 212.00 | 4.64 | 5.08 | 0.52 GiB |
@@ -176,7 +176,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | — / — | 11h 51m 51s / 11.86 | 5h 58m 25s / 5.97 | 5.90 GiB |
 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | 9h 12m 18s / 9.21 | — / — | — / — | 5.86 GiB |
 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | — / — | 22h 57m 26s / 22.96 | 11h 27m 14s / 11.45 | 11.42 GiB |
-| [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | — / — | — / — | 4h 15m 13s / 4.25 | 4.79 GiB |
+| [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | — / — | 10h 36m 29s / 10.61 | 4h 15m 13s / 4.25 | 4.79 GiB |
 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | — / — | 11h 13m 54s / 11.23 | 5h 38m 08s / 5.64 | 5.03 GiB |
 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | 12h 42m 58s / 12.72 | — / — | 11h 22m 57s / 11.38 | 8.59 GiB |
 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | — / — | 12h 20m 09s / 12.34 | — / — | 4.20 GiB |
