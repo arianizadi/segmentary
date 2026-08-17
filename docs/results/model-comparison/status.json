@@ -1,11 +1,11 @@
 {
   "counts": {
-    "complete_cells": 48,
-    "complete_models": 7,
+    "complete_cells": 50,
+    "complete_models": 9,
     "complete_performance_benchmarks": 15,
     "physical_performance_benchmarks": 36,
     "physical_training_cells": 108,
-    "reported_cells": 48,
+    "reported_cells": 50,
     "total_reported_cells": 111
   },
   "models": [
@@ -1502,7 +1502,7 @@
     {
       "alias_of": null,
       "cityscapes_miou": "79.18",
-      "cityscapes_to_railsem19_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "67.25",
       "iteration_progress": {
         "cityscapes": {
           "current_iterations": 40000,
@@ -1525,19 +1525,19 @@
           "target_iterations": 40000
         },
         "cityscapes_to_railsem19": {
-          "current_iterations": 0,
+          "current_iterations": 20000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 20000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 20000,
+            "result_total_iterations": 20000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
-              "dataset": "RailSem19 adaptation",
+              "current_iterations": 20000,
+              "dataset": "RailSem19",
               "stage": "railsem19",
               "target_iterations": 20000
             }
@@ -1618,7 +1618,7 @@
         "resident_parameter_bytes": 182699412,
         "status": "complete"
       },
-      "status": "running",
+      "status": "complete",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,
@@ -1651,7 +1651,7 @@
     {
       "alias_of": "smp_deeplabv3plus_resnet101",
       "cityscapes_miou": "79.18",
-      "cityscapes_to_railsem19_miou": "\u2014",
+      "cityscapes_to_railsem19_miou": "67.25",
       "iteration_progress": {
         "cityscapes": {
           "current_iterations": 40000,
@@ -1674,19 +1674,19 @@
           "target_iterations": 40000
         },
         "cityscapes_to_railsem19": {
-          "current_iterations": 0,
+          "current_iterations": 20000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 20000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 20000,
+            "result_total_iterations": 20000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
-              "dataset": "RailSem19 adaptation",
+              "current_iterations": 20000,
+              "dataset": "RailSem19",
               "stage": "railsem19",
               "target_iterations": 20000
             }
@@ -1767,7 +1767,7 @@
         "resident_parameter_bytes": 182699412,
         "status": "complete"
       },
-      "status": "running",
+      "status": "complete",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,
