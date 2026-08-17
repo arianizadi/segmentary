@@ -70,7 +70,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 74.81 | 82.80 | 87.30 | 84.84 | 99.73 | 95.64 | 91.95 | 80.35 |
 | RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
-| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+| Cityscapes → RailSem19 | 20,000 / 20,000 | 60.17 | 73.81 | 74.71 | 73.76 | 99.18 | 86.00 | 76.56 | 67.85 |
 
 ### Standardized model-only inference
 
@@ -88,7 +88,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | — | — | — | 8.008 |
 | RailSem19 | — | — | — | — |
-| Cityscapes → RailSem19 | — | — | — | — |
+| Cityscapes → RailSem19 | 4h 55m 50s | 4.93 | 3.24 GiB | 7.478 |
 
 ### Cityscapes class IoU
 
@@ -114,12 +114,38 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | motorcycle | 63.09 |
 | bicycle | 75.63 |
 
+### RailSem19 class IoU
+
+| class | RailSem19 | Cityscapes → RailSem19 |
+|---|---:|---:|
+| road | — | 50.02 |
+| sidewalk | — | 52.38 |
+| construction | — | 73.33 |
+| fence | — | 49.00 |
+| pole | — | 56.96 |
+| traffic-light | — | 46.24 |
+| traffic-sign | — | 41.06 |
+| vegetation | — | 84.07 |
+| terrain | — | 61.55 |
+| sky | — | 94.72 |
+| human | — | 59.16 |
+| car | — | 72.78 |
+| truck | — | 25.05 |
+| motorcycle | — | — |
+| bicycle | — | — |
+| on-rails | — | 75.00 |
+| rail-track | — | 79.29 |
+| rail-raised | — | 63.19 |
+| rail-embedded | — | 43.79 |
+| tram-track | — | 48.59 |
+| trackbed | — | 66.98 |
+
 ### Provenance
 
 - Model recipe: `configs/models/segformer_b0.yaml`
-- Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7`
-- Retained seeds: Cityscapes: 0.
-- Quality evaluation weights: Cityscapes: ema.
+- Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7, b9eb3e1f390b70aad63e78b2e723bd79b5266471`
+- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0.
+- Quality evaluation weights: Cityscapes: ema; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 - Caveat: Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone ema-weight validation evidence are retained.
