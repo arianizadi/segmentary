@@ -10,14 +10,14 @@
     },
     "standardized_inference": {
       "status": "complete",
-      "fps": 77.59808166343358,
+      "fps": 77.90865719638194,
       "latency_ms": {
-        "mean": 12.886916513442992,
-        "p50": 12.875264167785645,
-        "p95": 12.926976203918457
+        "mean": 12.835544033050537,
+        "p50": 12.828672409057617,
+        "p95": 12.890111923217773
       },
-      "peak_vram_bytes": 899678208,
-      "peak_reserved_bytes": 899678208,
+      "peak_vram_bytes": 717225984,
+      "peak_reserved_bytes": 717225984,
       "resident_parameter_bytes": 158555476,
       "parameter_dtype_counts": {
         "float32": 39638869
@@ -40,9 +40,9 @@
       },
       "provenance": {
         "measured_job_id": "smp_deeplabv3_resnet50--railsem19--seed-0",
-        "campaign_git_sha": "db1e951f289fc6c09294e9a019945695ad2d94d2",
-        "config_hash": "d1fc844e42ef",
-        "config_sha256": "85f67cc54ee6cbee7299cc94092836060c9b9c6e223e84959ee3b460d6320f80",
+        "campaign_git_sha": "b9eb3e1f390b70aad63e78b2e723bd79b5266471",
+        "config_hash": "860cac3f3e68",
+        "config_sha256": "e8cf40c0982ad00404196c003564e26bf7348be586b7066e36ef41254017d7af",
         "checkpoint_sha256": "cefa227df6e071d44dd577150d70444288975834c436c3298cf1db587e8a968f",
         "checkpoint_global_step": 40000,
         "checkpoint_bytes": 635077023,
