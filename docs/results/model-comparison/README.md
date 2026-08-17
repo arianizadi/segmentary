@@ -88,7 +88,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 15 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | running | 67.25 | — | 56.02 |
 | 16 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | complete | 76.31 | 66.41 | 64.68 |
 | 17 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | running | 78.73 | — | 66.31 |
-| 18 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | running | 72.45 | — | — |
+| 18 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | running | 72.45 | 64.56 | — |
 | 19 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | running | 71.87 | — | 61.00 |
 | 20 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | running | — | 68.18 | — |
 | 21 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | running | 77.08 | — | — |
@@ -135,7 +135,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | — | — | — | — | — | — | — | — |
 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | ema | 40,351,925 | 153.9 MiB | 616.5 MiB | 136.37 | 7.30 | 7.61 | 0.78 GiB |
 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | — | — | — | — | — | — | — | — |
-| [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | — | — | — | — | — | — | — | — |
+| [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | raw | 37,149,525 | 141.7 MiB | 567.6 MiB | 212.00 | 4.64 | 5.08 | 0.52 GiB |
 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | — | — | — | — | — | — | — | — |
 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | ema | 39,638,869 | 151.2 MiB | 605.7 MiB | 77.91 | 12.83 | 12.89 | 0.67 GiB |
 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | — | — | — | — | — | — | — | — |
@@ -179,7 +179,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | — / — | — / — | 4h 15m 13s / 4.25 | 4.79 GiB |
 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | — / — | 11h 13m 54s / 11.23 | 5h 38m 08s / 5.64 | 5.03 GiB |
 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | 12h 42m 58s / 12.72 | — / — | 11h 22m 57s / 11.38 | 8.59 GiB |
-| [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | — / — | — / — | — / — | — |
+| [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | — / — | 12h 20m 09s / 12.34 | — / — | 4.20 GiB |
 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | 8h 00m 50s / 8.01 | — / — | 6h 11m 24s / 6.19 | 4.25 GiB |
 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | — / — | 17h 40m 01s / 17.67 | — / — | 6.59 GiB |
 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | — / — | — / — | — / — | — |
