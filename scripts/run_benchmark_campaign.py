@@ -4322,6 +4322,69 @@ def _record_metric(record: dict[str, Any], protocol: str, metric: str) -> object
     )
 
 
+def _rail_accuracy_speed_leaderboard(
+    manifest: CampaignManifest,
+    records: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Rank unique models that have comparable Rail quality and speed evidence."""
+    candidates: list[dict[str, Any]] = []
+    priority = {model_id: index for index, model_id in enumerate(manifest.priority_order)}
+    for model in manifest.models:
+        if model.alias_of is not None:
+            continue
+        record = records.get(model.id)
+        if not isinstance(record, dict):
+            continue
+        miou = _record_metric(record, "railsem19", "miou")
+        inference = record.get("model_profile", {}).get("standardized_inference", {})
+        fps = inference.get("fps")
+        if (
+            inference.get("status") != "complete"
+            or not isinstance(miou, int | float)
+            or isinstance(miou, bool)
+            or not math.isfinite(miou)
+            or not 0 < miou <= 1
+            or not isinstance(fps, int | float)
+            or isinstance(fps, bool)
+            or not math.isfinite(fps)
+            or fps <= 0
+        ):
+            continue
+        latency = inference.get("latency_ms") or {}
+        candidates.append(
+            {
+                "model": model.id,
+                "miou": float(miou),
+                "fps": float(fps),
+                "p50_ms": latency.get("p50"),
+                "weights": inference.get("provenance", {}).get("weights"),
+                "resident_parameter_bytes": inference.get("resident_parameter_bytes"),
+                "peak_vram_bytes": inference.get("peak_reserved_bytes")
+                or inference.get("peak_vram_bytes"),
+                "priority": priority.get(model.id, len(priority)),
+            }
+        )
+    if not candidates:
+        return []
+
+    best_miou = max(item["miou"] for item in candidates)
+    best_fps = max(item["fps"] for item in candidates)
+    for item in candidates:
+        quality = item["miou"] / best_miou
+        speed = item["fps"] / best_fps
+        item["balanced_score"] = 100 * (2 * quality * speed) / (quality + speed)
+    candidates.sort(
+        key=lambda item: (
+            -item["balanced_score"],
+            -item["miou"],
+            -item["fps"],
+            item["priority"],
+            item["model"],
+        )
+    )
+    return candidates
+
+
 def _transfer_final(record: dict[str, Any] | None) -> dict[str, Any]:
     """Return only a verified 20k Rail adaptation result."""
     if not isinstance(record, dict):
@@ -5208,6 +5271,37 @@ def _central_readme(
             "",
         ]
     )
+    leaderboard = _rail_accuracy_speed_leaderboard(manifest, records)
+    lines.extend(
+        [
+            "## RailSem19 accuracy-speed leaderboard",
+            "",
+            "This ranks unique physical models only when both the final RailSem19-only mIoU "
+            "and the standardized L40S inference benchmark are complete. The balanced score "
+            "is the harmonic mean of mIoU and FPS after each is normalized to the best "
+            "currently measured value. A score of 100 would require leading both. Raw mIoU "
+            "and FPS remain visible because this convenience ranking is snapshot-relative "
+            "and will change as more models finish. Compatibility aliases are omitted.",
+            "",
+            "| rank | model | balanced score | RailSem19 mIoU | FPS | p50 latency | weights | model memory | peak inference VRAM |",
+            "|---:|---|---:|---:|---:|---:|---|---:|---:|",
+        ]
+    )
+    if not leaderboard:
+        lines.append(
+            "| — | No model has complete quality and speed evidence yet | — | — | — | — | — | — | — |"
+        )
+    for rank, item in enumerate(leaderboard, start=1):
+        model = models[item["model"]]
+        link = "../../" + str(model.readme).removeprefix("docs/")
+        weights = item["weights"] if item["weights"] in ("raw", "ema") else "—"
+        lines.append(
+            f"| {rank} | [{item['model']}]({link}) | "
+            f"{_number(item['balanced_score'])} | {_number(item['miou'] * 100)} | "
+            f"{_number(item['fps'])} | {_number(item['p50_ms'])} ms | {weights} | "
+            f"{_mib(item['resident_parameter_bytes'])} | {_gib(item['peak_vram_bytes'])} |"
+        )
+    lines.append("")
     output = "\n".join(lines)
     if "±" in output:
         raise CampaignError("central README accidentally includes dispersion display")
