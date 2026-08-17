@@ -48,3 +48,67 @@ repeatable scratch/frozen contract is
 
 No protocol-comparable accuracy benchmark has been generated for this recipe.
 See the [SMP component guide](../../components/smp/README.md).
+
+<!-- segmentary:generated-city-rail-benchmark:start -->
+## Cityscapes and RailSem19 benchmark results
+
+Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+
+| protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Cityscapes | 40,000 / 40,000 | 71.98 | 80.17 | 86.04 | 82.72 | 99.72 | 95.43 | 91.61 | 75.18 |
+| RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+
+### Standardized model-only inference
+
+Pending one measurement from this model's RailSem19-only 21-class recorded raw/EMA endpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+
+| parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
+|---:|---:|---:|---:|---:|---:|---:|
+| — | — | — | — | — | — | — |
+
+### Training and full-pipeline evaluation cost
+
+Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
+
+| protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
+|---|---:|---:|---:|---:|
+| Cityscapes | 7h 43m 24s | 7.72 | 4.73 GiB | 6.083 |
+| RailSem19 | — | — | — | — |
+| Cityscapes → RailSem19 | — | — | — | — |
+
+### Cityscapes class IoU
+
+| class | IoU |
+|---|---:|
+| road | 97.79 |
+| sidewalk | 82.44 |
+| building | 91.76 |
+| wall | 50.78 |
+| fence | 56.29 |
+| pole | 60.19 |
+| traffic-light | 67.18 |
+| traffic-sign | 76.16 |
+| vegetation | 91.77 |
+| terrain | 59.69 |
+| sky | 93.81 |
+| person | 79.11 |
+| rider | 56.34 |
+| car | 93.55 |
+| truck | 57.52 |
+| bus | 70.70 |
+| train | 63.39 |
+| motorcycle | 46.21 |
+| bicycle | 72.96 |
+
+### Provenance
+
+- Model recipe: `configs/models/smp_manet_efficientnet_b0.yaml`
+- Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471`
+- Retained seeds: Cityscapes: 0.
+- Quality evaluation weights: Cityscapes: raw.
+- Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
+- Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
+
+<!-- segmentary:generated-city-rail-benchmark:end -->
