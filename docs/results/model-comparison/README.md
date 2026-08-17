@@ -74,7 +74,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 1 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | complete | 82.96 | 71.42 | 69.50 |
 | 2 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | complete | 82.74 | 72.13 | 69.66 |
 | 3 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | running | 57.26 | 53.98 | — |
-| 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | running | 81.03 | 70.74 | — |
+| 4 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | complete | 81.03 | 70.74 | 69.32 |
 | 5 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | running | 82.40 | 71.95 | — |
 | 6 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | complete | 78.90 | 69.90 | 67.90 |
 | 7 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | running | 80.75 | 68.62 | — |
@@ -165,7 +165,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | 14h 06m 17s / 14.10 | 13h 41m 29s / 13.69 | 7h 36m 59s / 7.62 | 17.02 GiB |
 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | 13h 26m 42s / 13.45 | 14h 39m 19s / 14.66 | 7h 19m 43s / 7.33 | 16.86 GiB |
 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | 14h 40m 07s / 14.67 | 21h 55m 28s / 21.92 | — / — | 19.53 GiB |
-| [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 13h 28m 59s / 13.48 | 16h 57m 54s / 16.96 | — / — | 10.60 GiB |
+| [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 13h 28m 59s / 13.48 | 16h 57m 54s / 16.96 | 9h 28m 19s / 9.47 | 10.60 GiB |
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | 17h 59m 42s / 17.99 | 19h 38m 19s / 19.64 | — / — | 16.94 GiB |
 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | 14h 21m 30s / 14.36 | 17h 53m 41s / 17.89 | — / — | 8.88 GiB |
 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — / — | 27h 48m 14s / 27.80 | — / — | 17.35 GiB |
