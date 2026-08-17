@@ -31,3 +31,16 @@ def test_markdown_never_uses_plus_minus_result_formatting() -> None:
         if "±" in path.read_text(encoding="utf-8"):
             offenders.append(str(path.relative_to(ROOT)))
     assert offenders == []
+
+
+def test_live_comparison_ends_with_accuracy_speed_leaderboard() -> None:
+    readme = ROOT / "docs/results/model-comparison/README.md"
+    if not readme.is_file():
+        return
+    content = readme.read_text(encoding="utf-8")
+    heading = "## RailSem19 accuracy-speed leaderboard"
+    assert heading in content
+    assert content.index(heading) > content.index("## Fixed protocol and files")
+    leaderboard = content.split(heading, maxsplit=1)[1]
+    assert "| rank | model | balanced score | RailSem19 mIoU | FPS |" in leaderboard
+    assert "\n## " not in leaderboard
