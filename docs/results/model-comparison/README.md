@@ -94,7 +94,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 21 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | running | 77.08 | — | — |
 | 22 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | running | 75.47 | 66.56 | — |
 | 23 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | running | 74.81 | — | 60.17 |
-| 24 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | running | — | 65.86 | — |
+| 24 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | running | 74.47 | 65.86 | — |
 | 25 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | queued | — | — | — |
 | 26 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | queued | — | — | — |
 | 27 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | running | 71.98 | — | — |
@@ -185,7 +185,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | — / — | — / — | — / — | — |
 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | — / — | 14h 35m 12s / 14.59 | — / — | 6.69 GiB |
 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | — / — | — / — | 4h 55m 50s / 4.93 | 3.24 GiB |
-| [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | — / — | 9h 48m 13s / 9.80 | — / — | 3.24 GiB |
+| [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | 5h 39m 20s / 5.66 | 9h 48m 13s / 9.80 | — / — | 3.24 GiB |
 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | — / — | — / — | — / — | — |
 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | — / — | — / — | — / — | — |
 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | 7h 43m 24s / 7.72 | — / — | — / — | 4.73 GiB |

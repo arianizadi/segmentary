@@ -69,7 +69,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| Cityscapes | 40,000 / 40,000 | 74.47 | 83.02 | 86.54 | 84.60 | 99.73 | 95.67 | 92.04 | 80.13 |
 | RailSem19 | 40,000 / 40,000 | 65.86 | 78.88 | 78.09 | 78.43 | 99.33 | 88.68 | 80.52 | 73.05 |
 | Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
 
@@ -87,9 +87,33 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | — | — | — | — |
+| Cityscapes | 5h 39m 20s | 5.66 | 3.05 GiB | 8.121 |
 | RailSem19 | 9h 48m 13s | 9.80 | 3.24 GiB | 7.567 |
 | Cityscapes → RailSem19 | — | — | — | — |
+
+### Cityscapes class IoU
+
+| class | IoU |
+|---|---:|
+| road | 97.97 |
+| sidewalk | 83.58 |
+| building | 91.93 |
+| wall | 60.39 |
+| fence | 54.72 |
+| pole | 59.12 |
+| traffic-light | 65.99 |
+| traffic-sign | 75.34 |
+| vegetation | 92.11 |
+| terrain | 61.17 |
+| sky | 94.66 |
+| person | 78.78 |
+| rider | 53.76 |
+| car | 94.29 |
+| truck | 66.82 |
+| bus | 78.21 |
+| train | 70.49 |
+| motorcycle | 60.59 |
+| bicycle | 74.91 |
 
 ### RailSem19 class IoU
 
@@ -121,8 +145,8 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 - Model recipe: `configs/models/hf_auto_segformer_b0.yaml`
 - Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471`
-- Retained seeds: RailSem19: 0.
-- Quality evaluation weights: RailSem19: raw.
+- Retained seeds: RailSem19: 0; Cityscapes: 0.
+- Quality evaluation weights: RailSem19: raw; Cityscapes: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
