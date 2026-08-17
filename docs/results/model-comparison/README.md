@@ -212,28 +212,3 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 - [`records/`](records/): full class IoUs, retained seeds, resources, and provenance.
 
 Campaign source SHA: `b9eb3e1f390b70aad63e78b2e723bd79b5266471`.
-
-## RailSem19 accuracy-speed leaderboard
-
-This ranks unique physical models only when both the final RailSem19-only mIoU and the standardized L40S inference benchmark are complete. The balanced score is the harmonic mean of mIoU and FPS after each is normalized to the best currently measured value. A score of 100 would require leading both. Raw mIoU and FPS remain visible because this convenience ranking is snapshot-relative and will change as more models finish. Compatibility aliases are omitted.
-
-| rank | model | balanced score | RailSem19 mIoU | FPS | p50 latency | weights | model memory | peak inference VRAM |
-|---:|---|---:|---:|---:|---:|---|---:|---:|
-| 1 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | 94.46 | 64.56 | 212.00 | 4.64 ms | raw | 141.7 MiB | 0.52 GiB |
-| 2 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | 85.08 | 60.17 | 184.06 | 5.40 ms | raw | 90.6 MiB | 0.40 GiB |
-| 3 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | 75.73 | 66.41 | 136.37 | 7.30 ms | ema | 153.9 MiB | 0.78 GiB |
-| 4 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | 71.10 | 65.86 | 123.43 | 7.57 ms | raw | 14.2 MiB | 0.89 GiB |
-| 5 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | 67.94 | 67.82 | 112.74 | 8.69 ms | raw | 174.2 MiB | 0.66 GiB |
-| 6 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | 52.92 | 68.18 | 77.91 | 12.83 ms | ema | 151.2 MiB | 0.67 GiB |
-| 7 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | 49.20 | 66.82 | 71.01 | 13.70 ms | ema | 214.7 MiB | 1.44 GiB |
-| 8 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | 46.45 | 68.44 | 65.20 | 15.19 ms | ema | 233.9 MiB | 1.36 GiB |
-| 9 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | 40.09 | 66.56 | 54.28 | 18.39 ms | ema | 41.0 MiB | 1.09 GiB |
-| 10 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | 39.96 | 70.39 | 53.26 | 18.63 ms | ema | 104.4 MiB | 2.25 GiB |
-| 11 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | 35.60 | 72.13 | 45.91 | 21.76 ms | ema | 1207.7 MiB | 3.12 GiB |
-| 12 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 33.65 | 70.74 | 43.06 | 23.19 ms | ema | 308.6 MiB | 2.48 GiB |
-| 13 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | 33.11 | 69.90 | 42.33 | 23.48 ms | ema | 224.9 MiB | 2.41 GiB |
-| 14 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | 32.51 | 71.42 | 41.23 | 24.12 ms | ema | 1201.3 MiB | 3.13 GiB |
-| 15 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | 25.17 | 68.62 | 30.75 | 32.11 ms | ema | 279.1 MiB | 1.26 GiB |
-| 16 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | 24.12 | 70.70 | 29.15 | 34.30 ms | ema | 145.8 MiB | 1.95 GiB |
-| 17 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | 22.40 | 71.95 | 26.74 | 37.00 ms | ema | 322.8 MiB | 2.57 GiB |
-| 18 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | 2.34 | 53.98 | 2.52 | 394.46 ms | ema | 616.1 MiB | 3.77 GiB |
