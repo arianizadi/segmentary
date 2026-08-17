@@ -135,7 +135,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 80.72 | 87.20 | 90.79 | 88.87 | 99.78 | 96.41 | 93.28 | 86.58 |
 | RailSem19 | 40,000 / 40,000 | 70.70 | 80.84 | 83.58 | 82.01 | 99.43 | 90.25 | 82.91 | 79.22 |
-| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+| Cityscapes → RailSem19 | 20,000 / 20,000 | 70.31 | 81.75 | 82.35 | 81.90 | 99.40 | 89.86 | 82.26 | 78.04 |
 
 ### Standardized model-only inference
 
@@ -153,7 +153,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | — | — | — | 4.773 |
 | RailSem19 | 22h 57m 26s | 22.96 | 11.42 GiB | 3.334 |
-| Cityscapes → RailSem19 | — | — | — | — |
+| Cityscapes → RailSem19 | 11h 27m 14s | 11.45 | 11.42 GiB | 3.334 |
 
 ### Cityscapes class IoU
 
@@ -183,34 +183,34 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | 63.33 | — |
-| sidewalk | 63.63 | — |
-| construction | 79.95 | — |
-| fence | 58.59 | — |
-| pole | 63.52 | — |
-| traffic-light | 57.23 | — |
-| traffic-sign | 53.16 | — |
-| vegetation | 87.87 | — |
-| terrain | 70.37 | — |
-| sky | 96.04 | — |
-| human | 67.29 | — |
-| car | 81.38 | — |
-| truck | 38.45 | — |
+| road | 63.33 | 62.56 |
+| sidewalk | 63.63 | 63.14 |
+| construction | 79.95 | 79.37 |
+| fence | 58.59 | 58.71 |
+| pole | 63.52 | 62.94 |
+| traffic-light | 57.23 | 55.99 |
+| traffic-sign | 53.16 | 51.12 |
+| vegetation | 87.87 | 87.65 |
+| terrain | 70.37 | 69.57 |
+| sky | 96.04 | 95.59 |
+| human | 67.29 | 67.03 |
+| car | 81.38 | 82.05 |
+| truck | 38.45 | 51.95 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | 81.57 | — |
-| rail-track | 91.13 | — |
-| rail-raised | 75.31 | — |
-| rail-embedded | 59.56 | — |
-| tram-track | 78.20 | — |
-| trackbed | 76.70 | — |
+| on-rails | 81.57 | 82.96 |
+| rail-track | 91.13 | 89.50 |
+| rail-raised | 75.31 | 73.35 |
+| rail-embedded | 59.56 | 55.31 |
+| tram-track | 78.20 | 71.62 |
+| trackbed | 76.70 | 75.43 |
 
 ### Provenance
 
 - Model recipe: `configs/models/native_convnext_tiny_channelmapper_dpt.yaml`
-- Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7, db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: RailSem19: 0; Cityscapes: 0.
-- Quality evaluation weights: RailSem19: —; Cityscapes: ema.
+- Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7, b9eb3e1f390b70aad63e78b2e723bd79b5266471, db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Retained seeds: RailSem19: 0; Cityscapes: 0; Cityscapes → RailSem19: 0.
+- Quality evaluation weights: RailSem19: —; Cityscapes: ema; Cityscapes → RailSem19: ema.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 - Caveat: Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone ema-weight validation evidence are retained.
