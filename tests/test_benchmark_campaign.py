@@ -1149,6 +1149,10 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert "historical" not in readme.lower()
     assert "corrected" not in readme.lower()
     assert "±" not in readme
+    assert "## RailSem19 accuracy-speed leaderboard" in readme
+    assert readme.rstrip().endswith(
+        "| — | No model has complete quality and speed evidence yet | — | — | — | — | — | — | — |"
+    )
 
     by_model = {row["model"]: row for row in rows}
     beit = by_model["hf_auto_beit_base_ade"]
@@ -1164,6 +1168,49 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert eomt["training_gradient_accumulation"] == "8"
     assert eomt["training_effective_batch_size"] == "16"
     assert eomt["training_objective"] == "hungarian_query"
+
+
+def test_rail_accuracy_speed_leaderboard_is_balanced_sorted_and_deduplicated() -> None:
+    manifest = campaign.load_campaign_manifest()
+
+    def record(miou: float, fps: float) -> dict[str, object]:
+        return {
+            "protocols": {
+                "railsem19": {"aggregate": {"miou": {"mean": miou}}},
+            },
+            "model_profile": {
+                "standardized_inference": {
+                    "status": "complete",
+                    "fps": fps,
+                    "latency_ms": {"p50": 10.0},
+                    "provenance": {"weights": "ema"},
+                }
+            },
+        }
+
+    records = {
+        "eomt_dinov3_large": record(0.80, 20.0),
+        "eomt_large": record(0.70, 100.0),
+        "smp_deeplabv3plus_resnet101": record(0.60, 200.0),
+        "deeplabv3plus_r101": record(0.99, 999.0),
+        "hf_auto_beit_base_ade": {
+            "protocols": {"railsem19": {"aggregate": {"miou": {"mean": 0.95}}}},
+            "model_profile": {"standardized_inference": {"status": "pending"}},
+        },
+    }
+
+    rows = campaign._rail_accuracy_speed_leaderboard(manifest, records)
+
+    assert [row["model"] for row in rows] == [
+        "smp_deeplabv3plus_resnet101",
+        "eomt_large",
+        "eomt_dinov3_large",
+    ]
+    assert all(
+        rows[index]["balanced_score"] >= rows[index + 1]["balanced_score"]
+        for index in range(len(rows) - 1)
+    )
+    assert "deeplabv3plus_r101" not in {row["model"] for row in rows}
 
 
 def test_transfer_reporting_accepts_only_verified_20k_final() -> None:
