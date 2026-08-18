@@ -60,7 +60,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 72.79 | 80.44 | 87.10 | 83.30 | 99.73 | 95.69 | 92.06 | 77.63 |
 | RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
-| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+| Cityscapes → RailSem19 | 20,000 / 20,000 | 58.95 | 70.84 | 75.76 | 72.26 | 99.15 | 85.67 | 76.03 | 67.17 |
 
 ### Standardized model-only inference
 
@@ -78,7 +78,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | 9h 42m 08s | 9.70 | 5.65 GiB | 5.718 |
 | RailSem19 | — | — | — | — |
-| Cityscapes → RailSem19 | — | — | — | — |
+| Cityscapes → RailSem19 | 6h 39m 56s | 6.67 | 6.19 GiB | 5.380 |
 
 ### Cityscapes class IoU
 
@@ -104,12 +104,38 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | motorcycle | 50.75 |
 | bicycle | 74.34 |
 
+### RailSem19 class IoU
+
+| class | RailSem19 | Cityscapes → RailSem19 |
+|---|---:|---:|
+| road | — | 49.93 |
+| sidewalk | — | 53.12 |
+| construction | — | 70.59 |
+| fence | — | 48.11 |
+| pole | — | 57.85 |
+| traffic-light | — | 47.83 |
+| traffic-sign | — | 42.40 |
+| vegetation | — | 83.90 |
+| terrain | — | 59.42 |
+| sky | — | 94.62 |
+| human | — | 60.90 |
+| car | — | 73.83 |
+| truck | — | 8.49 |
+| motorcycle | — | — |
+| bicycle | — | — |
+| on-rails | — | 50.94 |
+| rail-track | — | 84.03 |
+| rail-raised | — | 65.73 |
+| rail-embedded | — | 43.75 |
+| tram-track | — | 57.82 |
+| trackbed | — | 66.88 |
+
 ### Provenance
 
 - Model recipe: `configs/models/smp_unetplusplus_efficientnet_b0.yaml`
 - Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471`
-- Retained seeds: Cityscapes: 0.
-- Quality evaluation weights: Cityscapes: raw.
+- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0.
+- Quality evaluation weights: Cityscapes: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
