@@ -34,3 +34,69 @@ common-data mIoU benchmark.
 
 See [native backbones](../../components/native-backbones/README.md) and the
 [evidence ledger](../../../benchmarks/native-component-smokes/README.md).
+
+<!-- segmentary:generated-city-rail-benchmark:start -->
+## Cityscapes and RailSem19 benchmark results
+
+Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+
+| protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Cityscapes | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| RailSem19 | 40,000 / 40,000 | 64.19 | 77.55 | 76.96 | 76.88 | 99.30 | 87.99 | 79.59 | 71.93 |
+| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+
+### Standardized model-only inference
+
+Measured once from this model's RailSem19-only 21-class raw endpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+
+| parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
+|---:|---:|---:|---:|---:|---:|---:|
+| 8,067,845 | 30.8 MiB | 123.7 MiB | 168.14 | 5.93 ms | 6.45 ms | 0.44 GiB |
+
+### Training and full-pipeline evaluation cost
+
+Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
+
+| protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
+|---|---:|---:|---:|---:|
+| Cityscapes | — | — | — | — |
+| RailSem19 | 9h 37m 04s | 9.62 | 3.23 GiB | 7.657 |
+| Cityscapes → RailSem19 | — | — | — | — |
+
+### RailSem19 class IoU
+
+| class | RailSem19 | Cityscapes → RailSem19 |
+|---|---:|---:|
+| road | 56.10 | — |
+| sidewalk | 57.10 | — |
+| construction | 75.64 | — |
+| fence | 50.37 | — |
+| pole | 59.78 | — |
+| traffic-light | 48.12 | — |
+| traffic-sign | 39.70 | — |
+| vegetation | 85.30 | — |
+| terrain | 65.45 | — |
+| sky | 95.25 | — |
+| human | 58.41 | — |
+| car | 71.82 | — |
+| truck | 28.04 | — |
+| motorcycle | — | — |
+| bicycle | — | — |
+| on-rails | 78.96 | — |
+| rail-track | 88.27 | — |
+| rail-raised | 69.33 | — |
+| rail-embedded | 49.00 | — |
+| tram-track | 70.11 | — |
+| trackbed | 72.92 | — |
+
+### Provenance
+
+- Model recipe: `configs/models/native_mobilenetv3_large_deeplabv3plus.yaml`
+- Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471`
+- Retained seeds: RailSem19: 0.
+- Quality evaluation weights: RailSem19: raw.
+- Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
+- Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
+
+<!-- segmentary:generated-city-rail-benchmark:end -->
