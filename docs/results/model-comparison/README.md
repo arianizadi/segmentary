@@ -95,7 +95,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 22 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | complete | 75.47 | 66.56 | 65.11 |
 | 23 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | complete | 74.81 | 65.26 | 60.17 |
 | 24 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | complete | 74.47 | 65.86 | 61.30 |
-| 25 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | running | 73.88 | 61.43 | — |
+| 25 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | complete | 73.88 | 61.43 | 59.78 |
 | 26 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | running | 72.79 | — | 58.95 |
 | 27 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | complete | 71.98 | 60.05 | 56.81 |
 | 28 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | running | 74.38 | — | 62.30 |
@@ -103,7 +103,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 30 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | running | 69.99 | — | 58.02 |
 | 31 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | running | 31.46 | — | — |
 | 32 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | running | — | 64.19 | — |
-| 33 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | queued | — | — | — |
+| 33 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | running | — | — | — |
 | 34 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | running | — | — | — |
 | 35 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | queued | — | — | — |
 | 36 | [native_resnet18_fpn_segformer_aux](../../catalog/models/native-resnet18-fpn-segformer-aux/README.md) | running | 73.54 | — | 58.82 |
@@ -186,7 +186,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | — / — | 14h 35m 12s / 14.59 | 7h 13m 36s / 7.23 | 6.70 GiB |
 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | — / — | 9h 51m 21s / 9.86 | 4h 55m 50s / 4.93 | 3.24 GiB |
 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | 5h 39m 20s / 5.66 | 9h 48m 13s / 9.80 | 4h 56m 03s / 4.93 | 3.24 GiB |
-| [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | 6h 17m 00s / 6.28 | 10h 43m 02s / 10.72 | — / — | 4.35 GiB |
+| [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | 6h 17m 00s / 6.28 | 10h 43m 02s / 10.72 | 5h 21m 19s / 5.36 | 4.36 GiB |
 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | 9h 42m 08s / 9.70 | — / — | 6h 39m 56s / 6.67 | 6.19 GiB |
 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | 7h 43m 24s / 7.72 | 11h 44m 14s / 11.74 | 5h 53m 46s / 5.90 | 5.48 GiB |
 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | 5h 57m 46s / 5.96 | — / — | 5h 05m 37s / 5.09 | 4.06 GiB |
