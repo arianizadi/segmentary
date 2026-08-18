@@ -1,11 +1,11 @@
 {
   "counts": {
-    "complete_cells": 77,
+    "complete_cells": 78,
     "complete_models": 22,
     "complete_performance_benchmarks": 25,
     "physical_performance_benchmarks": 36,
     "physical_training_cells": 108,
-    "reported_cells": 77,
+    "reported_cells": 78,
     "total_reported_cells": 111
   },
   "models": [
@@ -3920,22 +3920,22 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "\u2014",
+      "cityscapes_miou": "74.38",
       "cityscapes_to_railsem19_miou": "\u2014",
       "iteration_progress": {
         "cityscapes": {
-          "current_iterations": 0,
+          "current_iterations": 40000,
           "final_verification": {
-            "checkpoint_available": false,
-            "checkpoint_global_step": null,
-            "checkpoint_verified": false,
-            "result_final_stage_iteration": null,
-            "result_total_iterations": null,
-            "result_verified": false
+            "checkpoint_available": true,
+            "checkpoint_global_step": 40000,
+            "checkpoint_verified": true,
+            "result_final_stage_iteration": 40000,
+            "result_total_iterations": 40000,
+            "result_verified": true
           },
           "stages": [
             {
-              "current_iterations": 0,
+              "current_iterations": 40000,
               "dataset": "Cityscapes",
               "stage": "cityscapes",
               "target_iterations": 40000
@@ -3985,13 +3985,17 @@
         }
       },
       "model": "native_efficientnet_b0_deeplabv3plus",
-      "parameter_count": {},
+      "parameter_count": {
+        "cityscapes19": null,
+        "rail_union": null
+      },
       "priority": 28,
       "railsem19_miou": "\u2014",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": null,
         "latency_ms": null,
+        "note": "Pending the fixed RailSem19-only model benchmark.",
         "peak_vram_bytes": null,
         "status": "pending"
       },

@@ -98,7 +98,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 25 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | running | — | 61.43 | — |
 | 26 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | running | 72.79 | — | — |
 | 27 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | complete | 71.98 | 60.05 | 56.81 |
-| 28 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | running | — | — | — |
+| 28 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | running | 74.38 | — | — |
 | 29 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | running | — | 64.34 | — |
 | 30 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | running | 69.99 | — | — |
 | 31 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | running | — | — | — |
@@ -189,7 +189,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | — / — | 10h 43m 02s / 10.72 | — / — | 4.35 GiB |
 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | 9h 42m 08s / 9.70 | — / — | — / — | 5.65 GiB |
 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | 7h 43m 24s / 7.72 | 11h 44m 14s / 11.74 | 5h 53m 46s / 5.90 | 5.48 GiB |
-| [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | — / — | — / — | — / — | — |
+| [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | 5h 57m 46s / 5.96 | — / — | — / — | 3.65 GiB |
 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | — / — | 12h 38m 53s / 12.65 | — / — | 4.96 GiB |
 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | 18h 40m 27s / 18.67 | — / — | — / — | 15.78 GiB |
 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | — / — | — / — | — / — | — |
