@@ -52,7 +52,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| Cityscapes | 40,000 / 40,000 | 78.61 | 85.98 | 89.27 | 87.43 | 99.76 | 96.10 | 92.75 | 84.19 |
 | RailSem19 | 40,000 / 40,000 | 68.18 | 81.67 | 78.88 | 80.17 | 99.38 | 89.18 | 81.52 | 76.03 |
 | Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
 
@@ -70,9 +70,33 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | — | — | — | — |
+| Cityscapes | 14h 07m 22s | 14.12 | 6.02 GiB | 6.275 |
 | RailSem19 | 17h 40m 01s | 17.67 | 6.59 GiB | 5.576 |
 | Cityscapes → RailSem19 | — | — | — | — |
+
+### Cityscapes class IoU
+
+| class | IoU |
+|---|---:|
+| road | 98.21 |
+| sidewalk | 85.37 |
+| building | 92.47 |
+| wall | 53.79 |
+| fence | 59.81 |
+| pole | 63.40 |
+| traffic-light | 71.03 |
+| traffic-sign | 79.49 |
+| vegetation | 92.30 |
+| terrain | 64.40 |
+| sky | 94.80 |
+| person | 82.41 |
+| rider | 66.96 |
+| car | 95.21 |
+| truck | 78.60 |
+| bus | 87.53 |
+| train | 82.18 |
+| motorcycle | 67.73 |
+| bicycle | 77.98 |
 
 ### RailSem19 class IoU
 
@@ -103,9 +127,9 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 ### Provenance
 
 - Model recipe: `configs/models/smp_deeplabv3_resnet50.yaml`
-- Source revisions: `db1e951f289fc6c09294e9a019945695ad2d94d2`
-- Retained seeds: RailSem19: 0.
-- Quality evaluation weights: RailSem19: —.
+- Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471, db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Retained seeds: RailSem19: 0; Cityscapes: 0.
+- Quality evaluation weights: RailSem19: —; Cityscapes: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
