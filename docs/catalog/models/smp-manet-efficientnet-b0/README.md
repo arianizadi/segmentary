@@ -132,8 +132,8 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 - Model recipe: `configs/models/smp_manet_efficientnet_b0.yaml`
 - Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471`
-- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0; RailSem19: 0.
-- Quality evaluation weights: Cityscapes: raw; Cityscapes → RailSem19: raw; RailSem19: raw.
+- Retained seeds: Cityscapes: 0; RailSem19: 0; Cityscapes → RailSem19: 0.
+- Quality evaluation weights: Cityscapes: raw; RailSem19: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 

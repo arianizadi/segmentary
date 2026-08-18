@@ -144,8 +144,8 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 - Model recipe: `configs/models/segformer_b0.yaml`
 - Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7, b9eb3e1f390b70aad63e78b2e723bd79b5266471`
-- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0; RailSem19: 0.
-- Quality evaluation weights: Cityscapes: ema; Cityscapes → RailSem19: raw; RailSem19: raw.
+- Retained seeds: Cityscapes: 0; RailSem19: 0; Cityscapes → RailSem19: 0.
+- Quality evaluation weights: Cityscapes: ema; RailSem19: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 - Caveat: Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone ema-weight validation evidence are retained.
