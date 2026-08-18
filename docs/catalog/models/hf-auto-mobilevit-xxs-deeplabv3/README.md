@@ -64,16 +64,16 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 69.99 | 79.65 | 83.25 | 81.25 | 99.67 | 94.64 | 90.29 | 74.97 |
-| RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| RailSem19 | 40,000 / 40,000 | 60.72 | 75.08 | 73.43 | 74.13 | 99.21 | 86.49 | 77.34 | 67.78 |
 | Cityscapes → RailSem19 | 20,000 / 20,000 | 58.02 | 72.31 | 72.83 | 72.20 | 99.10 | 84.59 | 74.64 | 64.76 |
 
 ### Standardized model-only inference
 
-Pending one measurement from this model's RailSem19-only 21-class recorded raw/EMA endpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+Measured once from this model's RailSem19-only 21-class raw endpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
 
 | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
 |---:|---:|---:|---:|---:|---:|---:|
-| — | — | — | — | — | — | — |
+| 1,854,853 | 7.1 MiB | 28.9 MiB | 34.78 | 28.67 ms | 29.04 ms | 3.30 GiB |
 
 ### Training and full-pipeline evaluation cost
 
@@ -82,7 +82,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
 | Cityscapes | 18h 40m 27s | 18.67 | 15.78 GiB | 4.686 |
-| RailSem19 | — | — | — | — |
+| RailSem19 | 22h 28m 15s | 22.47 | 15.78 GiB | 3.691 |
 | Cityscapes → RailSem19 | 11h 14m 52s | 11.25 | 15.78 GiB | 3.677 |
 
 ### Cityscapes class IoU
@@ -113,34 +113,34 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | — | 49.65 |
-| sidewalk | — | 48.78 |
-| construction | — | 71.13 |
-| fence | — | 44.03 |
-| pole | — | 54.59 |
-| traffic-light | — | 44.09 |
-| traffic-sign | — | 33.95 |
-| vegetation | — | 82.29 |
-| terrain | — | 58.45 |
-| sky | — | 93.85 |
-| human | — | 59.49 |
-| car | — | 72.30 |
-| truck | — | 37.03 |
+| road | 53.43 | 49.65 |
+| sidewalk | 51.97 | 48.78 |
+| construction | 72.85 | 71.13 |
+| fence | 47.49 | 44.03 |
+| pole | 55.13 | 54.59 |
+| traffic-light | 43.95 | 44.09 |
+| traffic-sign | 33.20 | 33.95 |
+| vegetation | 84.06 | 82.29 |
+| terrain | 63.14 | 58.45 |
+| sky | 94.41 | 93.85 |
+| human | 58.27 | 59.49 |
+| car | 70.69 | 72.30 |
+| truck | 27.87 | 37.03 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | — | 62.19 |
-| rail-track | — | 78.98 |
-| rail-raised | — | 56.40 |
-| rail-embedded | — | 38.59 |
-| tram-track | — | 50.77 |
-| trackbed | — | 65.89 |
+| on-rails | 72.77 | 62.19 |
+| rail-track | 85.22 | 78.98 |
+| rail-raised | 63.21 | 56.40 |
+| rail-embedded | 44.51 | 38.59 |
+| tram-track | 61.12 | 50.77 |
+| trackbed | 70.32 | 65.89 |
 
 ### Provenance
 
 - Model recipe: `configs/models/hf_auto_mobilevit_xxs_deeplabv3.yaml`
 - Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471`
-- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0.
-- Quality evaluation weights: Cityscapes: raw; Cityscapes → RailSem19: raw.
+- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0; RailSem19: 0.
+- Quality evaluation weights: Cityscapes: raw; Cityscapes → RailSem19: raw; RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 

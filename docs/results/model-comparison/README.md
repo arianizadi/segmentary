@@ -100,7 +100,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 27 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | complete | 71.98 | 60.05 | 56.81 |
 | 28 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | running | 74.38 | — | 62.30 |
 | 29 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | running | — | 64.34 | — |
-| 30 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | running | 69.99 | — | 58.02 |
+| 30 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | complete | 69.99 | 60.72 | 58.02 |
 | 31 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | running | 31.46 | — | — |
 | 32 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | running | — | 64.19 | — |
 | 33 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | running | — | — | — |
@@ -147,7 +147,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | raw | 9,095,257 | 34.7 MiB | 136.6 MiB | 90.68 | 10.82 | 11.98 | 0.57 GiB |
 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | raw | 13,318,654 | 50.8 MiB | 203.8 MiB | 84.66 | 11.79 | 11.91 | 0.39 GiB |
-| [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | — | — | — | — | — | — | — | — |
+| [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | raw | 1,854,853 | 7.1 MiB | 28.9 MiB | 34.78 | 28.67 | 29.04 | 3.30 GiB |
 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | — | — | — | — | — | — | — | — |
 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | raw | 8,067,845 | 30.8 MiB | 123.7 MiB | 168.14 | 5.93 | 6.45 | 0.44 GiB |
 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | — | — | — | — | — | — | — | — |
@@ -191,7 +191,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | 7h 43m 24s / 7.72 | 11h 44m 14s / 11.74 | 5h 53m 46s / 5.90 | 5.48 GiB |
 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | 5h 57m 46s / 5.96 | — / — | 5h 05m 37s / 5.09 | 4.06 GiB |
 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | — / — | 12h 38m 53s / 12.65 | — / — | 4.96 GiB |
-| [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | 18h 40m 27s / 18.67 | — / — | 11h 14m 52s / 11.25 | 15.78 GiB |
+| [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | 18h 40m 27s / 18.67 | 22h 28m 15s / 22.47 | 11h 14m 52s / 11.25 | 15.78 GiB |
 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | 9h 38m 35s / 9.64 | — / — | — / — | 5.24 GiB |
 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | — / — | 9h 37m 04s / 9.62 | — / — | 3.23 GiB |
 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | — / — | — / — | — / — | — |
@@ -241,7 +241,8 @@ This ranks unique physical models only when both the final RailSem19-only mIoU a
 | 20 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 32.22 | 70.74 | 43.06 | 23.19 ms | ema | 308.6 MiB | 2.48 GiB |
 | 21 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | 31.70 | 69.90 | 42.33 | 23.48 ms | ema | 224.9 MiB | 2.41 GiB |
 | 22 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | 31.11 | 71.42 | 41.23 | 24.12 ms | ema | 1201.3 MiB | 3.13 GiB |
-| 23 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | 24.05 | 68.62 | 30.75 | 32.11 ms | ema | 279.1 MiB | 1.26 GiB |
-| 24 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | 23.03 | 70.70 | 29.15 | 34.30 ms | ema | 145.8 MiB | 1.95 GiB |
-| 25 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | 21.37 | 71.95 | 26.74 | 37.00 ms | ema | 322.8 MiB | 2.57 GiB |
-| 26 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | 2.22 | 53.98 | 2.52 | 394.46 ms | ema | 616.1 MiB | 3.77 GiB |
+| 23 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | 26.28 | 60.72 | 34.78 | 28.67 ms | raw | 7.1 MiB | 3.30 GiB |
+| 24 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | 24.05 | 68.62 | 30.75 | 32.11 ms | ema | 279.1 MiB | 1.26 GiB |
+| 25 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | 23.03 | 70.70 | 29.15 | 34.30 ms | ema | 145.8 MiB | 1.95 GiB |
+| 26 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | 21.37 | 71.95 | 26.74 | 37.00 ms | ema | 322.8 MiB | 2.57 GiB |
+| 27 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | 2.22 | 53.98 | 2.52 | 394.46 ms | ema | 616.1 MiB | 3.77 GiB |
