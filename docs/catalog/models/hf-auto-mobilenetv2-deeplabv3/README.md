@@ -65,9 +65,9 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 40,000 / 40,000 | 31.46 | 39.92 | 78.84 | 43.99 | 98.21 | 67.58 | 63.85 | 38.88 |
+| Cityscapes | 40,000 / 40,000 | 67.74 | 75.15 | 85.40 | 79.26 | 99.67 | 94.73 | 90.34 | 73.48 |
 | RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
-| Cityscapes → RailSem19 | 20,000 / 20,000 | 11.86 | 18.01 | 61.63 | 19.44 | 96.07 | 29.80 | 18.46 | 13.57 |
+| Cityscapes → RailSem19 | 20,000 / 20,000 | 53.29 | 66.16 | 72.60 | 67.24 | 98.99 | 82.64 | 72.05 | 61.24 |
 
 ### Standardized model-only inference
 
@@ -83,59 +83,59 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | 9h 38m 35s | 9.64 | 5.24 GiB | 7.262 |
+| Cityscapes | 9h 38m 35s | 9.64 | 5.24 GiB | 7.287 |
 | RailSem19 | — | — | — | — |
-| Cityscapes → RailSem19 | 6h 36m 03s | 6.60 | 5.55 GiB | 7.073 |
+| Cityscapes → RailSem19 | 6h 36m 03s | 6.60 | 5.55 GiB | 7.159 |
 
 ### Cityscapes class IoU
 
 | class | IoU |
 |---|---:|
-| road | 86.09 |
-| sidewalk | 49.41 |
-| building | 58.39 |
-| wall | 2.57 |
-| fence | 9.81 |
-| pole | 16.69 |
-| traffic-light | 25.62 |
-| traffic-sign | 36.73 |
-| vegetation | 49.83 |
-| terrain | 22.97 |
-| sky | 30.88 |
-| person | 27.92 |
-| rider | 12.94 |
-| car | 72.21 |
-| truck | 30.72 |
-| bus | 18.90 |
-| train | 8.53 |
-| motorcycle | 10.59 |
-| bicycle | 26.86 |
+| road | 97.36 |
+| sidewalk | 80.08 |
+| building | 90.16 |
+| wall | 36.99 |
+| fence | 41.13 |
+| pole | 55.61 |
+| traffic-light | 62.37 |
+| traffic-sign | 72.80 |
+| vegetation | 91.06 |
+| terrain | 55.61 |
+| sky | 93.42 |
+| person | 76.46 |
+| rider | 50.39 |
+| car | 92.83 |
+| truck | 59.14 |
+| bus | 62.93 |
+| train | 50.82 |
+| motorcycle | 45.04 |
+| bicycle | 72.87 |
 
 ### RailSem19 class IoU
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | — | 22.43 |
-| sidewalk | — | 5.38 |
-| construction | — | 16.75 |
-| fence | — | 7.42 |
-| pole | — | 4.88 |
-| traffic-light | — | 1.59 |
-| traffic-sign | — | 2.00 |
-| vegetation | — | 21.91 |
-| terrain | — | 3.50 |
-| sky | — | 19.27 |
-| human | — | 0.74 |
-| car | — | 23.33 |
-| truck | — | 0.00 |
+| road | — | 46.09 |
+| sidewalk | — | 42.39 |
+| construction | — | 66.28 |
+| fence | — | 41.52 |
+| pole | — | 52.95 |
+| traffic-light | — | 40.28 |
+| traffic-sign | — | 38.80 |
+| vegetation | — | 81.15 |
+| terrain | — | 53.20 |
+| sky | — | 93.38 |
+| human | — | 57.21 |
+| car | — | 65.84 |
+| truck | — | 2.08 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | — | 28.97 |
-| rail-track | — | 38.55 |
-| rail-raised | — | 3.64 |
-| rail-embedded | — | 0.13 |
-| tram-track | — | 2.80 |
-| trackbed | — | 22.04 |
+| on-rails | — | 52.03 |
+| rail-track | — | 76.55 |
+| rail-raised | — | 58.33 |
+| rail-embedded | — | 37.97 |
+| tram-track | — | 44.77 |
+| trackbed | — | 61.67 |
 
 ### Provenance
 
