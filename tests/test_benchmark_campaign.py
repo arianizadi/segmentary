@@ -1150,9 +1150,10 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert "corrected" not in readme.lower()
     assert "±" not in readme
     assert "## RailSem19 accuracy-speed leaderboard" in readme
-    assert readme.rstrip().endswith(
-        "| — | No model has complete quality and speed evidence yet | — | — | — | — | — | — | — |"
-    )
+    leaderboard = readme.split("## RailSem19 accuracy-speed leaderboard", maxsplit=1)[1]
+    assert "| rank | model | status | balanced score |" in leaderboard
+    assert leaderboard.count("| — | [") == status["scope"]["unique_training_choices"]
+    assert "| pending |" in leaderboard
 
     by_model = {row["model"]: row for row in rows}
     beit = by_model["hf_auto_beit_base_ade"]
@@ -1201,16 +1202,19 @@ def test_rail_accuracy_speed_leaderboard_is_balanced_sorted_and_deduplicated() -
 
     rows = campaign._rail_accuracy_speed_leaderboard(manifest, records)
 
-    assert [row["model"] for row in rows] == [
+    assert [row["model"] for row in rows[:3]] == [
         "smp_deeplabv3plus_resnet101",
         "eomt_large",
         "eomt_dinov3_large",
     ]
+    assert len(rows) == sum(model.alias_of is None for model in manifest.models)
+    assert all(row["status"] == "complete" for row in rows[:3])
+    assert all(row["status"] == "pending" for row in rows[3:])
     assert all(
-        rows[index]["balanced_score"] >= rows[index + 1]["balanced_score"]
-        for index in range(len(rows) - 1)
+        rows[index]["balanced_score"] >= rows[index + 1]["balanced_score"] for index in range(2)
     )
     assert "deeplabv3plus_r101" not in {row["model"] for row in rows}
+    assert rows[3]["model"] == "hf_auto_beit_base_ade"
 
 
 def test_transfer_reporting_accepts_only_verified_20k_final() -> None:
