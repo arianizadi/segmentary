@@ -78,7 +78,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | 9h 21m 34s | 9.36 | 6.51 GiB | 6.398 |
 | RailSem19 | 12h 55m 26s | 12.92 | 6.70 GiB | 5.532 |
-| Cityscapes → RailSem19 | — | — | — | 5.526 |
+| Cityscapes → RailSem19 | not retained | not retained | not retained | 5.526 |
 
 ### Cityscapes class IoU
 

@@ -72,7 +72,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | — | — | — | 7.034 |
+| Cityscapes | 6h 15m 36s | 6.26 | 4.21 GiB | 7.034 |
 | RailSem19 | 10h 36m 29s | 10.61 | 4.79 GiB | 6.789 |
 | Cityscapes → RailSem19 | 4h 15m 13s | 4.25 | 4.79 GiB | 6.918 |
 

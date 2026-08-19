@@ -887,6 +887,88 @@ def test_reporting_complete_result_without_checkpoint_is_reused_and_not_queued(
     assert "not retrained" in accepted["caveat"]
 
 
+def test_reused_evaluation_preserves_matching_training_resource_evidence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    record = _record(tmp_path, monkeypatch)
+    job = next(
+        item
+        for item in record["jobs"]
+        if item["model"] == "segformer_b2" and item["protocol"] == "cityscapes"
+    )
+    _, resolved = campaign._resolved_config(record, job, tmp_path / "prototype")
+    reuse_root = tmp_path / "prior"
+    run_root = reuse_root / "jobs" / job["id"]
+    checkpoint = run_root / "train" / job["experiment_name"] / "cityscapes" / "last.ckpt"
+    checkpoint.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(checkpoint, "w") as archive:
+        archive.writestr("archive/data.pkl", pickle.dumps({"global_step": 40_000}))
+    training_result = checkpoint.parent / "results.json"
+    write_results(
+        training_result,
+        RunRecord(
+            name=job["experiment_name"],
+            stage="cityscapes",
+            config_hash=config_hash(resolved),
+            git_sha=SHA,
+            git_dirty=False,
+            seed=0,
+            finished_at="2026-08-13T00:00:00+00:00",
+            wall_clock_s=123.0,
+            metrics=_metric_payload("cityscapes19"),
+            config=resolved,
+            env={"gpu_count": 1},
+            peak_vram_bytes={"cuda:0": 987_654_321},
+        ),
+    )
+    evaluation_result = run_root / "evaluation" / "cityscapes" / "results.json"
+    write_results(
+        evaluation_result,
+        RunRecord(
+            name=job["experiment_name"],
+            stage="eval:cityscapes:val",
+            config_hash=config_hash(resolved),
+            git_sha=SHA,
+            git_dirty=False,
+            seed=0,
+            finished_at="2026-08-13T00:01:00+00:00",
+            wall_clock_s=5.0,
+            metrics=_metric_payload("cityscapes19"),
+            config=resolved,
+            dataset_sizes={"eval": 500},
+            env={"gpu_count": 1},
+            notes=f"checkpoint={checkpoint} ema=True tta=False",
+        ),
+    )
+    record["reuse_policy"]["roots"] = [str(reuse_root)]
+
+    audit = campaign.scan_reusable_cells(record)
+    accepted = next(item for item in audit["accepted"] if item["job_id"] == job["id"])
+    assert accepted["source_result"] == str(evaluation_result)
+    assert accepted["training_source_result"] == str(training_result)
+    assert accepted["training_result_sha256"] == campaign._sha256(training_result)
+
+    record["reuse"] = audit
+    campaign._materialize_reused_results(record, Path(record["campaign"]))
+    lane = next(item for item in record["lanes"] if job["id"] in item["job_ids"])
+    reused = next(
+        item for item in campaign._lane_status(record, lane)["jobs"] if item["id"] == job["id"]
+    )
+    attempt = reused["attempts"][0]
+    result = campaign.validate_reused(record, job, attempt)
+    individual = campaign._normalised_individual(job, result, attempt)
+    assert individual["source"]["training_stages"] == [
+        {
+            "stage": "cityscapes",
+            "wall_clock_s": 123.0,
+            "gpu_count": 1,
+            "gpu_hours": pytest.approx(123.0 / 3600),
+            "peak_vram_bytes_per_device": 987_654_321,
+            "result_sha256": campaign._sha256(training_result),
+        }
+    ]
+
+
 def test_reporting_only_city_source_stays_queued_when_transfer_needs_checkpoint(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
