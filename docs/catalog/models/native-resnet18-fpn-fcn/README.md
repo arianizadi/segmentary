@@ -53,7 +53,7 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 74.33 | 83.19 | 86.09 | 84.52 | 99.71 | 95.37 | 91.50 | 78.48 |
 | RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
-| Cityscapes → RailSem19 | 0 / 20,000 | — | — | — | — | — | — | — | — |
+| Cityscapes → RailSem19 | 20,000 / 20,000 | 59.26 | 72.51 | 74.44 | 72.52 | 99.16 | 85.73 | 76.23 | 67.73 |
 
 ### Standardized model-only inference
 
@@ -71,7 +71,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | 2h 12m 01s | 2.20 | 2.43 GiB | 7.602 |
 | RailSem19 | — | — | — | — |
-| Cityscapes → RailSem19 | — | — | — | — |
+| Cityscapes → RailSem19 | 4h 36m 48s | 4.61 | 3.10 GiB | 7.720 |
 
 ### Cityscapes class IoU
 
@@ -97,12 +97,38 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | motorcycle | 58.33 |
 | bicycle | 74.69 |
 
+### RailSem19 class IoU
+
+| class | RailSem19 | Cityscapes → RailSem19 |
+|---|---:|---:|
+| road | — | 50.86 |
+| sidewalk | — | 51.46 |
+| construction | — | 72.22 |
+| fence | — | 46.02 |
+| pole | — | 56.73 |
+| traffic-light | — | 45.85 |
+| traffic-sign | — | 39.65 |
+| vegetation | — | 83.19 |
+| terrain | — | 60.39 |
+| sky | — | 94.66 |
+| human | — | 58.22 |
+| car | — | 71.24 |
+| truck | — | 9.55 |
+| motorcycle | — | — |
+| bicycle | — | — |
+| on-rails | — | 73.09 |
+| rail-track | — | 80.63 |
+| rail-raised | — | 65.63 |
+| rail-embedded | — | 45.44 |
+| tram-track | — | 53.72 |
+| trackbed | — | 67.44 |
+
 ### Provenance
 
 - Model recipe: `configs/models/native_resnet18_fpn_fcn.yaml`
 - Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471`
-- Retained seeds: Cityscapes: 0.
-- Quality evaluation weights: Cityscapes: raw.
+- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0.
+- Quality evaluation weights: Cityscapes: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
