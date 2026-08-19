@@ -4387,6 +4387,25 @@ def _record_metric(record: dict[str, Any], protocol: str, metric: str) -> object
     )
 
 
+RAIL_MIOU_QUALITY_FLOOR = 0.60
+RAIL_RECOMMENDATION_ACCURACY_WEIGHT = 0.85
+
+
+def _competition_ranks(rows: list[dict[str, Any]], key: str) -> dict[str, int]:
+    """Return 1-based descending ranks while assigning equal values equal ranks."""
+    ordered = sorted(rows, key=lambda item: (-item[key], item["model"]))
+    ranks: dict[str, int] = {}
+    previous: float | None = None
+    rank = 0
+    for index, item in enumerate(ordered, start=1):
+        value = item[key]
+        if previous is None or value != previous:
+            rank = index
+            previous = value
+        ranks[item["model"]] = rank
+    return ranks
+
+
 def _rail_accuracy_speed_leaderboard(
     manifest: CampaignManifest,
     records: dict[str, dict[str, Any]],
@@ -4444,16 +4463,33 @@ def _rail_accuracy_speed_leaderboard(
         )
     completed = [item for item in rows if item["status"] == "complete"]
     if completed:
+        accuracy_ranks = _competition_ranks(completed, "miou")
+        speed_ranks = _competition_ranks(completed, "fps")
+        qualified = [item for item in completed if item["miou"] >= RAIL_MIOU_QUALITY_FLOOR]
         best_miou = max(item["miou"] for item in completed)
-        best_fps = max(item["fps"] for item in completed)
+        best_qualified_fps = max(item["fps"] for item in qualified) if qualified else None
         for item in completed:
+            item["accuracy_rank"] = accuracy_ranks[item["model"]]
+            item["speed_rank"] = speed_ranks[item["model"]]
+            item["quality_gate"] = (
+                "qualified" if item["miou"] >= RAIL_MIOU_QUALITY_FLOOR else "below 60% mIoU"
+            )
+            if best_qualified_fps is None or item["quality_gate"] != "qualified":
+                continue
             quality = item["miou"] / best_miou
-            speed = item["fps"] / best_fps
-            item["balanced_score"] = 100 * (2 * quality * speed) / (quality + speed)
+            # Throughput has strongly diminishing practical value at high FPS. Log
+            # scaling prevents an extremely fast but less accurate model from
+            # overwhelming the recommendation score.
+            speed = math.log1p(item["fps"]) / math.log1p(best_qualified_fps)
+            accuracy_weight = RAIL_RECOMMENDATION_ACCURACY_WEIGHT
+            item["recommendation_score"] = (
+                100 * (quality**accuracy_weight) * (speed ** (1 - accuracy_weight))
+            )
     rows.sort(
         key=lambda item: (
             item["status"] != "complete",
-            -item.get("balanced_score", -math.inf),
+            item.get("quality_gate") != "qualified",
+            -item.get("recommendation_score", -math.inf),
             -(item["miou"] if item["miou"] is not None else -math.inf),
             -(item["fps"] if item["fps"] is not None else -math.inf),
             item["priority"],
@@ -5356,15 +5392,18 @@ def _central_readme(
             "",
             "This lists and sorts all shipped model recipes. Models with both a final RailSem19-only "
             "mIoU and standardized L40S inference benchmark are ranked first; pending models "
-            "remain visible below them until their evidence is complete. The balanced score "
-            "is the harmonic mean of mIoU and FPS after each is normalized to the best "
-            "currently measured value. A score of 100 would require leading both. Raw mIoU "
-            "and FPS remain visible because this convenience ranking is snapshot-relative "
-            "and will change as more models finish. Compatibility aliases remain visible and "
-            "are labelled; they share the canonical recipe's weights and measurements.",
+            "remain visible below them until their evidence is complete. The recommendation "
+            "score is accuracy-first: models must reach 60% RailSem19 mIoU to qualify, then "
+            "the score weights normalized mIoU at 85% and log-scaled FPS at 15%. The quality "
+            "gate prevents a weak but extremely fast model from taking over the leaderboard; "
+            "log scaling also gives diminishing credit to already-high FPS. Below-floor models "
+            "remain listed after qualified models, with their raw accuracy and speed ranks. "
+            "This is a convenience recommendation rather than a universal deployment choice. "
+            "Compatibility aliases remain visible and are labelled; they share the canonical "
+            "recipe's weights and measurements.",
             "",
-            "| rank | model | status | balanced score | RailSem19 mIoU | FPS | p50 latency | weights | model memory | peak inference VRAM |",
-            "|---:|---|---|---:|---:|---:|---:|---|---:|---:|",
+            "| rank | model | status | quality gate | recommendation score | RailSem19 mIoU | accuracy rank | FPS | speed rank | p50 latency | weights | model memory | peak inference VRAM |",
+            "|---:|---|---|---|---:|---:|---:|---:|---:|---:|---|---:|---:|",
         ]
     )
     rank = 0
@@ -5378,12 +5417,16 @@ def _central_readme(
             model_display += f" *(alias of `{item['alias_of']}`)*"
         weights = item["weights"] if item["weights"] in ("raw", "ema") else "—"
         rank_display = str(rank) if item["status"] == "complete" else "—"
-        score = _number(item.get("balanced_score"))
+        score = _number(item.get("recommendation_score"))
         miou = _number(item["miou"] * 100) if item["miou"] is not None else "—"
         latency = f"{_number(item['p50_ms'])} ms" if item["p50_ms"] is not None else "—"
+        quality_gate = item.get("quality_gate", "—")
+        accuracy_rank = item.get("accuracy_rank", "—")
+        speed_rank = item.get("speed_rank", "—")
         lines.append(
             f"| {rank_display} | {model_display} | {item['status']} | "
-            f"{score} | {miou} | {_number(item['fps'])} | {latency} | {weights} | "
+            f"{quality_gate} | {score} | {miou} | {accuracy_rank} | "
+            f"{_number(item['fps'])} | {speed_rank} | {latency} | {weights} | "
             f"{_mib(item['resident_parameter_bytes'])} | {_gib(item['peak_vram_bytes'])} |"
         )
     lines.append("")

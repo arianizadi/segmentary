@@ -1214,7 +1214,7 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert "±" not in readme
     assert "## RailSem19 accuracy-speed leaderboard" in readme
     leaderboard = readme.split("## RailSem19 accuracy-speed leaderboard", maxsplit=1)[1]
-    assert "| rank | model | status | balanced score |" in leaderboard
+    assert "| rank | model | status | quality gate | recommendation score |" in leaderboard
     assert leaderboard.count("| — | [") == status["scope"]["model_recipes"]
     assert "| pending |" in leaderboard
 
@@ -1234,7 +1234,7 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert eomt["training_objective"] == "hungarian_query"
 
 
-def test_rail_accuracy_speed_leaderboard_is_balanced_sorted_and_includes_aliases() -> None:
+def test_rail_accuracy_speed_leaderboard_is_accuracy_gated_and_includes_aliases() -> None:
     manifest = campaign.load_campaign_manifest()
 
     def record(miou: float, fps: float) -> dict[str, object]:
@@ -1256,6 +1256,7 @@ def test_rail_accuracy_speed_leaderboard_is_balanced_sorted_and_includes_aliases
         "eomt_dinov3_large": record(0.80, 20.0),
         "eomt_large": record(0.70, 100.0),
         "smp_deeplabv3plus_resnet101": record(0.60, 200.0),
+        "smp_pspnet_mobilenet_v2": record(0.40, 1_000.0),
         "deeplabv3plus_r101": record(0.99, 999.0),
         "hf_auto_beit_base_ade": {
             "protocols": {"railsem19": {"aggregate": {"miou": {"mean": 0.95}}}},
@@ -1266,22 +1267,41 @@ def test_rail_accuracy_speed_leaderboard_is_balanced_sorted_and_includes_aliases
     rows = campaign._rail_accuracy_speed_leaderboard(manifest, records)
 
     assert [row["model"] for row in rows[:4]] == [
+        "eomt_dinov3_large",
+        "eomt_large",
         "smp_deeplabv3plus_resnet101",
         "deeplabv3plus_r101",
-        "eomt_large",
-        "eomt_dinov3_large",
     ]
     assert len(rows) == len(manifest.models)
     assert all(row["status"] == "complete" for row in rows[:4])
-    assert all(row["status"] == "pending" for row in rows[4:])
     assert all(
-        rows[index]["balanced_score"] >= rows[index + 1]["balanced_score"] for index in range(3)
+        rows[index]["recommendation_score"] >= rows[index + 1]["recommendation_score"]
+        for index in range(3)
+    )
+    bad_but_fast = next(row for row in rows if row["model"] == "smp_pspnet_mobilenet_v2")
+    assert bad_but_fast["quality_gate"] == "below 60% mIoU"
+    assert "recommendation_score" not in bad_but_fast
+    assert bad_but_fast["speed_rank"] == 1
+    assert rows.index(bad_but_fast) > 3
+    assert all(
+        row["status"] == "pending"
+        for row in rows
+        if row["model"]
+        not in {
+            "eomt_dinov3_large",
+            "eomt_large",
+            "smp_deeplabv3plus_resnet101",
+            "deeplabv3plus_r101",
+            "smp_pspnet_mobilenet_v2",
+        }
     )
     alias = next(row for row in rows if row["model"] == "deeplabv3plus_r101")
     assert alias["alias_of"] == "smp_deeplabv3plus_resnet101"
     assert alias["miou"] == pytest.approx(0.60)
     assert alias["fps"] == pytest.approx(200.0)
-    assert rows[4]["model"] == "hf_auto_beit_base_ade"
+    assert alias["accuracy_rank"] == next(
+        row["accuracy_rank"] for row in rows if row["model"] == "smp_deeplabv3plus_resnet101"
+    )
 
 
 def test_transfer_reporting_accepts_only_verified_20k_final() -> None:
