@@ -38,11 +38,12 @@ See [native heads](../../components/native-heads/README.md) and the
 <!-- segmentary:generated-city-rail-benchmark:start -->
 ## Cityscapes and RailSem19 benchmark results
 
-Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 40,000 / 40,000 | 71.87 | 81.17 | 84.58 | 82.61 | 99.67 | 94.60 | 90.20 | 78.96 |
+| Cityscapes | 40,000 / 40,000 | 71.93 | 81.23 | 84.61 | 82.65 | 99.67 | 94.61 | 90.21 | 79.02 |
 | RailSem19 | 40,000 / 40,000 | 63.99 | 76.98 | 77.46 | 76.97 | 99.28 | 87.22 | 78.66 | 72.28 |
 | Cityscapes → RailSem19 | 20,000 / 20,000 | 61.00 | 74.63 | 75.12 | 74.66 | 99.17 | 85.70 | 76.32 | 69.00 |
 
@@ -60,7 +61,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | 8h 00m 50s | 8.01 | 3.66 GiB | 7.171 |
+| Cityscapes | 8h 00m 50s | 8.01 | 3.66 GiB | 7.603 |
 | RailSem19 | 12h 23m 01s | 12.38 | 4.27 GiB | 7.351 |
 | Cityscapes → RailSem19 | 6h 11m 24s | 6.19 | 4.25 GiB | 7.369 |
 
@@ -68,25 +69,25 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | class | IoU |
 |---|---:|
-| road | 97.43 |
-| sidewalk | 80.16 |
-| building | 90.14 |
-| wall | 50.40 |
-| fence | 59.31 |
-| pole | 39.76 |
-| traffic-light | 58.11 |
-| traffic-sign | 66.67 |
-| vegetation | 89.83 |
-| terrain | 61.20 |
-| sky | 91.86 |
-| person | 71.07 |
-| rider | 54.78 |
-| car | 92.94 |
-| truck | 77.00 |
-| bus | 83.57 |
-| train | 71.71 |
-| motorcycle | 59.61 |
-| bicycle | 70.05 |
+| road | 97.44 |
+| sidewalk | 80.29 |
+| building | 90.12 |
+| wall | 50.32 |
+| fence | 58.72 |
+| pole | 39.78 |
+| traffic-light | 58.30 |
+| traffic-sign | 66.61 |
+| vegetation | 89.85 |
+| terrain | 61.03 |
+| sky | 91.84 |
+| person | 71.21 |
+| rider | 54.62 |
+| car | 92.93 |
+| truck | 77.40 |
+| bus | 83.41 |
+| train | 72.35 |
+| motorcycle | 60.23 |
+| bicycle | 70.25 |
 
 ### RailSem19 class IoU
 
@@ -117,9 +118,9 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 ### Provenance
 
 - Model recipe: `configs/models/native_resnet50_aspp.yaml`
-- Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471, db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Source revisions: `a1a85ebcd593a1eeb3ad2e2445c14bbe6f5c5270, b9eb3e1f390b70aad63e78b2e723bd79b5266471`
 - Retained seeds: Cityscapes: 0; RailSem19: 0; Cityscapes → RailSem19: 0.
-- Quality evaluation weights: Cityscapes: —; RailSem19: raw; Cityscapes → RailSem19: raw.
+- Quality evaluation weights: Cityscapes: raw; RailSem19: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 

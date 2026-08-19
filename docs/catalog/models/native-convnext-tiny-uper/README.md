@@ -37,13 +37,14 @@ See [native backbones](../../components/native-backbones/README.md) and the
 <!-- segmentary:generated-city-rail-benchmark:start -->
 ## Cityscapes and RailSem19 benchmark results
 
-Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 40,000 / 40,000 | 81.48 | 87.86 | 91.05 | 89.34 | 99.79 | 96.55 | 93.53 | 87.21 |
-| RailSem19 | 40,000 / 40,000 | 70.38 | 80.66 | 83.07 | 81.73 | 99.43 | 90.23 | 82.91 | 79.27 |
-| Cityscapes → RailSem19 | 20,000 / 20,000 | 70.22 | 81.53 | 82.36 | 81.81 | 99.41 | 89.92 | 82.38 | 78.35 |
+| Cityscapes | 40,000 / 40,000 | 81.35 | 87.68 | 91.07 | 89.25 | 99.78 | 96.51 | 93.46 | 87.01 |
+| RailSem19 | 40,000 / 40,000 | 70.10 | 80.32 | 82.89 | 81.49 | 99.43 | 90.15 | 82.82 | 79.14 |
+| Cityscapes → RailSem19 | 20,000 / 20,000 | 69.61 | 80.70 | 82.12 | 81.34 | 99.39 | 89.63 | 81.98 | 77.81 |
 
 ### Standardized model-only inference
 
@@ -59,9 +60,9 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | 9h 12m 18s | 9.21 | 5.86 GiB | 6.607 |
-| RailSem19 | 12h 49m 26s | 12.82 | 6.23 GiB | 5.674 |
-| Cityscapes → RailSem19 | not retained | not retained | not retained | 5.828 |
+| Cityscapes | 9h 12m 18s | 9.21 | 5.86 GiB | 6.741 |
+| RailSem19 | 12h 49m 26s | 12.82 | 6.23 GiB | 5.750 |
+| Cityscapes → RailSem19 | not retained | not retained | not retained | 5.770 |
 
 `not retained` means the exact original training-duration record is no longer available. The validated quality result, final checkpoint, iteration count, and inference evidence are still complete; the model is not retrained only to recreate timing metadata.
 
@@ -69,58 +70,58 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | class | IoU |
 |---|---:|
-| road | 98.38 |
-| sidewalk | 86.51 |
-| building | 93.32 |
-| wall | 62.34 |
-| fence | 66.12 |
-| pole | 67.53 |
-| traffic-light | 74.51 |
-| traffic-sign | 82.41 |
-| vegetation | 92.95 |
-| terrain | 65.46 |
-| sky | 95.40 |
-| person | 84.69 |
-| rider | 68.17 |
-| car | 95.67 |
-| truck | 86.21 |
-| bus | 92.20 |
-| train | 85.77 |
-| motorcycle | 70.23 |
-| bicycle | 80.26 |
+| road | 98.33 |
+| sidewalk | 86.16 |
+| building | 93.27 |
+| wall | 62.57 |
+| fence | 65.86 |
+| pole | 67.27 |
+| traffic-light | 74.35 |
+| traffic-sign | 82.18 |
+| vegetation | 92.89 |
+| terrain | 65.01 |
+| sky | 95.38 |
+| person | 84.57 |
+| rider | 67.98 |
+| car | 95.64 |
+| truck | 86.65 |
+| bus | 92.25 |
+| train | 85.33 |
+| motorcycle | 69.70 |
+| bicycle | 80.20 |
 
 ### RailSem19 class IoU
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | 64.19 | 63.54 |
-| sidewalk | 64.25 | 63.71 |
-| construction | 80.07 | 79.58 |
-| fence | 58.37 | 58.83 |
-| pole | 62.76 | 63.19 |
-| traffic-light | 56.02 | 56.67 |
-| traffic-sign | 54.13 | 51.31 |
-| vegetation | 87.98 | 87.88 |
-| terrain | 70.81 | 70.15 |
-| sky | 95.93 | 95.62 |
-| human | 67.77 | 68.16 |
-| car | 81.38 | 82.42 |
-| truck | 35.34 | 48.70 |
+| road | 64.01 | 62.69 |
+| sidewalk | 64.25 | 63.05 |
+| construction | 79.86 | 78.91 |
+| fence | 57.96 | 57.49 |
+| pole | 62.71 | 63.10 |
+| traffic-light | 55.66 | 56.89 |
+| traffic-sign | 53.89 | 51.80 |
+| vegetation | 87.94 | 87.42 |
+| terrain | 70.65 | 69.36 |
+| sky | 95.94 | 95.69 |
+| human | 67.84 | 68.19 |
+| car | 81.10 | 81.73 |
+| truck | 33.19 | 45.08 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | 80.09 | 83.03 |
-| rail-track | 90.96 | 88.88 |
-| rail-raised | 74.87 | 72.34 |
-| rail-embedded | 58.18 | 54.11 |
-| tram-track | 77.52 | 70.58 |
-| trackbed | 76.61 | 75.47 |
+| on-rails | 79.45 | 81.99 |
+| rail-track | 90.92 | 89.10 |
+| rail-raised | 74.77 | 72.74 |
+| rail-embedded | 58.05 | 53.60 |
+| tram-track | 77.28 | 68.91 |
+| trackbed | 76.50 | 74.80 |
 
 ### Provenance
 
 - Model recipe: `configs/models/native_convnext_tiny_uper.yaml`
-- Source revisions: `57f686737f3aa22db9a92e9880b1862227160dfd, b9eb3e1f390b70aad63e78b2e723bd79b5266471, db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Source revisions: `a1a85ebcd593a1eeb3ad2e2445c14bbe6f5c5270`
 - Retained seeds: Cityscapes: 0; RailSem19: 0; Cityscapes → RailSem19: 0.
-- Quality evaluation weights: Cityscapes: —; RailSem19: ema; Cityscapes → RailSem19: ema.
+- Quality evaluation weights: Cityscapes: raw; RailSem19: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 

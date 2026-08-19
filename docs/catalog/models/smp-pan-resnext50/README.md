@@ -50,7 +50,8 @@ shape finding is a compatibility result, not an accuracy result. See the
 <!-- segmentary:generated-city-rail-benchmark:start -->
 ## Cityscapes and RailSem19 benchmark results
 
-Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -72,7 +73,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | 6h 15m 36s | 6.26 | 4.21 GiB | 7.034 |
+| Cityscapes | 6h 15m 36s | 6.26 | 4.21 GiB | 7.112 |
 | RailSem19 | 10h 36m 29s | 10.61 | 4.79 GiB | 6.789 |
 | Cityscapes → RailSem19 | 4h 15m 13s | 4.25 | 4.79 GiB | 6.918 |
 
@@ -129,9 +130,9 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 ### Provenance
 
 - Model recipe: `configs/models/smp_pan_resnext50.yaml`
-- Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7, b9eb3e1f390b70aad63e78b2e723bd79b5266471`
+- Source revisions: `a1a85ebcd593a1eeb3ad2e2445c14bbe6f5c5270, b9eb3e1f390b70aad63e78b2e723bd79b5266471`
 - Retained seeds: Cityscapes: 0; RailSem19: 0; Cityscapes → RailSem19: 0.
-- Quality evaluation weights: Cityscapes: —; RailSem19: raw; Cityscapes → RailSem19: raw.
+- Quality evaluation weights: Cityscapes: raw; RailSem19: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 - Caveat: Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone raw-weight validation evidence are retained.

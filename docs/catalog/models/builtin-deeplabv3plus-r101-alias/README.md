@@ -55,7 +55,8 @@ See the [explicit recipe page](../smp-deeplabv3plus-resnet101/README.md) and
 <!-- segmentary:generated-city-rail-benchmark:start -->
 ## Cityscapes and RailSem19 benchmark results
 
-Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|

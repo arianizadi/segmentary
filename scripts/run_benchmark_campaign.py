@@ -4437,9 +4437,45 @@ def _gib(value: object) -> str:
     )
 
 
+def _primary_protocols(record: dict[str, Any] | None) -> dict[str, Any]:
+    """Return paper-primary raw protocols without discarding deployment endpoints."""
+    if not isinstance(record, dict):
+        return {}
+    protocols = dict(record.get("protocols", {}))
+    raw_overrides = record.get("paper_raw_protocols")
+    if isinstance(raw_overrides, dict):
+        for protocol_id, protocol in raw_overrides.items():
+            baseline = protocols.get(protocol_id)
+            baseline_hashes = (
+                {
+                    item.get("source", {}).get("checkpoint_sha256")
+                    for item in baseline.get("individual", [])
+                }
+                if isinstance(baseline, dict)
+                else set()
+            )
+            override_hashes = (
+                {
+                    item.get("source", {}).get("checkpoint_sha256")
+                    for item in protocol.get("individual", [])
+                }
+                if isinstance(protocol, dict)
+                else set()
+            )
+            if (
+                protocol_id in REQUIRED_PROTOCOLS
+                and isinstance(protocol, dict)
+                and baseline_hashes
+                and baseline_hashes == override_hashes
+                and None not in baseline_hashes
+            ):
+                protocols[protocol_id] = protocol
+    return protocols
+
+
 def _record_metric(record: dict[str, Any], protocol: str, metric: str) -> object:
     return (
-        record.get("protocols", {})
+        _primary_protocols(record)
         .get(protocol, {})
         .get("aggregate", {})
         .get(metric, {})
@@ -4563,7 +4599,7 @@ def _transfer_final(record: dict[str, Any] | None) -> dict[str, Any]:
     """Return only a verified 20k Rail adaptation result."""
     if not isinstance(record, dict):
         return {}
-    transfer = record.get("protocols", {}).get("cityscapes_to_railsem19")
+    transfer = _primary_protocols(record).get("cityscapes_to_railsem19")
     if not isinstance(transfer, dict):
         return {}
     progress = transfer.get("iteration_progress")
@@ -4584,7 +4620,7 @@ def _transfer_final(record: dict[str, Any] | None) -> dict[str, Any]:
 
 
 def _model_record_status(record: dict[str, Any]) -> str:
-    protocols = record.get("protocols", {})
+    protocols = _primary_protocols(record)
     if not protocols:
         return "queued"
     return (
@@ -4601,16 +4637,24 @@ def _recorded_evaluation_weights(protocol: dict[str, Any]) -> str | None:
 
 
 def _model_generated_section(record: dict[str, Any]) -> str:
-    protocols = record.get("protocols", {})
+    protocols = _primary_protocols(record)
     visible_protocols = dict(protocols)
     if not _transfer_final(record):
         visible_protocols.pop("cityscapes_to_railsem19", None)
+    uniform_raw = bool(visible_protocols) and all(
+        _recorded_evaluation_weights(protocol) == "raw" for protocol in visible_protocols.values()
+    )
     lines = [
         REPORT_START,
         "## Cityscapes and RailSem19 benchmark results",
         "",
-        "Values are validated mean percentages, shown as one clean number. Detailed machine "
+        "Values are validated percentages, shown as one clean number. Detailed machine "
         "records retain every contributing seed. `—` means evidence is unavailable, not zero.",
+        *(
+            ["All quality values use raw checkpoint weights under the uniform paper policy."]
+            if uniform_raw
+            else []
+        ),
         "",
         "| protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
@@ -4973,7 +5017,7 @@ def _comparison_status(
     for priority, model_id in enumerate(manifest.priority_order, start=1):
         model = next(item for item in manifest.models if item.id == model_id)
         record = records.get(model_id)
-        protocols = dict(record.get("protocols", {})) if record else {}
+        protocols = _primary_protocols(record)
         if record and not _transfer_final(record):
             protocols.pop("cityscapes_to_railsem19", None)
         complete_cells += len(protocols)
@@ -5088,8 +5132,8 @@ def _comparison_status(
                     "retain the final common evaluation at Rail 20,000"
                 ),
                 "evaluation": (
-                    "automatic recorded weights (raw for running-stat BatchNorm; EMA otherwise), "
-                    "batch 1, 1024x1024 sliding window, stride 768, no TTA"
+                    "paper-primary raw checkpoint weights for every model, batch 1, "
+                    "1024x1024 sliding window, stride 768, no TTA"
                 ),
                 "resume_policy": (
                     campaign_record["execution"]["resume_policy"]
@@ -5136,6 +5180,7 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
         protocol_columns.extend(
             [
                 f"{protocol}_miou_mean",
+                f"{protocol}_evaluation_weights",
                 f"{protocol}_seeds",
                 f"{protocol}_iterations_current",
                 f"{protocol}_iterations_target",
@@ -5187,8 +5232,7 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
     writer.writeheader()
     for row in status["models"]:
         record = records.get(row["model"])
-        raw_protocols = record.get("protocols", {}) if record else {}
-        protocols = dict(raw_protocols)
+        protocols = _primary_protocols(record)
         if not _transfer_final(record):
             protocols.pop("cityscapes_to_railsem19", None)
         output: dict[str, Any] = {
@@ -5234,6 +5278,9 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
                 {
                     f"{protocol_id}_miou_mean": (
                         protocol["aggregate"]["miou"]["mean"] if protocol else ""
+                    ),
+                    f"{protocol_id}_evaluation_weights": (
+                        _recorded_evaluation_weights(protocol) if protocol else ""
                     ),
                     f"{protocol_id}_seeds": protocol["seed_count"] if protocol else 0,
                     f"{protocol_id}_iterations_current": progress["current_iterations"],
@@ -5307,7 +5354,9 @@ def _central_readme(
         "",
         "This live comparison covers every shipped model recipe. Compatible results are reused "
         "instead of retrained. `—` means evidence is unavailable, not zero or failure. Quality "
-        "tables show one clean mean; individual seeds remain in machine records.",
+        "tables use raw checkpoint weights for every model and show one clean value; individual "
+        "seeds remain in machine records. The separate [raw versus EMA analysis](RAW_VS_EMA.md) "
+        "quantifies cells that were also evaluated with EMA weights.",
         "",
         "## How to read the labels",
         "",
@@ -5378,6 +5427,9 @@ def _central_readme(
             "",
             "## Quality",
             "",
+            "Every quality value below uses raw checkpoint weights. This uniform paper policy "
+            "avoids architecture-dependent endpoint selection.",
+            "",
             "| priority | model | status | City mIoU (40k) | Rail mIoU (40k) | City → Rail mIoU (Rail20 / total60) |",
             "|---:|---|---|---:|---:|---:|",
         ]
@@ -5402,6 +5454,8 @@ def _central_readme(
             "",
             "Each unique physical model is measured exactly once from its RailSem19-only "
             "21-class recorded final endpoint (raw for running-stat BatchNorm; EMA otherwise). "
+            "Raw and EMA weights have the same graph and tensor shapes, so this standardized "
+            "speed and memory evidence remains comparable while the quality table is raw-only. "
             "Contract: NVIDIA L40S, PyTorch eager public "
             "forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed "
             "iterations. It includes internal query-to-dense collapse and excludes I/O, "
@@ -5418,7 +5472,7 @@ def _central_readme(
     )
     for row in status["models"]:
         record = records.get(row["model"])
-        protocols = record.get("protocols", {}) if record else {}
+        protocols = _primary_protocols(record)
         rail = protocols.get("railsem19", {})
         resource = rail.get("resource_evidence", {}) if isinstance(rail, dict) else {}
         checkpoint = resource.get("final_checkpoint", {})
@@ -5450,7 +5504,7 @@ def _central_readme(
     )
     for row in status["models"]:
         record = records.get(row["model"])
-        protocols = record.get("protocols", {}) if record else {}
+        protocols = _primary_protocols(record)
         cells = []
         peaks = []
         for protocol in REQUIRED_PROTOCOLS:
@@ -5483,8 +5537,10 @@ def _central_readme(
             "trained twice.",
             "- Transfer warm-starts every compatible learned tensor and reinitialises only the "
             "19-class to `rail_union` classifier mismatch.",
-            "- Quality evaluation: the exact recorded `raw` or `ema` endpoint for each "
-            "protocol, 1024x1024 sliding window, stride 768, no TTA.",
+            "- Primary quality evaluation: raw checkpoint weights for every protocol, "
+            "1024x1024 sliding window, stride 768, no TTA.",
+            "- [`RAW_VS_EMA.md`](RAW_VS_EMA.md): paired raw-versus-EMA quality analysis for "
+            "the same checkpoints and validation protocols.",
             "- [`results.csv`](results.csv): spreadsheet-friendly mean metrics, iterations, and resources.",
             "- [`status.json`](status.json): machine-readable scope and completion state.",
             "- [`records/`](records/): full class IoUs, retained seeds, resources, and provenance.",

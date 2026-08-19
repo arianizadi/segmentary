@@ -1,0 +1,374 @@
+#!/usr/bin/env python3
+"""Publish a uniform raw-weight paper view from verified evaluation-only results."""
+
+from __future__ import annotations
+
+import argparse
+import copy
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+from typing import Any
+
+from scripts import run_benchmark_campaign as campaign
+
+EXPECTED_EVALUATION_SHA = "a1a85ebcd593a1eeb3ad2e2445c14bbe6f5c5270"
+TRAINING_SOURCE_SHA = "b9eb3e1f390b70aad63e78b2e723bd79b5266471"
+COMPARISON_ROOT = campaign.REPO_ROOT / "docs/results/model-comparison"
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        while chunk := handle.read(16 * 1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _load_object(path: Path) -> dict[str, Any]:
+    value = json.loads(path.read_text())
+    if not isinstance(value, dict):
+        raise campaign.CampaignError(f"{path} must contain a JSON object")
+    return value
+
+
+def _finite_tree(value: Any) -> bool:
+    if value is None or isinstance(value, str | bool):
+        return True
+    if isinstance(value, int | float):
+        return math.isfinite(value)
+    if isinstance(value, list):
+        return all(_finite_tree(item) for item in value)
+    if isinstance(value, dict):
+        return all(_finite_tree(item) for item in value.values())
+    return False
+
+
+def _raw_individual(
+    *,
+    original: dict[str, Any],
+    result: dict[str, Any],
+    result_sha256: str,
+    target: dict[str, Any],
+) -> dict[str, Any]:
+    metrics = result["metrics"]
+    boundary = metrics.get("boundary") or {}
+    names = list(original["metrics"]["per_class_iou"])
+    if set(metrics["per_class_iou"]) != set(names) or set(metrics["support"]) != set(names):
+        raise campaign.CampaignError(f"{target['job_id']}: class metric keys changed")
+    individual = copy.deepcopy(original)
+    individual["metrics"] = {
+        **{key: metrics.get(key) for key, _ in campaign.AGGREGATE_METRICS},
+        "boundary_macro_f1": boundary.get("macro_f1"),
+        "per_class_iou": {name: metrics["per_class_iou"].get(name) for name in names},
+        "support": {name: metrics["support"].get(name) for name in names},
+    }
+    source = individual["source"]
+    source.update(
+        {
+            "result_sha256": result_sha256,
+            "git_sha": result["git_sha"],
+            "git_dirty": False,
+            "checkpoint_available": True,
+            "checkpoint_sha256": target["checkpoint_sha256"],
+            "checkpoint_step": target["checkpoint_step"],
+            "checkpoint_size_bytes": target["checkpoint_size_bytes"],
+            "full_validation_pipeline": {
+                "images": result["dataset_sizes"]["eval"],
+                "wall_clock_s": result["wall_clock_s"],
+                "images_per_s": result["dataset_sizes"]["eval"] / result["wall_clock_s"],
+                "scope": "loader, sliding-window inference, and metrics",
+            },
+        }
+    )
+    individual["milestones"] = {}
+    return individual
+
+
+def _validate_result(
+    target: dict[str, Any], result_path: Path, original: dict[str, Any], *, weights: str
+) -> tuple[dict[str, Any], str]:
+    result = _load_object(result_path)
+    result_hash = _sha256(result_path)
+    evaluation = result.get("config", {}).get("evaluation", {})
+    if evaluation.get("weights") != weights:
+        raise campaign.CampaignError(f"{result_path}: evaluation weights are not {weights}")
+    if result.get("git_sha") != EXPECTED_EVALUATION_SHA or result.get("git_dirty") is not False:
+        raise campaign.CampaignError(f"{result_path}: source is not exact and clean")
+    if result.get("seed") != target["seed"]:
+        raise campaign.CampaignError(f"{result_path}: seed changed")
+    if result.get("dataset_sizes", {}).get("eval") != target["images"]:
+        raise campaign.CampaignError(f"{result_path}: validation image count changed")
+    if not str(result.get("stage", "")).startswith("eval:"):
+        raise campaign.CampaignError(f"{result_path}: not a standalone evaluation record")
+    if target["checkpoint"] not in str(result.get("notes", "")):
+        raise campaign.CampaignError(f"{result_path}: checkpoint provenance changed")
+    if not isinstance(result.get("wall_clock_s"), int | float) or result["wall_clock_s"] <= 0:
+        raise campaign.CampaignError(f"{result_path}: invalid evaluation duration")
+    if not _finite_tree(result.get("metrics")):
+        raise campaign.CampaignError(f"{result_path}: non-finite metrics")
+    source = original.get("source", {})
+    for key in ("checkpoint_sha256", "checkpoint_step", "checkpoint_size_bytes"):
+        if source.get(key) != target[key]:
+            raise campaign.CampaignError(f"{target['job_id']}: published {key} changed")
+    return result, result_hash
+
+
+def _comparison_markdown(rows: list[dict[str, Any]]) -> str:
+    raw_wins = sum(row["delta_miou_points"] > 0 for row in rows)
+    ema_wins = sum(row["delta_miou_points"] < 0 for row in rows)
+    ties = len(rows) - raw_wins - ema_wins
+    mean_delta = sum(row["delta_miou_points"] for row in rows) / len(rows)
+    mean_summary = (
+        f"{('raw' if mean_delta > 0 else 'EMA')} averaged {abs(mean_delta):.2f} mIoU "
+        "percentage points higher"
+        if mean_delta
+        else "the two endpoints had the same mean mIoU"
+    )
+    labels = {
+        "cityscapes": "Cityscapes",
+        "railsem19": "RailSem19",
+        "cityscapes_to_railsem19": "Cityscapes to RailSem19",
+    }
+    lines = [
+        "# Raw versus EMA checkpoint weights",
+        "",
+        "This paired analysis evaluates raw and exponential-moving-average (EMA) weights "
+        "from the same final checkpoint. Dataset, validation split, seed, taxonomy, sliding "
+        "window, stride, precision, and no-TTA policy are identical; only the selected weight "
+        "set changes.",
+        "",
+        "The main [model comparison](README.md) uses raw weights for every quality cell so the "
+        "paper compares architectures under one uniform rule. Standardized FPS and memory are "
+        "not repeated because raw and EMA use the same model graph and tensor shapes.",
+        "",
+        "These are single-seed descriptive differences, not confidence intervals or evidence "
+        "of statistical significance. The higher-endpoint column carries the direction so the "
+        "human-facing table does not use signed or error-bar notation.",
+        "",
+        "## Summary",
+        "",
+        f"- Paired cells: {len(rows)}.",
+        f"- Raw higher: {raw_wins}; EMA higher: {ema_wins}; exact ties: {ties}.",
+        f"- Across these cells, {mean_summary}.",
+        "",
+        "## Paired results",
+        "",
+        "| model | protocol | raw mIoU | EMA mIoU | absolute difference (points) | higher endpoint |",
+        "|---|---|---:|---:|---:|---|",
+    ]
+    for row in sorted(rows, key=lambda item: (item["protocol"], item["model_id"])):
+        delta = row["delta_miou_points"]
+        higher = "raw" if delta > 0 else "EMA" if delta < 0 else "tie"
+        lines.append(
+            f"| `{row['model_id']}` | {labels[row['protocol']]} | "
+            f"{row['raw_miou'] * 100:.2f} | {row['ema_miou'] * 100:.2f} | "
+            f"{abs(delta):.2f} | {higher} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Interpretation",
+            "",
+            "EMA smooths parameter updates and can improve validation quality, but it is not "
+            "universally better. Architectures with running-stat BatchNorm can be especially "
+            "sensitive because parameter EMA does not automatically provide matching averaged "
+            "running buffers. Raw-only reporting avoids architecture-dependent endpoint selection "
+            "and avoids choosing the better endpoint on the same validation set.",
+            "",
+            "Machine-readable hashes, metrics, and provenance are retained in "
+            "[`raw-evaluation-manifest.json`](raw-evaluation-manifest.json) and each model's "
+            "record under [`records/`](records/).",
+            "",
+        ]
+    )
+    output = "\n".join(lines)
+    if "±" in output:
+        raise campaign.CampaignError("raw/EMA analysis contains forbidden dispersion formatting")
+    return output
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--results-root", type=Path, required=True)
+    parser.add_argument("--ema-results-root", type=Path, required=True)
+    parser.add_argument("--preflight", type=Path, required=True)
+    parser.add_argument("--write", action="store_true")
+    args = parser.parse_args()
+    preflight = _load_object(args.preflight)
+    if preflight.get("failures") or preflight.get("verified_count") != 36:
+        raise campaign.CampaignError("preflight must verify all 36 paired cells")
+
+    records = campaign._load_existing_records(campaign.REPO_ROOT)
+    rows: list[dict[str, Any]] = []
+    planned: dict[Path, str] = {}
+    for target in preflight["targets"]:
+        model_id = target["model_id"]
+        protocol_id = target["protocol"]
+        record = records[model_id]
+        protocol = record["protocols"][protocol_id]
+        if str(protocol["evaluation"]["weights"]).lower() != "ema":
+            raise campaign.CampaignError(f"{target['job_id']}: baseline is no longer EMA")
+        matches = [item for item in protocol["individual"] if item["seed"] == target["seed"]]
+        if len(matches) != 1:
+            raise campaign.CampaignError(f"{target['job_id']}: expected exactly one retained seed")
+        original = matches[0]
+        result_path = args.results_root / target["job_id"] / "results.json"
+        result, result_hash = _validate_result(target, result_path, original, weights="raw")
+        ema_result_path = args.ema_results_root / target["job_id"] / "results.json"
+        ema_result, ema_result_hash = _validate_result(
+            target, ema_result_path, original, weights="ema"
+        )
+        raw_config = copy.deepcopy(result["config"])
+        ema_config = copy.deepcopy(ema_result["config"])
+        raw_config["evaluation"].pop("weights", None)
+        ema_config["evaluation"].pop("weights", None)
+        if raw_config != ema_config:
+            raise campaign.CampaignError(
+                f"{target['job_id']}: paired evaluator configs differ beyond weights"
+            )
+        if (
+            result["stage"] != ema_result["stage"]
+            or result["dataset_sizes"] != ema_result["dataset_sizes"]
+        ):
+            raise campaign.CampaignError(
+                f"{target['job_id']}: paired stage or dataset size changed"
+            )
+        if result["metrics"].get("support") != ema_result["metrics"].get("support"):
+            raise campaign.CampaignError(f"{target['job_id']}: paired validation support changed")
+        raw = copy.deepcopy(protocol)
+        raw["evaluation"]["weights"] = "raw"
+        raw["individual"] = [
+            _raw_individual(
+                original=original,
+                result=result,
+                result_sha256=result_hash,
+                target=target,
+            )
+        ]
+        raw["milestones"] = {}
+        campaign._aggregate_protocol(raw)
+        pipeline = raw["individual"][0]["source"]["full_validation_pipeline"]
+        raw["resource_evidence"]["full_validation_pipeline"] = {
+            "seed_count": 1,
+            "images": pipeline["images"],
+            "wall_clock_s_mean": pipeline["wall_clock_s"],
+            "images_per_s_mean": pipeline["images_per_s"],
+            "scope": pipeline["scope"],
+        }
+        record.setdefault("paper_raw_protocols", {})[protocol_id] = raw
+        record["paper_quality_policy"] = {
+            "primary_weights": "raw",
+            "evaluation_source_git_sha": EXPECTED_EVALUATION_SHA,
+            "paired_analysis": "../RAW_VS_EMA.md",
+        }
+        raw_miou = float(result["metrics"]["miou"])
+        ema_miou = float(ema_result["metrics"]["miou"])
+        rows.append(
+            {
+                "job_id": target["job_id"],
+                "model_id": model_id,
+                "protocol": protocol_id,
+                "seed": target["seed"],
+                "images": target["images"],
+                "checkpoint_sha256": target["checkpoint_sha256"],
+                "checkpoint_step": target["checkpoint_step"],
+                "resolved_config_sha256": target["config_sha256"],
+                "raw_result_sha256": result_hash,
+                "raw_result_git_sha": result["git_sha"],
+                "raw_result_config_hash": result["config_hash"],
+                "raw_wall_clock_s": result["wall_clock_s"],
+                "raw_miou": raw_miou,
+                "ema_result_sha256": ema_result_hash,
+                "ema_result_git_sha": ema_result["git_sha"],
+                "ema_result_config_hash": ema_result["config_hash"],
+                "ema_wall_clock_s": ema_result["wall_clock_s"],
+                "ema_miou": ema_miou,
+                "delta_miou_points": (raw_miou - ema_miou) * 100,
+                "paired_config_equal_except_weights": True,
+            }
+        )
+
+    if len(rows) != 36:
+        raise campaign.CampaignError(f"expected 36 paired rows, found {len(rows)}")
+    for record in records.values():
+        for protocol_id, protocol in campaign._primary_protocols(record).items():
+            if (
+                protocol_id in campaign.REQUIRED_PROTOCOLS
+                and protocol["evaluation"]["weights"] != "raw"
+            ):
+                raise campaign.CampaignError(
+                    f"{record['model_id']} {protocol_id}: paper-primary endpoint is not raw"
+                )
+
+    manifest_payload = {
+        "schema_version": 1,
+        "policy": "raw checkpoint weights for every paper-primary quality cell",
+        "evaluation_source_git_sha": EXPECTED_EVALUATION_SHA,
+        "paired_cell_count": len(rows),
+        "targets": rows,
+    }
+    manifest_path = COMPARISON_ROOT / "raw-evaluation-manifest.json"
+    analysis_path = COMPARISON_ROOT / "RAW_VS_EMA.md"
+    planned[manifest_path] = json.dumps(manifest_payload, indent=2, sort_keys=True) + "\n"
+    planned[analysis_path] = _comparison_markdown(rows)
+    for model_id, record in records.items():
+        if "paper_raw_protocols" not in record:
+            continue
+        path = COMPARISON_ROOT / "records" / f"{model_id}.json"
+        planned[path] = json.dumps(record, indent=2) + "\n"
+
+    status_path = COMPARISON_ROOT / "status.json"
+    status = _load_object(status_path)
+    status["scope"]["quality_weight_policy"] = "raw checkpoint weights for every model and protocol"
+    status["scope"]["paired_raw_ema_cells"] = len(rows)
+    status["scope"]["training"]["evaluation"] = (
+        "paper-primary raw checkpoint weights for every model, batch 1, 1024x1024 sliding "
+        "window, stride 768, no TTA"
+    )
+    for row in status["models"]:
+        record = records[row["alias_of"] or row["model"]]
+        for protocol_id in campaign.REQUIRED_PROTOCOLS:
+            value = campaign._record_metric(record, protocol_id, "miou")
+            row[f"{protocol_id}_miou"] = campaign._number(
+                value * 100 if isinstance(value, int | float) else None
+            )
+    planned[status_path] = json.dumps(status, indent=2) + "\n"
+    planned[COMPARISON_ROOT / "results.csv"] = campaign._comparison_csv(status, records)
+    campaign_manifest = campaign.load_campaign_manifest()
+    planned[COMPARISON_ROOT / "README.md"] = campaign._central_readme(
+        campaign_manifest, status, records, TRAINING_SOURCE_SHA
+    )
+    by_model = {model.id: model for model in campaign_manifest.models}
+    for model_id, record in records.items():
+        model = by_model[model_id]
+        path = campaign.REPO_ROOT / model.readme
+        planned[path] = campaign._replace_generated_section(
+            path.read_text(), campaign._model_generated_section(record)
+        )
+    campaign._public_privacy_check(planned)
+    if any("±" in content for path, content in planned.items() if path.suffix == ".md"):
+        raise campaign.CampaignError("generated Markdown contains forbidden plus-minus notation")
+    if args.write:
+        for path, content in planned.items():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temporary = path.with_suffix(path.suffix + ".tmp")
+            temporary.write_text(content)
+            os.replace(temporary, path)
+    print(
+        json.dumps(
+            {
+                "paired_cells": len(rows),
+                "planned_files": len(planned),
+                "write": args.write,
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

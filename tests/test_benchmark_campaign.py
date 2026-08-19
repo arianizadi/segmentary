@@ -116,6 +116,36 @@ def test_alias_and_canonical_model_configs_have_same_compatibility_signature() -
     )
 
 
+def test_paper_raw_protocol_overrides_quality_without_discarding_deployment_record() -> None:
+    source = {"source": {"checkpoint_sha256": "checkpoint-a"}}
+    deployment = {
+        "evaluation": {"weights": "ema"},
+        "aggregate": {"miou": {"mean": 0.7}},
+        "individual": [source],
+    }
+    paper_raw = {
+        "evaluation": {"weights": "raw"},
+        "aggregate": {"miou": {"mean": 0.69}},
+        "individual": [copy.deepcopy(source)],
+    }
+    record = {
+        "protocols": {
+            "cityscapes": deployment,
+            "railsem19": {"evaluation": {"weights": "raw"}},
+        },
+        "paper_raw_protocols": {"cityscapes": paper_raw},
+    }
+
+    primary = campaign._primary_protocols(record)
+
+    assert primary["cityscapes"] is paper_raw
+    assert primary["railsem19"] is record["protocols"]["railsem19"]
+    assert record["protocols"]["cityscapes"] is deployment
+
+    paper_raw["individual"][0]["source"]["checkpoint_sha256"] = "checkpoint-b"
+    assert campaign._primary_protocols(record)["cityscapes"] is deployment
+
+
 def test_legacy_b2_config_normalizes_to_current_semantics(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -1287,7 +1317,10 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert "raw for running-stat BatchNorm; EMA otherwise" in readme
     assert "| model | weights | parameters" in readme
     assert "Quality evaluation: EMA" not in readme
-    assert "exact recorded `raw` or `ema` endpoint" in readme
+    assert "Primary quality evaluation: raw checkpoint weights for every protocol" in readme
+    assert "paper-primary raw checkpoint weights for every model" in readme
+    assert "automatic recorded weights" not in readme
+    assert "[`RAW_VS_EMA.md`](RAW_VS_EMA.md)" in readme
     assert "FPS can remain pending while Cityscapes mIoU is already available" in readme
     assert "City → Rail mIoU (Rail20 / total60)" in readme
     assert "Rail40" not in readme

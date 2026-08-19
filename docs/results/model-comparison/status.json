@@ -11,8 +11,8 @@
   "models": [
     {
       "alias_of": null,
-      "cityscapes_miou": "82.96",
-      "cityscapes_to_railsem19_miou": "69.50",
+      "cityscapes_miou": "82.94",
+      "cityscapes_to_railsem19_miou": "69.84",
       "iteration_progress": {
         "cityscapes": {
           "current_iterations": 40000,
@@ -81,7 +81,7 @@
         "rail_union": 314917910
       },
       "priority": 1,
-      "railsem19_miou": "71.42",
+      "railsem19_miou": "71.45",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 41.22877599524977,
@@ -160,8 +160,8 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "82.74",
-      "cityscapes_to_railsem19_miou": "69.66",
+      "cityscapes_miou": "82.72",
+      "cityscapes_to_railsem19_miou": "69.96",
       "iteration_progress": {
         "cityscapes": {
           "current_iterations": 40000,
@@ -230,7 +230,7 @@
         "rail_union": 316580886
       },
       "priority": 2,
-      "railsem19_miou": "72.13",
+      "railsem19_miou": "72.14",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 45.912213962035025,
@@ -309,7 +309,7 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "57.26",
+      "cityscapes_miou": "57.06",
       "cityscapes_to_railsem19_miou": "51.42",
       "iteration_progress": {
         "cityscapes": {
@@ -379,7 +379,7 @@
         "rail_union": 161500245
       },
       "priority": 3,
-      "railsem19_miou": "53.98",
+      "railsem19_miou": "54.17",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 2.5215333313679,
@@ -458,7 +458,7 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "81.03",
+      "cityscapes_miou": "80.88",
       "cityscapes_to_railsem19_miou": "69.32",
       "iteration_progress": {
         "cityscapes": {
@@ -528,7 +528,7 @@
         "rail_union": 80887221
       },
       "priority": 4,
-      "railsem19_miou": "70.74",
+      "railsem19_miou": "70.66",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 43.06300350975865,
@@ -607,7 +607,7 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "82.40",
+      "cityscapes_miou": "82.30",
       "cityscapes_to_railsem19_miou": "69.30",
       "iteration_progress": {
         "cityscapes": {
@@ -677,7 +677,7 @@
         "rail_union": 84609493
       },
       "priority": 5,
-      "railsem19_miou": "71.95",
+      "railsem19_miou": "71.87",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 26.74247741707274,
@@ -756,8 +756,8 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "78.90",
-      "cityscapes_to_railsem19_miou": "67.90",
+      "cityscapes_miou": "78.76",
+      "cityscapes_to_railsem19_miou": "67.26",
       "iteration_progress": {
         "cityscapes": {
           "current_iterations": 40000,
@@ -826,7 +826,7 @@
         "rail_union": 58953423
       },
       "priority": 6,
-      "railsem19_miou": "69.90",
+      "railsem19_miou": "69.75",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 42.33224752656839,
@@ -975,7 +975,7 @@
         "rail_union": 73168490
       },
       "priority": 7,
-      "railsem19_miou": "68.62",
+      "railsem19_miou": "68.52",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 30.752609785116793,
@@ -1054,7 +1054,7 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "78.46",
+      "cityscapes_miou": "78.36",
       "cityscapes_to_railsem19_miou": "66.89",
       "iteration_progress": {
         "cityscapes": {
@@ -1124,7 +1124,7 @@
         "rail_union": 61323093
       },
       "priority": 8,
-      "railsem19_miou": "68.44",
+      "railsem19_miou": "68.48",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 65.19736083299836,
@@ -1203,7 +1203,7 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "80.65",
+      "cityscapes_miou": "80.48",
       "cityscapes_to_railsem19_miou": "67.37",
       "iteration_progress": {
         "cityscapes": {
@@ -1273,7 +1273,7 @@
         "rail_union": 27362773
       },
       "priority": 9,
-      "railsem19_miou": "70.39",
+      "railsem19_miou": "70.42",
       "result_origin": "reused",
       "standardized_inference": {
         "fps": 53.259860255199456,
@@ -1352,7 +1352,7 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "78.57",
+      "cityscapes_miou": "78.15",
       "cityscapes_to_railsem19_miou": "66.06",
       "iteration_progress": {
         "cityscapes": {
@@ -1422,7 +1422,7 @@
         "rail_union": 56281941
       },
       "priority": 10,
-      "railsem19_miou": "66.82",
+      "railsem19_miou": "67.17",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 71.010390786865,
@@ -1799,8 +1799,8 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "81.48",
-      "cityscapes_to_railsem19_miou": "70.22",
+      "cityscapes_miou": "81.35",
+      "cityscapes_to_railsem19_miou": "69.61",
       "iteration_progress": {
         "cityscapes": {
           "current_iterations": 40000,
@@ -1869,7 +1869,7 @@
         "rail_union": 36849525
       },
       "priority": 13,
-      "railsem19_miou": "70.38",
+      "railsem19_miou": "70.10",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 75.58398906191174,
@@ -1948,8 +1948,8 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "80.72",
-      "cityscapes_to_railsem19_miou": "70.31",
+      "cityscapes_miou": "80.50",
+      "cityscapes_to_railsem19_miou": "70.42",
       "iteration_progress": {
         "cityscapes": {
           "current_iterations": 40000,
@@ -2018,7 +2018,7 @@
         "rail_union": 38230389
       },
       "priority": 14,
-      "railsem19_miou": "70.70",
+      "railsem19_miou": "70.55",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 29.148104385559158,
@@ -2316,7 +2316,7 @@
         "rail_union": 40351925
       },
       "priority": 16,
-      "railsem19_miou": "66.41",
+      "railsem19_miou": "66.38",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 136.37291155601733,
@@ -2395,7 +2395,7 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "78.73",
+      "cityscapes_miou": "78.67",
       "cityscapes_to_railsem19_miou": "66.31",
       "iteration_progress": {
         "cityscapes": {
@@ -2693,7 +2693,7 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "71.87",
+      "cityscapes_miou": "71.93",
       "cityscapes_to_railsem19_miou": "61.00",
       "iteration_progress": {
         "cityscapes": {
@@ -2912,7 +2912,7 @@
         "rail_union": 39638869
       },
       "priority": 20,
-      "railsem19_miou": "68.18",
+      "railsem19_miou": "68.41",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 77.90865719638194,
@@ -3140,7 +3140,7 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "75.47",
+      "cityscapes_miou": "75.74",
       "cityscapes_to_railsem19_miou": "65.11",
       "iteration_progress": {
         "cityscapes": {
@@ -3210,7 +3210,7 @@
         "rail_union": 10737525
       },
       "priority": 22,
-      "railsem19_miou": "66.56",
+      "railsem19_miou": "66.85",
       "result_origin": "trained",
       "standardized_inference": {
         "fps": 54.279556298378054,
@@ -3289,7 +3289,7 @@
     },
     {
       "alias_of": null,
-      "cityscapes_miou": "74.81",
+      "cityscapes_miou": "74.55",
       "cityscapes_to_railsem19_miou": "60.17",
       "iteration_progress": {
         "cityscapes": {
@@ -5576,7 +5576,7 @@
       "effective_batch_sizes": [
         16
       ],
-      "evaluation": "automatic recorded weights (raw for running-stat BatchNorm; EMA otherwise), batch 1, 1024x1024 sliding window, stride 768, no TTA",
+      "evaluation": "paper-primary raw checkpoint weights for every model, batch 1, 1024x1024 sliding window, stride 768, no TTA",
       "gpu_count_per_job": 1,
       "hardware": "one NVIDIA L40S per physical job",
       "optimizer": "AdamW",
@@ -5594,6 +5594,8 @@
       ],
       "transfer": "reuse the matching 40,000-iteration Cityscapes checkpoint, reset only the incompatible classifier, and train RailSem19 for 20,000 iterations; use 0.1x for backbone groups and 1.0x for model-declared head groups; retain the final common evaluation at Rail 20,000"
     },
-    "unique_training_choices": 36
+    "unique_training_choices": 36,
+    "quality_weight_policy": "raw checkpoint weights for every model and protocol",
+    "paired_raw_ema_cells": 36
   }
 }

@@ -65,12 +65,13 @@ and [`hrnet_ocr.py`](../../../../src/segmentary/models/hrnet_ocr.py).
 <!-- segmentary:generated-city-rail-benchmark:start -->
 ## Cityscapes and RailSem19 benchmark results
 
-Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 80.75 | 87.16 | 90.83 | 88.84 | 99.78 | 96.44 | 93.34 | 86.86 |
-| RailSem19 | 40,000 / 40,000 | 68.62 | 80.86 | 80.14 | 80.21 | 99.39 | 89.42 | 81.86 | 78.23 |
+| RailSem19 | 40,000 / 40,000 | 68.52 | 80.45 | 80.50 | 80.08 | 99.39 | 89.53 | 81.94 | 78.20 |
 | Cityscapes → RailSem19 | 20,000 / 20,000 | 66.03 | 78.92 | 78.57 | 78.31 | 99.33 | 88.43 | 80.28 | 75.04 |
 
 ### Standardized model-only inference
@@ -88,7 +89,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
 | Cityscapes | 19h 14m 44s | 19.25 | 17.35 GiB | 4.784 |
-| RailSem19 | 27h 48m 14s | 27.80 | 17.35 GiB | 3.529 |
+| RailSem19 | 27h 48m 14s | 27.80 | 17.35 GiB | 3.676 |
 | Cityscapes → RailSem19 | 13h 54m 23s | 13.91 | 17.35 GiB | 3.628 |
 
 ### Cityscapes class IoU
@@ -119,34 +120,34 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | 61.80 | 60.05 |
-| sidewalk | 62.78 | 61.01 |
-| construction | 78.87 | 77.04 |
-| fence | 58.53 | 56.61 |
-| pole | 63.99 | 64.18 |
-| traffic-light | 56.43 | 55.27 |
-| traffic-sign | 52.48 | 48.25 |
-| vegetation | 86.94 | 86.53 |
-| terrain | 69.81 | 66.66 |
-| sky | 94.81 | 94.28 |
-| human | 65.61 | 65.77 |
-| car | 82.60 | 81.94 |
-| truck | 23.22 | 23.01 |
+| road | 61.35 | 60.05 |
+| sidewalk | 63.30 | 61.01 |
+| construction | 79.01 | 77.04 |
+| fence | 58.47 | 56.61 |
+| pole | 64.45 | 64.18 |
+| traffic-light | 55.77 | 55.27 |
+| traffic-sign | 52.62 | 48.25 |
+| vegetation | 87.04 | 86.53 |
+| terrain | 69.63 | 66.66 |
+| sky | 95.21 | 94.28 |
+| human | 66.29 | 65.77 |
+| car | 83.02 | 81.94 |
+| truck | 21.74 | 23.01 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | 72.47 | 63.02 |
-| rail-track | 90.97 | 88.38 |
-| rail-raised | 74.89 | 70.03 |
-| rail-embedded | 56.90 | 50.10 |
-| tram-track | 75.04 | 68.84 |
-| trackbed | 75.69 | 73.51 |
+| on-rails | 70.86 | 63.02 |
+| rail-track | 90.92 | 88.38 |
+| rail-raised | 74.95 | 70.03 |
+| rail-embedded | 56.94 | 50.10 |
+| tram-track | 74.68 | 68.84 |
+| trackbed | 75.53 | 73.51 |
 
 ### Provenance
 
 - Model recipe: `configs/models/hrnet_w48_ocr.yaml`
-- Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7, b9eb3e1f390b70aad63e78b2e723bd79b5266471, db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Source revisions: `a1a85ebcd593a1eeb3ad2e2445c14bbe6f5c5270, a50027d6a72a9146f6302bc1f407e6477a74e8c7, b9eb3e1f390b70aad63e78b2e723bd79b5266471`
 - Retained seeds: RailSem19: 0; Cityscapes: 0; Cityscapes → RailSem19: 0.
-- Quality evaluation weights: RailSem19: —; Cityscapes: raw; Cityscapes → RailSem19: raw.
+- Quality evaluation weights: RailSem19: raw; Cityscapes: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 - Caveat: Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone raw-weight validation evidence are retained.

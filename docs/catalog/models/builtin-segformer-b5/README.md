@@ -61,12 +61,13 @@ for shared rules.
 <!-- segmentary:generated-city-rail-benchmark:start -->
 ## Cityscapes and RailSem19 benchmark results
 
-Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 40,000 / 40,000 | 82.40 | 89.06 | 90.98 | 89.96 | 99.80 | 96.73 | 93.87 | 88.23 |
-| RailSem19 | 40,000 / 40,000 | 71.95 | 82.46 | 83.76 | 83.02 | 99.44 | 90.51 | 83.29 | 80.07 |
+| Cityscapes | 40,000 / 40,000 | 82.30 | 88.92 | 91.00 | 89.89 | 99.80 | 96.73 | 93.85 | 88.17 |
+| RailSem19 | 40,000 / 40,000 | 71.87 | 82.36 | 83.72 | 82.96 | 99.44 | 90.50 | 83.26 | 80.04 |
 | Cityscapes → RailSem19 | 20,000 / 20,000 | 69.30 | 81.53 | 81.03 | 81.17 | 99.37 | 89.29 | 81.43 | 76.94 |
 
 ### Standardized model-only inference
@@ -83,66 +84,66 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | 17h 59m 42s | 17.99 | 16.31 GiB | 4.783 |
-| RailSem19 | 19h 38m 19s | 19.64 | 16.94 GiB | 3.478 |
+| Cityscapes | 17h 59m 42s | 17.99 | 16.31 GiB | 4.880 |
+| RailSem19 | 19h 38m 19s | 19.64 | 16.94 GiB | 3.476 |
 | Cityscapes → RailSem19 | 10h 48m 49s | 10.81 | 16.31 GiB | 3.408 |
 
 ### Cityscapes class IoU
 
 | class | IoU |
 |---|---:|
-| road | 98.54 |
-| sidewalk | 87.92 |
-| building | 93.65 |
-| wall | 69.71 |
-| fence | 66.49 |
-| pole | 68.21 |
-| traffic-light | 75.11 |
-| traffic-sign | 81.69 |
-| vegetation | 93.12 |
-| terrain | 67.10 |
-| sky | 95.46 |
-| person | 84.70 |
-| rider | 67.94 |
-| car | 95.84 |
-| truck | 89.15 |
+| road | 98.55 |
+| sidewalk | 87.94 |
+| building | 93.64 |
+| wall | 69.65 |
+| fence | 66.18 |
+| pole | 68.34 |
+| traffic-light | 75.10 |
+| traffic-sign | 81.68 |
+| vegetation | 93.09 |
+| terrain | 66.68 |
+| sky | 95.48 |
+| person | 84.72 |
+| rider | 67.80 |
+| car | 95.78 |
+| truck | 88.18 |
 | bus | 91.54 |
-| train | 85.56 |
-| motorcycle | 73.64 |
-| bicycle | 80.25 |
+| train | 85.29 |
+| motorcycle | 73.71 |
+| bicycle | 80.26 |
 
 ### RailSem19 class IoU
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | 64.76 | 60.80 |
-| sidewalk | 65.14 | 62.86 |
-| construction | 80.50 | 78.96 |
-| fence | 59.74 | 57.34 |
-| pole | 64.44 | 64.13 |
-| traffic-light | 57.19 | 56.42 |
-| traffic-sign | 53.31 | 51.55 |
-| vegetation | 87.93 | 87.15 |
-| terrain | 71.23 | 68.12 |
+| road | 64.57 | 60.80 |
+| sidewalk | 65.05 | 62.86 |
+| construction | 80.44 | 78.96 |
+| fence | 59.59 | 57.34 |
+| pole | 64.33 | 64.13 |
+| traffic-light | 57.11 | 56.42 |
+| traffic-sign | 53.25 | 51.55 |
+| vegetation | 87.95 | 87.15 |
+| terrain | 71.15 | 68.12 |
 | sky | 95.96 | 95.35 |
-| human | 67.69 | 67.71 |
-| car | 82.90 | 82.57 |
-| truck | 49.83 | 49.63 |
+| human | 67.63 | 67.71 |
+| car | 82.80 | 82.57 |
+| truck | 49.42 | 49.63 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | 85.17 | 82.36 |
-| rail-track | 91.26 | 87.93 |
+| on-rails | 85.12 | 82.36 |
+| rail-track | 91.22 | 87.93 |
 | rail-raised | 74.74 | 69.73 |
-| rail-embedded | 59.11 | 52.56 |
-| tram-track | 79.08 | 68.01 |
-| trackbed | 76.99 | 73.45 |
+| rail-embedded | 59.08 | 52.56 |
+| tram-track | 79.11 | 68.01 |
+| trackbed | 76.95 | 73.45 |
 
 ### Provenance
 
 - Model recipe: `configs/models/segformer_b5.yaml`
-- Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471, db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Source revisions: `a1a85ebcd593a1eeb3ad2e2445c14bbe6f5c5270, b9eb3e1f390b70aad63e78b2e723bd79b5266471`
 - Retained seeds: RailSem19: 0; Cityscapes: 0; Cityscapes → RailSem19: 0.
-- Quality evaluation weights: RailSem19: —; Cityscapes: —; Cityscapes → RailSem19: raw.
+- Quality evaluation weights: RailSem19: raw; Cityscapes: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 

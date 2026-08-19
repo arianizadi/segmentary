@@ -1,5 +1,7 @@
 """Contracts for a clean public results starting point."""
 
+import csv
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,3 +64,44 @@ def test_live_comparison_ends_with_accuracy_speed_leaderboard() -> None:
     assert "only the exact original training-duration or GPU-hour record" in content
     assert "below the leaderboard's 60% quality floor" in content
     assert "\n## " not in leaderboard
+
+
+def test_paper_quality_bundle_uses_raw_weights_at_every_public_level() -> None:
+    comparison = ROOT / "docs/results/model-comparison"
+    manifest_path = comparison / "raw-evaluation-manifest.json"
+    if not manifest_path.is_file():
+        return
+    manifest = json.loads(manifest_path.read_text())
+    assert manifest["policy"] == "raw checkpoint weights for every paper-primary quality cell"
+    assert manifest["paired_cell_count"] == 36
+    assert len(manifest["targets"]) == 36
+    assert all(item["paired_config_equal_except_weights"] is True for item in manifest["targets"])
+
+    records = []
+    for path in sorted((comparison / "records").glob("*.json")):
+        record = json.loads(path.read_text())
+        primary = dict(record["protocols"])
+        primary.update(record.get("paper_raw_protocols", {}))
+        assert set(primary) == {
+            "cityscapes",
+            "railsem19",
+            "cityscapes_to_railsem19",
+        }
+        assert all(protocol["evaluation"]["weights"] == "raw" for protocol in primary.values())
+        records.append(record)
+    assert len(records) == 37
+
+    with (comparison / "results.csv").open(newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    assert len(rows) == 37
+    for row in rows:
+        assert row["cityscapes_evaluation_weights"] == "raw"
+        assert row["railsem19_evaluation_weights"] == "raw"
+        assert row["cityscapes_to_railsem19_evaluation_weights"] == "raw"
+
+    readme = (comparison / "README.md").read_text()
+    analysis = (comparison / "RAW_VS_EMA.md").read_text()
+    assert "Every quality value below uses raw checkpoint weights" in readme
+    assert "[raw versus EMA analysis](RAW_VS_EMA.md)" in readme
+    assert analysis.count("| `") == 36
+    assert "±" not in analysis

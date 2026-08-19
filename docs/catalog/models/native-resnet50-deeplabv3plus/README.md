@@ -38,12 +38,13 @@ See [native heads](../../components/native-heads/README.md) and the
 <!-- segmentary:generated-city-rail-benchmark:start -->
 ## Cityscapes and RailSem19 benchmark results
 
-Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 76.31 | 84.86 | 87.19 | 85.89 | 99.73 | 95.68 | 92.04 | 81.74 |
-| RailSem19 | 40,000 / 40,000 | 66.41 | 78.89 | 79.20 | 78.85 | 99.33 | 88.31 | 80.16 | 74.40 |
+| RailSem19 | 40,000 / 40,000 | 66.38 | 78.71 | 79.28 | 78.83 | 99.33 | 88.26 | 80.11 | 74.30 |
 | Cityscapes → RailSem19 | 20,000 / 20,000 | 64.68 | 77.95 | 77.58 | 77.63 | 99.26 | 87.33 | 78.59 | 72.02 |
 
 ### Standardized model-only inference
@@ -61,7 +62,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
 | Cityscapes | 6h 41m 47s | 6.70 | 4.53 GiB | 6.788 |
-| RailSem19 | 11h 13m 54s | 11.23 | 5.03 GiB | 6.632 |
+| RailSem19 | 11h 13m 54s | 11.23 | 5.03 GiB | 6.709 |
 | Cityscapes → RailSem19 | 5h 38m 08s | 5.64 | 5.02 GiB | 6.566 |
 
 ### Cityscapes class IoU
@@ -92,34 +93,34 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | 57.65 | 55.81 |
-| sidewalk | 58.82 | 57.01 |
-| construction | 76.82 | 75.65 |
-| fence | 52.58 | 50.52 |
+| road | 57.66 | 55.81 |
+| sidewalk | 58.99 | 57.01 |
+| construction | 76.70 | 75.65 |
+| fence | 52.21 | 50.52 |
 | pole | 61.13 | 59.78 |
-| traffic-light | 50.86 | 49.48 |
-| traffic-sign | 45.31 | 44.14 |
-| vegetation | 85.50 | 84.17 |
-| terrain | 65.83 | 62.53 |
-| sky | 95.11 | 95.03 |
-| human | 61.97 | 62.15 |
-| car | 76.27 | 75.67 |
-| truck | 39.88 | 42.44 |
+| traffic-light | 50.90 | 49.48 |
+| traffic-sign | 45.51 | 44.14 |
+| vegetation | 85.44 | 84.17 |
+| terrain | 65.88 | 62.53 |
+| sky | 95.18 | 95.03 |
+| human | 61.75 | 62.15 |
+| car | 76.63 | 75.67 |
+| truck | 39.93 | 42.44 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | 79.72 | 76.66 |
-| rail-track | 88.78 | 85.64 |
-| rail-raised | 70.41 | 67.55 |
-| rail-embedded | 50.41 | 48.26 |
-| tram-track | 71.04 | 65.43 |
-| trackbed | 73.60 | 70.99 |
+| on-rails | 79.46 | 76.66 |
+| rail-track | 88.77 | 85.64 |
+| rail-raised | 70.40 | 67.55 |
+| rail-embedded | 50.30 | 48.26 |
+| tram-track | 71.11 | 65.43 |
+| trackbed | 73.32 | 70.99 |
 
 ### Provenance
 
 - Model recipe: `configs/models/native_resnet50_deeplabv3plus.yaml`
-- Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7, b9eb3e1f390b70aad63e78b2e723bd79b5266471, db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Source revisions: `a1a85ebcd593a1eeb3ad2e2445c14bbe6f5c5270, a50027d6a72a9146f6302bc1f407e6477a74e8c7, b9eb3e1f390b70aad63e78b2e723bd79b5266471`
 - Retained seeds: RailSem19: 0; Cityscapes: 0; Cityscapes → RailSem19: 0.
-- Quality evaluation weights: RailSem19: —; Cityscapes: raw; Cityscapes → RailSem19: raw.
+- Quality evaluation weights: RailSem19: raw; Cityscapes: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 - Caveat: Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone raw-weight validation evidence are retained.

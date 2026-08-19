@@ -60,13 +60,14 @@ and [model tuning guide](../../../guides/models-and-tuning.md).
 <!-- segmentary:generated-city-rail-benchmark:start -->
 ## Cityscapes and RailSem19 benchmark results
 
-Values are validated mean percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Cityscapes | 40,000 / 40,000 | 82.96 | 90.44 | 90.24 | 90.32 | 99.80 | 96.71 | 93.86 | 88.46 |
-| RailSem19 | 40,000 / 40,000 | 71.42 | 82.65 | 82.87 | 82.67 | 99.41 | 89.96 | 82.44 | 78.12 |
-| Cityscapes → RailSem19 | 20,000 / 20,000 | 69.50 | 80.93 | 82.19 | 81.31 | 99.35 | 88.99 | 81.00 | 76.45 |
+| Cityscapes | 40,000 / 40,000 | 82.94 | 90.40 | 90.26 | 90.31 | 99.80 | 96.71 | 93.85 | 88.49 |
+| RailSem19 | 40,000 / 40,000 | 71.45 | 82.65 | 82.90 | 82.69 | 99.41 | 89.98 | 82.47 | 78.09 |
+| Cityscapes → RailSem19 | 20,000 / 20,000 | 69.84 | 81.29 | 82.28 | 81.56 | 99.36 | 89.12 | 81.20 | 76.61 |
 
 ### Standardized model-only inference
 
@@ -82,66 +83,66 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
-| Cityscapes | 14h 06m 17s | 14.10 | 17.02 GiB | 5.799 |
-| RailSem19 | 13h 41m 29s | 13.69 | 17.02 GiB | 4.267 |
-| Cityscapes → RailSem19 | 7h 36m 59s | 7.62 | 16.54 GiB | 4.297 |
+| Cityscapes | 14h 06m 17s | 14.10 | 17.02 GiB | 5.814 |
+| RailSem19 | 13h 41m 29s | 13.69 | 17.02 GiB | 4.248 |
+| Cityscapes → RailSem19 | 7h 36m 59s | 7.62 | 16.54 GiB | 4.291 |
 
 ### Cityscapes class IoU
 
 | class | IoU |
 |---|---:|
-| road | 98.41 |
-| sidewalk | 87.72 |
-| building | 93.92 |
-| wall | 69.14 |
-| fence | 70.41 |
-| pole | 66.33 |
-| traffic-light | 73.34 |
-| traffic-sign | 81.52 |
-| vegetation | 92.84 |
-| terrain | 70.14 |
+| road | 98.42 |
+| sidewalk | 87.74 |
+| building | 93.91 |
+| wall | 69.00 |
+| fence | 70.38 |
+| pole | 66.21 |
+| traffic-light | 73.36 |
+| traffic-sign | 81.46 |
+| vegetation | 92.83 |
+| terrain | 69.90 |
 | sky | 95.30 |
-| person | 84.88 |
-| rider | 71.10 |
-| car | 95.89 |
-| truck | 89.19 |
-| bus | 93.47 |
-| train | 88.25 |
-| motorcycle | 73.88 |
-| bicycle | 80.53 |
+| person | 84.84 |
+| rider | 71.16 |
+| car | 95.88 |
+| truck | 89.16 |
+| bus | 93.45 |
+| train | 88.34 |
+| motorcycle | 74.01 |
+| bicycle | 80.54 |
 
 ### RailSem19 class IoU
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | 63.05 | 57.73 |
-| sidewalk | 64.52 | 62.68 |
-| construction | 79.31 | 78.29 |
-| fence | 59.18 | 57.15 |
-| pole | 65.14 | 64.62 |
-| traffic-light | 58.81 | 58.12 |
-| traffic-sign | 53.69 | 54.11 |
-| vegetation | 87.50 | 86.73 |
-| terrain | 69.11 | 66.91 |
-| sky | 95.55 | 95.32 |
-| human | 69.17 | 69.48 |
-| car | 84.03 | 84.52 |
-| truck | 49.20 | 54.00 |
+| road | 63.14 | 57.97 |
+| sidewalk | 64.70 | 62.92 |
+| construction | 79.32 | 78.41 |
+| fence | 59.19 | 57.41 |
+| pole | 65.09 | 64.68 |
+| traffic-light | 59.04 | 58.33 |
+| traffic-sign | 53.59 | 54.17 |
+| vegetation | 87.54 | 86.84 |
+| terrain | 69.19 | 67.22 |
+| sky | 95.57 | 95.36 |
+| human | 69.23 | 69.55 |
+| car | 83.79 | 84.73 |
+| truck | 48.96 | 53.76 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | 86.37 | 84.82 |
-| rail-track | 90.30 | 87.92 |
-| rail-raised | 72.94 | 69.18 |
-| rail-embedded | 57.71 | 48.33 |
-| tram-track | 76.19 | 67.97 |
-| trackbed | 75.28 | 72.65 |
+| on-rails | 86.38 | 84.69 |
+| rail-track | 90.29 | 88.44 |
+| rail-raised | 73.08 | 69.93 |
+| rail-embedded | 58.14 | 49.83 |
+| tram-track | 75.95 | 69.83 |
+| trackbed | 75.31 | 72.99 |
 
 ### Provenance
 
 - Model recipe: `configs/models/eomt_dinov3_large.yaml`
-- Source revisions: `b9eb3e1f390b70aad63e78b2e723bd79b5266471, db1e951f289fc6c09294e9a019945695ad2d94d2`
+- Source revisions: `a1a85ebcd593a1eeb3ad2e2445c14bbe6f5c5270`
 - Retained seeds: Cityscapes: 0; RailSem19: 0; Cityscapes → RailSem19: 0.
-- Quality evaluation weights: Cityscapes: —; RailSem19: —; Cityscapes → RailSem19: ema.
+- Quality evaluation weights: Cityscapes: raw; RailSem19: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 
