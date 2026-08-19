@@ -2,6 +2,12 @@
 
 This live comparison covers every shipped model recipe. Compatible results are reused instead of retrained. `—` means evidence is unavailable, not zero or failure. Quality tables show one clean mean; individual seeds remain in machine records.
 
+## How to read the labels
+
+- **Complete:** all required quality and inference evidence exists. Some complete results were verified as compatible and reused instead of retrained, avoiding unnecessary compute and electricity while retaining result and checkpoint provenance.
+- **Not retained:** only the exact original training-duration or GPU-hour record is no longer available. The quality result, final checkpoint, iteration count, and inference evidence remain complete; the model is not retrained solely to recreate timing metadata.
+- **Not eligible:** the model completed successfully and its results are valid, but its RailSem19 mIoU is below the leaderboard's 60% quality floor. Its raw accuracy and speed remain visible, but it receives no recommendation score.
+
 ## Training specification
 
 These are the resolved settings used by this campaign, not generic model defaults. Each physical job occupies one L40S and performs one optimizer update after the listed number of accumulated micro-batches.

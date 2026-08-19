@@ -55,4 +55,10 @@ def test_live_comparison_ends_with_accuracy_speed_leaderboard() -> None:
     assert "| below 60% mIoU | not eligible |" in leaderboard
     assert "| below 60% mIoU | — |" not in leaderboard
     assert content.count("| not retained |") == 3
+    assert (
+        "Some complete results were verified as compatible and reused instead of retrained"
+        in content
+    )
+    assert "only the exact original training-duration or GPU-hour record" in content
+    assert "below the leaderboard's 60% quality floor" in content
     assert "\n## " not in leaderboard
