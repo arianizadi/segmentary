@@ -105,7 +105,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 32 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | complete | 72.91 | 64.19 | 62.39 |
 | 33 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | complete | 69.45 | 57.64 | 56.76 |
 | 34 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | running | 46.87 | — | 40.39 |
-| 35 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | running | 59.82 | 52.86 | — |
+| 35 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | complete | 59.82 | 52.86 | 48.54 |
 | 36 | [native_resnet18_fpn_segformer_aux](../../catalog/models/native-resnet18-fpn-segformer-aux/README.md) | running | 73.54 | — | 58.82 |
 | 37 | [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | running | 74.33 | — | 59.26 |
 
@@ -196,7 +196,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | 5h 03m 01s / 5.05 | 9h 37m 04s / 9.62 | 4h 48m 27s / 4.81 | 3.23 GiB |
 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | 1h 41m 02s / 1.68 | 2h 31m 14s / 2.52 | 4h 12m 17s / 4.20 | 2.65 GiB |
 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | 4h 11m 01s / 4.18 | — / — | 0h 54m 37s / 0.91 | 3.00 GiB |
-| [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | 5h 27m 32s / 5.46 | 9h 59m 29s / 9.99 | — / — | 3.82 GiB |
+| [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | 5h 27m 32s / 5.46 | 9h 59m 29s / 9.99 | 4h 59m 39s / 4.99 | 3.82 GiB |
 | [native_resnet18_fpn_segformer_aux](../../catalog/models/native-resnet18-fpn-segformer-aux/README.md) | 6h 13m 46s / 6.23 | — / — | 7h 03m 58s / 7.07 | 4.11 GiB |
 | [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | 2h 12m 01s / 2.20 | — / — | 4h 36m 48s / 4.61 | 3.10 GiB |
 
