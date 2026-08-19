@@ -4996,7 +4996,7 @@
         "peak_vram_bytes": null,
         "status": "pending"
       },
-      "status": "queued",
+      "status": "running",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,
@@ -5214,7 +5214,7 @@
         "peak_vram_bytes": null,
         "status": "pending"
       },
-      "status": "queued",
+      "status": "running",
       "training_specification": {
         "backbone_lr": 0.0001,
         "batch_size_per_gpu": 2,
