@@ -68,15 +68,28 @@ segmentary-eval base.yaml model.yaml experiment.yaml \
 
 ## How a run flows
 
-```mermaid
-flowchart LR
-  A["YAML configs<br/>merged left → right"] --> B["Taxonomy<br/>native IDs → canonical"]
-  B --> C["Stage 1<br/>train"]
-  C -->|checkpoint| D["Stage 2<br/>train"]
-  D --> E["Evaluate<br/>native resolution"]
-  E --> F["results.json<br/>metrics + config + git SHA"]
-  F --> G["segmentary-table<br/>multi-seed comparison"]
-```
+<p align="center">
+  <strong>YAML configuration</strong><br>
+  <sub>Base → model → experiment, merged left to right</sub><br><br>
+  ↓<br><br>
+  <strong>Taxonomy mapping</strong><br>
+  <sub>Native dataset IDs → canonical classes</sub><br><br>
+  ↓<br><br>
+  <strong>Training stage 1</strong><br>
+  <sub>Writes a checkpoint and stage result</sub><br><br>
+  ↓ <em>checkpoint</em><br><br>
+  <strong>Additional training stages</strong> <em>(optional)</em><br>
+  <sub>Continues from the verified checkpoint</sub><br><br>
+  ↓<br><br>
+  <strong>Evaluation</strong><br>
+  <sub>Native resolution or sliding window</sub><br><br>
+  ↓<br><br>
+  <strong><code>results.json</code></strong><br>
+  <sub>Metrics + resolved config + Git SHA</sub><br><br>
+  ↓<br><br>
+  <strong><code>segmentary-table</code></strong><br>
+  <sub>Comparable results across models and seeds</sub>
+</p>
 
 Each stage writes its own `results.json`, so a three-stage curriculum produces
 three comparable records instead of one summary that hides where the gain came
