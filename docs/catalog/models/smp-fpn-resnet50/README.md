@@ -53,16 +53,16 @@ Values are validated mean percentages, shown as one clean number. Detailed machi
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Cityscapes | 40,000 / 40,000 | 77.08 | 84.11 | 89.05 | 86.29 | 99.74 | 95.87 | 92.34 | 83.73 |
-| RailSem19 | 0 / 40,000 | — | — | — | — | — | — | — | — |
+| RailSem19 | 40,000 / 40,000 | 67.70 | 79.81 | 80.05 | 79.81 | 99.36 | 89.07 | 81.17 | 76.12 |
 | Cityscapes → RailSem19 | 20,000 / 20,000 | 65.34 | 77.34 | 79.44 | 78.09 | 99.29 | 87.81 | 79.25 | 73.32 |
 
 ### Standardized model-only inference
 
-Pending one measurement from this model's RailSem19-only 21-class recorded raw/EMA endpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+Measured once from this model's RailSem19-only 21-class raw endpoint on an NVIDIA L40S: PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes all model-internal conversion to dense logits, including query collapse where applicable, and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
 
 | parameters (Rail 21-class) | model weight memory | resume checkpoint | FPS | p50 | p95 | peak inference VRAM (reserved, excl. context) |
 |---:|---:|---:|---:|---:|---:|---:|
-| — | — | — | — | — | — | — |
+| 26,118,613 | 99.6 MiB | 399.3 MiB | 156.92 | 6.26 ms | 6.95 ms | 0.73 GiB |
 
 ### Training and full-pipeline evaluation cost
 
@@ -71,7 +71,7 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 | protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
 |---|---:|---:|---:|---:|
 | Cityscapes | — | — | — | 7.254 |
-| RailSem19 | — | — | — | — |
+| RailSem19 | 10h 23m 49s | 10.40 | 4.35 GiB | 6.854 |
 | Cityscapes → RailSem19 | 5h 13m 08s | 5.22 | 4.35 GiB | 6.816 |
 
 ### Cityscapes class IoU
@@ -102,34 +102,34 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 
 | class | RailSem19 | Cityscapes → RailSem19 |
 |---|---:|---:|
-| road | — | 58.36 |
-| sidewalk | — | 58.91 |
-| construction | — | 75.89 |
-| fence | — | 52.11 |
-| pole | — | 60.02 |
-| traffic-light | — | 51.86 |
-| traffic-sign | — | 46.49 |
-| vegetation | — | 85.65 |
-| terrain | — | 63.73 |
-| sky | — | 95.10 |
-| human | — | 63.81 |
-| car | — | 79.01 |
-| truck | — | 38.37 |
+| road | 59.47 | 58.36 |
+| sidewalk | 61.19 | 58.91 |
+| construction | 77.14 | 75.89 |
+| fence | 54.65 | 52.11 |
+| pole | 61.05 | 60.02 |
+| traffic-light | 54.61 | 51.86 |
+| traffic-sign | 47.97 | 46.49 |
+| vegetation | 87.06 | 85.65 |
+| terrain | 67.99 | 63.73 |
+| sky | 95.83 | 95.10 |
+| human | 63.99 | 63.81 |
+| car | 79.27 | 79.01 |
+| truck | 37.03 | 38.37 |
 | motorcycle | — | — |
 | bicycle | — | — |
-| on-rails | — | 76.50 |
-| rail-track | — | 85.75 |
-| rail-raised | — | 66.98 |
-| rail-embedded | — | 47.35 |
-| tram-track | — | 64.47 |
-| trackbed | — | 71.05 |
+| on-rails | 79.56 | 76.50 |
+| rail-track | 89.08 | 85.75 |
+| rail-raised | 71.00 | 66.98 |
+| rail-embedded | 54.01 | 47.35 |
+| tram-track | 71.26 | 64.47 |
+| trackbed | 74.13 | 71.05 |
 
 ### Provenance
 
 - Model recipe: `configs/models/smp_fpn_resnet50.yaml`
 - Source revisions: `a50027d6a72a9146f6302bc1f407e6477a74e8c7, b9eb3e1f390b70aad63e78b2e723bd79b5266471`
-- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0.
-- Quality evaluation weights: Cityscapes: raw; Cityscapes → RailSem19: raw.
+- Retained seeds: Cityscapes: 0; Cityscapes → RailSem19: 0; RailSem19: 0.
+- Quality evaluation weights: Cityscapes: raw; Cityscapes → RailSem19: raw; RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
 - Caveat: Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone raw-weight validation evidence are retained.
