@@ -69,31 +69,37 @@ segmentary-eval base.yaml model.yaml experiment.yaml \
 ## How a run flows
 
 <p align="center">
-  <strong>YAML configuration</strong><br>
-  <sub>Base → model → experiment, merged left to right</sub><br><br>
+  <strong>1. Resolve and validate the configuration</strong><br>
+  <sub>Base → model → experiment, merged left to right</sub><br>
+  <sub>Unknown keys and invalid combinations fail before training</sub><br><br>
   ↓<br><br>
-  <strong>Taxonomy mapping</strong><br>
-  <sub>Native dataset IDs → canonical classes</sub><br><br>
+  <strong>2. Validate the task and data contract</strong><br>
+  <sub>Taxonomy + dataset mapping + active-class mask</sub><br>
+  <sub>Native mask IDs → canonical classes</sub><br><br>
   ↓<br><br>
-  <strong>Training stage 1</strong><br>
-  <sub>Writes a checkpoint and stage result</sub><br><br>
-  ↓ <em>checkpoint</em><br><br>
-  <strong>Additional training stages</strong> <em>(optional)</em><br>
-  <sub>Continues from the verified checkpoint</sub><br><br>
+  <strong>3. Train the curriculum</strong><br>
+  <sub>Build the configured model and loaders for each ordered stage</sub><br>
+  <sub>Initialize weights, then train + validate</sub><br>
+  <sub>Stream TensorBoard; write <code>last.ckpt</code> + stage <code>results.json</code></sub><br><br>
+  ↻ <em>each additional stage starts from the verified checkpoint</em><br><br>
   ↓<br><br>
-  <strong>Evaluation</strong><br>
-  <sub>Native resolution or sliding window</sub><br><br>
+  <strong>4. Evaluate a chosen checkpoint</strong><br>
+  <sub><code>segmentary-eval</code>: raw or EMA weights</sub><br>
+  <sub>Whole-image or sliding-window inference</sub><br><br>
   ↓<br><br>
-  <strong><code>results.json</code></strong><br>
-  <sub>Metrics + resolved config + Git SHA</sub><br><br>
+  <strong>5. Write the evaluation record</strong><br>
+  <sub><code>results.json</code>: metrics + protocol + config + Git/environment provenance</sub><br><br>
   ↓<br><br>
-  <strong><code>segmentary-table</code></strong><br>
-  <sub>Comparable results across models and seeds</sub>
+  <strong>6. Compare compatible records</strong><br>
+  <sub><code>segmentary-table</code> validates records and aggregates seeds</sub>
 </p>
 
-Each stage writes its own `results.json`, so a three-stage curriculum produces
-three comparable records instead of one summary that hides where the gain came
-from.
+Training and standalone evaluation produce separate evidence. Each stage keeps
+its own TensorBoard stream, final checkpoint, and `results.json`, so a
+three-stage curriculum produces three stage records instead of one summary that
+hides where the gain came from. `segmentary-eval` then scores the checkpoint and
+protocol you choose; `segmentary-table` compares those records without
+retraining anything.
 
 ## What you get
 
