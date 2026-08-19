@@ -89,12 +89,12 @@
           "size_bytes": 595191911
         },
         "training": {
-          "seed_count": 0,
-          "gpu_model": null,
-          "gpus_per_run": null,
-          "wall_clock_s_mean": null,
-          "gpu_hours_mean": null,
-          "peak_vram_bytes_per_device": null
+          "seed_count": 1,
+          "gpu_model": "NVIDIA L40S",
+          "gpus_per_run": 1,
+          "wall_clock_s_mean": 30255.9032968767,
+          "gpu_hours_mean": 8.404417582465749,
+          "peak_vram_bytes_per_device": 3869245440
         },
         "full_validation_pipeline": {
           "seed_count": 1,
@@ -345,7 +345,16 @@
             "checkpoint_sha256": "6665b49eff29d8d237a96290622adf375a75c2b114302bead67307bfd988fef5",
             "checkpoint_step": 40000,
             "checkpoint_size_bytes": 595191911,
-            "training_stages": [],
+            "training_stages": [
+              {
+                "stage": "cityscapes",
+                "wall_clock_s": 30255.9032968767,
+                "gpu_count": 1,
+                "gpu_hours": 8.404417582465749,
+                "peak_vram_bytes_per_device": 3869245440,
+                "result_sha256": "e1b1385467ba6b184e32b9ecfd1a56a71e5cbb7ad16eb870b152390edcf09308"
+              }
+            ],
             "full_validation_pipeline": {
               "images": 500,
               "wall_clock_s": 68.3743747100234,

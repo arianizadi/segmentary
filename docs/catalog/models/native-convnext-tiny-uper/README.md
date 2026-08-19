@@ -61,7 +61,9 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 |---|---:|---:|---:|---:|
 | Cityscapes | 9h 12m 18s | 9.21 | 5.86 GiB | 6.607 |
 | RailSem19 | 12h 49m 26s | 12.82 | 6.23 GiB | 5.674 |
-| Cityscapes → RailSem19 | — | — | — | 5.828 |
+| Cityscapes → RailSem19 | not retained | not retained | not retained | 5.828 |
+
+`not retained` means the exact original training-duration record is no longer available. The validated quality result, final checkpoint, iteration count, and inference evidence are still complete; the model is not retrained only to recreate timing metadata.
 
 ### Cityscapes class IoU
 

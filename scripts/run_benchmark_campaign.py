@@ -847,8 +847,14 @@ def _new_job_status(spec: dict[str, Any], accepted: dict[str, Any] | None = None
                         "failure": None,
                         "paths": {
                             "common_results": accepted["bundle_result"],
+                            "stage_results": (
+                                {spec["final_stage"]: accepted["bundle_training_result"]}
+                                if accepted.get("bundle_training_result")
+                                else {}
+                            ),
                             "checkpoint": accepted["checkpoint"],
                             "source_results": accepted["source_result"],
+                            "source_training_results": accepted.get("training_source_result"),
                             "config": accepted["bundle_config"],
                             "performance": accepted["bundle_performance"],
                             "milestone_results": {
@@ -862,6 +868,11 @@ def _new_job_status(spec: dict[str, Any], accepted: dict[str, Any] | None = None
                         },
                         "sha256": {
                             "common_results": accepted["result_sha256"],
+                            "stage_results": (
+                                {spec["final_stage"]: accepted["training_result_sha256"]}
+                                if accepted.get("training_result_sha256")
+                                else {}
+                            ),
                             "checkpoint": accepted["checkpoint_sha256"],
                             "milestone_results": {
                                 step: milestone["result_sha256"]
@@ -1003,6 +1014,17 @@ def _materialize_reused_results(record: dict[str, Any], campaign: Path) -> None:
             raise CampaignError(f"accepted checkpoint changed after preflight: {checkpoint}")
         destination = Path(accepted["bundle_result"])
         atomic_write_text(destination, source.read_text(encoding="utf-8"))
+        training_source_raw = accepted.get("training_source_result")
+        training_destination_raw = accepted.get("bundle_training_result")
+        if isinstance(training_source_raw, str) and isinstance(training_destination_raw, str):
+            training_source = Path(training_source_raw)
+            if _sha256(training_source) != accepted.get("training_result_sha256"):
+                raise CampaignError(
+                    f"accepted training result changed after preflight: {training_source}"
+                )
+            atomic_write_text(
+                Path(training_destination_raw), training_source.read_text(encoding="utf-8")
+            )
         for milestone in accepted.get("milestones", {}).values():
             milestone_source = Path(milestone["source_result"])
             milestone_checkpoint = Path(milestone["checkpoint"])
@@ -1029,6 +1051,8 @@ def _materialize_reused_results(record: dict[str, Any], campaign: Path) -> None:
                 "job_id": accepted["job_id"],
                 "source_result": str(source),
                 "source_result_sha256": accepted["result_sha256"],
+                "training_source_result": training_source_raw,
+                "training_result_sha256": accepted.get("training_result_sha256"),
                 "checkpoint": str(checkpoint) if checkpoint is not None else None,
                 "checkpoint_sha256": accepted["checkpoint_sha256"],
                 "checkpoint_available": accepted["checkpoint_available"],
@@ -1935,6 +1959,24 @@ def scan_reusable_cells(record: dict[str, Any]) -> dict[str, Any]:
                     chosen[key] = checkpoint_source[key]
                 chosen["checkpoint_source_result"] = checkpoint_source["source_result"]
                 chosen["caveat"] = None
+        # A standalone evaluation is the preferred quality record, but its
+        # wall clock measures evaluation rather than training. Preserve the
+        # compatible stage result alongside it so reused cells retain their
+        # training-time and peak-memory evidence.
+        training_sources = sorted(
+            (
+                item
+                for item in items
+                if item["record_kind"] == "training"
+                and item["source_git_sha"] == chosen["source_git_sha"]
+                and item["checkpoint_sha256"] == chosen["checkpoint_sha256"]
+            ),
+            key=lambda item: item["source_result"],
+        )
+        if training_sources:
+            training_source = training_sources[0]
+            chosen["training_source_result"] = training_source["source_result"]
+            chosen["training_result_sha256"] = training_source["result_sha256"]
         dependent_jobs = [item["id"] for item in record["jobs"] if item.get("depends_on") == job_id]
         if dependent_jobs and not chosen["checkpoint_available"]:
             # A reporting-only City result cannot warm-start the transfer cell.
@@ -1954,6 +1996,11 @@ def scan_reusable_cells(record: dict[str, Any]) -> dict[str, Any]:
         chosen["accepted_at"] = _now()
         chosen["bundle_result"] = str(
             Path(record["campaign"]) / "accepted" / job_id / "results.json"
+        )
+        chosen["bundle_training_result"] = (
+            str(Path(record["campaign"]) / "accepted" / job_id / "training-results.json")
+            if chosen.get("training_source_result")
+            else None
         )
         for step, milestone in chosen.get("milestones", {}).items():
             milestone["bundle_result"] = str(
@@ -2862,6 +2909,18 @@ def validate_reused(
         raise CampaignError(f"reused bundle result changed: {result_path}")
     if _sha256(source_path) != expected_hashes.get("common_results"):
         raise CampaignError(f"reused source result changed: {source_path}")
+    stage_paths = _attempt_path_objects(attempt)[1]
+    expected_stage_hashes = expected_hashes.get("stage_results") or {}
+    if set(stage_paths) != set(expected_stage_hashes):
+        raise CampaignError(f"reused training-stage evidence is incomplete for {job['id']}")
+    for stage, stage_path in stage_paths.items():
+        if _sha256(stage_path) != expected_stage_hashes[stage]:
+            raise CampaignError(f"reused training result changed: {stage_path}")
+    source_training = paths.get("source_training_results")
+    if source_training is not None:
+        expected_training_hash = expected_stage_hashes.get(job["final_stage"])
+        if _sha256(source_training) != expected_training_hash:
+            raise CampaignError(f"reused source training result changed: {source_training}")
     if attempt.get("checkpoint_available"):
         if checkpoint is None or _sha256(checkpoint) != expected_hashes.get("checkpoint"):
             raise CampaignError(f"reused checkpoint changed: {checkpoint}")
@@ -3762,7 +3821,8 @@ def _normalised_individual(
     checkpoint_hash = (
         source_hashes.get("checkpoint") or _sha256(checkpoint) if checkpoint_available else None
     )
-    training_stages = _training_stage_evidence(attempt) if attempt.get("kind") != "reused" else []
+    _, stage_paths = _attempt_path_objects(attempt)
+    training_stages = _training_stage_evidence(attempt) if stage_paths else []
     raw_milestone_results = attempt.get("paths", {}).get("milestone_results", {})
     raw_milestone_checkpoints = attempt.get("paths", {}).get("milestone_checkpoints", {})
     milestone_hashes = source_hashes.get("milestone_results", {})
@@ -4647,11 +4707,32 @@ def _model_generated_section(record: dict[str, Any]) -> str:
         evidence = protocol.get("resource_evidence", {}) if isinstance(protocol, dict) else {}
         training = evidence.get("training", {})
         pipeline = evidence.get("full_validation_pipeline", {})
+        retained_training = training.get("wall_clock_s_mean") is not None
+        missing_training = "not retained" if isinstance(protocol, dict) else "—"
         lines.append(
-            f"| {labels[protocol_id]} | {_duration(training.get('wall_clock_s_mean'))} | "
-            f"{_number(training.get('gpu_hours_mean'))} | "
-            f"{_gib(training.get('peak_vram_bytes_per_device'))} | "
+            f"| {labels[protocol_id]} | "
+            f"{_duration(training.get('wall_clock_s_mean')) if retained_training else missing_training} | "
+            f"{_number(training.get('gpu_hours_mean')) if retained_training else missing_training} | "
+            f"{_gib(training.get('peak_vram_bytes_per_device')) if retained_training else missing_training} | "
             f"{_number(pipeline.get('images_per_s_mean'), decimals=3)} |"
+        )
+    if any(
+        isinstance(visible_protocols.get(protocol_id), dict)
+        and visible_protocols[protocol_id]
+        .get("resource_evidence", {})
+        .get("training", {})
+        .get("wall_clock_s_mean")
+        is None
+        for protocol_id in REQUIRED_PROTOCOLS
+    ):
+        lines.extend(
+            [
+                "",
+                "`not retained` means the exact original training-duration record is no "
+                "longer available. The validated quality result, final checkpoint, iteration "
+                "count, and inference evidence are still complete; the model is not retrained "
+                "only to recreate timing metadata.",
+            ]
         )
 
     city = visible_protocols.get("cityscapes")
@@ -5211,12 +5292,35 @@ def _central_readme(
         if training_contract["deterministic_algorithms"]
         else "not forced; fixed seeds and full provenance are retained"
     )
+    performance_complete = (
+        status.get("counts", {}).get("complete_performance_benchmarks")
+        == status.get("counts", {}).get("physical_performance_benchmarks")
+        and status.get("counts", {}).get("physical_performance_benchmarks", 0) > 0
+    )
+    performance_note = (
+        "All unique physical models now have the standardized inference benchmark."
+        if performance_complete
+        else "During an active campaign, FPS can remain pending while Cityscapes mIoU is already available."
+    )
     lines = [
         "# Model comparison: Cityscapes and RailSem19",
         "",
         "This live comparison covers every shipped model recipe. Compatible results are reused "
         "instead of retrained. `—` means evidence is unavailable, not zero or failure. Quality "
         "tables show one clean mean; individual seeds remain in machine records.",
+        "",
+        "## How to read the labels",
+        "",
+        "- **Complete:** all required quality and inference evidence exists. Some complete "
+        "results were verified as compatible and reused instead of retrained, avoiding "
+        "unnecessary compute and electricity while retaining result and checkpoint provenance.",
+        "- **Not retained:** only the exact original training-duration or GPU-hour record is "
+        "no longer available. The quality result, final checkpoint, iteration count, and "
+        "inference evidence remain complete; the model is not retrained solely to recreate "
+        "timing metadata.",
+        "- **Not eligible:** the model completed successfully and its results are valid, but "
+        "its RailSem19 mIoU is below the leaderboard's 60% quality floor. Its raw accuracy "
+        "and speed remain visible, but it receives no recommendation score.",
         "",
         "## Training specification",
         "",
@@ -5302,9 +5406,7 @@ def _central_readme(
             "forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed "
             "iterations. It includes internal query-to-dense collapse and excludes I/O, "
             "preprocessing, sliding windows, argmax, and metrics.",
-            "The benchmark runs only after that model's RailSem19 training and final quality "
-            "evaluation succeed, so FPS can remain pending while Cityscapes mIoU is already "
-            "available.",
+            performance_note,
             "",
             "Weight memory is the resident parameter tensors; the resume checkpoint also "
             "contains optimizer and EMA state; peak VRAM is allocator-reserved memory excluding "
@@ -5354,8 +5456,14 @@ def _central_readme(
         for protocol in REQUIRED_PROTOCOLS:
             training = protocols.get(protocol, {}).get("resource_evidence", {}).get("training", {})
             cells.append(
-                f"{_duration(training.get('wall_clock_s_mean'))} / "
-                f"{_number(training.get('gpu_hours_mean'))}"
+                (
+                    f"{_duration(training.get('wall_clock_s_mean'))} / "
+                    f"{_number(training.get('gpu_hours_mean'))}"
+                )
+                if training.get("wall_clock_s_mean") is not None
+                else "not retained"
+                if row["status"] == "complete"
+                else "— / —"
             )
             if isinstance(training.get("peak_vram_bytes_per_device"), int):
                 peaks.append(training["peak_vram_bytes_per_device"])
@@ -5417,7 +5525,11 @@ def _central_readme(
             model_display += f" *(alias of `{item['alias_of']}`)*"
         weights = item["weights"] if item["weights"] in ("raw", "ema") else "—"
         rank_display = str(rank) if item["status"] == "complete" else "—"
-        score = _number(item.get("recommendation_score"))
+        score = (
+            "not eligible"
+            if item.get("quality_gate") == "below 60% mIoU"
+            else _number(item.get("recommendation_score"))
+        )
         miou = _number(item["miou"] * 100) if item["miou"] is not None else "—"
         latency = f"{_number(item['p50_ms'])} ms" if item["p50_ms"] is not None else "—"
         quality_gate = item.get("quality_gate", "—")

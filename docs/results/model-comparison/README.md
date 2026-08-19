@@ -2,6 +2,12 @@
 
 This live comparison covers every shipped model recipe. Compatible results are reused instead of retrained. `—` means evidence is unavailable, not zero or failure. Quality tables show one clean mean; individual seeds remain in machine records.
 
+## How to read the labels
+
+- **Complete:** all required quality and inference evidence exists. Some complete results were verified as compatible and reused instead of retrained, avoiding unnecessary compute and electricity while retaining result and checkpoint provenance.
+- **Not retained:** only the exact original training-duration or GPU-hour record is no longer available. The quality result, final checkpoint, iteration count, and inference evidence remain complete; the model is not retrained solely to recreate timing metadata.
+- **Not eligible:** the model completed successfully and its results are valid, but its RailSem19 mIoU is below the leaderboard's 60% quality floor. Its raw accuracy and speed remain visible, but it receives no recommendation score.
+
 ## Training specification
 
 These are the resolved settings used by this campaign, not generic model defaults. Each physical job occupies one L40S and performs one optimizer update after the listed number of accumulated micro-batches.
@@ -112,7 +118,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 ## Standardized model-only inference
 
 Each unique physical model is measured exactly once from its RailSem19-only 21-class recorded final endpoint (raw for running-stat BatchNorm; EMA otherwise). Contract: NVIDIA L40S, PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes internal query-to-dense collapse and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
-The benchmark runs only after that model's RailSem19 training and final quality evaluation succeed, so FPS can remain pending while Cityscapes mIoU is already available.
+All unique physical models now have the standardized inference benchmark.
 
 Weight memory is the resident parameter tensors; the resume checkpoint also contains optimizer and EMA state; peak VRAM is allocator-reserved memory excluding the CUDA context.
 
@@ -167,24 +173,24 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | 14h 40m 07s / 14.67 | 21h 55m 28s / 21.92 | 11h 05m 16s / 11.09 | 19.53 GiB |
 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | 13h 28m 59s / 13.48 | 16h 57m 54s / 16.96 | 9h 28m 19s / 9.47 | 10.60 GiB |
 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | 17h 59m 42s / 17.99 | 19h 38m 19s / 19.64 | 10h 48m 49s / 10.81 | 16.94 GiB |
-| [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | 14h 21m 30s / 14.36 | 17h 53m 41s / 17.89 | — / — | 8.88 GiB |
-| [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | — / — | 27h 48m 14s / 27.80 | 13h 54m 23s / 13.91 | 17.35 GiB |
+| [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | 14h 21m 30s / 14.36 | 17h 53m 41s / 17.89 | not retained | 8.88 GiB |
+| [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | 19h 14m 44s / 19.25 | 27h 48m 14s / 27.80 | 13h 54m 23s / 13.91 | 17.35 GiB |
 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | 7h 54m 19s / 7.91 | 13h 39m 24s / 13.66 | 6h 50m 30s / 6.84 | 6.88 GiB |
 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | 8h 10m 00s / 8.17 | 14h 17m 34s / 14.29 | 7h 06m 54s / 7.12 | 12.12 GiB |
-| [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | 9h 21m 34s / 9.36 | 12h 55m 26s / 12.92 | — / — | 6.70 GiB |
-| [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | — / — | 11h 51m 51s / 11.86 | 5h 58m 25s / 5.97 | 5.90 GiB |
-| [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | — / — | 11h 51m 51s / 11.86 | 5h 58m 25s / 5.97 | 5.90 GiB |
-| [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | 9h 12m 18s / 9.21 | 12h 49m 26s / 12.82 | — / — | 6.23 GiB |
-| [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | — / — | 22h 57m 26s / 22.96 | 11h 27m 14s / 11.45 | 11.42 GiB |
-| [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | — / — | 10h 36m 29s / 10.61 | 4h 15m 13s / 4.25 | 4.79 GiB |
-| [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | — / — | 11h 13m 54s / 11.23 | 5h 38m 08s / 5.64 | 5.03 GiB |
+| [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | 9h 21m 34s / 9.36 | 12h 55m 26s / 12.92 | not retained | 6.70 GiB |
+| [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | 8h 01m 51s / 8.03 | 11h 51m 51s / 11.86 | 5h 58m 25s / 5.97 | 5.90 GiB |
+| [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) | 8h 01m 51s / 8.03 | 11h 51m 51s / 11.86 | 5h 58m 25s / 5.97 | 5.90 GiB |
+| [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | 9h 12m 18s / 9.21 | 12h 49m 26s / 12.82 | not retained | 6.23 GiB |
+| [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | 18h 29m 05s / 18.48 | 22h 57m 26s / 22.96 | 11h 27m 14s / 11.45 | 11.42 GiB |
+| [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | 6h 15m 36s / 6.26 | 10h 36m 29s / 10.61 | 4h 15m 13s / 4.25 | 4.79 GiB |
+| [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | 6h 41m 47s / 6.70 | 11h 13m 54s / 11.23 | 5h 38m 08s / 5.64 | 5.03 GiB |
 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | 12h 42m 58s / 12.72 | 22h 44m 13s / 22.74 | 11h 22m 57s / 11.38 | 8.60 GiB |
-| [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | — / — | 12h 20m 09s / 12.34 | 6h 15m 52s / 6.26 | 4.21 GiB |
+| [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | 8h 24m 16s / 8.40 | 12h 20m 09s / 12.34 | 6h 15m 52s / 6.26 | 4.21 GiB |
 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | 8h 00m 50s / 8.01 | 12h 23m 01s / 12.38 | 6h 11m 24s / 6.19 | 4.27 GiB |
 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | 14h 07m 22s / 14.12 | 17h 40m 01s / 17.67 | 8h 45m 07s / 8.75 | 6.60 GiB |
-| [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | — / — | 10h 23m 49s / 10.40 | 5h 13m 08s / 5.22 | 4.35 GiB |
-| [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | — / — | 14h 35m 12s / 14.59 | 7h 13m 36s / 7.23 | 6.70 GiB |
-| [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | — / — | 9h 51m 21s / 9.86 | 4h 55m 50s / 4.93 | 3.24 GiB |
+| [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | 6h 07m 27s / 6.12 | 10h 23m 49s / 10.40 | 5h 13m 08s / 5.22 | 4.35 GiB |
+| [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | 10h 21m 56s / 10.37 | 14h 35m 12s / 14.59 | 7h 13m 36s / 7.23 | 6.70 GiB |
+| [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | 5h 35m 44s / 5.60 | 9h 51m 21s / 9.86 | 4h 55m 50s / 4.93 | 3.24 GiB |
 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | 5h 39m 20s / 5.66 | 9h 48m 13s / 9.80 | 4h 56m 03s / 4.93 | 3.24 GiB |
 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | 6h 17m 00s / 6.28 | 10h 43m 02s / 10.72 | 5h 21m 19s / 5.36 | 4.36 GiB |
 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | 9h 42m 08s / 9.70 | 2h 41m 15s / 2.69 | 6h 39m 56s / 6.67 | 6.24 GiB |
@@ -251,8 +257,8 @@ This lists and sorts all shipped model recipes. Models with both a final RailSem
 | 30 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | complete | qualified | 84.37 | 61.93 | 28 | 68.98 | 24 | 14.44 ms | raw | 25.1 MiB | 0.89 GiB |
 | 31 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | complete | qualified | 82.95 | 60.05 | 32 | 90.68 | 19 | 10.82 ms | raw | 34.7 MiB | 0.57 GiB |
 | 32 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | complete | qualified | 80.85 | 60.72 | 30 | 34.78 | 33 | 28.67 ms | raw | 7.1 MiB | 3.30 GiB |
-| 33 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | complete | below 60% mIoU | — | 57.93 | 33 | 166.66 | 10 | 5.96 ms | raw | 9.6 MiB | 0.45 GiB |
-| 34 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | complete | below 60% mIoU | — | 57.64 | 34 | 234.22 | 3 | 4.17 ms | raw | 12.3 MiB | 0.30 GiB |
-| 35 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | complete | below 60% mIoU | — | 53.98 | 35 | 2.52 | 37 | 394.46 ms | ema | 616.1 MiB | 3.77 GiB |
-| 36 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | complete | below 60% mIoU | — | 52.86 | 36 | 178.77 | 8 | 5.53 ms | raw | 16.5 MiB | 0.32 GiB |
-| 37 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | complete | below 60% mIoU | — | 42.71 | 37 | 344.52 | 1 | 2.90 ms | raw | 9.0 MiB | 0.36 GiB |
+| 33 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | complete | below 60% mIoU | not eligible | 57.93 | 33 | 166.66 | 10 | 5.96 ms | raw | 9.6 MiB | 0.45 GiB |
+| 34 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | complete | below 60% mIoU | not eligible | 57.64 | 34 | 234.22 | 3 | 4.17 ms | raw | 12.3 MiB | 0.30 GiB |
+| 35 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | complete | below 60% mIoU | not eligible | 53.98 | 35 | 2.52 | 37 | 394.46 ms | ema | 616.1 MiB | 3.77 GiB |
+| 36 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | complete | below 60% mIoU | not eligible | 52.86 | 36 | 178.77 | 8 | 5.53 ms | raw | 16.5 MiB | 0.32 GiB |
+| 37 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | complete | below 60% mIoU | not eligible | 42.71 | 37 | 344.52 | 1 | 2.90 ms | raw | 9.0 MiB | 0.36 GiB |
