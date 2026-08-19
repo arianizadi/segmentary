@@ -107,7 +107,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 34 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | running | 46.87 | — | 40.39 |
 | 35 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | complete | 59.82 | 52.86 | 48.54 |
 | 36 | [native_resnet18_fpn_segformer_aux](../../catalog/models/native-resnet18-fpn-segformer-aux/README.md) | running | 73.54 | — | 58.82 |
-| 37 | [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | running | 74.33 | — | 59.26 |
+| 37 | [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | complete | 74.33 | 62.77 | 59.26 |
 
 ## Standardized model-only inference
 
@@ -154,7 +154,7 @@ Weight memory is the resident parameter tensors; the resume checkpoint also cont
 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | — | — | — | — | — | — | — | — |
 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | raw | 4,320,519 | 16.5 MiB | 66.6 MiB | 178.77 | 5.53 | 6.10 | 0.32 GiB |
 | [native_resnet18_fpn_segformer_aux](../../catalog/models/native-resnet18-fpn-segformer-aux/README.md) | — | — | — | — | — | — | — | — |
-| [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | — | — | — | — | — | — | — | — |
+| [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | raw | 12,631,253 | 48.2 MiB | 193.0 MiB | 226.85 | 4.38 | 4.60 | 0.64 GiB |
 
 ## Training cost
 
@@ -198,7 +198,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | 4h 11m 01s / 4.18 | — / — | 0h 54m 37s / 0.91 | 3.00 GiB |
 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | 5h 27m 32s / 5.46 | 9h 59m 29s / 9.99 | 4h 59m 39s / 4.99 | 3.82 GiB |
 | [native_resnet18_fpn_segformer_aux](../../catalog/models/native-resnet18-fpn-segformer-aux/README.md) | 6h 13m 46s / 6.23 | — / — | 7h 03m 58s / 7.07 | 4.11 GiB |
-| [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | 2h 12m 01s / 2.20 | — / — | 4h 36m 48s / 4.61 | 3.10 GiB |
+| [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | 2h 12m 01s / 2.20 | 9h 13m 56s / 9.23 | 4h 36m 48s / 4.61 | 3.10 GiB |
 
 ## Fixed protocol and files
 
@@ -220,39 +220,39 @@ This lists and sorts all shipped model recipes. Models with both a final RailSem
 | rank | model | status | balanced score | RailSem19 mIoU | FPS | p50 latency | weights | model memory | peak inference VRAM |
 |---:|---|---|---:|---:|---:|---:|---|---:|---:|
 | 1 | [native_resnet50_aspp](../../catalog/models/native-resnet50-aspp/README.md) | complete | 91.92 | 63.99 | 223.41 | 4.44 ms | raw | 149.0 MiB | 0.53 GiB |
-| 2 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | complete | 90.00 | 64.56 | 212.00 | 4.64 ms | raw | 141.7 MiB | 0.52 GiB |
-| 3 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | complete | 88.83 | 57.64 | 234.22 | 4.17 ms | raw | 12.3 MiB | 0.30 GiB |
-| 4 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | complete | 80.93 | 60.17 | 184.06 | 5.40 ms | raw | 90.6 MiB | 0.40 GiB |
-| 5 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | complete | 79.47 | 64.19 | 168.14 | 5.93 ms | raw | 30.8 MiB | 0.44 GiB |
-| 6 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | complete | 78.18 | 67.70 | 156.92 | 6.26 ms | raw | 99.6 MiB | 0.73 GiB |
-| 7 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | complete | 75.46 | 57.93 | 166.66 | 5.96 ms | raw | 9.6 MiB | 0.45 GiB |
-| 8 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | complete | 74.78 | 52.86 | 178.77 | 5.53 ms | raw | 16.5 MiB | 0.32 GiB |
-| 9 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | complete | 72.43 | 63.95 | 143.40 | 6.47 ms | raw | 21.8 MiB | 0.43 GiB |
-| 10 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | complete | 71.33 | 66.41 | 136.37 | 7.30 ms | ema | 153.9 MiB | 0.78 GiB |
-| 11 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | complete | 71.32 | 61.43 | 143.68 | 6.87 ms | raw | 93.2 MiB | 0.67 GiB |
-| 12 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | complete | 70.79 | 65.26 | 136.18 | 7.29 ms | raw | 14.2 MiB | 0.89 GiB |
-| 13 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | complete | 66.83 | 65.86 | 123.43 | 7.57 ms | raw | 14.2 MiB | 0.89 GiB |
-| 14 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | complete | 63.67 | 67.82 | 112.74 | 8.69 ms | raw | 174.2 MiB | 0.66 GiB |
-| 15 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) *(alias of `smp_deeplabv3plus_resnet101`)* | complete | 63.67 | 67.82 | 112.74 | 8.69 ms | raw | 174.2 MiB | 0.66 GiB |
-| 16 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | complete | 52.85 | 60.05 | 90.68 | 10.82 ms | raw | 34.7 MiB | 0.57 GiB |
-| 17 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | complete | 51.44 | 64.34 | 84.66 | 11.79 ms | raw | 50.8 MiB | 0.39 GiB |
-| 18 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | complete | 49.21 | 68.18 | 77.91 | 12.83 ms | ema | 151.2 MiB | 0.67 GiB |
-| 19 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | complete | 48.50 | 70.38 | 75.58 | 13.18 ms | ema | 140.6 MiB | 1.24 GiB |
-| 20 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | complete | 45.68 | 66.82 | 71.01 | 13.70 ms | ema | 214.7 MiB | 1.44 GiB |
-| 21 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | complete | 43.86 | 61.93 | 68.98 | 14.44 ms | raw | 25.1 MiB | 0.89 GiB |
-| 22 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | complete | 43.04 | 68.44 | 65.20 | 15.19 ms | ema | 233.9 MiB | 1.36 GiB |
-| 23 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | complete | 37.05 | 66.56 | 54.28 | 18.39 ms | ema | 41.0 MiB | 1.09 GiB |
-| 24 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | complete | 36.88 | 70.39 | 53.26 | 18.63 ms | ema | 104.4 MiB | 2.25 GiB |
-| 25 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | complete | 33.78 | 67.68 | 48.24 | 20.57 ms | raw | 124.5 MiB | 1.46 GiB |
-| 26 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | complete | 32.78 | 72.13 | 45.91 | 21.76 ms | ema | 1207.7 MiB | 3.12 GiB |
-| 27 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | complete | 30.97 | 70.74 | 43.06 | 23.19 ms | ema | 308.6 MiB | 2.48 GiB |
-| 28 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | complete | 30.47 | 69.90 | 42.33 | 23.48 ms | ema | 224.9 MiB | 2.41 GiB |
-| 29 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | complete | 29.89 | 71.42 | 41.23 | 24.12 ms | ema | 1201.3 MiB | 3.13 GiB |
-| 30 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | complete | 25.25 | 60.72 | 34.78 | 28.67 ms | raw | 7.1 MiB | 3.30 GiB |
-| 31 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | complete | 23.08 | 68.62 | 30.75 | 32.11 ms | ema | 279.1 MiB | 1.26 GiB |
-| 32 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | complete | 22.09 | 70.70 | 29.15 | 34.30 ms | ema | 145.8 MiB | 1.95 GiB |
-| 33 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | complete | 20.49 | 71.95 | 26.74 | 37.00 ms | ema | 322.8 MiB | 2.57 GiB |
-| 34 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | complete | 2.12 | 53.98 | 2.52 | 394.46 ms | ema | 616.1 MiB | 3.77 GiB |
+| 2 | [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | complete | 91.68 | 62.77 | 226.85 | 4.38 ms | raw | 48.2 MiB | 0.64 GiB |
+| 3 | [native_resnet50_psp](../../catalog/models/native-resnet50-psp/README.md) | complete | 90.00 | 64.56 | 212.00 | 4.64 ms | raw | 141.7 MiB | 0.52 GiB |
+| 4 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | complete | 88.83 | 57.64 | 234.22 | 4.17 ms | raw | 12.3 MiB | 0.30 GiB |
+| 5 | [smp_pan_resnext50](../../catalog/models/smp-pan-resnext50/README.md) | complete | 80.93 | 60.17 | 184.06 | 5.40 ms | raw | 90.6 MiB | 0.40 GiB |
+| 6 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | complete | 79.47 | 64.19 | 168.14 | 5.93 ms | raw | 30.8 MiB | 0.44 GiB |
+| 7 | [smp_fpn_resnet50](../../catalog/models/smp-fpn-resnet50/README.md) | complete | 78.18 | 67.70 | 156.92 | 6.26 ms | raw | 99.6 MiB | 0.73 GiB |
+| 8 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | complete | 75.46 | 57.93 | 166.66 | 5.96 ms | raw | 9.6 MiB | 0.45 GiB |
+| 9 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | complete | 74.78 | 52.86 | 178.77 | 5.53 ms | raw | 16.5 MiB | 0.32 GiB |
+| 10 | [native_efficientnet_b0_deeplabv3plus](../../catalog/models/native-efficientnet-b0-deeplabv3plus/README.md) | complete | 72.43 | 63.95 | 143.40 | 6.47 ms | raw | 21.8 MiB | 0.43 GiB |
+| 11 | [native_resnet50_deeplabv3plus](../../catalog/models/native-resnet50-deeplabv3plus/README.md) | complete | 71.33 | 66.41 | 136.37 | 7.30 ms | ema | 153.9 MiB | 0.78 GiB |
+| 12 | [smp_unet_resnet34](../../catalog/models/smp-unet-resnet34/README.md) | complete | 71.32 | 61.43 | 143.68 | 6.87 ms | raw | 93.2 MiB | 0.67 GiB |
+| 13 | [segformer_b0](../../catalog/models/builtin-segformer-b0/README.md) | complete | 70.79 | 65.26 | 136.18 | 7.29 ms | raw | 14.2 MiB | 0.89 GiB |
+| 14 | [hf_auto_segformer_b0](../../catalog/models/hf-auto-segformer-b0/README.md) | complete | 66.83 | 65.86 | 123.43 | 7.57 ms | raw | 14.2 MiB | 0.89 GiB |
+| 15 | [smp_deeplabv3plus_resnet101](../../catalog/models/smp-deeplabv3plus-resnet101/README.md) | complete | 63.67 | 67.82 | 112.74 | 8.69 ms | raw | 174.2 MiB | 0.66 GiB |
+| 16 | [deeplabv3plus_r101](../../catalog/models/builtin-deeplabv3plus-r101-alias/README.md) *(alias of `smp_deeplabv3plus_resnet101`)* | complete | 63.67 | 67.82 | 112.74 | 8.69 ms | raw | 174.2 MiB | 0.66 GiB |
+| 17 | [smp_manet_efficientnet_b0](../../catalog/models/smp-manet-efficientnet-b0/README.md) | complete | 52.85 | 60.05 | 90.68 | 10.82 ms | raw | 34.7 MiB | 0.57 GiB |
+| 18 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | complete | 51.44 | 64.34 | 84.66 | 11.79 ms | raw | 50.8 MiB | 0.39 GiB |
+| 19 | [smp_deeplabv3_resnet50](../../catalog/models/smp-deeplabv3-resnet50/README.md) | complete | 49.21 | 68.18 | 77.91 | 12.83 ms | ema | 151.2 MiB | 0.67 GiB |
+| 20 | [native_convnext_tiny_uper](../../catalog/models/native-convnext-tiny-uper/README.md) | complete | 48.50 | 70.38 | 75.58 | 13.18 ms | ema | 140.6 MiB | 1.24 GiB |
+| 21 | [smp_upernet_resnet101](../../catalog/models/smp-upernet-resnet101/README.md) | complete | 45.68 | 66.82 | 71.01 | 13.70 ms | ema | 214.7 MiB | 1.44 GiB |
+| 22 | [smp_unetplusplus_efficientnet_b0](../../catalog/models/smp-unetplusplus-efficientnet-b0/README.md) | complete | 43.86 | 61.93 | 68.98 | 14.44 ms | raw | 25.1 MiB | 0.89 GiB |
+| 23 | [native_resnet101_uper](../../catalog/models/native-resnet101-uper/README.md) | complete | 43.04 | 68.44 | 65.20 | 15.19 ms | ema | 233.9 MiB | 1.36 GiB |
+| 24 | [smp_upernet_mit_b0](../../catalog/models/smp-upernet-mit-b0/README.md) | complete | 37.05 | 66.56 | 54.28 | 18.39 ms | ema | 41.0 MiB | 1.09 GiB |
+| 25 | [segformer_b2](../../catalog/models/builtin-segformer-b2/README.md) | complete | 36.88 | 70.39 | 53.26 | 18.63 ms | ema | 104.4 MiB | 2.25 GiB |
+| 26 | [native_resnet50_fpn_ocr](../../catalog/models/native-resnet50-fpn-ocr/README.md) | complete | 33.78 | 67.68 | 48.24 | 20.57 ms | raw | 124.5 MiB | 1.46 GiB |
+| 27 | [eomt_large](../../catalog/models/builtin-eomt-large/README.md) | complete | 32.78 | 72.13 | 45.91 | 21.76 ms | ema | 1207.7 MiB | 3.12 GiB |
+| 28 | [upernet_convnext](../../catalog/models/builtin-upernet-convnext/README.md) | complete | 30.97 | 70.74 | 43.06 | 23.19 ms | ema | 308.6 MiB | 2.48 GiB |
+| 29 | [hf_auto_upernet_swin_tiny](../../catalog/models/hf-auto-upernet-swin-tiny/README.md) | complete | 30.47 | 69.90 | 42.33 | 23.48 ms | ema | 224.9 MiB | 2.41 GiB |
+| 30 | [eomt_dinov3_large](../../catalog/models/builtin-eomt-dinov3-large/README.md) | complete | 29.89 | 71.42 | 41.23 | 24.12 ms | ema | 1201.3 MiB | 3.13 GiB |
+| 31 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | complete | 25.25 | 60.72 | 34.78 | 28.67 ms | raw | 7.1 MiB | 3.30 GiB |
+| 32 | [hrnet_w48_ocr](../../catalog/models/builtin-hrnet-w48-ocr/README.md) | complete | 23.08 | 68.62 | 30.75 | 32.11 ms | ema | 279.1 MiB | 1.26 GiB |
+| 33 | [native_convnext_tiny_channelmapper_dpt](../../catalog/models/native-convnext-tiny-channelmapper-dpt/README.md) | complete | 22.09 | 70.70 | 29.15 | 34.30 ms | ema | 145.8 MiB | 1.95 GiB |
+| 34 | [segformer_b5](../../catalog/models/builtin-segformer-b5/README.md) | complete | 20.49 | 71.95 | 26.74 | 37.00 ms | ema | 322.8 MiB | 2.57 GiB |
+| 35 | [hf_auto_beit_base_ade](../../catalog/models/hf-auto-beit-base-ade/README.md) | complete | 2.12 | 53.98 | 2.52 | 394.46 ms | ema | 616.1 MiB | 3.77 GiB |
 | — | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | pending | — | — | — | — | — | — | — |
 | — | [native_resnet18_fpn_segformer_aux](../../catalog/models/native-resnet18-fpn-segformer-aux/README.md) | pending | — | — | — | — | — | — | — |
-| — | [native_resnet18_fpn_fcn](../../catalog/models/native-resnet18-fpn-fcn/README.md) | pending | — | — | — | — | — | — | — |
