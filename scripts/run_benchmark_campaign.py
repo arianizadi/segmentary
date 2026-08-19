@@ -4390,13 +4390,16 @@ def _rail_accuracy_speed_leaderboard(
     manifest: CampaignManifest,
     records: dict[str, dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """List every unique model, ranking rows with complete quality and speed evidence."""
+    """List every shipped recipe, ranking rows with complete quality and speed evidence."""
     rows: list[dict[str, Any]] = []
     priority = {model_id: index for index, model_id in enumerate(manifest.priority_order)}
     for model in manifest.models:
-        if model.alias_of is not None:
-            continue
-        record = records.get(model.id)
+        # An alias is a separately shipped recipe name but intentionally shares the
+        # canonical model's weights and measurements. Keep it visible in the public
+        # ranking while sourcing its evidence from the canonical record.
+        record = records.get(model.alias_of or model.id)
+        if not isinstance(record, dict):
+            record = records.get(model.id, {})
         if not isinstance(record, dict):
             record = {}
         miou_value = _record_metric(record, "railsem19", "miou")
@@ -4426,6 +4429,7 @@ def _rail_accuracy_speed_leaderboard(
         rows.append(
             {
                 "model": model.id,
+                "alias_of": model.alias_of,
                 "status": "complete" if complete else "pending",
                 "miou": miou,
                 "fps": fps,
@@ -5349,14 +5353,14 @@ def _central_readme(
         [
             "## RailSem19 accuracy-speed leaderboard",
             "",
-            "This lists every unique physical model. Models with both a final RailSem19-only "
+            "This lists and sorts all shipped model recipes. Models with both a final RailSem19-only "
             "mIoU and standardized L40S inference benchmark are ranked first; pending models "
             "remain visible below them until their evidence is complete. The balanced score "
             "is the harmonic mean of mIoU and FPS after each is normalized to the best "
             "currently measured value. A score of 100 would require leading both. Raw mIoU "
             "and FPS remain visible because this convenience ranking is snapshot-relative "
-            "and will change as more models finish. The one compatibility alias is shown in "
-            "the main comparison table but omitted here to avoid ranking identical weights twice.",
+            "and will change as more models finish. Compatibility aliases remain visible and "
+            "are labelled; they share the canonical recipe's weights and measurements.",
             "",
             "| rank | model | status | balanced score | RailSem19 mIoU | FPS | p50 latency | weights | model memory | peak inference VRAM |",
             "|---:|---|---|---:|---:|---:|---:|---|---:|---:|",
@@ -5368,13 +5372,16 @@ def _central_readme(
             rank += 1
         model = models[item["model"]]
         link = "../../" + str(model.readme).removeprefix("docs/")
+        model_display = f"[{item['model']}]({link})"
+        if item["alias_of"] is not None:
+            model_display += f" *(alias of `{item['alias_of']}`)*"
         weights = item["weights"] if item["weights"] in ("raw", "ema") else "—"
         rank_display = str(rank) if item["status"] == "complete" else "—"
         score = _number(item.get("balanced_score"))
         miou = _number(item["miou"] * 100) if item["miou"] is not None else "—"
         latency = f"{_number(item['p50_ms'])} ms" if item["p50_ms"] is not None else "—"
         lines.append(
-            f"| {rank_display} | [{item['model']}]({link}) | {item['status']} | "
+            f"| {rank_display} | {model_display} | {item['status']} | "
             f"{score} | {miou} | {_number(item['fps'])} | {latency} | {weights} | "
             f"{_mib(item['resident_parameter_bytes'])} | {_gib(item['peak_vram_bytes'])} |"
         )
