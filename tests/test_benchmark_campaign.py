@@ -1069,6 +1069,68 @@ def test_trusted_weight_source_correction_is_narrow_and_provenance_identical() -
         assert not campaign._is_trusted_weight_source_correction(*arguments)
 
 
+def test_trusted_bn_recalibration_requires_explicit_zero_parameter_provenance() -> None:
+    existing_source = {
+        "result_sha256": "old-result",
+        "git_sha": "a" * 40,
+        "checkpoint_sha256": "old-checkpoint",
+        "checkpoint_step": 40_000,
+    }
+    candidate_source = {
+        **existing_source,
+        "result_sha256": "new-result",
+        "checkpoint_sha256": "new-checkpoint",
+    }
+    existing = {"metrics": {"miou": 0.31}, "source": existing_source}
+    candidate = {"metrics": {"miou": 0.67}, "source": candidate_source}
+    result = {"config": {"evaluation": {"weights": "raw"}}}
+    correction = {
+        "kind": "batchnorm_running_statistics_recalibration",
+        "parameters_changed": 0,
+        "bn_modules": 55,
+        "recalibration_batches": 371,
+        "recalibration_images": 2968,
+        "source_checkpoint_sha256": "old-checkpoint",
+        "corrected_checkpoint_sha256": "new-checkpoint",
+        "source_result_sha256": "old-result",
+        "corrected_result_sha256": "new-result",
+        "old_miou": 0.31,
+        "corrected_miou": 0.67,
+    }
+    attempt = {
+        "evaluation_correction": correction,
+        "sha256": {
+            "checkpoint": "new-checkpoint",
+            "common_results": "new-result",
+        },
+    }
+
+    assert campaign._is_trusted_bn_recalibration_correction(existing, candidate, result, attempt)
+
+    mutations = [
+        {**correction, "parameters_changed": 1},
+        {**correction, "recalibration_images": 0},
+        {**correction, "source_checkpoint_sha256": "wrong"},
+        {**correction, "corrected_checkpoint_sha256": "wrong"},
+        {**correction, "source_result_sha256": "wrong"},
+        {**correction, "corrected_result_sha256": "wrong"},
+        {**correction, "corrected_miou": 0.66},
+    ]
+    for changed in mutations:
+        assert not campaign._is_trusted_bn_recalibration_correction(
+            existing,
+            candidate,
+            result,
+            {**attempt, "evaluation_correction": changed},
+        )
+    assert not campaign._is_trusted_bn_recalibration_correction(
+        existing,
+        candidate,
+        {"config": {"evaluation": {"weights": "ema"}}},
+        attempt,
+    )
+
+
 def test_training_specifications_match_resolved_campaign_runtime(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

@@ -4121,6 +4121,69 @@ def _is_trusted_weight_source_correction(
     return bool(source.get("result_sha256")) and bool(candidate_source.get("result_sha256"))
 
 
+def _is_trusted_bn_recalibration_correction(
+    existing: dict[str, Any],
+    candidate: dict[str, Any],
+    result: dict[str, Any],
+    attempt: dict[str, Any],
+) -> bool:
+    """Admit an explicit zero-parameter BatchNorm-buffer recalibration."""
+    correction = attempt.get("evaluation_correction")
+    if not isinstance(correction, dict):
+        return False
+    if correction.get("kind") != "batchnorm_running_statistics_recalibration":
+        return False
+    if correction.get("parameters_changed") != 0:
+        return False
+    for key in ("bn_modules", "recalibration_batches", "recalibration_images"):
+        value = correction.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+            return False
+    result_config = result.get("config")
+    evaluation = result_config.get("evaluation") if isinstance(result_config, dict) else None
+    if not isinstance(evaluation, dict) or evaluation.get("weights") != "raw":
+        return False
+    source = existing.get("source")
+    candidate_source = candidate.get("source")
+    existing_metrics = existing.get("metrics")
+    candidate_metrics = candidate.get("metrics")
+    if not all(
+        isinstance(value, dict)
+        for value in (source, candidate_source, existing_metrics, candidate_metrics)
+    ):
+        return False
+    if source.get("git_sha") != candidate_source.get("git_sha"):
+        return False
+    if source.get("checkpoint_step") != candidate_source.get("checkpoint_step"):
+        return False
+    if source.get("checkpoint_sha256") != correction.get("source_checkpoint_sha256"):
+        return False
+    if source.get("result_sha256") != correction.get("source_result_sha256"):
+        return False
+    if candidate_source.get("checkpoint_sha256") != correction.get("corrected_checkpoint_sha256"):
+        return False
+    if candidate_source.get("result_sha256") != correction.get("corrected_result_sha256"):
+        return False
+    if attempt.get("sha256", {}).get("checkpoint") != candidate_source.get("checkpoint_sha256"):
+        return False
+    if attempt.get("sha256", {}).get("common_results") != candidate_source.get("result_sha256"):
+        return False
+    if not source.get("result_sha256") or not candidate_source.get("result_sha256"):
+        return False
+    if source.get("result_sha256") == candidate_source.get("result_sha256"):
+        return False
+    try:
+        old_miou = float(existing_metrics["miou"])
+        candidate_miou = float(candidate_metrics["miou"])
+        correction_old_miou = float(correction["old_miou"])
+        correction_new_miou = float(correction["corrected_miou"])
+    except (KeyError, TypeError, ValueError):
+        return False
+    return math.isclose(old_miou, correction_old_miou, abs_tol=1e-12) and math.isclose(
+        candidate_miou, correction_new_miou, abs_tol=1e-12
+    )
+
+
 def _comparison_records(
     publish_root: Path,
     manifest: CampaignManifest,
@@ -4190,9 +4253,10 @@ def _comparison_records(
             candidate = _normalised_individual(job, result, attempt)
             existing = existing_by_seed[job["seed"]]
             if existing.get("metrics") != candidate.get("metrics"):
-                if not _is_trusted_weight_source_correction(
+                trusted_correction = _is_trusted_weight_source_correction(
                     protocol, existing, candidate, result, attempt
-                ):
+                ) or _is_trusted_bn_recalibration_correction(existing, candidate, result, attempt)
+                if not trusted_correction:
                     raise CampaignError(
                         f"normalized seed {job_id} conflicts with preserved public metrics"
                     )
