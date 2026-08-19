@@ -40,10 +40,11 @@ class TinyBackbone(nn.Module):
     def __init__(self, channels: int = 8) -> None:
         super().__init__()
         self.stem = nn.Conv2d(3, channels, kernel_size=3, stride=2, padding=1)
+        self.norm = nn.BatchNorm2d(channels, momentum=0.997)
         self.attention = TinyAttention(channels)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.attention(self.stem(x))
+        return self.attention(self.norm(self.stem(x)))
 
 
 class TinyDecodeHead(nn.Module):
@@ -200,6 +201,14 @@ def test_hf_auto_config_is_typed_and_requires_a_checkpoint() -> None:
         _cfg(backbone_path="encoder")
     with pytest.raises(ConfigError, match="apply only to arch='hf_auto'"):
         ModelConfig(arch="segformer_b0", revision="deadbeef")
+    with pytest.raises(ConfigError, match=r"must be finite and in \(0, 1\]"):
+        _cfg(batch_norm_momentum=0.0)
+    with pytest.raises(ConfigError, match=r"must be finite and in \(0, 1\]"):
+        _cfg(batch_norm_momentum=float("nan"))
+    with pytest.raises(ConfigError, match="apply only to arch='hf_auto'"):
+        ModelConfig(arch="segformer_b0", batch_norm_momentum=0.003)
+    with pytest.raises(ConfigError, match=r"must be finite and in \(0, 1\]"):
+        ModelConfig(arch="segformer_b0", batch_norm_momentum=0.0)
 
     parsed = from_dict(
         ModelConfig,
@@ -213,6 +222,7 @@ def test_hf_auto_config_is_typed_and_requires_a_checkpoint() -> None:
             "backbone_path": "encoder",
             "head_paths": ["decode_head"],
             "classifier_path": "decode_head.classifier",
+            "batch_norm_momentum": 0.003,
         },
         "model",
     )
@@ -220,6 +230,38 @@ def test_hf_auto_config_is_typed_and_requires_a_checkpoint() -> None:
     assert parsed.subfolder == "weights"
     assert parsed.local_files_only is True
     assert parsed.head_paths == ["decode_head"]
+    assert parsed.batch_norm_momentum == pytest.approx(0.003)
+
+
+def test_hf_auto_applies_explicit_pytorch_batch_norm_momentum(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _install_fake_transformers(monkeypatch)
+    model = build_model(_cfg(batch_norm_momentum=0.003), NUM_CLASSES)
+
+    batch_norms = [
+        module for module in model.modules() if isinstance(module, nn.modules.batchnorm._BatchNorm)
+    ]
+    assert len(batch_norms) == 1
+    assert batch_norms[0].momentum == pytest.approx(0.003)
+
+
+def test_hf_auto_preserves_upstream_batch_norm_momentum_when_omitted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _install_fake_transformers(monkeypatch)
+    model = build_model(_cfg(), NUM_CLASSES)
+
+    batch_norms = [
+        module for module in model.modules() if isinstance(module, nn.modules.batchnorm._BatchNorm)
+    ]
+    assert len(batch_norms) == 1
+    assert batch_norms[0].momentum == pytest.approx(0.997)
+
+
+def test_batch_norm_momentum_override_requires_batch_norm() -> None:
+    with pytest.raises(ValueError, match="has no PyTorch BatchNorm modules"):
+        hf_auto_module._apply_batch_norm_momentum(nn.Conv2d(3, 4, 1), 0.003)
 
 
 def test_auto_layout_load_audit_and_output_contract(monkeypatch: pytest.MonkeyPatch) -> None:

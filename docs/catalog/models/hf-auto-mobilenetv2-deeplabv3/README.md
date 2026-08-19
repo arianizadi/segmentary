@@ -17,6 +17,7 @@ for 21-class Pascal VOC segmentation.
 | source task | Pascal VOC, 21 classes, 513×513 recipe |
 | source preprocessing | RGB, mean/std `(0.5, 0.5, 0.5)`, `1/255` rescale |
 | Segmentary parameters with 19 classes | 2,525,203 |
+| PyTorch BatchNorm momentum | `0.003` |
 
 ## Why choose it
 
@@ -40,15 +41,25 @@ Cons:
 
 The pinned real checkpoint passed strict loading and five FP32 AdamW steps on an
 L40S at batch 2 / 128×128. It used 0.188 GiB peak allocated CUDA memory; all
-losses and gradients were finite. This is not a latency or accuracy benchmark,
-and no comparable Segmentary mIoU has been measured for this recipe.
-The later BF16 strict audit froze only the declared terminal projection,
-verified every remaining trainable gradient, and updated the classifier.
+losses and gradients were finite. The later BF16 strict audit froze only the
+declared terminal projection, verified every remaining trainable gradient, and
+updated the classifier. Comparable campaign measurements appear below.
+
+The upstream checkpoint constructs 55 PyTorch BatchNorm modules with
+`momentum=0.997`, apparently carrying TensorFlow's running-stat decay into
+PyTorch's opposite convention. That makes evaluation statistics follow almost
+only the last micro-batch. This recipe explicitly uses `0.003`, the equivalent
+PyTorch batch contribution, so running statistics accumulate during training.
+Historical weights trained before this recipe correction were evaluated only
+after a full training-split running-stat recalibration that changed zero learned
+parameters; their machine records retain that correction provenance.
 
 ## Advanced settings
 
 - Keep per-device batch at least 2 unless SyncBatchNorm supplies the missing
   statistics across ranks.
+- Do not remove `batch_norm_momentum: 0.003`; it corrects the pinned upstream
+  checkpoint's TensorFlow-versus-PyTorch momentum convention mismatch.
 - Try frozen tuning first on very small datasets, then compare full tuning.
 - Benchmark exported ONNX/TensorRT on the actual target device before making a
   speed claim.

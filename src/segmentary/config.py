@@ -562,6 +562,10 @@ class ModelConfig:
     # Segmentary-native independently composable backbone -> neck -> head stack.
     # It is nested so no component field can be mistaken for a legacy model arm.
     native: NativeModelSpec | None = None
+    # Optional PyTorch running-stat update coefficient for audited hf_auto
+    # checkpoints whose upstream config copied TensorFlow decay semantics.
+    # Appended to preserve the existing positional ModelConfig API.
+    batch_norm_momentum: float | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.arch, str) or not self.arch.strip():
@@ -687,6 +691,14 @@ class ModelConfig:
                 f"arch={self.arch!r}"
             )
 
+        if self.batch_norm_momentum is not None and (
+            isinstance(self.batch_norm_momentum, bool)
+            or not isinstance(self.batch_norm_momentum, (int, float))
+            or not math.isfinite(self.batch_norm_momentum)
+            or not 0.0 < self.batch_norm_momentum <= 1.0
+        ):
+            raise ConfigError("model.batch_norm_momentum must be finite and in (0, 1]")
+
         hf_options = {
             "revision": self.revision,
             "subfolder": self.subfolder,
@@ -694,6 +706,7 @@ class ModelConfig:
             "backbone_path": self.backbone_path,
             "head_paths": self.head_paths,
             "classifier_path": self.classifier_path,
+            "batch_norm_momentum": self.batch_norm_momentum,
         }
         if self.arch != "hf_auto":
             used = [key for key, value in hf_options.items() if value not in (None, False, [])]
@@ -717,7 +730,6 @@ class ModelConfig:
                 "model.drop_path is not portable across AutoModelForSemanticSegmentation "
                 "configs; use a supported explicit architecture arm instead"
             )
-
         paths_set = (
             self.backbone_path is not None,
             bool(self.head_paths),
