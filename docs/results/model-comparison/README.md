@@ -102,7 +102,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 | 29 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | running | 74.40 | 64.34 | — |
 | 30 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | complete | 69.99 | 60.72 | 58.02 |
 | 31 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | complete | 67.74 | 57.93 | 53.29 |
-| 32 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | running | 72.91 | 64.19 | — |
+| 32 | [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | complete | 72.91 | 64.19 | 62.39 |
 | 33 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | complete | 69.45 | 57.64 | 56.76 |
 | 34 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | running | 46.87 | — | 40.39 |
 | 35 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | running | 59.82 | — | — |
@@ -193,7 +193,7 @@ Wall time and GPU-hours include every curriculum stage; peak is per-device alloc
 | [hf_auto_mobilevitv2_deeplabv3](../../catalog/models/hf-auto-mobilevitv2-deeplabv3/README.md) | 7h 22m 10s / 7.37 | 12h 38m 53s / 12.65 | — / — | 4.96 GiB |
 | [hf_auto_mobilevit_xxs_deeplabv3](../../catalog/models/hf-auto-mobilevit-xxs-deeplabv3/README.md) | 18h 40m 27s / 18.67 | 22h 28m 15s / 22.47 | 11h 14m 52s / 11.25 | 15.78 GiB |
 | [hf_auto_mobilenetv2_deeplabv3](../../catalog/models/hf-auto-mobilenetv2-deeplabv3/README.md) | 9h 38m 35s / 9.64 | 5h 17m 58s / 5.30 | 6h 36m 03s / 6.60 | 5.83 GiB |
-| [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | 5h 03m 01s / 5.05 | 9h 37m 04s / 9.62 | — / — | 3.23 GiB |
+| [native_mobilenetv3_large_deeplabv3plus](../../catalog/models/native-mobilenetv3-large-deeplabv3plus/README.md) | 5h 03m 01s / 5.05 | 9h 37m 04s / 9.62 | 4h 48m 27s / 4.81 | 3.23 GiB |
 | [native_mobilenetv3_large_lraspp](../../catalog/models/native-mobilenetv3-large-lraspp/README.md) | 1h 41m 02s / 1.68 | 2h 31m 14s / 2.52 | 4h 12m 17s / 4.20 | 2.65 GiB |
 | [smp_pspnet_mobilenet_v2](../../catalog/models/smp-pspnet-mobilenet-v2/README.md) | 4h 11m 01s / 4.18 | — / — | 0h 54m 37s / 0.91 | 3.00 GiB |
 | [smp_linknet_mobilenet_v2](../../catalog/models/smp-linknet-mobilenet-v2/README.md) | 5h 27m 32s / 5.46 | — / — | — / — | 3.43 GiB |
