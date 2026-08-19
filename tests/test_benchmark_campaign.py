@@ -1214,7 +1214,7 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert "## RailSem19 accuracy-speed leaderboard" in readme
     leaderboard = readme.split("## RailSem19 accuracy-speed leaderboard", maxsplit=1)[1]
     assert "| rank | model | status | balanced score |" in leaderboard
-    assert leaderboard.count("| — | [") == status["scope"]["unique_training_choices"]
+    assert leaderboard.count("| — | [") == status["scope"]["model_recipes"]
     assert "| pending |" in leaderboard
 
     by_model = {row["model"]: row for row in rows}
@@ -1233,7 +1233,7 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert eomt["training_objective"] == "hungarian_query"
 
 
-def test_rail_accuracy_speed_leaderboard_is_balanced_sorted_and_deduplicated() -> None:
+def test_rail_accuracy_speed_leaderboard_is_balanced_sorted_and_includes_aliases() -> None:
     manifest = campaign.load_campaign_manifest()
 
     def record(miou: float, fps: float) -> dict[str, object]:
@@ -1264,19 +1264,23 @@ def test_rail_accuracy_speed_leaderboard_is_balanced_sorted_and_deduplicated() -
 
     rows = campaign._rail_accuracy_speed_leaderboard(manifest, records)
 
-    assert [row["model"] for row in rows[:3]] == [
+    assert [row["model"] for row in rows[:4]] == [
         "smp_deeplabv3plus_resnet101",
+        "deeplabv3plus_r101",
         "eomt_large",
         "eomt_dinov3_large",
     ]
-    assert len(rows) == sum(model.alias_of is None for model in manifest.models)
-    assert all(row["status"] == "complete" for row in rows[:3])
-    assert all(row["status"] == "pending" for row in rows[3:])
+    assert len(rows) == len(manifest.models)
+    assert all(row["status"] == "complete" for row in rows[:4])
+    assert all(row["status"] == "pending" for row in rows[4:])
     assert all(
-        rows[index]["balanced_score"] >= rows[index + 1]["balanced_score"] for index in range(2)
+        rows[index]["balanced_score"] >= rows[index + 1]["balanced_score"] for index in range(3)
     )
-    assert "deeplabv3plus_r101" not in {row["model"] for row in rows}
-    assert rows[3]["model"] == "hf_auto_beit_base_ade"
+    alias = next(row for row in rows if row["model"] == "deeplabv3plus_r101")
+    assert alias["alias_of"] == "smp_deeplabv3plus_resnet101"
+    assert alias["miou"] == pytest.approx(0.60)
+    assert alias["fps"] == pytest.approx(200.0)
+    assert rows[4]["model"] == "hf_auto_beit_base_ade"
 
 
 def test_transfer_reporting_accepts_only_verified_20k_final() -> None:

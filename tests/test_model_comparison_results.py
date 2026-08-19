@@ -43,6 +43,7 @@ def test_live_comparison_ends_with_accuracy_speed_leaderboard() -> None:
     assert content.index(heading) > content.index("## Fixed protocol and files")
     leaderboard = content.split(heading, maxsplit=1)[1]
     assert "| rank | model | status | balanced score | RailSem19 mIoU | FPS |" in leaderboard
-    assert sum(line.startswith("| ") and "](" in line for line in leaderboard.splitlines()) == 36
+    assert sum(line.startswith("| ") and "](" in line for line in leaderboard.splitlines()) == 37
+    assert "*(alias of `smp_deeplabv3plus_resnet101`)*" in leaderboard
     assert "| pending |" in leaderboard
     assert "\n## " not in leaderboard
