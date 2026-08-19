@@ -44,6 +44,7 @@ See [native heads](../../components/native-heads/README.md),
 ## Cityscapes and RailSem19 benchmark results
 
 Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Each quality cell is one retained seed (seed 0). It has no error bar and should not be used to claim that a sub-one-point difference is statistically meaningful.
 All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
@@ -62,13 +63,14 @@ Measured once from this model's RailSem19-only 21-class raw endpoint on an NVIDI
 
 ### Training and full-pipeline evaluation cost
 
-Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
+Standalone rows report their own training cost. The transfer adaptation row reports only Rail20 because it reuses City40; the cumulative row adds the retained City40 and Rail20 costs. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
 
-| protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
-|---|---:|---:|---:|---:|
-| Cityscapes | 6h 13m 46s | 6.23 | 3.07 GiB | 7.455 |
-| RailSem19 | 14h 06m 32s | 14.11 | 4.12 GiB | 7.955 |
-| Cityscapes → RailSem19 | 7h 03m 58s | 7.07 | 4.11 GiB | 7.796 |
+| protocol | cost scope | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
+|---|---|---:|---:|---:|---:|
+| Cityscapes | City40 standalone | 6h 13m 46s | 6.23 | 3.07 GiB | 7.455 |
+| RailSem19 | Rail40 standalone | 14h 06m 32s | 14.11 | 4.12 GiB | 7.955 |
+| Cityscapes → RailSem19 | Rail20 adaptation only; excludes reused City40 | 7h 03m 58s | 7.07 | 4.11 GiB | 7.796 |
+| Cityscapes → RailSem19, cumulative | City40 training + Rail20 adaptation | 13h 17m 44s | 13.30 | 4.11 GiB | — |
 
 ### Cityscapes class IoU
 

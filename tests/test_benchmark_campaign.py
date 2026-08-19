@@ -1037,6 +1037,38 @@ def test_reporting_only_city_source_stays_queued_when_transfer_needs_checkpoint(
     assert "source training remains queued" in audit["rejected_examples"][-1]["reason"]
 
 
+def test_resumed_training_segment_is_not_aggregated_as_whole_run_cost() -> None:
+    partial_stage = {
+        "stage": "railsem19",
+        "wall_clock_s": 120.0,
+        "gpu_count": 1,
+        "gpu_hours": 120.0 / 3600,
+        "peak_vram_bytes_per_device": 123,
+        "result_sha256": "result",
+        "timing_scope": "post_resume_segment_only",
+        "resume_checkpoint_steps": [32_000],
+    }
+    evidence = campaign._protocol_resource_evidence(
+        [
+            {
+                "source": {
+                    "checkpoint_size_bytes": 456,
+                    "training_stages": [partial_stage],
+                    "full_validation_pipeline": None,
+                }
+            }
+        ],
+        parameter_count=789,
+    )
+
+    training = evidence["training"]
+    assert training["wall_clock_s_mean"] is None
+    assert training["gpu_hours_mean"] is None
+    assert training["peak_vram_bytes_per_device"] is None
+    assert training["total_timing_status"] == "not_retained_due_to_resume"
+    assert training["post_resume_segments"][0]["stages"] == [partial_stage]
+
+
 def test_reuse_scan_accepts_exact_20k_transfer_final(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -1341,6 +1373,11 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert beit["training_effective_batch_size"] == "16"
     assert beit["training_backbone_lr"] == "2e-05"
     assert beit["training_objective"] == "dense_semantic"
+    assert (
+        beit["cityscapes_to_railsem19_training_cost_scope"]
+        == "Rail20 adaptation only; excludes reused City40"
+    )
+    assert beit["cityscapes_to_railsem19_cumulative_iterations"] == "60000"
 
     eomt = by_model["eomt_dinov3_large"]
     assert eomt["training_batch_size_per_gpu"] == "2"

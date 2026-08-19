@@ -3763,6 +3763,12 @@ def _iteration_progress(
 
 def _training_stage_evidence(attempt: dict[str, Any]) -> list[dict[str, Any]]:
     _, stage_paths = _attempt_path_objects(attempt)
+    resumes = attempt.get("resumes")
+    resume_steps = (
+        [row.get("global_step") for row in resumes if isinstance(row, dict)]
+        if isinstance(resumes, list)
+        else []
+    )
     rows = []
     for stage, path in stage_paths.items():
         value = load_results(path).to_dict()
@@ -3779,16 +3785,18 @@ def _training_stage_evidence(attempt: dict[str, Any]) -> list[dict[str, Any]]:
             raise CampaignError(f"{path}: stage wall_clock_s must be positive")
         if not isinstance(devices, int) or isinstance(devices, bool) or devices < 1:
             raise CampaignError(f"{path}: env.gpu_count must be positive")
-        rows.append(
-            {
-                "stage": stage,
-                "wall_clock_s": float(wall),
-                "gpu_count": devices,
-                "gpu_hours": float(wall) * devices / 3600,
-                "peak_vram_bytes_per_device": peak,
-                "result_sha256": _sha256(path),
-            }
-        )
+        row = {
+            "stage": stage,
+            "wall_clock_s": float(wall),
+            "gpu_count": devices,
+            "gpu_hours": float(wall) * devices / 3600,
+            "peak_vram_bytes_per_device": peak,
+            "result_sha256": _sha256(path),
+        }
+        if resume_steps:
+            row["timing_scope"] = "post_resume_segment_only"
+            row["resume_checkpoint_steps"] = resume_steps
+        rows.append(row)
     return rows
 
 
@@ -3948,7 +3956,14 @@ def _protocol_resource_evidence(
     sizes = [item.get("checkpoint_size_bytes") for item in checkpoints]
     available_sizes = [item for item in sizes if isinstance(item, int)]
     stage_sets = [item.get("training_stages") or [] for item in checkpoints]
-    training_runs = [rows for rows in stage_sets if rows]
+    partial_runs = [
+        rows
+        for rows in stage_sets
+        if any(row.get("timing_scope") == "post_resume_segment_only" for row in rows)
+    ]
+    training_runs = [rows for rows in stage_sets if rows and rows not in partial_runs]
+    if partial_runs:
+        training_runs = []
     training: dict[str, Any] = {
         "seed_count": len(training_runs),
         "gpu_model": "NVIDIA L40S" if training_runs else None,
@@ -3979,6 +3994,15 @@ def _protocol_resource_evidence(
             else None
         ),
     }
+    if partial_runs:
+        training["total_timing_status"] = "not_retained_due_to_resume"
+        training["post_resume_segments"] = [
+            {
+                "stages": copy.deepcopy(run),
+                "note": "These values cover only the final post-resume segment, not the total.",
+            }
+            for run in partial_runs
+        ]
     if training_runs and len(training_runs[0]) > 1:
         names = [row["stage"] for row in training_runs[0]]
         training["stages"] = [
@@ -4053,6 +4077,44 @@ def _new_protocol(
         raise CampaignError(
             f"validated result for {job['id']} records no trusted raw/ema weight source"
         )
+    caveats = [attempt["caveat"]] if attempt.get("caveat") else []
+    if attempt.get("resumes"):
+        caveats.append(
+            "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not "
+            "retained across interruption recovery; the final post-resume segment remains in "
+            "the machine record but is not presented as the total."
+        )
+    raw_correction = attempt.get("evaluation_correction")
+    public_correction = None
+    if (
+        isinstance(raw_correction, dict)
+        and raw_correction.get("kind") == "batchnorm_running_statistics_recalibration"
+        and raw_correction.get("parameters_changed") == 0
+    ):
+        keys = (
+            "kind",
+            "reason",
+            "parameters_changed",
+            "bn_modules",
+            "recalibration_batches",
+            "recalibration_images",
+            "old_miou",
+            "corrected_miou",
+            "source_checkpoint_sha256",
+            "corrected_checkpoint_sha256",
+            "source_result_sha256",
+            "corrected_result_sha256",
+            "corrected_performance_sha256",
+        )
+        public_correction = {
+            key: raw_correction[key] for key in keys if raw_correction.get(key) is not None
+        }
+        public_correction["data_scope"] = "training split only; no validation images"
+        caveats.append(
+            "Before evaluation, BatchNorm running-statistics buffers were recalibrated on the "
+            "training split to correct an imported momentum-convention error; no learned "
+            "parameter or validation image was used."
+        )
     return {
         "status": "complete",
         "label": job["protocol_label"],
@@ -4091,7 +4153,8 @@ def _new_protocol(
             "Derived from each retained confusion matrix when absent; all other metrics "
             "come directly from validated result records."
         ),
-        "caveats": ([attempt["caveat"]] if attempt.get("caveat") else []),
+        "caveats": caveats,
+        **({"evaluation_correction": public_correction} if public_correction else {}),
     }
 
 
@@ -4636,6 +4699,33 @@ def _recorded_evaluation_weights(protocol: dict[str, Any]) -> str | None:
     return weights if weights in ("raw", "ema") else None
 
 
+def _cumulative_transfer_training(protocols: dict[str, Any]) -> dict[str, Any]:
+    """Combine the reused City40 cost with the Rail20 adaptation cost when retained."""
+    city = protocols.get("cityscapes", {}).get("resource_evidence", {}).get("training", {})
+    adaptation = (
+        protocols.get("cityscapes_to_railsem19", {})
+        .get("resource_evidence", {})
+        .get("training", {})
+    )
+    required = ("wall_clock_s_mean", "gpu_hours_mean")
+    if any(
+        not isinstance(row.get(key), int | float) for row in (city, adaptation) for key in required
+    ):
+        return {}
+    peaks = [
+        row.get("peak_vram_bytes_per_device")
+        for row in (city, adaptation)
+        if isinstance(row.get("peak_vram_bytes_per_device"), int)
+    ]
+    return {
+        "wall_clock_s": city["wall_clock_s_mean"] + adaptation["wall_clock_s_mean"],
+        "gpu_hours": city["gpu_hours_mean"] + adaptation["gpu_hours_mean"],
+        "peak_vram_bytes_per_device": max(peaks) if len(peaks) == 2 else None,
+        "iterations": 60_000,
+        "scope": "reused City40 training plus Rail20 adaptation",
+    }
+
+
 def _model_generated_section(record: dict[str, Any]) -> str:
     protocols = _primary_protocols(record)
     visible_protocols = dict(protocols)
@@ -4650,6 +4740,8 @@ def _model_generated_section(record: dict[str, Any]) -> str:
         "",
         "Values are validated percentages, shown as one clean number. Detailed machine "
         "records retain every contributing seed. `—` means evidence is unavailable, not zero.",
+        "Each quality cell is one retained seed (seed 0). It has no error bar and should not "
+        "be used to claim that a sub-one-point difference is statistically meaningful.",
         *(
             ["All quality values use raw checkpoint weights under the uniform paper policy."]
             if uniform_raw
@@ -4738,14 +4830,21 @@ def _model_generated_section(record: dict[str, Any]) -> str:
             "",
             "### Training and full-pipeline evaluation cost",
             "",
-            "Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM "
-            "is the maximum per-device allocator-reserved high-water mark. Full-pipeline "
-            "throughput includes the loader, sliding-window inference, and metrics.",
+            "Standalone rows report their own training cost. The transfer adaptation row reports "
+            "only Rail20 because it reuses City40; the cumulative row adds the retained City40 "
+            "and Rail20 costs. Peak training VRAM is the maximum per-device allocator-reserved "
+            "high-water mark. Full-pipeline throughput includes the loader, sliding-window "
+            "inference, and metrics.",
             "",
-            "| protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |",
-            "|---|---:|---:|---:|---:|",
+            "| protocol | cost scope | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |",
+            "|---|---|---:|---:|---:|---:|",
         ]
     )
+    scopes = {
+        "cityscapes": "City40 standalone",
+        "railsem19": "Rail40 standalone",
+        "cityscapes_to_railsem19": "Rail20 adaptation only; excludes reused City40",
+    }
     for protocol_id in REQUIRED_PROTOCOLS:
         protocol = visible_protocols.get(protocol_id)
         evidence = protocol.get("resource_evidence", {}) if isinstance(protocol, dict) else {}
@@ -4754,12 +4853,20 @@ def _model_generated_section(record: dict[str, Any]) -> str:
         retained_training = training.get("wall_clock_s_mean") is not None
         missing_training = "not retained" if isinstance(protocol, dict) else "—"
         lines.append(
-            f"| {labels[protocol_id]} | "
+            f"| {labels[protocol_id]} | {scopes[protocol_id]} | "
             f"{_duration(training.get('wall_clock_s_mean')) if retained_training else missing_training} | "
             f"{_number(training.get('gpu_hours_mean')) if retained_training else missing_training} | "
             f"{_gib(training.get('peak_vram_bytes_per_device')) if retained_training else missing_training} | "
             f"{_number(pipeline.get('images_per_s_mean'), decimals=3)} |"
         )
+    cumulative = _cumulative_transfer_training(visible_protocols)
+    cumulative_available = bool(cumulative)
+    lines.append(
+        "| Cityscapes → RailSem19, cumulative | City40 training + Rail20 adaptation | "
+        f"{_duration(cumulative.get('wall_clock_s')) if cumulative_available else 'not retained'} | "
+        f"{_number(cumulative.get('gpu_hours')) if cumulative_available else 'not retained'} | "
+        f"{_gib(cumulative.get('peak_vram_bytes_per_device')) if cumulative_available else 'not retained'} | — |"
+    )
     if any(
         isinstance(visible_protocols.get(protocol_id), dict)
         and visible_protocols[protocol_id]
@@ -5219,6 +5326,11 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
         "training_checkpoint_interval",
         "training_objective",
         *protocol_columns,
+        "cityscapes_to_railsem19_training_cost_scope",
+        "cityscapes_to_railsem19_cumulative_iterations",
+        "cityscapes_to_railsem19_cumulative_wall_clock_s",
+        "cityscapes_to_railsem19_cumulative_gpu_hours",
+        "cityscapes_to_railsem19_cumulative_peak_vram_bytes_per_device",
         "standardized_inference_fps",
         "standardized_inference_resident_parameter_bytes",
         "standardized_inference_latency_ms",
@@ -5300,6 +5412,22 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
                     or "",
                 }
             )
+        cumulative = _cumulative_transfer_training(protocols)
+        output.update(
+            {
+                "cityscapes_to_railsem19_training_cost_scope": (
+                    "Rail20 adaptation only; excludes reused City40"
+                ),
+                "cityscapes_to_railsem19_cumulative_iterations": 60_000,
+                "cityscapes_to_railsem19_cumulative_wall_clock_s": cumulative.get(
+                    "wall_clock_s", ""
+                ),
+                "cityscapes_to_railsem19_cumulative_gpu_hours": cumulative.get("gpu_hours", ""),
+                "cityscapes_to_railsem19_cumulative_peak_vram_bytes_per_device": cumulative.get(
+                    "peak_vram_bytes_per_device", ""
+                ),
+            }
+        )
         inference = row["standardized_inference"]
         latency = inference.get("latency_ms") or {}
         output.update(
@@ -5429,6 +5557,12 @@ def _central_readme(
             "",
             "Every quality value below uses raw checkpoint weights. This uniform paper policy "
             "avoids architecture-dependent endpoint selection.",
+            "All 111 quality cells use seed 0. A single-seed value has no error bar, so rankings "
+            "and sub-one-point differences are descriptive and are not claims of statistical "
+            "significance.",
+            "The imported Hugging Face MobileNetV2 recipe required a documented training-split "
+            "BatchNorm running-statistics recalibration after an upstream momentum-convention "
+            "error; no learned parameter or validation image was used by that correction.",
             "",
             "| priority | model | status | City mIoU (40k) | Rail mIoU (40k) | City → Rail mIoU (Rail20 / total60) |",
             "|---:|---|---|---:|---:|---:|",
@@ -5495,11 +5629,13 @@ def _central_readme(
             "",
             "## Training cost",
             "",
-            "Wall time and GPU-hours include every curriculum stage; peak is per-device "
-            "allocator-reserved training VRAM.",
+            "City and Rail columns report standalone training. Transfer adaptation reports only "
+            "Rail20 and excludes the reused City40 stage; transfer cumulative adds City40 and "
+            "Rail20 when both exact totals were retained. Peak is per-device allocator-reserved "
+            "training VRAM; the final column is the maximum retained peak.",
             "",
-            "| model | Cityscapes wall / GPU-h | RailSem19 wall / GPU-h | transfer wall / GPU-h | peak train VRAM |",
-            "|---|---:|---:|---:|---:|",
+            "| model | Cityscapes wall / GPU-h | RailSem19 wall / GPU-h | transfer adaptation wall / GPU-h | transfer cumulative wall / GPU-h | max retained peak train VRAM |",
+            "|---|---:|---:|---:|---:|---:|",
         ]
     )
     for row in status["models"]:
@@ -5521,9 +5657,16 @@ def _central_readme(
             )
             if isinstance(training.get("peak_vram_bytes_per_device"), int):
                 peaks.append(training["peak_vram_bytes_per_device"])
+        cumulative = _cumulative_transfer_training(protocols)
+        cumulative_cell = (
+            f"{_duration(cumulative.get('wall_clock_s'))} / {_number(cumulative.get('gpu_hours'))}"
+            if cumulative
+            else "not retained"
+        )
         link = "../../" + str(models[row["model"]].readme).removeprefix("docs/")
         lines.append(
-            f"| [{row['model']}]({link}) | {' | '.join(cells)} | {_gib(max(peaks) if peaks else None)} |"
+            f"| [{row['model']}]({link}) | {' | '.join(cells)} | {cumulative_cell} | "
+            f"{_gib(max(peaks) if peaks else None)} |"
         )
     lines.extend(
         [
@@ -5532,9 +5675,13 @@ def _central_readme(
             "",
             "- Cityscapes: 40,000 iterations, standard 19-class 500-image validation.",
             "- RailSem19: 40,000 iterations, `rail_union`, fixed 850-image validation.",
+            "- RailSem19's disjoint 850-image test split remains reserved and unused; this "
+            "comparison reports the validation split for every model.",
             "- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint and train "
             "RailSem19 for 20,000 iterations (60,000 cumulative); Cityscapes is never "
             "trained twice.",
+            "- Transfer cost tables label Rail20 adaptation-only cost separately from cumulative "
+            "City40 + Rail20 cost.",
             "- Transfer warm-starts every compatible learned tensor and reinitialises only the "
             "19-class to `rail_union` classifier mismatch.",
             "- Primary quality evaluation: raw checkpoint weights for every protocol, "
@@ -5544,8 +5691,13 @@ def _central_readme(
             "- [`results.csv`](results.csv): spreadsheet-friendly mean metrics, iterations, and resources.",
             "- [`status.json`](status.json): machine-readable scope and completion state.",
             "- [`records/`](records/): full class IoUs, retained seeds, resources, and provenance.",
+            "- [`paper-review-corrections.json`](paper-review-corrections.json): resumed-run "
+            "timing disclosures and exceptional BatchNorm correction provenance.",
             "",
-            f"Campaign source SHA: `{source_sha}`.",
+            f"Training campaign source SHA: `{source_sha}`.",
+            "Quality evaluation revisions are retained per cell and model page. The metric, "
+            "inference, boundary, taxonomy, and transform implementations used by the mixed "
+            "revisions are byte-identical for this comparison.",
             "",
         ]
     )
@@ -5563,6 +5715,8 @@ def _central_readme(
             "log scaling also gives diminishing credit to already-high FPS. Below-floor models "
             "remain listed after qualified models, with their raw accuracy and speed ranks. "
             "This is a convenience recommendation rather than a universal deployment choice. "
+            "Because every quality cell is seed 0, ranks separated by less than one mIoU point "
+            "should be treated as practically unresolved rather than statistically ordered. "
             "Compatibility aliases remain visible and are labelled; they share the canonical "
             "recipe's weights and measurements.",
             "",

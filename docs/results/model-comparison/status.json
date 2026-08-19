@@ -5596,6 +5596,9 @@
     },
     "unique_training_choices": 36,
     "quality_weight_policy": "raw checkpoint weights for every model and protocol",
-    "paired_raw_ema_cells": 36
+    "paired_raw_ema_cells": 36,
+    "statistical_scope": "single seed 0; descriptive values and ranks; no significance claim",
+    "transfer_cost_scope": "reported transfer training is Rail20 adaptation-only; cumulative fields add reused City40 when exact totals are retained",
+    "resource_corrections": "paper-review-corrections.json"
   }
 }

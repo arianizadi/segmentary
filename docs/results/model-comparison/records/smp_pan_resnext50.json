@@ -373,7 +373,8 @@
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
       "caveats": [
-        "Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone raw-weight validation evidence are retained."
+        "Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone raw-weight validation evidence are retained.",
+        "The retained historical endpoint label conflicts with the fresh paired measurement; the paper-primary value is the independently verified raw evaluation."
       ]
     },
     "railsem19": {
@@ -749,12 +750,21 @@
           "size_bytes": 380818182
         },
         "training": {
-          "seed_count": 1,
+          "seed_count": 0,
           "gpu_model": "NVIDIA L40S",
           "gpus_per_run": 1,
-          "wall_clock_s_mean": 15313.306554693729,
-          "gpu_hours_mean": 4.253696265192702,
-          "peak_vram_bytes_per_device": 5146411008
+          "wall_clock_s_mean": null,
+          "gpu_hours_mean": null,
+          "peak_vram_bytes_per_device": null,
+          "post_resume_segment_only": {
+            "wall_clock_s": 15313.306554693729,
+            "gpu_hours": 4.253696265192702,
+            "peak_vram_bytes_per_device": 5146411008,
+            "resume_checkpoint_steps": [
+              4000
+            ]
+          },
+          "total_timing_status": "not_retained_due_to_resume"
         },
         "full_validation_pipeline": {
           "seed_count": 1,
@@ -1028,7 +1038,11 @@
                 "gpu_count": 1,
                 "gpu_hours": 4.253696265192702,
                 "peak_vram_bytes_per_device": 5146411008,
-                "result_sha256": "c539a9fd90ed0c4dfb6a36877452933791e4ee2cacbb412663249dc8e4c45fdb"
+                "result_sha256": "c539a9fd90ed0c4dfb6a36877452933791e4ee2cacbb412663249dc8e4c45fdb",
+                "timing_scope": "post_resume_segment_only",
+                "resume_checkpoint_steps": [
+                  4000
+                ]
               }
             ],
             "full_validation_pipeline": {
@@ -1048,7 +1062,9 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not retained across interruption recovery; the machine record preserves the final post-resume segment separately but does not present it as the total."
+      ]
     }
   },
   "paper_raw_protocols": {
@@ -1370,7 +1386,8 @@
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
       "caveats": [
-        "Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone raw-weight validation evidence are retained."
+        "Completed on compatible clean source a50027d6a72a after the legacy lane was stopped before this cell produced a reusable result; exact final full-state checkpoint and standalone raw-weight validation evidence are retained.",
+        "The retained historical endpoint label conflicts with the fresh paired measurement; the paper-primary value is the independently verified raw evaluation."
       ]
     }
   },

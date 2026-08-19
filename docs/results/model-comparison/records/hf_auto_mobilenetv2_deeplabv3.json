@@ -360,6 +360,21 @@
               "wall_clock_s": 68.61628261208534,
               "images_per_s": 7.286900149148204,
               "scope": "loader, sliding-window inference, and metrics"
+            },
+            "evaluation_correction": {
+              "kind": "batchnorm_running_statistics_recalibration",
+              "reason": "correct an upstream TensorFlow-to-PyTorch momentum-convention error",
+              "data_scope": "training split only; no validation images",
+              "parameters_changed": 0,
+              "bn_modules": 55,
+              "recalibration_batches": 371,
+              "training_images": 2968,
+              "old_miou": 0.31455687106804364,
+              "corrected_miou": 0.6774129638222623,
+              "source_checkpoint_sha256": "dfe1a70fe765b643b09f89d66ca21e6a3b19f0ef7bddeda0a7fc097bb5050895",
+              "corrected_checkpoint_sha256": "4f3711930ae1df9eaa26a222ba7652799b210f3a244770289a5e58a1c8bf3aa5",
+              "source_result_sha256": "05dac80e6c8f14234dce1100994d246c8b09dbbed21e3667e0726f07c5ea8c8a",
+              "corrected_result_sha256": "b135e1a1431f6d1c8639912b3f32e5e7f051675cd8c3ce454fce63f0d88ade20"
             }
           },
           "milestones": {}
@@ -372,7 +387,24 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used."
+      ],
+      "evaluation_correction": {
+        "kind": "batchnorm_running_statistics_recalibration",
+        "reason": "correct an upstream TensorFlow-to-PyTorch momentum-convention error",
+        "data_scope": "training split only; no validation images",
+        "parameters_changed": 0,
+        "bn_modules": 55,
+        "recalibration_batches": 371,
+        "training_images": 2968,
+        "old_miou": 0.31455687106804364,
+        "corrected_miou": 0.6774129638222623,
+        "source_checkpoint_sha256": "dfe1a70fe765b643b09f89d66ca21e6a3b19f0ef7bddeda0a7fc097bb5050895",
+        "corrected_checkpoint_sha256": "4f3711930ae1df9eaa26a222ba7652799b210f3a244770289a5e58a1c8bf3aa5",
+        "source_result_sha256": "05dac80e6c8f14234dce1100994d246c8b09dbbed21e3667e0726f07c5ea8c8a",
+        "corrected_result_sha256": "b135e1a1431f6d1c8639912b3f32e5e7f051675cd8c3ce454fce63f0d88ade20"
+      }
     },
     "railsem19": {
       "status": "complete",
@@ -408,12 +440,21 @@
           "size_bytes": 37739949
         },
         "training": {
-          "seed_count": 1,
+          "seed_count": 0,
           "gpu_model": "NVIDIA L40S",
           "gpus_per_run": 1,
-          "wall_clock_s_mean": 19077.66953483224,
-          "gpu_hours_mean": 5.299352648564511,
-          "peak_vram_bytes_per_device": 6259998720
+          "wall_clock_s_mean": null,
+          "gpu_hours_mean": null,
+          "peak_vram_bytes_per_device": null,
+          "post_resume_segment_only": {
+            "wall_clock_s": 19077.66953483224,
+            "gpu_hours": 5.299352648564511,
+            "peak_vram_bytes_per_device": 6259998720,
+            "resume_checkpoint_steps": [
+              24000
+            ]
+          },
+          "total_timing_status": "not_retained_due_to_resume"
         },
         "full_validation_pipeline": {
           "seed_count": 1,
@@ -687,7 +728,11 @@
                 "gpu_count": 1,
                 "gpu_hours": 5.299352648564511,
                 "peak_vram_bytes_per_device": 6259998720,
-                "result_sha256": "b694cfdfd0a539a1868b74d2695cb8aa7a40746ad94e9532f848b3e0f386e607"
+                "result_sha256": "b694cfdfd0a539a1868b74d2695cb8aa7a40746ad94e9532f848b3e0f386e607",
+                "timing_scope": "post_resume_segment_only",
+                "resume_checkpoint_steps": [
+                  24000
+                ]
               }
             ],
             "full_validation_pipeline": {
@@ -695,6 +740,22 @@
               "wall_clock_s": 120.24404093623161,
               "images_per_s": 7.0689573751997905,
               "scope": "loader, sliding-window inference, and metrics"
+            },
+            "evaluation_correction": {
+              "kind": "batchnorm_running_statistics_recalibration",
+              "reason": "correct an upstream TensorFlow-to-PyTorch momentum-convention error",
+              "data_scope": "training split only; no validation images",
+              "parameters_changed": 0,
+              "bn_modules": 55,
+              "recalibration_batches": 850,
+              "training_images": 6800,
+              "old_miou": 0.14359671156058598,
+              "corrected_miou": 0.579339803923551,
+              "source_checkpoint_sha256": "10a45b97af1d179af6b60ad8506b4fdda99d8f3e8afe82eee14b657116447550",
+              "corrected_checkpoint_sha256": "79a6185e64264a8fa64a4bca840b7536c498c9e989fae15c821957420f97e768",
+              "source_result_sha256": "dfe8cc318739fd431ed7fd437ed8f505a6ed388ad2608bf2d3e6489e6ba7e9c1",
+              "corrected_result_sha256": "6471ff61acc59206881bb5cd5a1bf1796cb56848011692340e9fcc5d5f953203",
+              "corrected_performance_sha256": "beaf184afa64d20b744bcb3635e510e65729054a98d1769841682bfc22574dff"
             }
           },
           "milestones": {}
@@ -707,7 +768,26 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not retained across interruption recovery; the machine record preserves the final post-resume segment separately but does not present it as the total.",
+        "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used."
+      ],
+      "evaluation_correction": {
+        "kind": "batchnorm_running_statistics_recalibration",
+        "reason": "correct an upstream TensorFlow-to-PyTorch momentum-convention error",
+        "data_scope": "training split only; no validation images",
+        "parameters_changed": 0,
+        "bn_modules": 55,
+        "recalibration_batches": 850,
+        "training_images": 6800,
+        "old_miou": 0.14359671156058598,
+        "corrected_miou": 0.579339803923551,
+        "source_checkpoint_sha256": "10a45b97af1d179af6b60ad8506b4fdda99d8f3e8afe82eee14b657116447550",
+        "corrected_checkpoint_sha256": "79a6185e64264a8fa64a4bca840b7536c498c9e989fae15c821957420f97e768",
+        "source_result_sha256": "dfe8cc318739fd431ed7fd437ed8f505a6ed388ad2608bf2d3e6489e6ba7e9c1",
+        "corrected_result_sha256": "6471ff61acc59206881bb5cd5a1bf1796cb56848011692340e9fcc5d5f953203",
+        "corrected_performance_sha256": "beaf184afa64d20b744bcb3635e510e65729054a98d1769841682bfc22574dff"
+      }
     },
     "cityscapes_to_railsem19": {
       "status": "complete",
@@ -1034,6 +1114,21 @@
               "wall_clock_s": 118.73481735214591,
               "images_per_s": 7.15881001845528,
               "scope": "loader, sliding-window inference, and metrics"
+            },
+            "evaluation_correction": {
+              "kind": "batchnorm_running_statistics_recalibration",
+              "reason": "correct an upstream TensorFlow-to-PyTorch momentum-convention error",
+              "data_scope": "training split only; no validation images",
+              "parameters_changed": 0,
+              "bn_modules": 55,
+              "recalibration_batches": 850,
+              "training_images": 6800,
+              "old_miou": 0.1185908977098898,
+              "corrected_miou": 0.5328885396125134,
+              "source_checkpoint_sha256": "1df464b560c05d155838961097dc9cc70a00a519d867ffc5130b266f18f2b286",
+              "corrected_checkpoint_sha256": "2671491cfd7ee6602687c37110da7b0e85183c7fe0bb5aa429ca8541f2a7ce35",
+              "source_result_sha256": "b050c7ae581b8b94d62b56d702b0e259b3b3dcc3631e2242f9d74cd55c553979",
+              "corrected_result_sha256": "04da05647559dcda3ce9494ee043f2f2fcd2ac17005e04d41f1f7bc6ac633a6c"
             }
           },
           "milestones": {}
@@ -1046,7 +1141,25 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used.",
+        "Transfer warm-started from the pre-recalibration Cityscapes checkpoint; only BatchNorm buffers differ from the published Cityscapes endpoint, and Rail20 re-estimated them."
+      ],
+      "evaluation_correction": {
+        "kind": "batchnorm_running_statistics_recalibration",
+        "reason": "correct an upstream TensorFlow-to-PyTorch momentum-convention error",
+        "data_scope": "training split only; no validation images",
+        "parameters_changed": 0,
+        "bn_modules": 55,
+        "recalibration_batches": 850,
+        "training_images": 6800,
+        "old_miou": 0.1185908977098898,
+        "corrected_miou": 0.5328885396125134,
+        "source_checkpoint_sha256": "1df464b560c05d155838961097dc9cc70a00a519d867ffc5130b266f18f2b286",
+        "corrected_checkpoint_sha256": "2671491cfd7ee6602687c37110da7b0e85183c7fe0bb5aa429ca8541f2a7ce35",
+        "source_result_sha256": "b050c7ae581b8b94d62b56d702b0e259b3b3dcc3631e2242f9d74cd55c553979",
+        "corrected_result_sha256": "04da05647559dcda3ce9494ee043f2f2fcd2ac17005e04d41f1f7bc6ac633a6c"
+      }
     }
   }
 }

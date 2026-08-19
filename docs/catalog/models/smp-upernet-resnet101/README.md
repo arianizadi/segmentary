@@ -55,6 +55,7 @@ experiment. See the [SMP component guide](../../components/smp/README.md), the
 ## Cityscapes and RailSem19 benchmark results
 
 Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Each quality cell is one retained seed (seed 0). It has no error bar and should not be used to claim that a sub-one-point difference is statistically meaningful.
 All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
@@ -73,13 +74,14 @@ Measured once from this model's RailSem19-only 21-class ema endpoint on an NVIDI
 
 ### Training and full-pipeline evaluation cost
 
-Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
+Standalone rows report their own training cost. The transfer adaptation row reports only Rail20 because it reuses City40; the cumulative row adds the retained City40 and Rail20 costs. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
 
-| protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
-|---|---:|---:|---:|---:|
-| Cityscapes | 9h 21m 34s | 9.36 | 6.51 GiB | 6.336 |
-| RailSem19 | 12h 55m 26s | 12.92 | 6.70 GiB | 5.483 |
-| Cityscapes → RailSem19 | not retained | not retained | not retained | 5.526 |
+| protocol | cost scope | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
+|---|---|---:|---:|---:|---:|
+| Cityscapes | City40 standalone | 9h 21m 34s | 9.36 | 6.51 GiB | 6.336 |
+| RailSem19 | Rail40 standalone | 12h 55m 26s | 12.92 | 6.70 GiB | 5.483 |
+| Cityscapes → RailSem19 | Rail20 adaptation only; excludes reused City40 | not retained | not retained | not retained | 5.526 |
+| Cityscapes → RailSem19, cumulative | City40 training + Rail20 adaptation | not retained | not retained | not retained | — |
 
 `not retained` means the exact original training-duration record is no longer available. The validated quality result, final checkpoint, iteration count, and inference evidence are still complete; the model is not retrained only to recreate timing metadata.
 

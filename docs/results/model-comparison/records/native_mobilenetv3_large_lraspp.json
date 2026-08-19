@@ -89,12 +89,21 @@
           "size_bytes": 52105730
         },
         "training": {
-          "seed_count": 1,
+          "seed_count": 0,
           "gpu_model": "NVIDIA L40S",
           "gpus_per_run": 1,
-          "wall_clock_s_mean": 6061.823889728636,
-          "gpu_hours_mean": 1.6838399693690653,
-          "peak_vram_bytes_per_device": 1931476992
+          "wall_clock_s_mean": null,
+          "gpu_hours_mean": null,
+          "peak_vram_bytes_per_device": null,
+          "post_resume_segment_only": {
+            "wall_clock_s": 6061.823889728636,
+            "gpu_hours": 1.6838399693690653,
+            "peak_vram_bytes_per_device": 1931476992,
+            "resume_checkpoint_steps": [
+              24016
+            ]
+          },
+          "total_timing_status": "not_retained_due_to_resume"
         },
         "full_validation_pipeline": {
           "seed_count": 1,
@@ -352,7 +361,11 @@
                 "gpu_count": 1,
                 "gpu_hours": 1.6838399693690653,
                 "peak_vram_bytes_per_device": 1931476992,
-                "result_sha256": "09620387962dd8fbdeea8e7bc0a42411104d1f38445b2b6c93a6d40a4d400b3a"
+                "result_sha256": "09620387962dd8fbdeea8e7bc0a42411104d1f38445b2b6c93a6d40a4d400b3a",
+                "timing_scope": "post_resume_segment_only",
+                "resume_checkpoint_steps": [
+                  24016
+                ]
               }
             ],
             "full_validation_pipeline": {
@@ -372,7 +385,9 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not retained across interruption recovery; the machine record preserves the final post-resume segment separately but does not present it as the total."
+      ]
     },
     "railsem19": {
       "status": "complete",
@@ -408,12 +423,21 @@
           "size_bytes": 52110594
         },
         "training": {
-          "seed_count": 1,
+          "seed_count": 0,
           "gpu_model": "NVIDIA L40S",
           "gpus_per_run": 1,
-          "wall_clock_s_mean": 9074.157923255116,
-          "gpu_hours_mean": 2.520599423126421,
-          "peak_vram_bytes_per_device": 2841640960
+          "wall_clock_s_mean": null,
+          "gpu_hours_mean": null,
+          "peak_vram_bytes_per_device": null,
+          "post_resume_segment_only": {
+            "wall_clock_s": 9074.157923255116,
+            "gpu_hours": 2.520599423126421,
+            "peak_vram_bytes_per_device": 2841640960,
+            "resume_checkpoint_steps": [
+              28000
+            ]
+          },
+          "total_timing_status": "not_retained_due_to_resume"
         },
         "full_validation_pipeline": {
           "seed_count": 1,
@@ -687,7 +711,11 @@
                 "gpu_count": 1,
                 "gpu_hours": 2.520599423126421,
                 "peak_vram_bytes_per_device": 2841640960,
-                "result_sha256": "9c277a75b98805b06c591620510983988f522c1b222640be5e01c88fea1c27f7"
+                "result_sha256": "9c277a75b98805b06c591620510983988f522c1b222640be5e01c88fea1c27f7",
+                "timing_scope": "post_resume_segment_only",
+                "resume_checkpoint_steps": [
+                  28000
+                ]
               }
             ],
             "full_validation_pipeline": {
@@ -707,7 +735,9 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not retained across interruption recovery; the machine record preserves the final post-resume segment separately but does not present it as the total."
+      ]
     },
     "cityscapes_to_railsem19": {
       "status": "complete",

@@ -408,12 +408,21 @@
           "size_bytes": 102801281
         },
         "training": {
-          "seed_count": 1,
+          "seed_count": 0,
           "gpu_model": "NVIDIA L40S",
           "gpus_per_run": 1,
-          "wall_clock_s_mean": 9674.837382085621,
-          "gpu_hours_mean": 2.687454828357117,
-          "peak_vram_bytes_per_device": 6698303488
+          "wall_clock_s_mean": null,
+          "gpu_hours_mean": null,
+          "peak_vram_bytes_per_device": null,
+          "post_resume_segment_only": {
+            "wall_clock_s": 9674.837382085621,
+            "gpu_hours": 2.687454828357117,
+            "peak_vram_bytes_per_device": 6698303488,
+            "resume_checkpoint_steps": [
+              32000
+            ]
+          },
+          "total_timing_status": "not_retained_due_to_resume"
         },
         "full_validation_pipeline": {
           "seed_count": 1,
@@ -687,7 +696,11 @@
                 "gpu_count": 1,
                 "gpu_hours": 2.687454828357117,
                 "peak_vram_bytes_per_device": 6698303488,
-                "result_sha256": "a7375e89018205f8d6aef667f61d557eb4cb91ae8612184db02b008d4de488f8"
+                "result_sha256": "a7375e89018205f8d6aef667f61d557eb4cb91ae8612184db02b008d4de488f8",
+                "timing_scope": "post_resume_segment_only",
+                "resume_checkpoint_steps": [
+                  32000
+                ]
               }
             ],
             "full_validation_pipeline": {
@@ -707,7 +720,9 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not retained across interruption recovery; the machine record preserves the final post-resume segment separately but does not present it as the total."
+      ]
     },
     "cityscapes_to_railsem19": {
       "status": "complete",

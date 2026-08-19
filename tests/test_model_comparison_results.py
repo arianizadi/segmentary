@@ -56,7 +56,9 @@ def test_live_comparison_ends_with_accuracy_speed_leaderboard() -> None:
     assert "*(alias of `smp_deeplabv3plus_resnet101`)*" in leaderboard
     assert "| below 60% mIoU | not eligible |" in leaderboard
     assert "| below 60% mIoU | — |" not in leaderboard
-    assert content.count("| not retained |") == 3
+    assert "not retained" in content
+    assert "Transfer adaptation reports only Rail20" in content
+    assert "All 111 quality cells use seed 0" in content
     assert (
         "Some complete results were verified as compatible and reused instead of retrained"
         in content
@@ -101,7 +103,34 @@ def test_paper_quality_bundle_uses_raw_weights_at_every_public_level() -> None:
 
     readme = (comparison / "README.md").read_text()
     analysis = (comparison / "RAW_VS_EMA.md").read_text()
+    corrections = json.loads((comparison / "paper-review-corrections.json").read_text())
     assert "Every quality value below uses raw checkpoint weights" in readme
     assert "[raw versus EMA analysis](RAW_VS_EMA.md)" in readme
     assert analysis.count("| `") == 36
     assert "±" not in analysis
+    assert len(corrections["resumed_cells"]) == 8
+    assert len(corrections["batchnorm_recalibrations"]) == 3
+
+
+def test_resumed_cells_never_publish_partial_segments_as_total_costs() -> None:
+    comparison = ROOT / "docs/results/model-comparison"
+    corrections_path = comparison / "paper-review-corrections.json"
+    if not corrections_path.is_file():
+        return
+    corrections = json.loads(corrections_path.read_text())
+    for row in corrections["resumed_cells"]:
+        record = json.loads((comparison / "records" / f"{row['model_id']}.json").read_text())
+        variants = [record["protocols"][row["protocol"]]]
+        override = record.get("paper_raw_protocols", {}).get(row["protocol"])
+        if override is not None:
+            variants.append(override)
+        for protocol in variants:
+            training = protocol["resource_evidence"]["training"]
+            assert training["wall_clock_s_mean"] is None
+            assert training["gpu_hours_mean"] is None
+            assert training["peak_vram_bytes_per_device"] is None
+            assert training["total_timing_status"] == "not_retained_due_to_resume"
+            assert (
+                training["post_resume_segment_only"]["resume_checkpoint_steps"]
+                == row["resume_checkpoint_steps"]
+            )

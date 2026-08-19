@@ -747,12 +747,21 @@
           "size_bytes": 20920327
         },
         "training": {
-          "seed_count": 1,
+          "seed_count": 0,
           "gpu_model": "NVIDIA L40S",
           "gpus_per_run": 1,
-          "wall_clock_s_mean": 3276.6036330088973,
-          "gpu_hours_mean": 0.9101676758358048,
-          "peak_vram_bytes_per_device": 3225419776
+          "wall_clock_s_mean": null,
+          "gpu_hours_mean": null,
+          "peak_vram_bytes_per_device": null,
+          "post_resume_segment_only": {
+            "wall_clock_s": 3276.6036330088973,
+            "gpu_hours": 0.9101676758358048,
+            "peak_vram_bytes_per_device": 3225419776,
+            "resume_checkpoint_steps": [
+              16000
+            ]
+          },
+          "total_timing_status": "not_retained_due_to_resume"
         },
         "full_validation_pipeline": {
           "seed_count": 1,
@@ -1026,7 +1035,11 @@
                 "gpu_count": 1,
                 "gpu_hours": 0.9101676758358048,
                 "peak_vram_bytes_per_device": 3225419776,
-                "result_sha256": "3d89eb2afbc2ccc55d35ae60a94e9d650cc29c1de8037ad0fc23d38fe095decc"
+                "result_sha256": "3d89eb2afbc2ccc55d35ae60a94e9d650cc29c1de8037ad0fc23d38fe095decc",
+                "timing_scope": "post_resume_segment_only",
+                "resume_checkpoint_steps": [
+                  16000
+                ]
               }
             ],
             "full_validation_pipeline": {
@@ -1046,7 +1059,9 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not retained across interruption recovery; the machine record preserves the final post-resume segment separately but does not present it as the total."
+      ]
     }
   }
 }

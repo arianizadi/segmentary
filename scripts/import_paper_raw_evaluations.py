@@ -18,6 +18,142 @@ EXPECTED_EVALUATION_SHA = "a1a85ebcd593a1eeb3ad2e2445c14bbe6f5c5270"
 TRAINING_SOURCE_SHA = "b9eb3e1f390b70aad63e78b2e723bd79b5266471"
 COMPARISON_ROOT = campaign.REPO_ROOT / "docs/results/model-comparison"
 
+RESUMED_CELLS: dict[tuple[str, str], list[int]] = {
+    ("native_resnet18_fpn_fcn", "cityscapes"): [12_008, 20_013],
+    ("native_mobilenetv3_large_lraspp", "cityscapes"): [24_016],
+    ("smp_pspnet_mobilenet_v2", "cityscapes_to_railsem19"): [16_000],
+    ("smp_pan_resnext50", "cityscapes_to_railsem19"): [4_000],
+    ("native_mobilenetv3_large_lraspp", "railsem19"): [28_000],
+    ("hf_auto_mobilenetv2_deeplabv3", "railsem19"): [24_000],
+    ("hf_auto_mobilevitv2_deeplabv3", "cityscapes"): [4_002],
+    ("smp_unetplusplus_efficientnet_b0", "railsem19"): [32_000],
+}
+
+BN_RECALIBRATIONS: dict[str, dict[str, Any]] = {
+    "cityscapes": {
+        "bn_modules": 55,
+        "recalibration_batches": 371,
+        "training_images": 2968,
+        "old_miou": 0.31455687106804364,
+        "corrected_miou": 0.6774129638222623,
+        "source_checkpoint_sha256": "dfe1a70fe765b643b09f89d66ca21e6a3b19f0ef7bddeda0a7fc097bb5050895",
+        "corrected_checkpoint_sha256": "4f3711930ae1df9eaa26a222ba7652799b210f3a244770289a5e58a1c8bf3aa5",
+        "source_result_sha256": "05dac80e6c8f14234dce1100994d246c8b09dbbed21e3667e0726f07c5ea8c8a",
+        "corrected_result_sha256": "b135e1a1431f6d1c8639912b3f32e5e7f051675cd8c3ce454fce63f0d88ade20",
+    },
+    "railsem19": {
+        "bn_modules": 55,
+        "recalibration_batches": 850,
+        "training_images": 6800,
+        "old_miou": 0.14359671156058598,
+        "corrected_miou": 0.579339803923551,
+        "source_checkpoint_sha256": "10a45b97af1d179af6b60ad8506b4fdda99d8f3e8afe82eee14b657116447550",
+        "corrected_checkpoint_sha256": "79a6185e64264a8fa64a4bca840b7536c498c9e989fae15c821957420f97e768",
+        "source_result_sha256": "dfe8cc318739fd431ed7fd437ed8f505a6ed388ad2608bf2d3e6489e6ba7e9c1",
+        "corrected_result_sha256": "6471ff61acc59206881bb5cd5a1bf1796cb56848011692340e9fcc5d5f953203",
+        "corrected_performance_sha256": "beaf184afa64d20b744bcb3635e510e65729054a98d1769841682bfc22574dff",
+    },
+    "cityscapes_to_railsem19": {
+        "bn_modules": 55,
+        "recalibration_batches": 850,
+        "training_images": 6800,
+        "old_miou": 0.1185908977098898,
+        "corrected_miou": 0.5328885396125134,
+        "source_checkpoint_sha256": "1df464b560c05d155838961097dc9cc70a00a519d867ffc5130b266f18f2b286",
+        "corrected_checkpoint_sha256": "2671491cfd7ee6602687c37110da7b0e85183c7fe0bb5aa429ca8541f2a7ce35",
+        "source_result_sha256": "b050c7ae581b8b94d62b56d702b0e259b3b3dcc3631e2242f9d74cd55c553979",
+        "corrected_result_sha256": "04da05647559dcda3ce9494ee043f2f2fcd2ac17005e04d41f1f7bc6ac633a6c",
+    },
+}
+
+
+def _append_caveat(protocol: dict[str, Any], text: str) -> None:
+    caveats = protocol.setdefault("caveats", [])
+    if text not in caveats:
+        caveats.append(text)
+
+
+def _apply_review_corrections(records: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    """Fail closed on partial resume timing and retain exceptional BN provenance."""
+    for (model_id, protocol_id), resume_steps in RESUMED_CELLS.items():
+        record = records[model_id]
+        variants = [record["protocols"].get(protocol_id)]
+        variants.append(record.get("paper_raw_protocols", {}).get(protocol_id))
+        for protocol in (item for item in variants if isinstance(item, dict)):
+            training = protocol["resource_evidence"]["training"]
+            if "post_resume_segment_only" not in training:
+                training["post_resume_segment_only"] = {
+                    "wall_clock_s": training.get("wall_clock_s_mean"),
+                    "gpu_hours": training.get("gpu_hours_mean"),
+                    "peak_vram_bytes_per_device": training.get("peak_vram_bytes_per_device"),
+                    "resume_checkpoint_steps": resume_steps,
+                }
+            training.update(
+                {
+                    "seed_count": 0,
+                    "wall_clock_s_mean": None,
+                    "gpu_hours_mean": None,
+                    "peak_vram_bytes_per_device": None,
+                    "total_timing_status": "not_retained_due_to_resume",
+                }
+            )
+            for individual in protocol.get("individual", []):
+                for stage in individual.get("source", {}).get("training_stages", []):
+                    stage["timing_scope"] = "post_resume_segment_only"
+                    stage["resume_checkpoint_steps"] = resume_steps
+            _append_caveat(
+                protocol,
+                "The exact total training wall time, GPU-hours, and whole-run peak VRAM were "
+                "not retained across interruption recovery; the machine record preserves the "
+                "final post-resume segment separately but does not present it as the total.",
+            )
+
+    mobile = records["hf_auto_mobilenetv2_deeplabv3"]
+    for protocol_id, correction in BN_RECALIBRATIONS.items():
+        protocol = mobile["protocols"][protocol_id]
+        public = {
+            "kind": "batchnorm_running_statistics_recalibration",
+            "reason": "correct an upstream TensorFlow-to-PyTorch momentum-convention error",
+            "data_scope": "training split only; no validation images",
+            "parameters_changed": 0,
+            **correction,
+        }
+        protocol["evaluation_correction"] = public
+        for individual in protocol.get("individual", []):
+            individual.setdefault("source", {})["evaluation_correction"] = public
+        _append_caveat(
+            protocol,
+            "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on "
+            "the protocol's training split to correct an imported momentum-convention error; "
+            "no learned parameter or validation image was used.",
+        )
+    _append_caveat(
+        mobile["protocols"]["cityscapes_to_railsem19"],
+        "Transfer warm-started from the pre-recalibration Cityscapes checkpoint; only BatchNorm "
+        "buffers differ from the published Cityscapes endpoint, and Rail20 re-estimated them.",
+    )
+    _append_caveat(
+        records["smp_pan_resnext50"]["protocols"]["cityscapes"],
+        "The retained historical endpoint label conflicts with the fresh paired measurement; "
+        "the paper-primary value is the independently verified raw evaluation.",
+    )
+    return {
+        "schema_version": 1,
+        "resumed_cells": [
+            {
+                "model_id": model_id,
+                "protocol": protocol_id,
+                "resume_checkpoint_steps": steps,
+                "publication_action": "total timing and whole-run peak marked not retained",
+            }
+            for (model_id, protocol_id), steps in RESUMED_CELLS.items()
+        ],
+        "batchnorm_recalibrations": [
+            {"model_id": "hf_auto_mobilenetv2_deeplabv3", "protocol": protocol_id, **value}
+            for protocol_id, value in BN_RECALIBRATIONS.items()
+        ],
+    }
+
 
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -293,6 +429,7 @@ def main() -> int:
 
     if len(rows) != 36:
         raise campaign.CampaignError(f"expected 36 paired rows, found {len(rows)}")
+    review_corrections = _apply_review_corrections(records)
     for record in records.values():
         for protocol_id, protocol in campaign._primary_protocols(record).items():
             if (
@@ -314,8 +451,15 @@ def main() -> int:
     analysis_path = COMPARISON_ROOT / "RAW_VS_EMA.md"
     planned[manifest_path] = json.dumps(manifest_payload, indent=2, sort_keys=True) + "\n"
     planned[analysis_path] = _comparison_markdown(rows)
+    planned[COMPARISON_ROOT / "paper-review-corrections.json"] = (
+        json.dumps(review_corrections, indent=2, sort_keys=True) + "\n"
+    )
+    corrected_models = {model_id for model_id, _ in RESUMED_CELLS} | {
+        "hf_auto_mobilenetv2_deeplabv3",
+        "smp_pan_resnext50",
+    }
     for model_id, record in records.items():
-        if "paper_raw_protocols" not in record:
+        if "paper_raw_protocols" not in record and model_id not in corrected_models:
             continue
         path = COMPARISON_ROOT / "records" / f"{model_id}.json"
         planned[path] = json.dumps(record, indent=2) + "\n"
@@ -324,6 +468,14 @@ def main() -> int:
     status = _load_object(status_path)
     status["scope"]["quality_weight_policy"] = "raw checkpoint weights for every model and protocol"
     status["scope"]["paired_raw_ema_cells"] = len(rows)
+    status["scope"]["statistical_scope"] = (
+        "single seed 0; descriptive values and ranks; no significance claim"
+    )
+    status["scope"]["transfer_cost_scope"] = (
+        "reported transfer training is Rail20 adaptation-only; cumulative fields add reused "
+        "City40 when exact totals are retained"
+    )
+    status["scope"]["resource_corrections"] = "paper-review-corrections.json"
     status["scope"]["training"]["evaluation"] = (
         "paper-primary raw checkpoint weights for every model, batch 1, 1024x1024 sliding "
         "window, stride 768, no TTA"

@@ -48,6 +48,7 @@ See [native backbones](../../components/native-backbones/README.md),
 ## Cityscapes and RailSem19 benchmark results
 
 Values are validated percentages, shown as one clean number. Detailed machine records retain every contributing seed. `—` means evidence is unavailable, not zero.
+Each quality cell is one retained seed (seed 0). It has no error bar and should not be used to claim that a sub-one-point difference is statistically meaningful.
 All quality values use raw checkpoint weights under the uniform paper policy.
 
 | protocol | iterations | mIoU | mean accuracy | mean precision | mean Dice | mean specificity | pixel accuracy | fwIoU | boundary F1 |
@@ -66,13 +67,16 @@ Measured once from this model's RailSem19-only 21-class raw endpoint on an NVIDI
 
 ### Training and full-pipeline evaluation cost
 
-Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
+Standalone rows report their own training cost. The transfer adaptation row reports only Rail20 because it reuses City40; the cumulative row adds the retained City40 and Rail20 costs. Peak training VRAM is the maximum per-device allocator-reserved high-water mark. Full-pipeline throughput includes the loader, sliding-window inference, and metrics.
 
-| protocol | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
-|---|---:|---:|---:|---:|
-| Cityscapes | 2h 12m 01s | 2.20 | 2.43 GiB | 7.602 |
-| RailSem19 | 9h 13m 56s | 9.23 | 3.08 GiB | 7.731 |
-| Cityscapes → RailSem19 | 4h 36m 48s | 4.61 | 3.10 GiB | 7.720 |
+| protocol | cost scope | train wall / run | GPU-hours / run | peak train VRAM / GPU | full validation images/s |
+|---|---|---:|---:|---:|---:|
+| Cityscapes | City40 standalone | not retained | not retained | not retained | 7.602 |
+| RailSem19 | Rail40 standalone | 9h 13m 56s | 9.23 | 3.08 GiB | 7.731 |
+| Cityscapes → RailSem19 | Rail20 adaptation only; excludes reused City40 | 4h 36m 48s | 4.61 | 3.10 GiB | 7.720 |
+| Cityscapes → RailSem19, cumulative | City40 training + Rail20 adaptation | not retained | not retained | not retained | — |
+
+`not retained` means the exact original training-duration record is no longer available. The validated quality result, final checkpoint, iteration count, and inference evidence are still complete; the model is not retrained only to recreate timing metadata.
 
 ### Cityscapes class IoU
 
@@ -132,5 +136,6 @@ Training wall time and GPU-hours sum every curriculum stage. Peak training VRAM 
 - Quality evaluation weights: Cityscapes: raw; RailSem19: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
+- Caveat: The exact total training wall time, GPU-hours, and whole-run peak VRAM were not retained across interruption recovery; the machine record preserves the final post-resume segment separately but does not present it as the total.
 
 <!-- segmentary:generated-city-rail-benchmark:end -->

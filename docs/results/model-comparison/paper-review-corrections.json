@@ -1,0 +1,112 @@
+{
+  "batchnorm_recalibrations": [
+    {
+      "bn_modules": 55,
+      "corrected_checkpoint_sha256": "4f3711930ae1df9eaa26a222ba7652799b210f3a244770289a5e58a1c8bf3aa5",
+      "corrected_miou": 0.6774129638222623,
+      "corrected_result_sha256": "b135e1a1431f6d1c8639912b3f32e5e7f051675cd8c3ce454fce63f0d88ade20",
+      "model_id": "hf_auto_mobilenetv2_deeplabv3",
+      "old_miou": 0.31455687106804364,
+      "protocol": "cityscapes",
+      "recalibration_batches": 371,
+      "source_checkpoint_sha256": "dfe1a70fe765b643b09f89d66ca21e6a3b19f0ef7bddeda0a7fc097bb5050895",
+      "source_result_sha256": "05dac80e6c8f14234dce1100994d246c8b09dbbed21e3667e0726f07c5ea8c8a",
+      "training_images": 2968
+    },
+    {
+      "bn_modules": 55,
+      "corrected_checkpoint_sha256": "79a6185e64264a8fa64a4bca840b7536c498c9e989fae15c821957420f97e768",
+      "corrected_miou": 0.579339803923551,
+      "corrected_performance_sha256": "beaf184afa64d20b744bcb3635e510e65729054a98d1769841682bfc22574dff",
+      "corrected_result_sha256": "6471ff61acc59206881bb5cd5a1bf1796cb56848011692340e9fcc5d5f953203",
+      "model_id": "hf_auto_mobilenetv2_deeplabv3",
+      "old_miou": 0.14359671156058598,
+      "protocol": "railsem19",
+      "recalibration_batches": 850,
+      "source_checkpoint_sha256": "10a45b97af1d179af6b60ad8506b4fdda99d8f3e8afe82eee14b657116447550",
+      "source_result_sha256": "dfe8cc318739fd431ed7fd437ed8f505a6ed388ad2608bf2d3e6489e6ba7e9c1",
+      "training_images": 6800
+    },
+    {
+      "bn_modules": 55,
+      "corrected_checkpoint_sha256": "2671491cfd7ee6602687c37110da7b0e85183c7fe0bb5aa429ca8541f2a7ce35",
+      "corrected_miou": 0.5328885396125134,
+      "corrected_result_sha256": "04da05647559dcda3ce9494ee043f2f2fcd2ac17005e04d41f1f7bc6ac633a6c",
+      "model_id": "hf_auto_mobilenetv2_deeplabv3",
+      "old_miou": 0.1185908977098898,
+      "protocol": "cityscapes_to_railsem19",
+      "recalibration_batches": 850,
+      "source_checkpoint_sha256": "1df464b560c05d155838961097dc9cc70a00a519d867ffc5130b266f18f2b286",
+      "source_result_sha256": "b050c7ae581b8b94d62b56d702b0e259b3b3dcc3631e2242f9d74cd55c553979",
+      "training_images": 6800
+    }
+  ],
+  "resumed_cells": [
+    {
+      "model_id": "native_resnet18_fpn_fcn",
+      "protocol": "cityscapes",
+      "publication_action": "total timing and whole-run peak marked not retained",
+      "resume_checkpoint_steps": [
+        12008,
+        20013
+      ]
+    },
+    {
+      "model_id": "native_mobilenetv3_large_lraspp",
+      "protocol": "cityscapes",
+      "publication_action": "total timing and whole-run peak marked not retained",
+      "resume_checkpoint_steps": [
+        24016
+      ]
+    },
+    {
+      "model_id": "smp_pspnet_mobilenet_v2",
+      "protocol": "cityscapes_to_railsem19",
+      "publication_action": "total timing and whole-run peak marked not retained",
+      "resume_checkpoint_steps": [
+        16000
+      ]
+    },
+    {
+      "model_id": "smp_pan_resnext50",
+      "protocol": "cityscapes_to_railsem19",
+      "publication_action": "total timing and whole-run peak marked not retained",
+      "resume_checkpoint_steps": [
+        4000
+      ]
+    },
+    {
+      "model_id": "native_mobilenetv3_large_lraspp",
+      "protocol": "railsem19",
+      "publication_action": "total timing and whole-run peak marked not retained",
+      "resume_checkpoint_steps": [
+        28000
+      ]
+    },
+    {
+      "model_id": "hf_auto_mobilenetv2_deeplabv3",
+      "protocol": "railsem19",
+      "publication_action": "total timing and whole-run peak marked not retained",
+      "resume_checkpoint_steps": [
+        24000
+      ]
+    },
+    {
+      "model_id": "hf_auto_mobilevitv2_deeplabv3",
+      "protocol": "cityscapes",
+      "publication_action": "total timing and whole-run peak marked not retained",
+      "resume_checkpoint_steps": [
+        4002
+      ]
+    },
+    {
+      "model_id": "smp_unetplusplus_efficientnet_b0",
+      "protocol": "railsem19",
+      "publication_action": "total timing and whole-run peak marked not retained",
+      "resume_checkpoint_steps": [
+        32000
+      ]
+    }
+  ],
+  "schema_version": 1
+}

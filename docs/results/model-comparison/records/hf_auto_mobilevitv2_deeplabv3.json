@@ -424,12 +424,21 @@
           "size_bytes": 213700919
         },
         "training": {
-          "seed_count": 1,
+          "seed_count": 0,
           "gpu_model": "NVIDIA L40S",
           "gpus_per_run": 1,
-          "wall_clock_s_mean": 26529.69763668254,
-          "gpu_hours_mean": 7.369360454634039,
-          "peak_vram_bytes_per_device": 4542431232
+          "wall_clock_s_mean": null,
+          "gpu_hours_mean": null,
+          "peak_vram_bytes_per_device": null,
+          "post_resume_segment_only": {
+            "wall_clock_s": 26529.69763668254,
+            "gpu_hours": 7.369360454634039,
+            "peak_vram_bytes_per_device": 4542431232,
+            "resume_checkpoint_steps": [
+              4002
+            ]
+          },
+          "total_timing_status": "not_retained_due_to_resume"
         },
         "full_validation_pipeline": {
           "seed_count": 1,
@@ -687,7 +696,11 @@
                 "gpu_count": 1,
                 "gpu_hours": 7.369360454634039,
                 "peak_vram_bytes_per_device": 4542431232,
-                "result_sha256": "deca8cfbdfcef59afa54354126ec9e5311a95f4087d0cbe18858b760e6d4893a"
+                "result_sha256": "deca8cfbdfcef59afa54354126ec9e5311a95f4087d0cbe18858b760e6d4893a",
+                "timing_scope": "post_resume_segment_only",
+                "resume_checkpoint_steps": [
+                  4002
+                ]
               }
             ],
             "full_validation_pipeline": {
@@ -707,7 +720,9 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not retained across interruption recovery; the machine record preserves the final post-resume segment separately but does not present it as the total."
+      ]
     },
     "cityscapes_to_railsem19": {
       "status": "complete",
