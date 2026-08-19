@@ -4326,36 +4326,45 @@ def _rail_accuracy_speed_leaderboard(
     manifest: CampaignManifest,
     records: dict[str, dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Rank unique models that have comparable Rail quality and speed evidence."""
-    candidates: list[dict[str, Any]] = []
+    """List every unique model, ranking rows with complete quality and speed evidence."""
+    rows: list[dict[str, Any]] = []
     priority = {model_id: index for index, model_id in enumerate(manifest.priority_order)}
     for model in manifest.models:
         if model.alias_of is not None:
             continue
         record = records.get(model.id)
         if not isinstance(record, dict):
-            continue
-        miou = _record_metric(record, "railsem19", "miou")
-        inference = record.get("model_profile", {}).get("standardized_inference", {})
+            record = {}
+        miou_value = _record_metric(record, "railsem19", "miou")
+        miou = (
+            float(miou_value)
+            if isinstance(miou_value, int | float)
+            and not isinstance(miou_value, bool)
+            and math.isfinite(miou_value)
+            and 0 < miou_value <= 1
+            else None
+        )
+        inference_value = record.get("model_profile", {}).get("standardized_inference", {})
+        inference = inference_value if isinstance(inference_value, dict) else {}
         fps = inference.get("fps")
-        if (
-            inference.get("status") != "complete"
-            or not isinstance(miou, int | float)
-            or isinstance(miou, bool)
-            or not math.isfinite(miou)
-            or not 0 < miou <= 1
-            or not isinstance(fps, int | float)
-            or isinstance(fps, bool)
-            or not math.isfinite(fps)
-            or fps <= 0
-        ):
-            continue
+        fps = (
+            float(fps)
+            if (
+                isinstance(fps, int | float)
+                and not isinstance(fps, bool)
+                and math.isfinite(fps)
+                and fps > 0
+            )
+            else None
+        )
+        complete = inference.get("status") == "complete" and miou is not None and fps is not None
         latency = inference.get("latency_ms") or {}
-        candidates.append(
+        rows.append(
             {
                 "model": model.id,
-                "miou": float(miou),
-                "fps": float(fps),
+                "status": "complete" if complete else "pending",
+                "miou": miou,
+                "fps": fps,
                 "p50_ms": latency.get("p50"),
                 "weights": inference.get("provenance", {}).get("weights"),
                 "resident_parameter_bytes": inference.get("resident_parameter_bytes"),
@@ -4364,25 +4373,25 @@ def _rail_accuracy_speed_leaderboard(
                 "priority": priority.get(model.id, len(priority)),
             }
         )
-    if not candidates:
-        return []
-
-    best_miou = max(item["miou"] for item in candidates)
-    best_fps = max(item["fps"] for item in candidates)
-    for item in candidates:
-        quality = item["miou"] / best_miou
-        speed = item["fps"] / best_fps
-        item["balanced_score"] = 100 * (2 * quality * speed) / (quality + speed)
-    candidates.sort(
+    completed = [item for item in rows if item["status"] == "complete"]
+    if completed:
+        best_miou = max(item["miou"] for item in completed)
+        best_fps = max(item["fps"] for item in completed)
+        for item in completed:
+            quality = item["miou"] / best_miou
+            speed = item["fps"] / best_fps
+            item["balanced_score"] = 100 * (2 * quality * speed) / (quality + speed)
+    rows.sort(
         key=lambda item: (
-            -item["balanced_score"],
-            -item["miou"],
-            -item["fps"],
+            item["status"] != "complete",
+            -item.get("balanced_score", -math.inf),
+            -(item["miou"] if item["miou"] is not None else -math.inf),
+            -(item["fps"] if item["fps"] is not None else -math.inf),
             item["priority"],
             item["model"],
         )
     )
-    return candidates
+    return rows
 
 
 def _transfer_final(record: dict[str, Any] | None) -> dict[str, Any]:
@@ -5276,29 +5285,33 @@ def _central_readme(
         [
             "## RailSem19 accuracy-speed leaderboard",
             "",
-            "This ranks unique physical models only when both the final RailSem19-only mIoU "
-            "and the standardized L40S inference benchmark are complete. The balanced score "
+            "This lists every unique physical model. Models with both a final RailSem19-only "
+            "mIoU and standardized L40S inference benchmark are ranked first; pending models "
+            "remain visible below them until their evidence is complete. The balanced score "
             "is the harmonic mean of mIoU and FPS after each is normalized to the best "
             "currently measured value. A score of 100 would require leading both. Raw mIoU "
             "and FPS remain visible because this convenience ranking is snapshot-relative "
-            "and will change as more models finish. Compatibility aliases are omitted.",
+            "and will change as more models finish. The one compatibility alias is shown in "
+            "the main comparison table but omitted here to avoid ranking identical weights twice.",
             "",
-            "| rank | model | balanced score | RailSem19 mIoU | FPS | p50 latency | weights | model memory | peak inference VRAM |",
-            "|---:|---|---:|---:|---:|---:|---|---:|---:|",
+            "| rank | model | status | balanced score | RailSem19 mIoU | FPS | p50 latency | weights | model memory | peak inference VRAM |",
+            "|---:|---|---|---:|---:|---:|---:|---|---:|---:|",
         ]
     )
-    if not leaderboard:
-        lines.append(
-            "| — | No model has complete quality and speed evidence yet | — | — | — | — | — | — | — |"
-        )
-    for rank, item in enumerate(leaderboard, start=1):
+    rank = 0
+    for item in leaderboard:
+        if item["status"] == "complete":
+            rank += 1
         model = models[item["model"]]
         link = "../../" + str(model.readme).removeprefix("docs/")
         weights = item["weights"] if item["weights"] in ("raw", "ema") else "—"
+        rank_display = str(rank) if item["status"] == "complete" else "—"
+        score = _number(item.get("balanced_score"))
+        miou = _number(item["miou"] * 100) if item["miou"] is not None else "—"
+        latency = f"{_number(item['p50_ms'])} ms" if item["p50_ms"] is not None else "—"
         lines.append(
-            f"| {rank} | [{item['model']}]({link}) | "
-            f"{_number(item['balanced_score'])} | {_number(item['miou'] * 100)} | "
-            f"{_number(item['fps'])} | {_number(item['p50_ms'])} ms | {weights} | "
+            f"| {rank_display} | [{item['model']}]({link}) | {item['status']} | "
+            f"{score} | {miou} | {_number(item['fps'])} | {latency} | {weights} | "
             f"{_mib(item['resident_parameter_bytes'])} | {_gib(item['peak_vram_bytes'])} |"
         )
     lines.append("")
