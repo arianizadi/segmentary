@@ -13,6 +13,10 @@ model:
   head: unified_head
   # DeepLab consumes the stride-16 feature map before this terminal projection.
   inactive_parameter_paths: [mobilenet_v2.conv_1x1]
+  # The upstream checkpoint carries TensorFlow decay=0.997 into PyTorch's
+  # opposite momentum convention. Use a 0.003 batch contribution so running
+  # statistics accumulate across training instead of tracking the last batch.
+  batch_norm_momentum: 0.003
 
 optim:
   backbone_lr: 1.0e-4

@@ -544,6 +544,22 @@ def _transformers_auto_classes() -> tuple[Any, Any, Any]:
     return AutoConfig, AutoImageProcessor, AutoModelForSemanticSegmentation
 
 
+def _apply_batch_norm_momentum(model: nn.Module, momentum: float | None) -> int:
+    """Apply one explicit PyTorch BatchNorm update coefficient, if requested."""
+    if momentum is None:
+        return 0
+    batch_norm_types = (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d, nn.SyncBatchNorm)
+    modules = [module for module in model.modules() if isinstance(module, batch_norm_types)]
+    if not modules:
+        raise ValueError(
+            "model.batch_norm_momentum was set, but the loaded hf_auto model has no "
+            "PyTorch BatchNorm modules"
+        )
+    for module in modules:
+        module.momentum = float(momentum)
+    return len(modules)
+
+
 def build_hf_auto(cfg: ModelConfig, num_classes: int) -> HFAutoDenseWrapper:
     """Load and validate one standard HF semantic-segmentation checkpoint."""
     AutoConfig, AutoImageProcessor, AutoModelForSemanticSegmentation = _transformers_auto_classes()
@@ -601,6 +617,7 @@ def build_hf_auto(cfg: ModelConfig, num_classes: int) -> HFAutoDenseWrapper:
             "hf_auto cannot audit the pretrained load"
         )
     model, raw_info = loaded
+    _apply_batch_norm_momentum(model, cfg.batch_norm_momentum)
     missing, unexpected, mismatches = _loading_info(raw_info)
     layout = _explicit_or_inferred_layout(cfg, model, mismatches, num_classes)
     _validate_layout(model, layout, num_classes)
