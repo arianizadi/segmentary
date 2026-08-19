@@ -1466,6 +1466,7 @@ def _normalised_compatibility_config(
     if isinstance(model, dict):
         for field, default in {
             "backbone_path": None,
+            "batch_norm_momentum": None,
             "classifier_path": None,
             "encoder_name": None,
             "encoder_weights": None,

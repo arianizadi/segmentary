@@ -142,6 +142,7 @@ def test_legacy_b2_config_normalizes_to_current_semantics(
         legacy["loss"].pop(key)
     for key in (
         "backbone_path",
+        "batch_norm_momentum",
         "classifier_path",
         "encoder_name",
         "encoder_weights",
