@@ -95,15 +95,26 @@
           "wall_clock_s_mean": null,
           "gpu_hours_mean": null,
           "peak_vram_bytes_per_device": null,
-          "post_resume_segment_only": {
-            "wall_clock_s": 6061.823889728636,
-            "gpu_hours": 1.6838399693690653,
-            "peak_vram_bytes_per_device": 1931476992,
-            "resume_checkpoint_steps": [
-              24016
-            ]
-          },
-          "total_timing_status": "not_retained_due_to_resume"
+          "total_timing_status": "not_retained_due_to_resume",
+          "post_resume_segments": [
+            {
+              "stages": [
+                {
+                  "stage": "cityscapes",
+                  "wall_clock_s": 6061.823889728636,
+                  "gpu_count": 1,
+                  "gpu_hours": 1.6838399693690653,
+                  "peak_vram_bytes_per_device": 1931476992,
+                  "result_sha256": "09620387962dd8fbdeea8e7bc0a42411104d1f38445b2b6c93a6d40a4d400b3a",
+                  "timing_scope": "post_resume_segment_only",
+                  "resume_checkpoint_steps": [
+                    24016
+                  ]
+                }
+              ],
+              "note": "These values cover only the final post-resume segment, not the total."
+            }
+          ]
         },
         "full_validation_pipeline": {
           "seed_count": 1,
@@ -429,15 +440,26 @@
           "wall_clock_s_mean": null,
           "gpu_hours_mean": null,
           "peak_vram_bytes_per_device": null,
-          "post_resume_segment_only": {
-            "wall_clock_s": 9074.157923255116,
-            "gpu_hours": 2.520599423126421,
-            "peak_vram_bytes_per_device": 2841640960,
-            "resume_checkpoint_steps": [
-              28000
-            ]
-          },
-          "total_timing_status": "not_retained_due_to_resume"
+          "total_timing_status": "not_retained_due_to_resume",
+          "post_resume_segments": [
+            {
+              "stages": [
+                {
+                  "stage": "railsem19",
+                  "wall_clock_s": 9074.157923255116,
+                  "gpu_count": 1,
+                  "gpu_hours": 2.520599423126421,
+                  "peak_vram_bytes_per_device": 2841640960,
+                  "result_sha256": "9c277a75b98805b06c591620510983988f522c1b222640be5e01c88fea1c27f7",
+                  "timing_scope": "post_resume_segment_only",
+                  "resume_checkpoint_steps": [
+                    28000
+                  ]
+                }
+              ],
+              "note": "These values cover only the final post-resume segment, not the total."
+            }
+          ]
         },
         "full_validation_pipeline": {
           "seed_count": 1,

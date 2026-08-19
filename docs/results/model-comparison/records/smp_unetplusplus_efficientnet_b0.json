@@ -414,15 +414,26 @@
           "wall_clock_s_mean": null,
           "gpu_hours_mean": null,
           "peak_vram_bytes_per_device": null,
-          "post_resume_segment_only": {
-            "wall_clock_s": 9674.837382085621,
-            "gpu_hours": 2.687454828357117,
-            "peak_vram_bytes_per_device": 6698303488,
-            "resume_checkpoint_steps": [
-              32000
-            ]
-          },
-          "total_timing_status": "not_retained_due_to_resume"
+          "total_timing_status": "not_retained_due_to_resume",
+          "post_resume_segments": [
+            {
+              "stages": [
+                {
+                  "stage": "railsem19",
+                  "wall_clock_s": 9674.837382085621,
+                  "gpu_count": 1,
+                  "gpu_hours": 2.687454828357117,
+                  "peak_vram_bytes_per_device": 6698303488,
+                  "result_sha256": "a7375e89018205f8d6aef667f61d557eb4cb91ae8612184db02b008d4de488f8",
+                  "timing_scope": "post_resume_segment_only",
+                  "resume_checkpoint_steps": [
+                    32000
+                  ]
+                }
+              ],
+              "note": "These values cover only the final post-resume segment, not the total."
+            }
+          ]
         },
         "full_validation_pipeline": {
           "seed_count": 1,

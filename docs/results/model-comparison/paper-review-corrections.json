@@ -108,5 +108,10 @@
       ]
     }
   ],
-  "schema_version": 1
+  "schema_version": 2,
+  "transfer_source_provenance_missing": [
+    "hf_auto_upernet_swin_tiny",
+    "native_convnext_tiny_uper",
+    "smp_upernet_resnet101"
+  ]
 }

@@ -83,7 +83,7 @@ Standalone rows report their own training cost. The transfer adaptation row repo
 | Cityscapes → RailSem19 | Rail20 adaptation only; excludes reused City40 | 6h 39m 56s | 6.67 | 6.19 GiB | 5.380 |
 | Cityscapes → RailSem19, cumulative | City40 training + Rail20 adaptation | 16h 22m 04s | 16.37 | 6.19 GiB | — |
 
-`not retained` means the exact original training-duration record is no longer available. The validated quality result, final checkpoint, iteration count, and inference evidence are still complete; the model is not retrained only to recreate timing metadata.
+`not retained` means the exact whole-run wall time, GPU-hours, or peak training-VRAM record is unavailable. The validated quality result, final checkpoint, iteration count, and inference evidence are still complete; the model is not retrained only to recreate resource metadata.
 
 ### Cityscapes class IoU
 

@@ -4079,11 +4079,7 @@ def _new_protocol(
         )
     caveats = [attempt["caveat"]] if attempt.get("caveat") else []
     if attempt.get("resumes"):
-        caveats.append(
-            "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not "
-            "retained across interruption recovery; the final post-resume segment remains in "
-            "the machine record but is not presented as the total."
-        )
+        caveats.append(RESUME_TIMING_CAVEAT)
     raw_correction = attempt.get("evaluation_correction")
     public_correction = None
     if (
@@ -4098,6 +4094,7 @@ def _new_protocol(
             "bn_modules",
             "recalibration_batches",
             "recalibration_images",
+            "training_images",
             "old_miou",
             "corrected_miou",
             "source_checkpoint_sha256",
@@ -4110,10 +4107,11 @@ def _new_protocol(
             key: raw_correction[key] for key in keys if raw_correction.get(key) is not None
         }
         public_correction["data_scope"] = "training split only; no validation images"
+        caveats.append(_bn_recalibration_caveat(public_correction))
+    if job["protocol"] == "cityscapes_to_railsem19" and public_dependency is None:
         caveats.append(
-            "Before evaluation, BatchNorm running-statistics buffers were recalibrated on the "
-            "training split to correct an imported momentum-convention error; no learned "
-            "parameter or validation image was used."
+            "The transfer endpoint is complete, but its City40 source-checkpoint hash was not "
+            "retained, so the warm-start link cannot be independently audited."
         )
     return {
         "status": "complete",
@@ -4121,8 +4119,12 @@ def _new_protocol(
         "dataset": f"{'Cityscapes' if job['protocol'] == 'cityscapes' else 'RailSem19'} val",
         "taxonomy": job["evaluation_space"],
         "training": (
-            "reused matching 40,000-step Cityscapes checkpoint; "
-            f"{target_iterations:,} RailSem19 steps"
+            (
+                "reused matching 40,000-step Cityscapes checkpoint; "
+                if public_dependency is not None
+                else "Cityscapes warm-start provenance not retained; "
+            )
+            + f"{target_iterations:,} RailSem19 steps"
             + (f"; retained evaluations at {milestone_text} and final" if milestone_text else "")
             if job["protocol"] == "cityscapes_to_railsem19"
             else "40,000 steps from pretrained weights"
@@ -4699,8 +4701,46 @@ def _recorded_evaluation_weights(protocol: dict[str, Any]) -> str | None:
     return weights if weights in ("raw", "ema") else None
 
 
+RESUME_TIMING_CAVEAT = (
+    "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not "
+    "retained across interruption recovery; the machine record preserves the final "
+    "post-resume segment separately but does not present it as the total."
+)
+
+
+def _bn_recalibration_caveat(correction: dict[str, Any]) -> str:
+    old = correction.get("old_miou")
+    corrected = correction.get("corrected_miou")
+    change = (
+        f" The reported raw mIoU changed from {old * 100:.2f} to {corrected * 100:.2f}."
+        if isinstance(old, int | float) and isinstance(corrected, int | float)
+        else ""
+    )
+    return (
+        "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on "
+        "the protocol's training split to correct an imported momentum-convention error; "
+        "no learned parameter or validation image was used." + change
+    )
+
+
+def _transfer_source_provenance_retained(protocol: dict[str, Any] | None) -> bool:
+    source = protocol.get("source_checkpoint") if isinstance(protocol, dict) else None
+    return isinstance(source, dict) and isinstance(source.get("checkpoint_sha256"), str)
+
+
+def _transfer_training_scope(protocol: dict[str, Any] | None) -> str:
+    return (
+        "Rail20 adaptation only; excludes reused City40"
+        if _transfer_source_provenance_retained(protocol)
+        else "Rail20 adaptation; City40 warm-start provenance not retained"
+    )
+
+
 def _cumulative_transfer_training(protocols: dict[str, Any]) -> dict[str, Any]:
     """Combine the reused City40 cost with the Rail20 adaptation cost when retained."""
+    transfer = protocols.get("cityscapes_to_railsem19")
+    if not _transfer_source_provenance_retained(transfer):
+        return {}
     city = protocols.get("cityscapes", {}).get("resource_evidence", {}).get("training", {})
     adaptation = (
         protocols.get("cityscapes_to_railsem19", {})
@@ -4843,7 +4883,6 @@ def _model_generated_section(record: dict[str, Any]) -> str:
     scopes = {
         "cityscapes": "City40 standalone",
         "railsem19": "Rail40 standalone",
-        "cityscapes_to_railsem19": "Rail20 adaptation only; excludes reused City40",
     }
     for protocol_id in REQUIRED_PROTOCOLS:
         protocol = visible_protocols.get(protocol_id)
@@ -4853,7 +4892,8 @@ def _model_generated_section(record: dict[str, Any]) -> str:
         retained_training = training.get("wall_clock_s_mean") is not None
         missing_training = "not retained" if isinstance(protocol, dict) else "—"
         lines.append(
-            f"| {labels[protocol_id]} | {scopes[protocol_id]} | "
+            f"| {labels[protocol_id]} | "
+            f"{_transfer_training_scope(protocol) if protocol_id == 'cityscapes_to_railsem19' else scopes[protocol_id]} | "
             f"{_duration(training.get('wall_clock_s_mean')) if retained_training else missing_training} | "
             f"{_number(training.get('gpu_hours_mean')) if retained_training else missing_training} | "
             f"{_gib(training.get('peak_vram_bytes_per_device')) if retained_training else missing_training} | "
@@ -4879,10 +4919,10 @@ def _model_generated_section(record: dict[str, Any]) -> str:
         lines.extend(
             [
                 "",
-                "`not retained` means the exact original training-duration record is no "
-                "longer available. The validated quality result, final checkpoint, iteration "
-                "count, and inference evidence are still complete; the model is not retrained "
-                "only to recreate timing metadata.",
+                "`not retained` means the exact whole-run wall time, GPU-hours, or peak "
+                "training-VRAM record is unavailable. The validated quality result, final "
+                "checkpoint, iteration count, and inference evidence are still complete; the "
+                "model is not retrained only to recreate resource metadata.",
             ]
         )
 
@@ -5413,12 +5453,14 @@ def _comparison_csv(status: dict[str, Any], records: dict[str, dict[str, Any]]) 
                 }
             )
         cumulative = _cumulative_transfer_training(protocols)
+        transfer = protocols.get("cityscapes_to_railsem19")
+        transfer_source_retained = _transfer_source_provenance_retained(transfer)
         output.update(
             {
-                "cityscapes_to_railsem19_training_cost_scope": (
-                    "Rail20 adaptation only; excludes reused City40"
+                "cityscapes_to_railsem19_training_cost_scope": _transfer_training_scope(transfer),
+                "cityscapes_to_railsem19_cumulative_iterations": (
+                    60_000 if transfer_source_retained else ""
                 ),
-                "cityscapes_to_railsem19_cumulative_iterations": 60_000,
                 "cityscapes_to_railsem19_cumulative_wall_clock_s": cumulative.get(
                     "wall_clock_s", ""
                 ),
@@ -5477,6 +5519,19 @@ def _central_readme(
         if performance_complete
         else "During an active campaign, FPS can remain pending while Cityscapes mIoU is already available."
     )
+    mobile_protocols = _primary_protocols(records.get("hf_auto_mobilenetv2_deeplabv3"))
+    mobile_changes = []
+    for protocol_id, label in (
+        ("cityscapes", "City"),
+        ("railsem19", "Rail"),
+        ("cityscapes_to_railsem19", "transfer"),
+    ):
+        correction = mobile_protocols.get(protocol_id, {}).get("evaluation_correction", {})
+        old = correction.get("old_miou")
+        corrected = correction.get("corrected_miou")
+        if isinstance(old, int | float) and isinstance(corrected, int | float):
+            mobile_changes.append(f"{label} {old * 100:.2f} to {corrected * 100:.2f}")
+    mobile_change_text = ", ".join(mobile_changes)
     lines = [
         "# Model comparison: Cityscapes and RailSem19",
         "",
@@ -5491,10 +5546,10 @@ def _central_readme(
         "- **Complete:** all required quality and inference evidence exists. Some complete "
         "results were verified as compatible and reused instead of retrained, avoiding "
         "unnecessary compute and electricity while retaining result and checkpoint provenance.",
-        "- **Not retained:** only the exact original training-duration or GPU-hour record is "
-        "no longer available. The quality result, final checkpoint, iteration count, and "
+        "- **Not retained:** the exact whole-run wall time, GPU-hours, or peak training-VRAM "
+        "record is unavailable. The quality result, final checkpoint, iteration count, and "
         "inference evidence remain complete; the model is not retrained solely to recreate "
-        "timing metadata.",
+        "resource metadata.",
         "- **Not eligible:** the model completed successfully and its results are valid, but "
         "its RailSem19 mIoU is below the leaderboard's 60% quality floor. Its raw accuracy "
         "and speed remain visible, but it receives no recommendation score.",
@@ -5562,7 +5617,14 @@ def _central_readme(
             "significance.",
             "The imported Hugging Face MobileNetV2 recipe required a documented training-split "
             "BatchNorm running-statistics recalibration after an upstream momentum-convention "
-            "error; no learned parameter or validation image was used by that correction.",
+            "error; no learned parameter or validation image was used by that correction."
+            + (
+                f" It changed raw mIoU as follows: {mobile_change_text}. These are "
+                "repaired-checkpoint evaluations, not training reruns with the corrected "
+                "momentum."
+                if mobile_change_text
+                else ""
+            ),
             "",
             "| priority | model | status | City mIoU (40k) | Rail mIoU (40k) | City → Rail mIoU (Rail20 / total60) |",
             "|---:|---|---|---:|---:|---:|",
@@ -5680,6 +5742,9 @@ def _central_readme(
             "- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint and train "
             "RailSem19 for 20,000 iterations (60,000 cumulative); Cityscapes is never "
             "trained twice.",
+            "- Three completed transfer cells lack the retained City40 source-checkpoint "
+            "hash. Their endpoints remain complete, but the warm-start link and cumulative "
+            "60,000-iteration claim are withheld for those cells.",
             "- Transfer cost tables label Rail20 adaptation-only cost separately from cumulative "
             "City40 + Rail20 cost.",
             "- Transfer warm-starts every compatible learned tensor and reinitialises only the "

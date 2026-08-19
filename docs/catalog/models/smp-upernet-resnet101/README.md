@@ -80,10 +80,10 @@ Standalone rows report their own training cost. The transfer adaptation row repo
 |---|---|---:|---:|---:|---:|
 | Cityscapes | City40 standalone | 9h 21m 34s | 9.36 | 6.51 GiB | 6.336 |
 | RailSem19 | Rail40 standalone | 12h 55m 26s | 12.92 | 6.70 GiB | 5.483 |
-| Cityscapes → RailSem19 | Rail20 adaptation only; excludes reused City40 | not retained | not retained | not retained | 5.526 |
+| Cityscapes → RailSem19 | Rail20 adaptation; City40 warm-start provenance not retained | not retained | not retained | not retained | 5.526 |
 | Cityscapes → RailSem19, cumulative | City40 training + Rail20 adaptation | not retained | not retained | not retained | — |
 
-`not retained` means the exact original training-duration record is no longer available. The validated quality result, final checkpoint, iteration count, and inference evidence are still complete; the model is not retrained only to recreate timing metadata.
+`not retained` means the exact whole-run wall time, GPU-hours, or peak training-VRAM record is unavailable. The validated quality result, final checkpoint, iteration count, and inference evidence are still complete; the model is not retrained only to recreate resource metadata.
 
 ### Cityscapes class IoU
 
@@ -143,5 +143,6 @@ Standalone rows report their own training cost. The transfer adaptation row repo
 - Quality evaluation weights: RailSem19: raw; Cityscapes: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
+- Caveat: The transfer endpoint is complete, but its City40 source-checkpoint hash was not retained, so the warm-start link cannot be independently audited.
 
 <!-- segmentary:generated-city-rail-benchmark:end -->

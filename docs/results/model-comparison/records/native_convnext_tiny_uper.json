@@ -1031,7 +1031,9 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "The transfer endpoint is complete, but its City40 source-checkpoint hash was not retained, so the warm-start link cannot be independently audited."
+      ]
     }
   },
   "paper_raw_protocols": {
@@ -2013,7 +2015,9 @@
         "mspecificity"
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
-      "caveats": []
+      "caveats": [
+        "The transfer endpoint is complete, but its City40 source-checkpoint hash was not retained, so the warm-start link cannot be independently audited."
+      ]
     }
   },
   "paper_quality_policy": {

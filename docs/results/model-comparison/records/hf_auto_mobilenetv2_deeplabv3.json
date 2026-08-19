@@ -388,7 +388,7 @@
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
       "caveats": [
-        "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used."
+        "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used. The reported raw mIoU changed from 31.46 to 67.74."
       ],
       "evaluation_correction": {
         "kind": "batchnorm_running_statistics_recalibration",
@@ -446,15 +446,26 @@
           "wall_clock_s_mean": null,
           "gpu_hours_mean": null,
           "peak_vram_bytes_per_device": null,
-          "post_resume_segment_only": {
-            "wall_clock_s": 19077.66953483224,
-            "gpu_hours": 5.299352648564511,
-            "peak_vram_bytes_per_device": 6259998720,
-            "resume_checkpoint_steps": [
-              24000
-            ]
-          },
-          "total_timing_status": "not_retained_due_to_resume"
+          "total_timing_status": "not_retained_due_to_resume",
+          "post_resume_segments": [
+            {
+              "stages": [
+                {
+                  "stage": "railsem19",
+                  "wall_clock_s": 19077.66953483224,
+                  "gpu_count": 1,
+                  "gpu_hours": 5.299352648564511,
+                  "peak_vram_bytes_per_device": 6259998720,
+                  "result_sha256": "b694cfdfd0a539a1868b74d2695cb8aa7a40746ad94e9532f848b3e0f386e607",
+                  "timing_scope": "post_resume_segment_only",
+                  "resume_checkpoint_steps": [
+                    24000
+                  ]
+                }
+              ],
+              "note": "These values cover only the final post-resume segment, not the total."
+            }
+          ]
         },
         "full_validation_pipeline": {
           "seed_count": 1,
@@ -770,7 +781,7 @@
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
       "caveats": [
         "The exact total training wall time, GPU-hours, and whole-run peak VRAM were not retained across interruption recovery; the machine record preserves the final post-resume segment separately but does not present it as the total.",
-        "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used."
+        "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used. The reported raw mIoU changed from 14.36 to 57.93."
       ],
       "evaluation_correction": {
         "kind": "batchnorm_running_statistics_recalibration",
@@ -1142,8 +1153,8 @@
       ],
       "derivation": "Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.",
       "caveats": [
-        "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used.",
-        "Transfer warm-started from the pre-recalibration Cityscapes checkpoint; only BatchNorm buffers differ from the published Cityscapes endpoint, and Rail20 re-estimated them."
+        "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used. The reported raw mIoU changed from 11.86 to 53.29.",
+        "Transfer warm-started from the pre-recalibration Cityscapes checkpoint; only BatchNorm buffers differ from the published Cityscapes endpoint. Training-mode BatchNorm uses batch statistics, so those initial buffers did not affect gradient calculations; the transfer endpoint received its own disclosed recalibration before evaluation."
       ],
       "evaluation_correction": {
         "kind": "batchnorm_running_statistics_recalibration",

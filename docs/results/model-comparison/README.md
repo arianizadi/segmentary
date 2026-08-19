@@ -5,7 +5,7 @@ This live comparison covers every shipped model recipe. Compatible results are r
 ## How to read the labels
 
 - **Complete:** all required quality and inference evidence exists. Some complete results were verified as compatible and reused instead of retrained, avoiding unnecessary compute and electricity while retaining result and checkpoint provenance.
-- **Not retained:** only the exact original training-duration or GPU-hour record is no longer available. The quality result, final checkpoint, iteration count, and inference evidence remain complete; the model is not retrained solely to recreate timing metadata.
+- **Not retained:** the exact whole-run wall time, GPU-hours, or peak training-VRAM record is unavailable. The quality result, final checkpoint, iteration count, and inference evidence remain complete; the model is not retrained solely to recreate resource metadata.
 - **Not eligible:** the model completed successfully and its results are valid, but its RailSem19 mIoU is below the leaderboard's 60% quality floor. Its raw accuracy and speed remain visible, but it receives no recommendation score.
 
 ## Training specification
@@ -77,7 +77,7 @@ The fresh-component LR is the initial LR for newly initialized heads or adapters
 
 Every quality value below uses raw checkpoint weights. This uniform paper policy avoids architecture-dependent endpoint selection.
 All 111 quality cells use seed 0. A single-seed value has no error bar, so rankings and sub-one-point differences are descriptive and are not claims of statistical significance.
-The imported Hugging Face MobileNetV2 recipe required a documented training-split BatchNorm running-statistics recalibration after an upstream momentum-convention error; no learned parameter or validation image was used by that correction.
+The imported Hugging Face MobileNetV2 recipe required a documented training-split BatchNorm running-statistics recalibration after an upstream momentum-convention error; no learned parameter or validation image was used by that correction. It changed raw mIoU as follows: City 31.46 to 67.74, Rail 14.36 to 57.93, transfer 11.86 to 53.29. These are repaired-checkpoint evaluations, not training reruns with the corrected momentum.
 
 | priority | model | status | City mIoU (40k) | Rail mIoU (40k) | City → Rail mIoU (Rail20 / total60) |
 |---:|---|---|---:|---:|---:|
@@ -216,6 +216,7 @@ City and Rail columns report standalone training. Transfer adaptation reports on
 - RailSem19: 40,000 iterations, `rail_union`, fixed 850-image validation.
 - RailSem19's disjoint 850-image test split remains reserved and unused; this comparison reports the validation split for every model.
 - Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint and train RailSem19 for 20,000 iterations (60,000 cumulative); Cityscapes is never trained twice.
+- Three completed transfer cells lack the retained City40 source-checkpoint hash. Their endpoints remain complete, but the warm-start link and cumulative 60,000-iteration claim are withheld for those cells.
 - Transfer cost tables label Rail20 adaptation-only cost separately from cumulative City40 + Rail20 cost.
 - Transfer warm-starts every compatible learned tensor and reinitialises only the 19-class to `rail_union` classifier mismatch.
 - Primary quality evaluation: raw checkpoint weights for every protocol, 1024x1024 sliding window, stride 768, no TTA.

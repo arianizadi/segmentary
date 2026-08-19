@@ -430,15 +430,26 @@
           "wall_clock_s_mean": null,
           "gpu_hours_mean": null,
           "peak_vram_bytes_per_device": null,
-          "post_resume_segment_only": {
-            "wall_clock_s": 26529.69763668254,
-            "gpu_hours": 7.369360454634039,
-            "peak_vram_bytes_per_device": 4542431232,
-            "resume_checkpoint_steps": [
-              4002
-            ]
-          },
-          "total_timing_status": "not_retained_due_to_resume"
+          "total_timing_status": "not_retained_due_to_resume",
+          "post_resume_segments": [
+            {
+              "stages": [
+                {
+                  "stage": "cityscapes",
+                  "wall_clock_s": 26529.69763668254,
+                  "gpu_count": 1,
+                  "gpu_hours": 7.369360454634039,
+                  "peak_vram_bytes_per_device": 4542431232,
+                  "result_sha256": "deca8cfbdfcef59afa54354126ec9e5311a95f4087d0cbe18858b760e6d4893a",
+                  "timing_scope": "post_resume_segment_only",
+                  "resume_checkpoint_steps": [
+                    4002
+                  ]
+                }
+              ],
+              "note": "These values cover only the final post-resume segment, not the total."
+            }
+          ]
         },
         "full_validation_pipeline": {
           "seed_count": 1,

@@ -73,6 +73,31 @@ def _append_caveat(protocol: dict[str, Any], text: str) -> None:
         caveats.append(text)
 
 
+def _remove_caveats_containing(protocol: dict[str, Any], marker: str) -> None:
+    protocol["caveats"] = [caveat for caveat in protocol.get("caveats", []) if marker not in caveat]
+
+
+def _post_resume_segments(
+    protocol: dict[str, Any], resume_steps: list[int]
+) -> list[dict[str, Any]]:
+    segments = []
+    for individual in protocol.get("individual", []):
+        stages = []
+        for original in individual.get("source", {}).get("training_stages", []):
+            stage = copy.deepcopy(original)
+            stage["timing_scope"] = "post_resume_segment_only"
+            stage["resume_checkpoint_steps"] = resume_steps
+            stages.append(stage)
+        if stages:
+            segments.append(
+                {
+                    "stages": stages,
+                    "note": "These values cover only the final post-resume segment, not the total.",
+                }
+            )
+    return segments
+
+
 def _apply_review_corrections(records: dict[str, dict[str, Any]]) -> dict[str, Any]:
     """Fail closed on partial resume timing and retain exceptional BN provenance."""
     for (model_id, protocol_id), resume_steps in RESUMED_CELLS.items():
@@ -81,13 +106,10 @@ def _apply_review_corrections(records: dict[str, dict[str, Any]]) -> dict[str, A
         variants.append(record.get("paper_raw_protocols", {}).get(protocol_id))
         for protocol in (item for item in variants if isinstance(item, dict)):
             training = protocol["resource_evidence"]["training"]
-            if "post_resume_segment_only" not in training:
-                training["post_resume_segment_only"] = {
-                    "wall_clock_s": training.get("wall_clock_s_mean"),
-                    "gpu_hours": training.get("gpu_hours_mean"),
-                    "peak_vram_bytes_per_device": training.get("peak_vram_bytes_per_device"),
-                    "resume_checkpoint_steps": resume_steps,
-                }
+            segments = _post_resume_segments(protocol, resume_steps)
+            if segments:
+                training["post_resume_segments"] = segments
+            training.pop("post_resume_segment_only", None)
             training.update(
                 {
                     "seed_count": 0,
@@ -101,11 +123,10 @@ def _apply_review_corrections(records: dict[str, dict[str, Any]]) -> dict[str, A
                 for stage in individual.get("source", {}).get("training_stages", []):
                     stage["timing_scope"] = "post_resume_segment_only"
                     stage["resume_checkpoint_steps"] = resume_steps
+            _remove_caveats_containing(protocol, "retained across interruption recovery")
             _append_caveat(
                 protocol,
-                "The exact total training wall time, GPU-hours, and whole-run peak VRAM were "
-                "not retained across interruption recovery; the machine record preserves the "
-                "final post-resume segment separately but does not present it as the total.",
+                campaign.RESUME_TIMING_CAVEAT,
             )
 
     mobile = records["hf_auto_mobilenetv2_deeplabv3"]
@@ -121,24 +142,44 @@ def _apply_review_corrections(records: dict[str, dict[str, Any]]) -> dict[str, A
         protocol["evaluation_correction"] = public
         for individual in protocol.get("individual", []):
             individual.setdefault("source", {})["evaluation_correction"] = public
-        _append_caveat(
-            protocol,
-            "Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on "
-            "the protocol's training split to correct an imported momentum-convention error; "
-            "no learned parameter or validation image was used.",
+        _remove_caveats_containing(
+            protocol, "BatchNorm running-statistics buffers were recalibrated"
         )
+        _append_caveat(protocol, campaign._bn_recalibration_caveat(public))
+    transfer = mobile["protocols"]["cityscapes_to_railsem19"]
+    _remove_caveats_containing(transfer, "Transfer warm-started from the pre-recalibration")
     _append_caveat(
-        mobile["protocols"]["cityscapes_to_railsem19"],
+        transfer,
         "Transfer warm-started from the pre-recalibration Cityscapes checkpoint; only BatchNorm "
-        "buffers differ from the published Cityscapes endpoint, and Rail20 re-estimated them.",
+        "buffers differ from the published Cityscapes endpoint. Training-mode BatchNorm uses "
+        "batch statistics, so those initial buffers did not affect gradient calculations; the "
+        "transfer endpoint received its own disclosed recalibration before evaluation.",
     )
+    missing_transfer_sources = []
+    for model_id, record in records.items():
+        variants = [record["protocols"].get("cityscapes_to_railsem19")]
+        variants.append(record.get("paper_raw_protocols", {}).get("cityscapes_to_railsem19"))
+        protocols = [item for item in variants if isinstance(item, dict)]
+        if not protocols or all(
+            campaign._transfer_source_provenance_retained(protocol) for protocol in protocols
+        ):
+            continue
+        for protocol in protocols:
+            if campaign._transfer_source_provenance_retained(protocol):
+                continue
+            _append_caveat(
+                protocol,
+                "The transfer endpoint is complete, but its City40 source-checkpoint hash was "
+                "not retained, so the warm-start link cannot be independently audited.",
+            )
+        missing_transfer_sources.append(model_id)
     _append_caveat(
         records["smp_pan_resnext50"]["protocols"]["cityscapes"],
         "The retained historical endpoint label conflicts with the fresh paired measurement; "
         "the paper-primary value is the independently verified raw evaluation.",
     )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "resumed_cells": [
             {
                 "model_id": model_id,
@@ -152,6 +193,7 @@ def _apply_review_corrections(records: dict[str, dict[str, Any]]) -> dict[str, A
             {"model_id": "hf_auto_mobilenetv2_deeplabv3", "protocol": protocol_id, **value}
             for protocol_id, value in BN_RECALIBRATIONS.items()
         ],
+        "transfer_source_provenance_missing": sorted(missing_transfer_sources),
     }
 
 

@@ -51,8 +51,9 @@ PyTorch's opposite convention. That makes evaluation statistics follow almost
 only the last micro-batch. This recipe explicitly uses `0.003`, the equivalent
 PyTorch batch contribution, so running statistics accumulate during training.
 Historical weights trained before this recipe correction were evaluated only
-after a full training-split running-stat recalibration that changed zero learned
-parameters; their machine records retain that correction provenance.
+after a training-only running-stat recalibration that changed zero learned
+parameters. It used 2,968 of 2,975 Cityscapes training images and all 6,800
+RailSem19 training images; machine records retain the correction provenance.
 
 ## Advanced settings
 
@@ -101,7 +102,7 @@ Standalone rows report their own training cost. The transfer adaptation row repo
 | Cityscapes → RailSem19 | Rail20 adaptation only; excludes reused City40 | 6h 36m 03s | 6.60 | 5.55 GiB | 7.159 |
 | Cityscapes → RailSem19, cumulative | City40 training + Rail20 adaptation | 16h 14m 38s | 16.24 | 5.55 GiB | — |
 
-`not retained` means the exact original training-duration record is no longer available. The validated quality result, final checkpoint, iteration count, and inference evidence are still complete; the model is not retrained only to recreate timing metadata.
+`not retained` means the exact whole-run wall time, GPU-hours, or peak training-VRAM record is unavailable. The validated quality result, final checkpoint, iteration count, and inference evidence are still complete; the model is not retrained only to recreate resource metadata.
 
 ### Cityscapes class IoU
 
@@ -161,8 +162,10 @@ Standalone rows report their own training cost. The transfer adaptation row repo
 - Quality evaluation weights: Cityscapes: raw; RailSem19: raw; Cityscapes → RailSem19: raw.
 - Evaluation uses 1024x1024 sliding windows, stride 768, and no TTA.
 - Metric derivation: Derived from each retained confusion matrix when absent; all other metrics come directly from validated result records.
-- Caveat: Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used.
+- Caveat: Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used. The reported raw mIoU changed from 11.86 to 53.29.
+- Caveat: Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used. The reported raw mIoU changed from 14.36 to 57.93.
+- Caveat: Before evaluation, 55 BatchNorm running-statistics buffers were recalibrated on the protocol's training split to correct an imported momentum-convention error; no learned parameter or validation image was used. The reported raw mIoU changed from 31.46 to 67.74.
 - Caveat: The exact total training wall time, GPU-hours, and whole-run peak VRAM were not retained across interruption recovery; the machine record preserves the final post-resume segment separately but does not present it as the total.
-- Caveat: Transfer warm-started from the pre-recalibration Cityscapes checkpoint; only BatchNorm buffers differ from the published Cityscapes endpoint, and Rail20 re-estimated them.
+- Caveat: Transfer warm-started from the pre-recalibration Cityscapes checkpoint; only BatchNorm buffers differ from the published Cityscapes endpoint. Training-mode BatchNorm uses batch statistics, so those initial buffers did not affect gradient calculations; the transfer endpoint received its own disclosed recalibration before evaluation.
 
 <!-- segmentary:generated-city-rail-benchmark:end -->

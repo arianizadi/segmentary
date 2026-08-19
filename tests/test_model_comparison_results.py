@@ -63,7 +63,7 @@ def test_live_comparison_ends_with_accuracy_speed_leaderboard() -> None:
         "Some complete results were verified as compatible and reused instead of retrained"
         in content
     )
-    assert "only the exact original training-duration or GPU-hour record" in content
+    assert "exact whole-run wall time, GPU-hours, or peak training-VRAM" in content
     assert "below the leaderboard's 60% quality floor" in content
     assert "\n## " not in leaderboard
 
@@ -115,8 +115,7 @@ def test_paper_quality_bundle_uses_raw_weights_at_every_public_level() -> None:
 def test_resumed_cells_never_publish_partial_segments_as_total_costs() -> None:
     comparison = ROOT / "docs/results/model-comparison"
     corrections_path = comparison / "paper-review-corrections.json"
-    if not corrections_path.is_file():
-        return
+    assert corrections_path.is_file()
     corrections = json.loads(corrections_path.read_text())
     for row in corrections["resumed_cells"]:
         record = json.loads((comparison / "records" / f"{row['model_id']}.json").read_text())
@@ -130,7 +129,26 @@ def test_resumed_cells_never_publish_partial_segments_as_total_costs() -> None:
             assert training["gpu_hours_mean"] is None
             assert training["peak_vram_bytes_per_device"] is None
             assert training["total_timing_status"] == "not_retained_due_to_resume"
-            assert (
-                training["post_resume_segment_only"]["resume_checkpoint_steps"]
-                == row["resume_checkpoint_steps"]
+            segments = training["post_resume_segments"]
+            assert segments
+            assert all(
+                stage["resume_checkpoint_steps"] == row["resume_checkpoint_steps"]
+                for segment in segments
+                for stage in segment["stages"]
             )
+            assert "post_resume_segment_only" not in training
+
+
+def test_missing_transfer_source_provenance_is_not_claimed_as_reused() -> None:
+    comparison = ROOT / "docs/results/model-comparison"
+    corrections = json.loads((comparison / "paper-review-corrections.json").read_text())
+    rows = list(csv.DictReader((comparison / "results.csv").open()))
+    by_model = {row["model"]: row for row in rows}
+    for model_id in corrections["transfer_source_provenance_missing"]:
+        record = json.loads((comparison / "records" / f"{model_id}.json").read_text())
+        transfer = record["protocols"]["cityscapes_to_railsem19"]
+        assert transfer["source_checkpoint"] is None
+        assert any("cannot be independently audited" in item for item in transfer["caveats"])
+        row = by_model[model_id]
+        assert "provenance not retained" in row["cityscapes_to_railsem19_training_cost_scope"]
+        assert row["cityscapes_to_railsem19_cumulative_iterations"] == ""

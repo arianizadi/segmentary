@@ -1067,6 +1067,7 @@ def test_resumed_training_segment_is_not_aggregated_as_whole_run_cost() -> None:
     assert training["peak_vram_bytes_per_device"] is None
     assert training["total_timing_status"] == "not_retained_due_to_resume"
     assert training["post_resume_segments"][0]["stages"] == [partial_stage]
+    assert "post_resume_segment_only" not in training
 
 
 def test_reuse_scan_accepts_exact_20k_transfer_final(
@@ -1375,9 +1376,9 @@ def test_training_specifications_are_rendered_in_readme_and_csv(
     assert beit["training_objective"] == "dense_semantic"
     assert (
         beit["cityscapes_to_railsem19_training_cost_scope"]
-        == "Rail20 adaptation only; excludes reused City40"
+        == "Rail20 adaptation; City40 warm-start provenance not retained"
     )
-    assert beit["cityscapes_to_railsem19_cumulative_iterations"] == "60000"
+    assert beit["cityscapes_to_railsem19_cumulative_iterations"] == ""
 
     eomt = by_model["eomt_dinov3_large"]
     assert eomt["training_batch_size_per_gpu"] == "2"
