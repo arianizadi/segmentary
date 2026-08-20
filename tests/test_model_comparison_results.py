@@ -59,6 +59,9 @@ def test_live_comparison_ends_with_accuracy_speed_leaderboard() -> None:
     assert "not retained" in content
     assert "Transfer adaptation reports only Rail20" in content
     assert "All 111 quality cells use seed 0" in content
+    assert "BF16 autocast" in content
+    assert "not a saturated multi-stream throughput measurement" in content
+    assert "Cityscapes parameter-count column is intentionally blank" in content
     assert (
         "Some complete results were verified as compatible and reused instead of retrained"
         in content
@@ -108,6 +111,8 @@ def test_paper_quality_bundle_uses_raw_weights_at_every_public_level() -> None:
     assert "[raw versus EMA analysis](RAW_VS_EMA.md)" in readme
     assert analysis.count("| `") == 36
     assert "±" not in analysis
+    assert "selected subset" in analysis
+    assert "same rank order across all 15 paired RailSem19 cells" in analysis
     assert len(corrections["resumed_cells"]) == 8
     assert len(corrections["batchnorm_recalibrations"]) == 3
 
@@ -152,3 +157,21 @@ def test_missing_transfer_source_provenance_is_not_claimed_as_reused() -> None:
         row = by_model[model_id]
         assert "provenance not retained" in row["cityscapes_to_railsem19_training_cost_scope"]
         assert row["cityscapes_to_railsem19_cumulative_iterations"] == ""
+
+
+def test_paper_corrections_are_present_in_raw_override_views() -> None:
+    comparison = ROOT / "docs/results/model-comparison/records"
+    mobile = json.loads((comparison / "hf_auto_mobilenetv2_deeplabv3.json").read_text())
+    for protocol_id in ("cityscapes", "railsem19", "cityscapes_to_railsem19"):
+        for family in ("protocols", "paper_raw_protocols"):
+            protocol = mobile.get(family, {}).get(protocol_id)
+            if protocol is None:
+                continue
+            assert protocol["evaluation_correction"]["parameters_changed"] == 0
+            assert any("reported raw mIoU changed" in item for item in protocol["caveats"])
+
+    pan = json.loads((comparison / "smp_pan_resnext50.json").read_text())
+    for family in ("protocols", "paper_raw_protocols"):
+        city = pan.get(family, {}).get("cityscapes")
+        if city is not None:
+            assert any("historical endpoint label conflicts" in item for item in city["caveats"])

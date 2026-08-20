@@ -5,12 +5,14 @@ This paired analysis evaluates raw and exponential-moving-average (EMA) weights 
 The main [model comparison](README.md) uses raw weights for every quality cell so the paper compares architectures under one uniform rule. Standardized FPS and memory are not repeated because raw and EMA use the same model graph and tensor shapes.
 
 These are single-seed descriptive differences, not confidence intervals or evidence of statistical significance. The higher-endpoint column carries the direction so the human-facing table does not use signed or error-bar notation.
+The 36 paired cells are a selected subset: they are endpoints previously admitted with EMA, generally architectures without running-stat BatchNorm. They do not form a random sample of all 111 quality cells.
 
 ## Summary
 
 - Paired cells: 36.
 - Raw higher: 14; EMA higher: 22; exact ties: 0.
 - Across these cells, EMA averaged 0.05 mIoU percentage points higher.
+- Raw and EMA give the same rank order across all 15 paired RailSem19 cells.
 
 ## Paired results
 

@@ -27,7 +27,7 @@ These are the resolved settings used by this campaign, not generic model default
 | protocol budgets | Cityscapes 40,000; RailSem19 40,000; transfer reuses City40 and trains RailSem19 for 20,000 iterations (60,000 cumulative) |
 | transfer initialization | reuse the matching 40,000-iteration Cityscapes checkpoint, reset only the incompatible classifier, and train RailSem19 for 20,000 iterations; use 0.1x for backbone groups and 1.0x for model-declared head groups; retain the final common evaluation at Rail 20,000 |
 | interruption recovery | same-attempt full-state resume from newest validated periodic checkpoint; fresh attempt only when no recovery checkpoint exists |
-| final quality evaluation | paper-primary raw checkpoint weights for every model, batch 1, 1024x1024 sliding window, stride 768, no TTA |
+| final quality evaluation | paper-primary raw checkpoint weights for every model, BF16 autocast, batch 1, 1024x1024 sliding window, stride 768, no TTA |
 
 ### Model-specific optimizer and batching settings
 
@@ -122,6 +122,7 @@ The imported Hugging Face MobileNetV2 recipe required a documented training-spli
 ## Standardized model-only inference
 
 Each unique physical model is measured exactly once from its RailSem19-only 21-class recorded final endpoint (raw for running-stat BatchNorm; EMA otherwise). Raw and EMA weights have the same graph and tensor shapes, so this standardized speed and memory evidence remains comparable while the quality table is raw-only. Contract: NVIDIA L40S, PyTorch eager public forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed iterations. It includes internal query-to-dense collapse and excludes I/O, preprocessing, sliding windows, argmax, and metrics.
+FPS is 1,000 divided by mean batch-1 CUDA-event latency. It is a single-stream latency reciprocal, not a saturated multi-stream throughput measurement.
 All unique physical models now have the standardized inference benchmark.
 
 Weight memory is the resident parameter tensors; the resume checkpoint also contains optimizer and EMA state; peak VRAM is allocator-reserved memory excluding the CUDA context.
@@ -216,12 +217,13 @@ City and Rail columns report standalone training. Transfer adaptation reports on
 - RailSem19: 40,000 iterations, `rail_union`, fixed 850-image validation.
 - RailSem19's disjoint 850-image test split remains reserved and unused; this comparison reports the validation split for every model.
 - Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint and train RailSem19 for 20,000 iterations (60,000 cumulative); Cityscapes is never trained twice.
-- Three completed transfer cells lack the retained City40 source-checkpoint hash. Their endpoints remain complete, but the warm-start link and cumulative 60,000-iteration claim are withheld for those cells.
+- 3 completed transfer cells lack the retained City40 source-checkpoint hash. Their endpoints remain complete, but the warm-start link and cumulative 60,000-iteration claim are withheld for those cells.
 - Transfer cost tables label Rail20 adaptation-only cost separately from cumulative City40 + Rail20 cost.
 - Transfer warm-starts every compatible learned tensor and reinitialises only the 19-class to `rail_union` classifier mismatch.
 - Primary quality evaluation: raw checkpoint weights for every protocol, 1024x1024 sliding window, stride 768, no TTA.
 - [`RAW_VS_EMA.md`](RAW_VS_EMA.md): paired raw-versus-EMA quality analysis for the same checkpoints and validation protocols.
 - [`results.csv`](results.csv): spreadsheet-friendly mean metrics, iterations, and resources.
+  Its Cityscapes parameter-count column is intentionally blank because model profiling used the 21-class RailSem19 endpoint and classifier shapes differ.
 - [`status.json`](status.json): machine-readable scope and completion state.
 - [`records/`](records/): full class IoUs, retained seeds, resources, and provenance.
 - [`paper-review-corrections.json`](paper-review-corrections.json): resumed-run timing disclosures and exceptional BatchNorm correction provenance.

@@ -5576,7 +5576,7 @@
       "effective_batch_sizes": [
         16
       ],
-      "evaluation": "paper-primary raw checkpoint weights for every model, batch 1, 1024x1024 sliding window, stride 768, no TTA",
+      "evaluation": "paper-primary raw checkpoint weights for every model, BF16 autocast, batch 1, 1024x1024 sliding window, stride 768, no TTA",
       "gpu_count_per_job": 1,
       "hardware": "one NVIDIA L40S per physical job",
       "optimizer": "AdamW",

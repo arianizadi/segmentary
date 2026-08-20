@@ -5279,8 +5279,8 @@ def _comparison_status(
                     "retain the final common evaluation at Rail 20,000"
                 ),
                 "evaluation": (
-                    "paper-primary raw checkpoint weights for every model, batch 1, "
-                    "1024x1024 sliding window, stride 768, no TTA"
+                    "paper-primary raw checkpoint weights for every model, BF16 autocast, "
+                    "batch 1, 1024x1024 sliding window, stride 768, no TTA"
                 ),
                 "resume_policy": (
                     campaign_record["execution"]["resume_policy"]
@@ -5532,6 +5532,13 @@ def _central_readme(
         if isinstance(old, int | float) and isinstance(corrected, int | float):
             mobile_changes.append(f"{label} {old * 100:.2f} to {corrected * 100:.2f}")
     mobile_change_text = ", ".join(mobile_changes)
+    missing_transfer_source_count = sum(
+        not _transfer_source_provenance_retained(
+            _primary_protocols(record).get("cityscapes_to_railsem19")
+        )
+        for record in records.values()
+        if isinstance(_primary_protocols(record).get("cityscapes_to_railsem19"), dict)
+    )
     lines = [
         "# Model comparison: Cityscapes and RailSem19",
         "",
@@ -5656,6 +5663,8 @@ def _central_readme(
             "forward, BF16 autocast, batch 1, 1024x1024, 20 warmup and 100 CUDA-event-timed "
             "iterations. It includes internal query-to-dense collapse and excludes I/O, "
             "preprocessing, sliding windows, argmax, and metrics.",
+            "FPS is 1,000 divided by mean batch-1 CUDA-event latency. It is a single-stream "
+            "latency reciprocal, not a saturated multi-stream throughput measurement.",
             performance_note,
             "",
             "Weight memory is the resident parameter tensors; the resume checkpoint also "
@@ -5742,9 +5751,16 @@ def _central_readme(
             "- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint and train "
             "RailSem19 for 20,000 iterations (60,000 cumulative); Cityscapes is never "
             "trained twice.",
-            "- Three completed transfer cells lack the retained City40 source-checkpoint "
-            "hash. Their endpoints remain complete, but the warm-start link and cumulative "
-            "60,000-iteration claim are withheld for those cells.",
+            *(
+                [
+                    f"- {missing_transfer_source_count} completed transfer cells lack the "
+                    "retained City40 source-checkpoint hash. Their endpoints remain complete, "
+                    "but the warm-start link and cumulative 60,000-iteration claim are "
+                    "withheld for those cells."
+                ]
+                if missing_transfer_source_count
+                else []
+            ),
             "- Transfer cost tables label Rail20 adaptation-only cost separately from cumulative "
             "City40 + Rail20 cost.",
             "- Transfer warm-starts every compatible learned tensor and reinitialises only the "
@@ -5754,6 +5770,8 @@ def _central_readme(
             "- [`RAW_VS_EMA.md`](RAW_VS_EMA.md): paired raw-versus-EMA quality analysis for "
             "the same checkpoints and validation protocols.",
             "- [`results.csv`](results.csv): spreadsheet-friendly mean metrics, iterations, and resources.",
+            "  Its Cityscapes parameter-count column is intentionally blank because model "
+            "profiling used the 21-class RailSem19 endpoint and classifier shapes differ.",
             "- [`status.json`](status.json): machine-readable scope and completion state.",
             "- [`records/`](records/): full class IoUs, retained seeds, resources, and provenance.",
             "- [`paper-review-corrections.json`](paper-review-corrections.json): resumed-run "

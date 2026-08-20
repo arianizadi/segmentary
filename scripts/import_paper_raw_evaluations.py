@@ -131,7 +131,6 @@ def _apply_review_corrections(records: dict[str, dict[str, Any]]) -> dict[str, A
 
     mobile = records["hf_auto_mobilenetv2_deeplabv3"]
     for protocol_id, correction in BN_RECALIBRATIONS.items():
-        protocol = mobile["protocols"][protocol_id]
         public = {
             "kind": "batchnorm_running_statistics_recalibration",
             "reason": "correct an upstream TensorFlow-to-PyTorch momentum-convention error",
@@ -139,22 +138,32 @@ def _apply_review_corrections(records: dict[str, dict[str, Any]]) -> dict[str, A
             "parameters_changed": 0,
             **correction,
         }
-        protocol["evaluation_correction"] = public
-        for individual in protocol.get("individual", []):
-            individual.setdefault("source", {})["evaluation_correction"] = public
-        _remove_caveats_containing(
-            protocol, "BatchNorm running-statistics buffers were recalibrated"
+        variants = [mobile["protocols"][protocol_id]]
+        raw = mobile.get("paper_raw_protocols", {}).get(protocol_id)
+        if isinstance(raw, dict):
+            variants.append(raw)
+        for protocol in variants:
+            protocol["evaluation_correction"] = public
+            for individual in protocol.get("individual", []):
+                individual.setdefault("source", {})["evaluation_correction"] = public
+            _remove_caveats_containing(
+                protocol, "BatchNorm running-statistics buffers were recalibrated"
+            )
+            _append_caveat(protocol, campaign._bn_recalibration_caveat(public))
+    transfer_variants = [mobile["protocols"]["cityscapes_to_railsem19"]]
+    raw_transfer = mobile.get("paper_raw_protocols", {}).get("cityscapes_to_railsem19")
+    if isinstance(raw_transfer, dict):
+        transfer_variants.append(raw_transfer)
+    for transfer in transfer_variants:
+        _remove_caveats_containing(transfer, "Transfer warm-started from the pre-recalibration")
+        _append_caveat(
+            transfer,
+            "Transfer warm-started from the pre-recalibration Cityscapes checkpoint; only "
+            "BatchNorm buffers differ from the published Cityscapes endpoint. Training-mode "
+            "BatchNorm uses batch statistics, so those initial buffers did not affect gradient "
+            "calculations; the transfer endpoint received its own disclosed recalibration "
+            "before evaluation.",
         )
-        _append_caveat(protocol, campaign._bn_recalibration_caveat(public))
-    transfer = mobile["protocols"]["cityscapes_to_railsem19"]
-    _remove_caveats_containing(transfer, "Transfer warm-started from the pre-recalibration")
-    _append_caveat(
-        transfer,
-        "Transfer warm-started from the pre-recalibration Cityscapes checkpoint; only BatchNorm "
-        "buffers differ from the published Cityscapes endpoint. Training-mode BatchNorm uses "
-        "batch statistics, so those initial buffers did not affect gradient calculations; the "
-        "transfer endpoint received its own disclosed recalibration before evaluation.",
-    )
     missing_transfer_sources = []
     for model_id, record in records.items():
         variants = [record["protocols"].get("cityscapes_to_railsem19")]
@@ -173,11 +182,18 @@ def _apply_review_corrections(records: dict[str, dict[str, Any]]) -> dict[str, A
                 "not retained, so the warm-start link cannot be independently audited.",
             )
         missing_transfer_sources.append(model_id)
-    _append_caveat(
-        records["smp_pan_resnext50"]["protocols"]["cityscapes"],
-        "The retained historical endpoint label conflicts with the fresh paired measurement; "
-        "the paper-primary value is the independently verified raw evaluation.",
-    )
+    pan = records["smp_pan_resnext50"]
+    pan_variants = [pan["protocols"]["cityscapes"]]
+    raw_pan = pan.get("paper_raw_protocols", {}).get("cityscapes")
+    if isinstance(raw_pan, dict):
+        pan_variants.append(raw_pan)
+    for protocol in pan_variants:
+        _append_caveat(
+            protocol,
+            "The retained historical endpoint label conflicts with the fresh paired "
+            "measurement; the paper-primary value is the independently verified raw "
+            "evaluation.",
+        )
     return {
         "schema_version": 2,
         "resumed_cells": [
@@ -305,6 +321,13 @@ def _comparison_markdown(rows: list[dict[str, Any]]) -> str:
         if mean_delta
         else "the two endpoints had the same mean mIoU"
     )
+    rail_rows = [row for row in rows if row["protocol"] == "railsem19"]
+    raw_rail_order = [
+        row["model_id"] for row in sorted(rail_rows, key=lambda row: -row["raw_miou"])
+    ]
+    ema_rail_order = [
+        row["model_id"] for row in sorted(rail_rows, key=lambda row: -row["ema_miou"])
+    ]
     labels = {
         "cityscapes": "Cityscapes",
         "railsem19": "RailSem19",
@@ -325,12 +348,22 @@ def _comparison_markdown(rows: list[dict[str, Any]]) -> str:
         "These are single-seed descriptive differences, not confidence intervals or evidence "
         "of statistical significance. The higher-endpoint column carries the direction so the "
         "human-facing table does not use signed or error-bar notation.",
+        "The 36 paired cells are a selected subset: they are endpoints previously admitted "
+        "with EMA, generally architectures without running-stat BatchNorm. They do not form a "
+        "random sample of all 111 quality cells.",
         "",
         "## Summary",
         "",
         f"- Paired cells: {len(rows)}.",
         f"- Raw higher: {raw_wins}; EMA higher: {ema_wins}; exact ties: {ties}.",
         f"- Across these cells, {mean_summary}.",
+        *(
+            [
+                f"- Raw and EMA give the same rank order across all {len(rail_rows)} paired RailSem19 cells."
+            ]
+            if rail_rows and raw_rail_order == ema_rail_order
+            else []
+        ),
         "",
         "## Paired results",
         "",
@@ -519,8 +552,8 @@ def main() -> int:
     )
     status["scope"]["resource_corrections"] = "paper-review-corrections.json"
     status["scope"]["training"]["evaluation"] = (
-        "paper-primary raw checkpoint weights for every model, batch 1, 1024x1024 sliding "
-        "window, stride 768, no TTA"
+        "paper-primary raw checkpoint weights for every model, BF16 autocast, batch 1, "
+        "1024x1024 sliding window, stride 768, no TTA"
     )
     for row in status["models"]:
         record = records[row["alias_of"] or row["model"]]
