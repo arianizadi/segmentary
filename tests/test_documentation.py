@@ -66,8 +66,22 @@ def test_legacy_brand_only_appears_in_immutable_or_explicitly_archived_records()
         if not path.is_file() or any(part == ".git" for part in path.parts):
             continue
         relative = path.relative_to(ROOT)
+        # Tool caches and local environments are not repository content. The
+        # mypy cache in particular stores absolute site-packages paths, so an
+        # environment whose *directory name* carries the legacy brand would make
+        # every cached stub file a false positive.
         if relative in allowed or any(
-            part in {".pytest_cache", ".ruff_cache", "build", "dist", "__pycache__"}
+            part
+            in {
+                ".pytest_cache",
+                ".ruff_cache",
+                ".mypy_cache",
+                ".venv",
+                "venv",
+                "build",
+                "dist",
+                "__pycache__",
+            }
             or part.endswith(".egg-info")
             for part in relative.parts
         ):

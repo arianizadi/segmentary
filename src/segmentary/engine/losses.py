@@ -72,6 +72,27 @@ class LossConfig:
         return cls(task=spec.task, activation=spec.activation, terms=spec.resolved_terms())
 
 
+_EMPTY_ACTIVE_ROW = "active mask excludes every class; the loss would be undefined"
+
+
+def _validate_active_shape(active: Tensor, n: int, c: int) -> None:
+    """Shape contract for a ``(C,)`` or per-sample ``(N, C)`` active mask; no device sync."""
+    if active.ndim == 1:
+        if active.shape != (c,):
+            raise ValueError(f"active mask {tuple(active.shape)} does not match {c} classes")
+    elif active.ndim == 2:
+        if active.shape != (n, c):
+            raise ValueError(
+                f"per-sample active mask {tuple(active.shape)} does not match batch ({n}, {c})"
+            )
+    else:
+        raise ValueError(f"active mask must be 1-D (C,) or 2-D (N, C), got {active.ndim}-D")
+
+
+def _fill_inactive(logits: Tensor, active_view: Tensor) -> Tensor:
+    return logits.masked_fill(~active_view, torch.finfo(logits.dtype).min)
+
+
 def mask_inactive(logits: Tensor, active: Tensor | None) -> Tensor:
     """Drive classes a sample cannot label to the finite dtype floor.
 
@@ -82,23 +103,10 @@ def mask_inactive(logits: Tensor, active: Tensor | None) -> Tensor:
     if active is None:
         return logits
     n, c = logits.shape[:2]
-    if active.ndim == 1:
-        if active.shape != (c,):
-            raise ValueError(f"active mask {tuple(active.shape)} does not match {c} classes")
-        view = active.view(1, c, 1, 1)
-    elif active.ndim == 2:
-        if active.shape != (n, c):
-            raise ValueError(
-                f"per-sample active mask {tuple(active.shape)} does not match batch ({n}, {c})"
-            )
-        view = active.view(n, c, 1, 1)
-    else:
-        raise ValueError(f"active mask must be 1-D (C,) or 2-D (N, C), got {active.ndim}-D")
+    _validate_active_shape(active, n, c)
     if not bool(active.bool().any(dim=-1).all()):
-        raise ValueError("active mask excludes every class; the loss would be undefined")
-    return logits.masked_fill(
-        ~view.to(device=logits.device, dtype=torch.bool), torch.finfo(logits.dtype).min
-    )
+        raise ValueError(_EMPTY_ACTIVE_ROW)
+    return _fill_inactive(logits, _active_view(active, n, c, logits.device))
 
 
 def _active_view(active: Tensor | None, n: int, c: int, device: torch.device) -> Tensor:
@@ -184,7 +192,12 @@ def _cross_entropy_pixels(
     label_smoothing: float,
     class_weights: list[float] | None,
 ) -> tuple[Tensor, Tensor]:
-    """Return valid per-pixel CE and its weighted-mean denominator.
+    """Return the per-pixel CE map (zero at invalid pixels) and its weighted-mean denominator.
+
+    The map keeps the ``(N, H, W)`` layout rather than gathering the valid
+    pixels: a boolean gather has to read the mask on the host to size its
+    output, which stalls the GPU queue once per step. Plain CE only needs the
+    masked sum; OHEM gathers explicitly because it ranks the valid pixels.
 
     PyTorch's built-in label smoothing distributes mass over every channel.
     That is wrong for mixed-taxonomy batches because inactive channels have
@@ -210,12 +223,18 @@ def _cross_entropy_pixels(
         active_count = active_view.sum(1).to(logits.dtype)
         smooth = -(log_probs * class_mask).sum(1) / active_count
         raw = (1.0 - label_smoothing) * raw + label_smoothing * smooth
-    denominator = target_weight[valid].sum() if weights is not None else valid.sum()
-    if not bool(denominator > 0):
-        raise ValueError(
-            "cross-entropy class weights are zero for every valid target in this batch"
-        )
-    return raw[valid], denominator.to(logits.dtype)
+    valid_weight = valid.to(logits.dtype)
+    if weights is None:
+        # The caller has already established that the batch has valid pixels,
+        # so the unweighted denominator is positive without a host round-trip.
+        denominator = valid_weight.sum()
+    else:
+        denominator = (target_weight * valid_weight).sum()
+        if not bool(denominator > 0):
+            raise ValueError(
+                "cross-entropy class weights are zero for every valid target in this batch"
+            )
+    return raw * valid_weight, denominator.to(logits.dtype)
 
 
 def _multiclass_onehot(
@@ -318,8 +337,6 @@ class SegmentationLoss(nn.Module):
                 f"logits {tuple(logits.shape)} and target {tuple(target.shape)} disagree; "
                 "upsample logits to label resolution before the loss"
             )
-        if not bool(torch.isfinite(logits).all()):
-            raise FloatingPointError("segmentation loss received non-finite logits")
         if self.cfg.task == "multiclass" and (
             target.dtype == torch.bool or target.is_floating_point() or target.is_complex()
         ):
@@ -327,32 +344,57 @@ class SegmentationLoss(nn.Module):
         original_logits = logits
         if logits.dtype not in (torch.float32, torch.float64):
             logits = logits.float()
-        active_view = _active_view(active, logits.shape[0], logits.shape[1], logits.device)
+        n, c = logits.shape[:2]
+        if active is not None:
+            _validate_active_shape(active, n, c)
+        active_view = _active_view(active, n, c, logits.device)
         if self.cfg.task == "multiclass":
-            masked_logits = mask_inactive(logits, active)
             target = target.long()
             valid = target != self.ignore_index
-            if bool(valid.any()):
-                if bool(((target[valid] < 0) | (target[valid] >= self.num_classes)).any()):
-                    raise ValueError(
-                        f"multiclass targets must be in [0, {self.num_classes - 1}] or "
-                        f"ignore_index={self.ignore_index}"
-                    )
-                sample_index = torch.arange(target.shape[0], device=target.device)[:, None, None]
-                supervised = active_view[:, :, 0, 0][
-                    sample_index, target.clamp(0, self.num_classes - 1)
-                ]
-                if bool((valid & ~supervised).any()):
-                    raise ValueError("target contains a class marked inactive for that sample")
+            out_of_range = valid & ((target < 0) | (target >= self.num_classes))
+            sample_index = torch.arange(target.shape[0], device=target.device)[:, None, None]
+            supervised = active_view[:, :, 0, 0][
+                sample_index, target.clamp(0, self.num_classes - 1)
+            ]
+            unsupervised = valid & ~supervised
+            # Every data-dependent contract check in one host round-trip. Each
+            # ``bool()`` on a CUDA tensor stalls the CPU until the GPU has drained
+            # its queue, and several of those per step are measurable idle time
+            # on small models. The checks are unchanged; only the sync is shared.
+            finite, rows_active, any_valid, bad_target, inactive_target = torch.stack(
+                (
+                    torch.isfinite(logits).all(),
+                    active_view.any(dim=1).all(),
+                    valid.any(),
+                    out_of_range.any(),
+                    unsupervised.any(),
+                )
+            ).tolist()
+            if not finite:
+                raise FloatingPointError("segmentation loss received non-finite logits")
+            if not rows_active:
+                raise ValueError(_EMPTY_ACTIVE_ROW)
+            if bad_target:
+                raise ValueError(
+                    f"multiclass targets must be in [0, {self.num_classes - 1}] or "
+                    f"ignore_index={self.ignore_index}"
+                )
+            if inactive_target:
+                raise ValueError("target contains a class marked inactive for that sample")
+            masked_logits = _fill_inactive(logits, active_view)
             probs = masked_logits.softmax(dim=1)
             dense_target = None
             element_valid = valid.unsqueeze(1) & active_view
         else:
-            mask_inactive(logits, active)  # validates mask shape and non-empty samples
+            if not bool(torch.isfinite(logits).all()):
+                raise FloatingPointError("segmentation loss received non-finite logits")
+            if not bool(active_view.any(dim=1).all()):
+                raise ValueError(_EMPTY_ACTIVE_ROW)
             masked_logits = logits
             dense_target, element_valid = _sigmoid_target(target, logits, self.ignore_index)
             element_valid &= active_view
             valid = element_valid.any(dim=1)
+            any_valid = bool(valid.any())
             probs = logits.sigmoid()
 
         if any(term.kind == "kl_distillation" for term in self.cfg.terms):
@@ -370,7 +412,7 @@ class SegmentationLoss(nn.Module):
             if not bool(torch.isfinite(teacher_logits).all()):
                 raise FloatingPointError("teacher_logits contains non-finite values")
 
-        if not bool(valid.any()):
+        if not any_valid:
             zero = _graph_zero(original_logits)
             # Keys are widened to str deliberately: alongside the term kinds this
             # dict also carries the "total" and "empty_crop" reporting entries.
@@ -379,6 +421,7 @@ class SegmentationLoss(nn.Module):
             return zero, components
 
         components = {}
+        values: list[Tensor] = []
         total = _graph_zero(original_logits)
         for term in self.cfg.terms:
             value = self._term(
@@ -392,14 +435,20 @@ class SegmentationLoss(nn.Module):
                 active_view,
                 teacher_logits,
             )
-            if not bool(torch.isfinite(value).all()):
+            values.append(value)
+            components[term.kind] = value.detach()
+            total = total + term.weight * value
+        # One host round-trip for every finiteness check rather than one per term.
+        finite = torch.stack(
+            [torch.isfinite(value).all() for value in values] + [torch.isfinite(total).all()]
+        ).tolist()
+        for term, term_finite in zip(self.cfg.terms, finite, strict=False):
+            if not term_finite:
                 raise FloatingPointError(
                     f"loss term {term.kind!r} produced a non-finite value; "
                     "check logits, targets, and objective hyperparameters"
                 )
-            components[term.kind] = value.detach()
-            total = total + term.weight * value
-        if not bool(torch.isfinite(total).all()):
+        if not finite[-1]:
             raise FloatingPointError("weighted loss total is non-finite")
         components["total"] = total.detach()
         return total, components
@@ -442,7 +491,7 @@ class SegmentationLoss(nn.Module):
             return raw[element_valid].mean()
 
         if term.kind == "ohem_cross_entropy":
-            raw, _ = _cross_entropy_pixels(
+            pixel_map, _ = _cross_entropy_pixels(
                 logits,
                 target,
                 valid,
@@ -450,6 +499,7 @@ class SegmentationLoss(nn.Module):
                 label_smoothing=term.label_smoothing,
                 class_weights=term.class_weights,
             )
+            raw = pixel_map[valid]
             keep = min(raw.numel(), max(term.min_kept, int(raw.numel() * term.fraction)))
             if term.probability_threshold is not None:
                 flat_target = target[valid]

@@ -31,12 +31,12 @@ _PEFT_PREFIXES = ("", "base_model.model.")
 
 
 def resize_logits(logits: Tensor, size: tuple[int, ...]) -> Tensor:
-    """Resize to a spatial (H, W); callers pass a tensor .shape slice directly."""
-    """Bilinearly resize (N, C, h, w) logits to ``size``, or pass through if equal.
+    """Bilinearly resize (N, C, h, w) logits to a spatial ``size``, or pass through if equal.
 
-    Segmentary fixes ``align_corners=False`` everywhere so train, sliding-window,
-    TTA, and export use one interpolation convention. Changing it can shift
-    boundaries and therefore defines a different evaluation protocol.
+    Callers pass a tensor ``.shape`` slice directly. Segmentary fixes
+    ``align_corners=False`` everywhere so train, sliding-window, TTA, and export
+    use one interpolation convention. Changing it can shift boundaries and
+    therefore defines a different evaluation protocol.
     """
     if tuple(logits.shape[-2:]) == tuple(size):
         return logits

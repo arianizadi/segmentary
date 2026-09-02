@@ -5532,13 +5532,29 @@ def _central_readme(
         if isinstance(old, int | float) and isinstance(corrected, int | float):
             mobile_changes.append(f"{label} {old * 100:.2f} to {corrected * 100:.2f}")
     mobile_change_text = ", ".join(mobile_changes)
+    # Count physical runs, not report rows: an alias record is a deep copy of its
+    # canonical model and would otherwise count the same missing hash twice.
     missing_transfer_source_count = sum(
         not _transfer_source_provenance_retained(
             _primary_protocols(record).get("cityscapes_to_railsem19")
         )
-        for record in records.values()
+        for model_id, record in records.items()
         if isinstance(_primary_protocols(record).get("cityscapes_to_railsem19"), dict)
+        and not (model_id in models and models[model_id].alias_of)
     )
+    if missing_transfer_source_count == 1:
+        missing_transfer_source_note = (
+            "- 1 completed transfer cell lacks the retained City40 source-checkpoint hash. "
+            "Its endpoint remains complete, but the warm-start link and cumulative "
+            "60,000-iteration claim are withheld for that cell."
+        )
+    else:
+        missing_transfer_source_note = (
+            f"- {missing_transfer_source_count} completed transfer cells lack the "
+            "retained City40 source-checkpoint hash. Their endpoints remain complete, "
+            "but the warm-start link and cumulative 60,000-iteration claim are "
+            "withheld for those cells."
+        )
     lines = [
         "# Model comparison: Cityscapes and RailSem19",
         "",
@@ -5751,16 +5767,7 @@ def _central_readme(
             "- Transfer: reuse the matching 40,000-iteration Cityscapes checkpoint and train "
             "RailSem19 for 20,000 iterations (60,000 cumulative); Cityscapes is never "
             "trained twice.",
-            *(
-                [
-                    f"- {missing_transfer_source_count} completed transfer cells lack the "
-                    "retained City40 source-checkpoint hash. Their endpoints remain complete, "
-                    "but the warm-start link and cumulative 60,000-iteration claim are "
-                    "withheld for those cells."
-                ]
-                if missing_transfer_source_count
-                else []
-            ),
+            *([missing_transfer_source_note] if missing_transfer_source_count else []),
             "- Transfer cost tables label Rail20 adaptation-only cost separately from cumulative "
             "City40 + Rail20 cost.",
             "- Transfer warm-starts every compatible learned tensor and reinitialises only the "

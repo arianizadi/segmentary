@@ -266,12 +266,27 @@ runs/<experiment>_seed<seed>/<stage>/last.ckpt
 automatic handoff path for the next stage. This differs from `best.ckpt`, which
 is selected by validation mIoU and may come from an earlier step.
 
-The base config enables an exponential moving average (EMA) of model weights.
-In-training validation uses EMA, and current checkpoints save the EMA shadow
-alongside raw model and optimizer state. When a later stage says
-`init_from: previous`, the handoff loader prefers the saved EMA weights, then
-optionally resets the head. Legacy checkpoints without EMA fall back to their
-raw state.
+The base config enables an exponential moving average (EMA) of model weights,
+and current checkpoints save the EMA shadow alongside raw model and optimizer
+state. Which weights are *scored* depends on the architecture:
+
+- a model without running-statistic BatchNorm (pure transformer/GroupNorm
+  stacks) is validated with its EMA weights, and a later stage with
+  `init_from: previous` starts from that EMA shadow;
+- a model with running-statistic BatchNorm (SegFormer's decode head, the SMP
+  and most native CNN decoders, several `hf_auto` checkpoints) is validated and
+  handed off with its **raw** weights, because the EMA shadow only copies the
+  live BatchNorm statistics and has none calibrated for the averaged weights.
+
+Every stage record states which rule applied in `env.validation_weights`;
+`segmentary-eval --auto-weights` applies the same rule. Legacy checkpoints
+without EMA fall back to their raw state either way.
+
+The stage record's `metrics` always describe `last.ckpt`. Periodic validation
+runs every `train.val_every` optimizer steps; when that cadence does not land
+on the stage's final step (or the stage is shorter than one interval), the final
+weights are validated once more after training so the recorded number is never
+an earlier checkpoint's.
 
 This yields two useful but different checkpoint choices:
 

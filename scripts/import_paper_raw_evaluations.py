@@ -310,7 +310,8 @@ def _validate_result(
     return result, result_hash
 
 
-def _comparison_markdown(rows: list[dict[str, Any]]) -> str:
+def _comparison_markdown(rows: list[dict[str, Any]], *, total_cells: int) -> str:
+    """Render the paired raw/EMA analysis; ``total_cells`` is the comparison's full cell count."""
     raw_wins = sum(row["delta_miou_points"] > 0 for row in rows)
     ema_wins = sum(row["delta_miou_points"] < 0 for row in rows)
     ties = len(rows) - raw_wins - ema_wins
@@ -348,9 +349,9 @@ def _comparison_markdown(rows: list[dict[str, Any]]) -> str:
         "These are single-seed descriptive differences, not confidence intervals or evidence "
         "of statistical significance. The higher-endpoint column carries the direction so the "
         "human-facing table does not use signed or error-bar notation.",
-        "The 36 paired cells are a selected subset: they are endpoints previously admitted "
-        "with EMA, generally architectures without running-stat BatchNorm. They do not form a "
-        "random sample of all 111 quality cells.",
+        f"The {len(rows)} paired cells are a selected subset: they are endpoints previously "
+        "admitted with EMA, generally architectures without running-stat BatchNorm. They do "
+        f"not form a random sample of all {total_cells} quality cells.",
         "",
         "## Summary",
         "",
@@ -525,7 +526,9 @@ def main() -> int:
     manifest_path = COMPARISON_ROOT / "raw-evaluation-manifest.json"
     analysis_path = COMPARISON_ROOT / "RAW_VS_EMA.md"
     planned[manifest_path] = json.dumps(manifest_payload, indent=2, sort_keys=True) + "\n"
-    planned[analysis_path] = _comparison_markdown(rows)
+    planned[analysis_path] = _comparison_markdown(
+        rows, total_cells=len(records) * len(campaign.REQUIRED_PROTOCOLS)
+    )
     planned[COMPARISON_ROOT / "paper-review-corrections.json"] = (
         json.dumps(review_corrections, indent=2, sort_keys=True) + "\n"
     )

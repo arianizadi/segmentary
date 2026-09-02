@@ -201,6 +201,10 @@ class SegLitModule(L.LightningModule):
 
         self._cm: ConfusionMatrix | None = None
         self._bf1: BoundaryF1 | None = None
+        # Optimizer step of the last *completed, non-sanity* validation epoch.
+        # Lightning's sanity check also runs the validation hooks, so the metric
+        # accumulators alone cannot tell a real validation from that dry run.
+        self._metrics_step: int | None = None
         self._train_started_monotonic: float | None = None
         self._training_samples = 0
         self._telemetry_start_step = 0
@@ -415,6 +419,11 @@ class SegLitModule(L.LightningModule):
         bf1.all_reduce()
         result = cm.compute()
         boundary = bf1.compute()
+        if self.trainer.sanity_checking:
+            # A one-batch dry run of the untrained model: never a stage result,
+            # and not worth a line in the log either.
+            return
+        self._metrics_step = int(self.global_step)
 
         self.log("val/miou", result.miou, prog_bar=True, sync_dist=False)
         self.log("val/macc", result.macc, sync_dist=False)
@@ -442,10 +451,23 @@ class SegLitModule(L.LightningModule):
                 )
                 print(f"\n[step {self.global_step}] thin-class IoU: {pairs}")
 
+    @property
+    def metrics_step(self) -> int | None:
+        """Optimizer step scored by :meth:`latest_metrics`; None before any validation."""
+        return self._metrics_step
+
     def latest_metrics(self) -> dict[str, Any]:
-        """Full metric dump for results.json, including the confusion matrix."""
-        if self._cm is None:
-            raise RuntimeError("latest_metrics() called before any validation ran")
+        """Full metric dump for results.json, including the confusion matrix.
+
+        Only a completed validation epoch counts. The sanity check populates the
+        same accumulators, and reporting it would record the untrained model's
+        one-batch score as the stage result.
+        """
+        if self._metrics_step is None:
+            raise RuntimeError(
+                "latest_metrics() has no completed validation to report; the run never "
+                "reached a validation step"
+            )
         cm, bf1 = self._metric_state()
         result = cm.compute()
         out = result.as_dict(list(self.space.names))
