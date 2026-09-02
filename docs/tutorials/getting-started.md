@@ -232,15 +232,17 @@ runs/first_run_seed0/
     step-00000200.ckpt
     ...
     results.json
-    lightning_logs/
-      version_0/
-        events.out.tfevents.*
+    tensorboard/
+      events.out.tfevents.*
+      hparams.yaml
 ```
 
 `last.ckpt` is explicitly saved after the trainer reaches its final configured
 step and includes optimizer/scheduler and EMA state. `best.ckpt` is selected by
 observed validation mIoU. Do not assume they represent the same step or selection
-policy.
+policy. The metrics in `results.json` always describe `last.ckpt`: if
+`train.val_every` does not divide the stage's iterations, the final weights are
+validated once more after training rather than reporting an earlier validation.
 
 Every `train.ckpt_every` optimizer steps, Segmentary also writes and retains a full
 `step-XXXXXXXX.ckpt` recovery snapshot. These improve recovery choices but can
@@ -253,13 +255,16 @@ with the checkpoint.
 
 ## 9. Evaluate an exact artifact
 
-Use the same config layers and state clearly whether you select EMA:
+Use the same config layers and state clearly which weights you score.
+`--auto-weights` applies the trainer's own rule (EMA unless the model carries
+running-statistic BatchNorm, in which case raw), so the number reproduces the
+in-training validation; `--ema` or no flag force one choice explicitly:
 
 ```bash
 segmentary-eval base.yaml model.yaml experiment.yaml \
   --ckpt runs/first_run_seed0/train_my_data/last.ckpt \
   --seed 0 \
-  --ema \
+  --auto-weights \
   --device cuda:0 \
   --out runs/first_run_seed0/eval_my_dataset_val/results.json
 ```

@@ -821,6 +821,115 @@ def test_lightning_full_state_resume_continues_optimizer_scheduler_ema_and_step(
     assert resumed.lr_scheduler_configs[0].scheduler.last_epoch == 4
 
 
+# ------------------------------------------------- final-step stage metrics
+
+
+class _StepDataset(Dataset):
+    """Eight deterministic 8x8 samples; enough for several optimizer steps."""
+
+    def __len__(self) -> int:
+        return 8
+
+    def __getitem__(self, index: int) -> dict[str, torch.Tensor]:
+        generator = torch.Generator().manual_seed(index)
+        return {
+            "image": torch.rand(3, 8, 8, generator=generator),
+            "mask": torch.randint(0, 3, (8, 8), generator=generator),
+        }
+
+
+def _metrics_module(seed: int, *, iters: int, val_every: int) -> SegLitModule:
+    space = SimpleNamespace(
+        name="metrics-test",
+        num_classes=3,
+        ignore_index=255,
+        names=("a", "b", "c"),
+        thin_classes=(),
+    )
+    train_cfg = TrainConfig(
+        iters=iters,
+        batch_size=1,
+        accum=1,
+        num_workers=0,
+        precision="32-true",
+        ema_decay=None,
+        val_every=val_every,
+        ckpt_every=iters,
+    )
+    return SegLitModule(
+        model=_tiny_model(seed, num_classes=3),
+        loss_fn=SegmentationLoss(LossConfig(), 3, 255),
+        space=space,
+        optim_cfg=OptimConfig(warmup_iters=0),
+        train_cfg=train_cfg,
+        eval_cfg=EvalConfig(sliding_window=False),
+        stage_name="stage",
+    )
+
+
+def _metrics_trainer(*, max_steps: int, val_check_interval: int) -> curriculum.L.Trainer:
+    return curriculum.L.Trainer(
+        accelerator="cpu",
+        devices=1,
+        max_steps=max_steps,
+        val_check_interval=val_check_interval,
+        check_val_every_n_epoch=None,
+        logger=False,
+        enable_checkpointing=False,
+        enable_progress_bar=False,
+        enable_model_summary=False,
+        num_sanity_val_steps=1,
+    )
+
+
+def test_sanity_check_metrics_are_never_reported_as_stage_metrics() -> None:
+    """A run too short to reach ``val_every`` has no validation result at all.
+
+    Lightning's sanity check runs the validation hooks on one batch of the
+    untrained model. Reporting that as the stage result would write a plausible
+    looking but meaningless mIoU into results.json.
+    """
+    module = _metrics_module(1, iters=1, val_every=4)
+    loader = DataLoader(_StepDataset(), batch_size=1)
+    trainer = _metrics_trainer(max_steps=1, val_check_interval=4)
+    trainer.fit(module, train_dataloaders=loader, val_dataloaders=loader)
+
+    assert module.metrics_step is None
+    with pytest.raises(RuntimeError, match="no completed validation"):
+        module.latest_metrics()
+
+
+def test_ensure_final_validation_scores_the_final_step_only_when_needed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """results.json metrics must describe ``last.ckpt``, not an earlier validation.
+
+    With iters=3 and val_every=2 the in-training validation last ran at step 2.
+    The stage must score the final step-3 weights before recording them, and
+    must not run a redundant validation when the final step was already scored.
+    """
+    module = _metrics_module(2, iters=3, val_every=2)
+    loader = DataLoader(_StepDataset(), batch_size=1)
+    trainer = _metrics_trainer(max_steps=3, val_check_interval=2)
+    trainer.fit(module, train_dataloaders=loader, val_dataloaders=loader)
+    assert module.metrics_step == 2
+
+    assert curriculum.ensure_final_validation(trainer, module, loader) == 3
+    assert module.metrics_step == 3
+    assert 0.0 <= module.latest_metrics()["miou"] <= 1.0
+
+    validations: list[int] = []
+    original = trainer.validate
+
+    def counting_validate(*args, **kwargs):
+        validations.append(1)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(trainer, "validate", counting_validate)
+    assert curriculum.ensure_final_validation(trainer, module, loader) == 3
+    assert validations == []
+
+
 # -------------------------------------------------------------- integration
 
 
@@ -935,9 +1044,7 @@ def test_real_two_stage_curriculum_threads_the_trained_backbone(
 
         saved = torch.load(checkpoint, map_location="cpu", weights_only=False)
         transfer["stage_one_raw"] = saved["state_dict"][f"model.{name}"].detach().clone()
-        transfer["stage_one_checkpoint"] = (
-            saved[EMA_CHECKPOINT_KEY]["params"][name].detach().clone()
-        )
+        transfer["stage_one_ema"] = saved[EMA_CHECKPOINT_KEY]["params"][name].detach().clone()
         transfer["stage_one_has_ema"] = EMA_CHECKPOINT_KEY in saved
         transfer["checkpoint_path"] = Path(checkpoint)
 
@@ -970,8 +1077,12 @@ def test_real_two_stage_curriculum_threads_the_trained_backbone(
         assert checkpoint[EMA_CHECKPOINT_KEY]["num_updates"] == stage.iters
     assert transfer["checkpoint_path"] == results[0].checkpoint
     assert transfer["stage_one_has_ema"]
-    assert torch.equal(transfer["loaded_stage_two"], transfer["stage_one_checkpoint"])
-    assert not torch.equal(transfer["loaded_stage_two"], transfer["stage_one_raw"])
+    # SegFormer's decode head carries running-stat BatchNorm, so both in-training
+    # validation and the stage hand-off deliberately use the raw weights: the EMA
+    # shadow has no separately recalibrated BN statistics (see ema_evaluation_safe).
+    # The shadow must still have moved, or the checkpoint carried no EMA at all.
+    assert torch.equal(transfer["loaded_stage_two"], transfer["stage_one_raw"])
+    assert not torch.equal(transfer["stage_one_ema"], transfer["stage_one_raw"])
     assert not torch.equal(transfer["fresh_stage_two"], transfer["loaded_stage_two"])
 
     stage_two_state = torch.load(results[1].checkpoint, map_location="cpu", weights_only=False)[
@@ -980,12 +1091,13 @@ def test_real_two_stage_curriculum_threads_the_trained_backbone(
     stage_two_final = stage_two_state[f"model.{transfer['parameter_name']}"]
     assert not torch.equal(stage_two_final, transfer["loaded_stage_two"])
 
-    # Re-run the exact stage-one validation externally from the persisted EMA.
-    # This closes the loop between Lightning validation, checkpoint save, and
-    # the standalone evaluator instead of comparing unrelated sample sizes.
+    # Re-run the exact stage-one validation externally with the same weight
+    # selection rule the trainer used (raw for this BatchNorm model). This closes
+    # the loop between Lightning validation, checkpoint save, and the standalone
+    # evaluator instead of comparing unrelated sample sizes.
     config_path = tmp_path / "resolved.yaml"
     config_path.write_text(yaml.safe_dump(to_dict(cfg)))
-    eval_path = tmp_path / "ema-eval.json"
+    eval_path = tmp_path / "auto-weights-eval.json"
     assert (
         eval_module.main(
             [
@@ -994,7 +1106,7 @@ def test_real_two_stage_curriculum_threads_the_trained_backbone(
                 str(results[0].checkpoint),
                 "--stage",
                 "cityscapes",
-                "--ema",
+                "--auto-weights",
                 "--out",
                 str(eval_path),
                 "--device",
@@ -1004,4 +1116,5 @@ def test_real_two_stage_curriculum_threads_the_trained_backbone(
         == 0
     )
     eval_record = json.loads(eval_path.read_text())
+    assert eval_record["config"]["evaluation"]["weights"] == "raw"
     assert eval_record["metrics"]["miou"] == pytest.approx(results[0].metrics["miou"], abs=1e-7)

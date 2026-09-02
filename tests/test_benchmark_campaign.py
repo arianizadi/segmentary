@@ -1542,6 +1542,59 @@ def test_transfer_reporting_accepts_only_verified_20k_final() -> None:
     assert campaign._transfer_final(invalid) == {}
 
 
+def test_transfer_provenance_disclosure_counts_physical_models_once(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The README disclosure counts transfer cells per physical model, in the right number.
+
+    ``deeplabv3plus_r101`` is an alias record deep-copied from
+    ``smp_deeplabv3plus_resnet101``; one physical run lacking its City40 source
+    hash must read as one cell, in the singular, not as two.
+    """
+    record = _record(tmp_path, monkeypatch)
+    manifest = campaign.load_campaign_manifest()
+    monkeypatch.setattr(campaign, "_model_execution_states", lambda _record: {})
+    status = campaign._comparison_status(manifest, {}, record)
+
+    transfer_without_source = {"protocols": {"cityscapes_to_railsem19": {"status": "complete"}}}
+    records = {
+        "smp_deeplabv3plus_resnet101": copy.deepcopy(transfer_without_source),
+        "deeplabv3plus_r101": copy.deepcopy(transfer_without_source),
+    }
+    readme = campaign._central_readme(manifest, status, records, SHA)
+
+    assert "- 1 completed transfer cell lacks the retained City40 source-checkpoint hash." in readme
+    assert "withheld for that cell." in readme
+    assert "transfer cells lack" not in readme
+
+    records["native_convnext_tiny_uper"] = copy.deepcopy(transfer_without_source)
+    readme = campaign._central_readme(manifest, status, records, SHA)
+    assert "- 2 completed transfer cells lack the retained City40 source-checkpoint hash." in readme
+    assert "withheld for those cells." in readme
+
+
+def test_raw_versus_ema_markdown_reports_the_actual_cell_counts() -> None:
+    from scripts import import_paper_raw_evaluations as importer
+
+    rows = [
+        {
+            "model_id": f"model_{index}",
+            "protocol": "railsem19",
+            "raw_miou": 0.70 + index / 100,
+            "ema_miou": 0.69 + index / 100,
+            "delta_miou_points": 1.0,
+            "checkpoint_sha256": "c" * 64,
+        }
+        for index in range(2)
+    ]
+    markdown = importer._comparison_markdown(rows, total_cells=114)
+    assert "The 2 paired cells are a selected subset" in markdown
+    assert "random sample of all 114 quality cells" in markdown
+    assert "36 paired cells" not in markdown
+    assert "111" not in markdown
+
+
 def test_public_weight_source_rejects_legacy_unverified_ema_label() -> None:
     assert campaign._recorded_evaluation_weights({"evaluation": {"weights": "raw"}}) == "raw"
     assert campaign._recorded_evaluation_weights({"evaluation": {"weights": "ema"}}) == "ema"

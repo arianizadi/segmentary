@@ -62,9 +62,12 @@ not your learning rate. Finding that out takes a minute instead of a weekend.
 segmentary-train base.yaml model.yaml experiment.yaml --seed 0
 
 segmentary-eval base.yaml model.yaml experiment.yaml \
-  --ckpt runs/first_run_seed0/train_my_data/last.ckpt --ema \
+  --ckpt runs/first_run_seed0/train_my_data/last.ckpt --auto-weights \
   --out runs/first_run_seed0/eval_val/results.json
 ```
+
+`--auto-weights` scores the same weights the trainer validated (EMA, or raw for
+models with running-statistic BatchNorm); `--ema` forces the EMA shadow.
 
 ## How a run flows
 

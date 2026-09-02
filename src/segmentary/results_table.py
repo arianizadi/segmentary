@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """Generate reproducible benchmark tables from runs/**/results.json.
 
-Emits markdown and CSV. Runs differing only in seed are aggregated into
-mean +/- std, because single-seed segmentation deltas under ~1 mIoU are noise and
-staged-transfer effects land right in that band.
+Emits markdown and CSV. Runs differing only in seed are aggregated into one mean
+per metric (the seed count is its own column), because single-seed segmentation
+deltas under ~1 mIoU are noise and staged-transfer effects land right in that
+band. Per-seed values stay in the individual results.json records.
 
     segmentary-table --runs runs --out reports
 """

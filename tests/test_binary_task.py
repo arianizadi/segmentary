@@ -530,7 +530,9 @@ def _write_pair(root: Path, split: str, key: str, *, phase: int) -> None:
     Image.fromarray(mask, mode="L").save(mask_path)
 
 
-def _write_binary_project(tmp_path: Path) -> tuple[Path, Path, Path]:
+def _write_binary_project(
+    tmp_path: Path, *, train: dict[str, object] | None = None
+) -> tuple[Path, Path, Path]:
     taxonomy = tmp_path / "taxonomy"
     space_root = taxonomy / "binary"
     space_root.mkdir(parents=True)
@@ -605,6 +607,7 @@ def _write_binary_project(tmp_path: Path) -> tuple[Path, Path, Path]:
                     "ema_decay": None,
                     "val_every": 1,
                     "ckpt_every": 1,
+                    **(train or {}),
                 },
                 "eval": {
                     "sliding_window": False,
@@ -750,6 +753,69 @@ def test_segmentary_train_runs_binary_folder_curriculum_on_cpu(
     }
     assert eval_record["git_sha"] == expected_sha
     assert eval_record["git_dirty"] is expected_dirty
+
+
+def test_train_scores_the_final_step_when_val_every_does_not_divide_iters(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """results.json must describe last.ckpt even when the cadence misses the end.
+
+    With iters=3 and val_every=2 the periodic validation last ran at step 2. The
+    stage record is written for the step-3 checkpoint, so it must carry a
+    step-3 validation: the TensorBoard stream shows both validations and a
+    standalone evaluation of last.ckpt reproduces the recorded mIoU exactly.
+    """
+    torch.manual_seed(12)
+    config_path, _, _ = _write_binary_project(
+        tmp_path, train={"iters": 3, "val_every": 2, "ckpt_every": 3}
+    )
+    repo_root = Path(__file__).resolve().parents[1]
+    monkeypatch.chdir(repo_root)
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+
+    assert train_module.main([str(config_path), "--devices", "1"]) == 0
+
+    cfg = load_experiment([config_path])
+    run_dir = Path(cfg.output_root) / f"{cfg.name}_seed{cfg.train.seed}" / "train"
+    checkpoint_path = run_dir / "last.ckpt"
+    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    assert checkpoint["global_step"] == 3
+
+    from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+
+    # The final-step validation runs after Trainer.fit, so it lands in a second
+    # event file of the same stage directory; TensorBoard and the progress
+    # dashboard merge those by step, and so does this check.
+    validations = []
+    for event_file in sorted((run_dir / "tensorboard").glob("events.out.tfevents*")):
+        events = EventAccumulator(str(event_file), size_guidance={"scalars": 0})
+        events.Reload()
+        if "val/miou" in events.Tags()["scalars"]:
+            validations.extend(events.Scalars("val/miou"))
+    assert len(validations) == 2
+    assert max(scalar.step for scalar in validations) == 3
+
+    eval_results = tmp_path / "eval" / "results.json"
+    assert (
+        eval_module.main(
+            [
+                str(config_path),
+                "--ckpt",
+                str(checkpoint_path),
+                "--device",
+                "cpu",
+                "--num-workers",
+                "0",
+                "--out",
+                str(eval_results),
+            ]
+        )
+        == 0
+    )
+    recorded = json.loads((run_dir / "results.json").read_text(encoding="utf-8"))["metrics"]
+    evaluated = json.loads(eval_results.read_text(encoding="utf-8"))["metrics"]
+    assert recorded["miou"] == evaluated["miou"]
+    assert recorded["confusion"] == evaluated["confusion"]
 
 
 def test_binary_checkpoint_cannot_load_into_two_logit_multiclass_model(tmp_path: Path) -> None:

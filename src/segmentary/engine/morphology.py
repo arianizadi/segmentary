@@ -44,7 +44,15 @@ def _morph(mask: Tensor, radius: int, erode: bool) -> Tensor:
     x = mask.to(torch.bool).to(torch.float32).reshape(-1, 1, h, w)
     if erode:
         x = -x
-    out = F.max_pool2d(x, kernel_size=2 * radius + 1, stride=1, padding=radius)
+    # A square structuring element is separable: the max over a (k x k) window
+    # is the max over rows of the max over columns. Two 1-D passes cost 2k
+    # comparisons per pixel instead of k^2, which at the 17 px tolerance used
+    # for Cityscapes-sized frames is a ~17x cheaper contour metric. max_pool2d
+    # excludes padded positions from both passes, so the border semantics are
+    # exactly those of the single 2-D window.
+    size = 2 * radius + 1
+    out = F.max_pool2d(x, kernel_size=(size, 1), stride=1, padding=(radius, 0))
+    out = F.max_pool2d(out, kernel_size=(1, size), stride=1, padding=(0, radius))
     if erode:
         out = -out
     return (out > 0.5).reshape(mask.shape)

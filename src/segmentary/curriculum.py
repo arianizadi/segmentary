@@ -223,6 +223,27 @@ def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[Callbac
     return [best, periodic]
 
 
+def ensure_final_validation(trainer: L.Trainer, lit: SegLitModule, val_loader) -> int:
+    """Make the stage metrics describe the final weights, i.e. ``last.ckpt``.
+
+    Periodic validation runs every ``val_every`` optimizer steps, so when that
+    cadence does not divide the stage budget (or the budget is shorter than one
+    interval) the last completed validation scored an earlier checkpoint. The
+    record written for ``last.ckpt`` must not carry that number, so the final
+    weights are scored once more here. Runs whose final step was already
+    validated pay nothing.
+    """
+    final_step = int(trainer.global_step)
+    if lit.metrics_step != final_step:
+        trainer.validate(lit, dataloaders=val_loader, verbose=False)
+    if lit.metrics_step != final_step:
+        raise RuntimeError(
+            f"final validation scored step {lit.metrics_step!r} instead of the stage's "
+            f"final optimizer step {final_step}; refusing to record mismatched metrics"
+        )
+    return final_step
+
+
 def _validation_batch_interval(train_cfg: TrainConfig) -> int:
     """Translate the public optimizer-step cadence to Lightning train batches.
 
@@ -574,6 +595,7 @@ def run_stage(
             weights_only=False if resume_checkpoint is not None else None,
         )
         final_checkpoint = _save_final_checkpoint(trainer, out_dir)
+        ensure_final_validation(trainer, lit, val_loader)
 
     train_dataset = as_dataset(train_loader.dataset)
     if timer.started_at is None:

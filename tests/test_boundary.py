@@ -18,7 +18,7 @@ import numpy as np
 import pytest
 import torch
 from PIL import Image
-from scipy.ndimage import binary_erosion, distance_transform_cdt
+from scipy.ndimage import binary_dilation, binary_erosion, distance_transform_cdt
 
 from segmentary.engine.boundary import (
     BoundaryConfig,
@@ -562,3 +562,25 @@ def test_morphology_thresholds_consistently_at_every_radius():
     assert bool(dilate(x, 0)[2, 2])
     assert bool(dilate(x, 1)[2, 2]) and int(dilate(x, 1).sum()) == 9
     assert bool(erode(torch.full((5, 5), 0.3), 1).all())
+
+
+@pytest.mark.parametrize("radius", [1, 3, 8, 17])
+def test_morphology_matches_scipy_square_structuring_element(radius: int):
+    """dilate/erode are exactly a (2r+1)^2 square, at the radii evaluation uses.
+
+    17 px is the tolerance at Cityscapes resolution, far beyond the hand-checked
+    5x5 cases above. Erosion treats the outside of the frame as foreground, so
+    the SciPy reference is called with ``border_value=1``. The batched (C, H, W)
+    form must dilate every plane independently.
+    """
+    generator = torch.Generator().manual_seed(radius)
+    planes = torch.rand(3, 48, 80, generator=generator) > 0.93
+    structure = np.ones((2 * radius + 1, 2 * radius + 1), dtype=bool)
+    for plane in planes:
+        expected_dilate = binary_dilation(plane.numpy(), structure=structure)
+        expected_erode = binary_erosion(plane.numpy(), structure=structure, border_value=1)
+        assert np.array_equal(dilate(plane, radius).numpy(), expected_dilate)
+        assert np.array_equal(erode(plane, radius).numpy(), expected_erode)
+    batched = dilate(planes, radius)
+    assert batched.shape == planes.shape
+    assert all(torch.equal(batched[i], dilate(planes[i], radius)) for i in range(3))
