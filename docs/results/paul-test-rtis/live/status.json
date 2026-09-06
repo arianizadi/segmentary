@@ -462,7 +462,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2449,
+      "observed_step": 2499,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -472,7 +472,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2599,
+      "observed_step": 2649,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -482,7 +482,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2749,
+      "observed_step": 2799,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -492,7 +492,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2499,
+      "observed_step": 2545,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -502,7 +502,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2549,
+      "observed_step": 2599,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -510,9 +510,9 @@
       "model": "eomt_dinov3_large",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2545,
+      "status": "collecting",
+      "final_step": 2545,
+      "observed_step": null,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -522,7 +522,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2349,
+      "observed_step": 2399,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -532,7 +532,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2349,
+      "observed_step": 2399,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -540,7 +540,7 @@
       "model": "eomt_dinov3_large",
       "protocol": "railsem19_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2290,
       "observed_step": null,
       "record": "models/eomt_dinov3_large/record.json"
@@ -552,7 +552,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1699,
+      "observed_step": 1749,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -560,7 +560,7 @@
       "model": "eomt_dinov3_large",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/eomt_dinov3_large/record.json"
