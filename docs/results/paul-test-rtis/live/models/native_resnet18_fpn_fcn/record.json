@@ -636,6 +636,27 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.5048704147338867
+          },
+          {
+            "step": 99,
+            "value": 1.9203342199325562
+          },
+          {
+            "step": 149,
+            "value": 1.4595627784729004
+          },
+          {
+            "step": 199,
+            "value": 1.0880156755447388
+          }
+        ]
+      },
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -649,7 +670,10 @@
       "config_sha256": "466b98d6641d312ffd624338d12a238017362f7b3e710df4d3617411606d0a07",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-06T21:10:33.757958+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_resnet18_fpn_fcn--rtis_only--seed-1",
         "model": {
