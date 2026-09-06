@@ -5111,7 +5111,8 @@
             "value": 0.5615444183349609
           }
         ]
-      }
+      },
+      "checkpoint_bytes_removed": 20264224741
     },
     {
       "name": "hf_auto_beit_base_ade--rtis_only--seed-0",
@@ -5184,9 +5185,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 0,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-06T02:58:13.771564+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilenetv2_deeplabv3--rtis_only--seed-0",
