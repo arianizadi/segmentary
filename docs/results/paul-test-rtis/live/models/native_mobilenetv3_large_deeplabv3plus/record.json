@@ -631,6 +631,23 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.5572285652160645
+          },
+          {
+            "step": 99,
+            "value": 1.3399732112884521
+          },
+          {
+            "step": 149,
+            "value": 2.7193899154663086
+          }
+        ]
+      },
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -812,6 +829,19 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.561039924621582
+          },
+          {
+            "step": 99,
+            "value": 2.923208713531494
+          }
+        ]
+      },
+      "observed_step": 99,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -825,7 +855,10 @@
       "config_sha256": "d3de1f56ce92e212460a55a53a966010a0b1f70c43b7c354b2976685d40b0cb4",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 8,
+      "started_at": "2026-09-06T19:28:19.974863+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_mobilenetv3_large_deeplabv3plus--rtis_only--seed-2",
         "model": {
