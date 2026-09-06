@@ -23,7 +23,8 @@ The viewer supports ground-truth-only bundles, one or many models, single-model
 overlays, side-by-side comparisons, disagreement views, pixel hover labels,
 and per-scene metrics. Use **Focus class** to isolate a defect such as mud-pumping,
 **Overlay** to reveal the original image, and **Zoom** to magnify it. Scroll within
-a zoomed image to pan. Display filters and zoom do not alter metrics.
+a zoomed image to pan. In Compare mode, panning either image automatically
+synchronizes the other horizontally and vertically, including on narrow screens. Display filters and zoom do not alter metrics.
 Scene navigation shows original frame names, including nested dataset groups.
 
 ## Prepare a bundle from existing masks

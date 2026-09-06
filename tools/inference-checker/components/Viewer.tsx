@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo, type UIEvent } from "react";
 import { Activity, ChevronLeft, ChevronRight, HelpCircle, X, AlertTriangle } from "lucide-react";
 import MaskCanvas from "./MaskCanvas";
 import DiffCanvas from "./DiffCanvas";
@@ -135,6 +135,22 @@ export default function Viewer({ scenes, config, setupError }: ViewerProps) {
     },
     []
   );
+
+  // Scroll positions are DOM-only: panning must not rerender full-resolution masks.
+  const syncCompareScroll = useCallback((event: UIEvent<HTMLDivElement>) => {
+    const source = event.target;
+    if (!(source instanceof HTMLDivElement) || !source.classList.contains("canvas-scroll")) return;
+    const x = source.scrollLeft / Math.max(1, source.scrollWidth - source.clientWidth);
+    const y = source.scrollTop / Math.max(1, source.scrollHeight - source.clientHeight);
+    event.currentTarget.querySelectorAll<HTMLDivElement>(".canvas-scroll").forEach(target => {
+      if (target === source) return;
+      const left = x * (target.scrollWidth - target.clientWidth);
+      const top = y * (target.scrollHeight - target.clientHeight);
+      // Subpixel tolerance prevents scroll events from echoing between panes.
+      if (Math.abs(target.scrollLeft - left) > 1) target.scrollLeft = left;
+      if (Math.abs(target.scrollTop - top) > 1) target.scrollTop = top;
+    });
+  }, []);
 
   const toggleClass = useCallback((classIndex: number) => {
     setHiddenClasses((prev) => {
@@ -272,7 +288,7 @@ export default function Viewer({ scenes, config, setupError }: ViewerProps) {
       </div>
       {(statsRequestError || statsErrors.length > 0) && <div className="error-strip" role="alert">{statsRequestError}{statsErrors.map(e => <p key={e.modelName}>{e.modelName}: {e.message}</p>)}<button onClick={retryStats}>Retry metrics</button></div>}
       <div className="inspection-workspace">
-        <div className={`image-workspace ${mode === "sideBySide" ? "compare-workspace" : ""}`}>
+        <div onScrollCapture={mode === "sideBySide" ? syncCompareScroll : undefined} className={`image-workspace ${mode === "sideBySide" ? "compare-workspace" : ""}`}>
           {mode === "single" && maskPane(safeSelectedIndex, currentModel.isGroundTruth ? "REFERENCE" : "PREDICTION")}
           {mode === "sideBySide" && <>{maskPane(safeLeftIndex, "LEFT")}{maskPane(safeRightIndex, "RIGHT")}</>}
           {mode === "diff" && <section className="image-pane"><div className="pane-heading diff-key"><span><i style={{background:'#00c850'}}/>Agree + correct</span><span><i style={{background:'#ffa500'}}/>Agree + wrong</span><span><i style={{background:'#dc2828'}}/>Disagree</span></div>
