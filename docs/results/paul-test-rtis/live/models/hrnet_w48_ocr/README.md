@@ -6,12 +6,12 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hrnet_w48_ocr | rtis_only | 0 | training | 849 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | rtis_only | 1 | training | 508 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | rtis_only | 2 | training | 399 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | cityscapes_to_rtis | 0 | training | 399 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | cityscapes_to_rtis | 1 | training | 349 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | cityscapes_to_rtis | 2 | training | 349 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 0 | training | 949 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 1 | training | 599 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 2 | training | 508 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | cityscapes_to_rtis | 0 | training | 499 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | cityscapes_to_rtis | 1 | training | 449 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | cityscapes_to_rtis | 2 | training | 399 | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -565,6 +565,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 21.70 | 0.09 |
+| 508 | 23.51 | 0.27 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
