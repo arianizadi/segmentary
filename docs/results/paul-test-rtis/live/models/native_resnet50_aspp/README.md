@@ -13,10 +13,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | native_resnet50_aspp | cityscapes_to_rtis | 1 | completed | 2290 | 1018 | 4.17 | 7.10 | 9.18 | 1.50 | 25.71 | 30.00 |
 | native_resnet50_aspp | cityscapes_to_rtis | 2 | completed | 1781 | 509 | 3.60 | 4.18 | 20.60 | 1.04 | 22.93 | 26.75 |
 | native_resnet50_aspp | railsem19_to_rtis | 0 | completed | 1781 | 509 | 2.90 | 3.64 | 12.55 | 0.13 | 32.05 | 37.39 |
-| native_resnet50_aspp | railsem19_to_rtis | 1 | training | 3249 | — | — | — | — | — | — | — |
+| native_resnet50_aspp | railsem19_to_rtis | 1 | training | 3349 | — | — | — | — | — | — | — |
 | native_resnet50_aspp | railsem19_to_rtis | 2 | completed | 1781 | 509 | 1.17 | 1.76 | 3.34 | 0.66 | 32.41 | 37.82 |
 | native_resnet50_aspp | cityscapes_to_railsem19_to_rtis | 0 | completed | 1781 | 509 | 2.02 | 2.50 | 9.49 | 0.14 | 30.12 | 35.14 |
-| native_resnet50_aspp | cityscapes_to_railsem19_to_rtis | 1 | training | 2249 | — | — | — | — | — | — | — |
+| native_resnet50_aspp | cityscapes_to_railsem19_to_rtis | 1 | training | 2349 | — | — | — | — | — | — | — |
 | native_resnet50_aspp | cityscapes_to_railsem19_to_rtis | 2 | completed | 1781 | 509 | 1.53 | 2.00 | 6.09 | 0.44 | 32.32 | 37.71 |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
@@ -4806,6 +4806,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2545 | 32.29 | 1.60 |
 | 2799 | 32.20 | 0.71 |
 | 3054 | 31.97 | 1.45 |
+| 3308 | 32.07 | 0.81 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -6415,6 +6416,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1527 | 31.39 | 0.95 |
 | 1781 | 33.05 | 0.69 |
 | 2036 | 30.90 | 0.30 |
+| 2290 | 32.04 | 0.79 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
