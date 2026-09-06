@@ -35,6 +35,11 @@ run full training
 evaluate an exact checkpoint
 ```
 
+## Inspect predictions visually
+
+[Bundled Inference Checker](guides/inference-checker.md): open images, annotations,
+and saved predictions with `./scripts/inspect.sh /path/to/bundle`.
+
 ## Bring your own data or model
 
 - [paul-test-rtis dataset](datasets/paul-test-rtis/README.md) explains the prepared

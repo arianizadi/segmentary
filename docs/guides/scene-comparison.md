@@ -91,3 +91,12 @@ scenes without Segmentary `scene.json`: those artifacts use RailSem native IDs,
 whose ordering differs from canonical `rail_union`. The exporter rejects that
 mixture. Commit only an explicitly approved small example whose redistribution
 terms are known. Check `git status --short` before every push.
+
+## Open the exported bundle
+
+```bash
+./scripts/inspect.sh /artifacts/empty-canonical-comparison
+```
+
+See [Inference Checker](inference-checker.md) for installation, image/mask packaging,
+class filtering, zoom, and original-tool compatibility.

@@ -1,0 +1,33 @@
+name: inference-checker
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/inference-checker/**'
+      - 'scripts/inspect.sh'
+      - '.github/workflows/viewer.yml'
+  pull_request:
+    paths:
+      - 'tools/inference-checker/**'
+      - 'scripts/inspect.sh'
+      - '.github/workflows/viewer.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  viewer:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/inference-checker
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.0'
+      - run: bun install --frozen-lockfile
+      - run: bun run test
+      - run: bun run lint
+      - run: bun run build

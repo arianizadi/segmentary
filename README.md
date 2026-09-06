@@ -69,6 +69,19 @@ segmentary-eval base.yaml model.yaml experiment.yaml \
 `--auto-weights` scores the same weights the trainer validated (EMA, or raw for
 models with running-statistic BatchNorm); `--ema` forces the EMA shadow.
 
+## Inspect images and masks
+
+The original Inference Checker is bundled in this repository. With [Bun](https://bun.sh/)
+installed, open an existing comparison bundle with one command:
+
+```bash
+./scripts/inspect.sh /path/to/bundle
+```
+
+Compare ground truth and saved predictions, isolate classes, zoom, and inspect
+pixel-level differences. No GPU is required. See the [viewer guide](docs/guides/inference-checker.md)
+to prepare a bundle from your images and masks.
+
 ## How a run flows
 
 <p align="center">

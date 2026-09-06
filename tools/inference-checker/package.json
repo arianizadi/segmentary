@@ -1,0 +1,42 @@
+{
+  "name": "inference-checker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "bun test",
+    "inspect": "bun scripts/inspect.ts"
+  },
+  "dependencies": {
+    "framer-motion": "^12.43.0",
+    "gsap": "^3.15.0",
+    "lucide-react": "^0.577.0",
+    "next": "16",
+    "pngjs": "^7.0.0",
+    "react": "19",
+    "react-dom": "19"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/bun": "^1.4.1",
+    "@types/node": "^20.19.43",
+    "@types/pngjs": "^6.0.5",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3"
+  },
+  "ignoreScripts": [
+    "sharp",
+    "unrs-resolver"
+  ],
+  "trustedDependencies": [
+    "sharp",
+    "unrs-resolver"
+  ]
+}

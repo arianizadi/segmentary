@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 from urllib.parse import unquote
@@ -9,6 +10,31 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 MARKDOWN_LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 SKIP_SCHEMES = ("http://", "https://", "mailto:", "data:")
+
+
+def _repository_files():
+    """Prune generated environments before walking the mixed Python/JS repo."""
+    ignored = {
+        ".git",
+        ".venv",
+        "venv",
+        "node_modules",
+        ".next",
+        "build",
+        "dist",
+        "runs",
+        "artifacts",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".mypy_cache",
+        "__pycache__",
+    }
+    for root, directories, files in os.walk(ROOT):
+        directories[:] = [
+            d for d in directories if d not in ignored and not d.endswith(".egg-info")
+        ]
+        for name in files:
+            yield Path(root) / name
 
 
 def _local_target(document: Path, raw_target: str) -> Path | None:
@@ -26,7 +52,7 @@ def _local_target(document: Path, raw_target: str) -> Path | None:
 
 def test_every_repository_markdown_link_has_a_local_target() -> None:
     missing: list[str] = []
-    documents = sorted(ROOT.rglob("*.md"))
+    documents = sorted(p for p in _repository_files() if p.suffix == ".md")
     assert len(documents) >= 80  # catches an accidentally omitted docs tree
 
     for document in documents:
@@ -62,7 +88,7 @@ def test_legacy_brand_only_appears_in_immutable_or_explicitly_archived_records()
     allowed.update(path.relative_to(ROOT) for path in (ROOT / "docs/benchmarks").rglob("*.json"))
 
     stale: list[str] = []
-    for path in sorted(ROOT.rglob("*")):
+    for path in sorted(_repository_files()):
         if not path.is_file() or any(part == ".git" for part in path.parts):
             continue
         relative = path.relative_to(ROOT)
