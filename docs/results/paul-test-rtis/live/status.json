@@ -792,7 +792,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2149,
+      "observed_step": 2199,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -802,7 +802,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1999,
+      "observed_step": 2049,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -810,7 +810,7 @@
       "model": "hf_auto_beit_base_ade",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "evaluating",
+      "status": "collecting",
       "final_step": 1781,
       "observed_step": null,
       "record": "models/hf_auto_beit_base_ade/record.json"
@@ -832,7 +832,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1799,
+      "observed_step": 1849,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -842,7 +842,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1749,
+      "observed_step": 1799,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -852,7 +852,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 699,
+      "observed_step": 763,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -862,7 +862,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 299,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -872,7 +872,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 49,
+      "observed_step": 149,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
