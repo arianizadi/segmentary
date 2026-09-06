@@ -1960,7 +1960,7 @@
       "model": "native_mobilenetv3_large_deeplabv3plus",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2800,
       "observed_step": null,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
@@ -1972,7 +1972,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2749,
+      "observed_step": 2849,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -1980,7 +1980,7 @@
       "model": "native_mobilenetv3_large_deeplabv3plus",
       "protocol": "railsem19_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2036,
       "observed_step": null,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
@@ -1992,7 +1992,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1799,
+      "observed_step": 1949,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -2000,9 +2000,9 @@
       "model": "native_mobilenetv3_large_deeplabv3plus",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1699,
+      "status": "collecting",
+      "final_step": 1781,
+      "observed_step": null,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -2012,7 +2012,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1649,
+      "observed_step": 1799,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -2022,7 +2022,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 1249,
       "record": "models/native_mobilenetv3_large_lraspp/record.json"
     },
     {
@@ -2032,7 +2032,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1049,
+      "observed_step": 1149,
       "record": "models/native_mobilenetv3_large_lraspp/record.json"
     },
     {
@@ -2042,7 +2042,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 699,
+      "observed_step": 799,
       "record": "models/native_mobilenetv3_large_lraspp/record.json"
     },
     {
@@ -2052,7 +2052,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 549,
+      "observed_step": 649,
       "record": "models/native_mobilenetv3_large_lraspp/record.json"
     },
     {
@@ -2060,7 +2060,7 @@
       "model": "native_mobilenetv3_large_lraspp",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/native_mobilenetv3_large_lraspp/record.json"
@@ -2070,7 +2070,7 @@
       "model": "native_mobilenetv3_large_lraspp",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/native_mobilenetv3_large_lraspp/record.json"
