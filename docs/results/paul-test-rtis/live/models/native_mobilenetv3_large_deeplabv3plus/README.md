@@ -13,11 +13,11 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | native_mobilenetv3_large_deeplabv3plus | cityscapes_to_rtis | 1 | completed | 1781 | 1781 | 0.24 | 0.30 | 1.15 | 0.24 | 27.14 | 31.66 |
 | native_mobilenetv3_large_deeplabv3plus | cityscapes_to_rtis | 2 | completed | 2290 | 2290 | 0.52 | 0.68 | 2.18 | 0.52 | 27.81 | 32.45 |
 | native_mobilenetv3_large_deeplabv3plus | railsem19_to_rtis | 0 | completed | 2800 | 1527 | 1.90 | 2.16 | 13.52 | 0.37 | 36.09 | 42.11 |
-| native_mobilenetv3_large_deeplabv3plus | railsem19_to_rtis | 1 | training | 3099 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | railsem19_to_rtis | 1 | training | 3199 | — | — | — | — | — | — | — |
 | native_mobilenetv3_large_deeplabv3plus | railsem19_to_rtis | 2 | completed | 2036 | 763 | 0.92 | 1.13 | 4.93 | 0.46 | 33.17 | 36.85 |
-| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 0 | training | 2149 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 0 | training | 2299 | — | — | — | — | — | — | — |
 | native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 1 | completed | 1781 | 509 | 1.43 | 1.74 | 7.65 | 0.42 | 27.08 | 31.60 |
-| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 2 | training | 2036 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 2 | training | 2149 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -5759,6 +5759,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1527 | 33.74 | 0.99 |
 | 1781 | 35.50 | 0.52 |
 | 2036 | 34.25 | 0.36 |
+| 2290 | 34.79 | 0.04 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
