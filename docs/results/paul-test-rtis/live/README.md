@@ -22,10 +22,10 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | completed | 1527 | 1527 | 10.26 | 13.26 | 31.21 | 10.26 | 50.69 | 53.50 |
 | [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | completed | 1781 | 1018 | 4.40 | 5.81 | 15.31 | 3.64 | 53.74 | 59.71 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | completed | 1527 | 763 | 13.33 | 16.58 | 40.49 | 14.81 | 58.34 | 58.34 |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | training | 3249 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | training | 3249 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | training | 2249 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | training | 1999 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | training | 3499 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | training | 3499 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | training | 2499 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | training | 2249 | — | — | — | — | — | — | — |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | rtis_only | completed | 3054 | 2290 | 0.42 | 0.61 | 1.36 | 3.66 | 22.18 | 24.64 |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | cityscapes_to_rtis | completed | 1781 | 1018 | 1.38 | 2.59 | 2.86 | 1.67 | 21.79 | 23.00 |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | railsem19_to_rtis | completed | 1272 | 509 | 2.29 | 2.68 | 13.43 | 2.34 | 25.51 | 26.93 |
