@@ -463,7 +463,10 @@
       "config_sha256": "cafd5725061f6ed6e811214da72ab823acf0150a80142583709a67f2664cbb2f",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-06T09:01:24.653383+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hf_auto_mobilenetv2_deeplabv3--rtis_only--seed-0",
         "model": {
