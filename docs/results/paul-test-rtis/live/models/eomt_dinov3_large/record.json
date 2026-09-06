@@ -610,6 +610,27 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 7.753340721130371
+          },
+          {
+            "step": 99,
+            "value": 5.079527854919434
+          },
+          {
+            "step": 149,
+            "value": 3.279186725616455
+          },
+          {
+            "step": 199,
+            "value": 4.263979434967041
+          }
+        ]
+      },
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -770,6 +791,27 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 7.675649642944336
+          },
+          {
+            "step": 99,
+            "value": 7.16680383682251
+          },
+          {
+            "step": 149,
+            "value": 5.435059547424316
+          },
+          {
+            "step": 199,
+            "value": 4.100440979003906
+          }
+        ]
+      },
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -930,6 +972,27 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 9.024593353271484
+          },
+          {
+            "step": 99,
+            "value": 7.409867286682129
+          },
+          {
+            "step": 149,
+            "value": 4.534544467926025
+          },
+          {
+            "step": 199,
+            "value": 4.206636428833008
+          }
+        ]
+      },
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1098,6 +1161,27 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 10.448762893676758
+          },
+          {
+            "step": 99,
+            "value": 6.342921733856201
+          },
+          {
+            "step": 149,
+            "value": 5.301624774932861
+          },
+          {
+            "step": 199,
+            "value": 5.355180740356445
+          }
+        ]
+      },
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1266,6 +1350,27 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 9.090191841125488
+          },
+          {
+            "step": 99,
+            "value": 8.043458938598633
+          },
+          {
+            "step": 149,
+            "value": 4.795013904571533
+          },
+          {
+            "step": 199,
+            "value": 3.2207117080688477
+          }
+        ]
+      },
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1434,6 +1539,27 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 7.954105854034424
+          },
+          {
+            "step": 99,
+            "value": 8.321723937988281
+          },
+          {
+            "step": 149,
+            "value": 5.782318115234375
+          },
+          {
+            "step": 199,
+            "value": 3.544837474822998
+          }
+        ]
+      },
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1455,7 +1581,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-06T04:48:51.245716+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
         "model": {

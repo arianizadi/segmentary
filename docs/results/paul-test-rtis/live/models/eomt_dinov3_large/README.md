@@ -6,13 +6,13 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| eomt_dinov3_large | rtis_only | 0 | training | — | — | — | — | — | — | — | — |
-| eomt_dinov3_large | rtis_only | 1 | training | — | — | — | — | — | — | — | — |
-| eomt_dinov3_large | rtis_only | 2 | training | — | — | — | — | — | — | — | — |
-| eomt_dinov3_large | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
-| eomt_dinov3_large | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
-| eomt_dinov3_large | cityscapes_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
-| eomt_dinov3_large | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| eomt_dinov3_large | rtis_only | 0 | training | 199 | — | — | — | — | — | — | — |
+| eomt_dinov3_large | rtis_only | 1 | training | 199 | — | — | — | — | — | — | — |
+| eomt_dinov3_large | rtis_only | 2 | training | 199 | — | — | — | — | — | — | — |
+| eomt_dinov3_large | cityscapes_to_rtis | 0 | training | 199 | — | — | — | — | — | — | — |
+| eomt_dinov3_large | cityscapes_to_rtis | 1 | training | 199 | — | — | — | — | — | — | — |
+| eomt_dinov3_large | cityscapes_to_rtis | 2 | training | 199 | — | — | — | — | — | — | — |
+| eomt_dinov3_large | railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | eomt_dinov3_large | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | eomt_dinov3_large | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -1489,7 +1489,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T04:48:51.245716+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/eomt-dinov3-coco-panoptic-large-640 (DINOv3 ViT-L/16, COCO panoptic)`.
 
