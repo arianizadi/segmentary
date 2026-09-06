@@ -21,7 +21,7 @@
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | cityscapes_to_rtis | 3/3 | 3.73 | 2.00 |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | railsem19_to_rtis | 3/3 | 3.72 | 0.79 |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | rtis_only | 3/3 | 2.52 | 0.70 |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 1/3 | 16.38 | — |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 2/3 | 16.44 | 0.09 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_rtis | 3/3 | 25.28 | 2.14 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 3/3 | 10.59 | 1.65 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | rtis_only | 3/3 | 13.16 | 1.88 |
@@ -152,7 +152,7 @@
 
 Mean and sample SD are descriptive optimization variability. Incomplete seed groups are provisional; source checkpoints and data split are fixed across seeds.
 
-**68/432 completed · 0 failed**
+**69/432 completed · 0 failed**
 
 Fresh full-statistics campaign: checkpoint selection and early stopping use **mud-pumping IoU**. Every job collects full accounting, train/validation diagnostics, raw/EMA comparison, prediction examples and isolated performance before completion.
 
@@ -224,8 +224,8 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 1 | completed | 4000 | 3309 | 12.35 | 38.05 | 15.45 | 8.46 | 27.46 | 32.04 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 2 | completed | 3563 | 2290 | 10.33 | 32.17 | 13.21 | 6.05 | 26.44 | 30.85 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 2800 | 1527 | 16.38 | 43.63 | 20.78 | 11.87 | 25.58 | 29.84 |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 2749 | — | — | — | — | — | — | — |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 2 | collecting | 2290 | 1018 | 16.50 | 48.05 | 20.08 | 10.75 | 22.63 | 26.40 |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 1 | collecting | 2800 | 1527 | 17.25 | 43.57 | 22.21 | 5.65 | 26.32 | 30.70 |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 2 | completed | 2290 | 1018 | 16.50 | 48.05 | 20.08 | 10.75 | 22.63 | 26.40 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 0 | completed | 2545 | 1272 | 26.86 | 60.28 | 32.63 | 21.68 | 28.81 | 33.61 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 1 | completed | 1781 | 1272 | 8.54 | 10.37 | 32.66 | 4.16 | 26.63 | 31.07 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 2 | completed | 3309 | 2036 | 24.08 | 54.60 | 30.12 | 16.11 | 26.32 | 30.71 |
@@ -235,16 +235,16 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | railsem19_to_rtis | 0 | completed | 2290 | 1018 | 17.06 | 26.08 | 33.06 | 7.78 | 35.09 | 40.93 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | railsem19_to_rtis | 1 | completed | 1781 | 509 | 11.43 | 15.32 | 31.00 | 6.97 | 31.00 | 36.17 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | railsem19_to_rtis | 2 | completed | 2036 | 763 | 9.37 | 15.03 | 19.91 | 8.22 | 37.45 | 43.69 |
-| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 0 | evaluating | 2290 | — | — | — | — | — | — | — |
+| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 0 | collecting | 2290 | 1018 | 9.39 | 21.42 | 14.33 | 2.16 | 32.89 | 38.38 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 1 | completed | 1781 | 509 | 9.55 | 13.98 | 23.19 | 3.96 | 27.87 | 32.52 |
-| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 1849 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 0 | training | 1499 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 1 | training | 1249 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 2 | training | 999 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 0 | training | 349 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 1 | training | 349 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 2 | training | 99 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 1949 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 0 | training | 1599 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 1 | training | 1349 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 2 | training | 1099 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 0 | training | 499 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 1 | training | 449 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 2 | training | 199 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -671,7 +671,7 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 15.78 | 6.64 | 6643.32 | 16.82 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 15.78 | 6.64 | 5916.02 | 17.00 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 15.78 | 6.64 | 4667.37 | 16.83 |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | — | — | — | — |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 15.78 | 6.64 | 4670.56 | 17.13 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 15.78 | 6.64 | 3835.60 | 17.35 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 9.10 | 6.64 | 1970.60 | 12.07 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 9.10 | 6.64 | 1389.96 | 12.19 |
@@ -682,7 +682,7 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | railsem19_to_rtis | 9.10 | 6.64 | 1775.34 | 12.28 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | railsem19_to_rtis | 9.10 | 6.64 | 1385.54 | 12.29 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | railsem19_to_rtis | 9.10 | 6.64 | 1575.69 | 12.37 |
-| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | — | — | — | — |
+| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 9.10 | 6.64 | 1771.30 | 12.15 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 9.10 | 6.64 | 1385.59 | 12.22 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | — | — | — | — |
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | — | — | — | — |
