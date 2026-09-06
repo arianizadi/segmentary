@@ -1180,7 +1180,7 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 4000,
       "observed_step": null,
       "record": "models/hf_auto_segformer_b0/record.json"
@@ -1190,9 +1190,9 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 3949,
+      "status": "collecting",
+      "final_step": 4000,
+      "observed_step": null,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -1200,9 +1200,9 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "rtis_only",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 3699,
+      "status": "evaluating",
+      "final_step": 3818,
+      "observed_step": null,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -1212,7 +1212,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 3099,
+      "observed_step": 3249,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -1222,7 +1222,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2999,
+      "observed_step": 3149,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -1232,7 +1232,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2849,
+      "observed_step": 2949,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -1242,7 +1242,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2549,
+      "observed_step": 2699,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -1252,7 +1252,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2449,
+      "observed_step": 2599,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -1272,7 +1272,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 599,
+      "observed_step": 749,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -1280,9 +1280,9 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 49,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
