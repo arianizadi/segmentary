@@ -102832,7 +102832,7 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "collecting",
+      "status": "completed",
       "gpu": 1,
       "started_at": "2026-09-06T05:09:36.388144+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
@@ -112348,7 +112348,7 @@
           }
         ]
       },
-      "collection_phase": "cleanup",
+      "collection_phase": "complete",
       "performance": {
         "schema_version": 1,
         "model_id": "eomt_dinov3_large",
@@ -115526,11 +115526,25 @@
               "telemetry_samples": 5,
               "sampled_peak_device_used_mib": 3725.0
             }
-          ]
+          ],
+          "worker_attempts": [
+            {
+              "started_at": "2026-09-06T05:09:32.913592+00:00",
+              "status": "completed",
+              "gpu": 1,
+              "finished_at": "2026-09-06T07:07:51.954966+00:00",
+              "wall_clock_s": 7099.041399545968
+            }
+          ],
+          "total_reserved_gpu_wall_seconds": 7099.041399545968,
+          "total_reserved_gpu_hours": 1.9719559443183243,
+          "whole_run_accounting_complete": true
         },
         "verified": true,
         "smoke": false
       },
+      "checkpoint_bytes_removed": 40315157960,
+      "finished_at": "2026-09-06T07:07:51.956415+00:00",
       "resolved_config": {
         "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
         "model": {

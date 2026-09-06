@@ -7,16 +7,16 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | eomt_large | rtis_only | 0 | completed | 2290 | 1018 | 12.60 | 14.96 | 44.36 | 11.17 | 46.14 | 51.27 |
-| eomt_large | rtis_only | 1 | training | 1999 | — | — | — | — | — | — | — |
-| eomt_large | rtis_only | 2 | training | 1949 | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_rtis | 0 | training | 1899 | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_rtis | 1 | training | 1799 | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_rtis | 2 | training | 949 | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 0 | training | 763 | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 1 | training | 249 | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
+| eomt_large | rtis_only | 1 | training | 2049 | — | — | — | — | — | — | — |
+| eomt_large | rtis_only | 2 | training | 2036 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_rtis | 0 | training | 1949 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_rtis | 1 | training | 1849 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_rtis | 2 | training | 999 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 0 | training | 799 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 1 | training | 254 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 2 | training | 49 | — | — | — | — | — | — | — |
 | eomt_large | cityscapes_to_railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
 | eomt_large | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
@@ -888,6 +888,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1272 | 46.61 | 22.64 |
 | 1527 | 46.85 | 18.61 |
 | 1781 | 46.78 | 17.01 |
+| 2036 | 47.17 | 17.67 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1139,6 +1140,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1272 | 45.23 | 6.21 |
 | 1527 | 46.07 | 5.83 |
 | 1781 | 46.53 | 4.65 |
+| 2036 | 46.81 | 4.17 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -2379,6 +2381,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 31.12 | 0.00 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3041,7 +3044,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 1
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T07:07:55.594112+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
