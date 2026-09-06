@@ -656,6 +656,26 @@
           {
             "step": 249,
             "value": 0.10742975026369095
+          },
+          {
+            "step": 299,
+            "value": 0.3483695685863495
+          },
+          {
+            "step": 349,
+            "value": 0.4455784857273102
+          },
+          {
+            "step": 399,
+            "value": 0.2524264454841614
+          },
+          {
+            "step": 449,
+            "value": 0.11620806157588959
+          },
+          {
+            "step": 499,
+            "value": 0.23126986622810364
           }
         ],
         "val/miou": [
@@ -1271,7 +1291,7 @@
           }
         ]
       },
-      "observed_step": 254,
+      "observed_step": 499,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1285,7 +1305,10 @@
       "config_sha256": "fcf11800b455bc31ad41c82f6f15c797951d24f8860f6708f281b669abb89f5d",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-06T17:57:29.785825+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_convnext_tiny_uper--rtis_only--seed-1",
         "model": {
