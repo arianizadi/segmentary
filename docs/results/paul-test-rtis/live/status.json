@@ -792,7 +792,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2599,
+      "observed_step": 2649,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -830,7 +830,7 @@
       "model": "hf_auto_mobilenetv2_deeplabv3",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 3054,
       "observed_step": null,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
@@ -852,7 +852,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2036,
+      "observed_step": 2099,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -862,7 +862,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1549,
+      "observed_step": 1649,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -872,7 +872,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1399,
+      "observed_step": 1499,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -882,7 +882,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1299,
+      "observed_step": 1349,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -892,7 +892,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 449,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -902,7 +902,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 299,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -920,7 +920,7 @@
       "model": "hf_auto_mobilenetv2_deeplabv3",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
