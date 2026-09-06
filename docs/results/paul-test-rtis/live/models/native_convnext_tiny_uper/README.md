@@ -7,9 +7,9 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | native_convnext_tiny_uper | rtis_only | 0 | collecting | 1527 | 254 | 14.15 | 46.83 | 16.85 | 7.73 | 26.55 | 28.02 |
-| native_convnext_tiny_uper | rtis_only | 1 | training | 1099 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | rtis_only | 2 | training | 699 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | cityscapes_to_rtis | 0 | training | 249 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | rtis_only | 1 | training | 1199 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | rtis_only | 2 | training | 763 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | cityscapes_to_rtis | 0 | training | 299 | — | — | — | — | — | — | — |
 | native_convnext_tiny_uper | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | native_convnext_tiny_uper | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | native_convnext_tiny_uper | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -799,6 +799,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 27.68 | 8.69 |
 | 508 | 30.91 | 6.20 |
+| 763 | 33.20 | 6.57 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1068,6 +1069,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 24.82 | 1.19 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 

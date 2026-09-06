@@ -1610,9 +1610,9 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "railsem19_to_rtis",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2499,
+      "status": "evaluating",
+      "final_step": 2545,
+      "observed_step": null,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1622,7 +1622,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2149,
+      "observed_step": 2199,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1632,7 +1632,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2036,
+      "observed_step": 2049,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1642,7 +1642,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1399,
+      "observed_step": 1449,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1652,7 +1652,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1149,
+      "observed_step": 1199,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1672,7 +1672,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 1199,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1682,7 +1682,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 699,
+      "observed_step": 763,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1692,7 +1692,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 249,
+      "observed_step": 299,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
