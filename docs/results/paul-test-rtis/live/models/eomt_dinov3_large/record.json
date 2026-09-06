@@ -68719,7 +68719,7 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "collecting",
+      "status": "completed",
       "gpu": 7,
       "started_at": "2026-09-06T04:48:51.245716+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
@@ -78373,7 +78373,7 @@
           }
         ]
       },
-      "collection_phase": "cleanup",
+      "collection_phase": "complete",
       "performance": {
         "schema_version": 1,
         "model_id": "eomt_dinov3_large",
@@ -81551,11 +81551,25 @@
               "telemetry_samples": 5,
               "sampled_peak_device_used_mib": 3725.0
             }
-          ]
+          ],
+          "worker_attempts": [
+            {
+              "started_at": "2026-09-06T04:48:47.892396+00:00",
+              "status": "completed",
+              "gpu": 7,
+              "finished_at": "2026-09-06T06:47:39.129400+00:00",
+              "wall_clock_s": 7131.237030383199
+            }
+          ],
+          "total_reserved_gpu_wall_seconds": 7131.237030383199,
+          "total_reserved_gpu_hours": 1.9808991751064442,
+          "whole_run_accounting_complete": true
         },
         "verified": true,
         "smoke": false
       },
+      "checkpoint_bytes_removed": 40315157448,
+      "finished_at": "2026-09-06T06:47:39.130837+00:00",
       "resolved_config": {
         "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
         "model": {
@@ -103246,6 +103260,10 @@
           {
             "step": 3499,
             "value": 0.4898177683353424
+          },
+          {
+            "step": 3549,
+            "value": 1.0967671871185303
           }
         ],
         "val/miou": [
@@ -108847,7 +108865,7 @@
           }
         ]
       },
-      "observed_step": 3499,
+      "observed_step": 3549,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -109169,6 +109187,10 @@
           {
             "step": 1899,
             "value": 1.653459906578064
+          },
+          {
+            "step": 1949,
+            "value": 0.41073423624038696
           }
         ],
         "val/miou": [
@@ -112238,7 +112260,7 @@
           }
         ]
       },
-      "observed_step": 1899,
+      "observed_step": 1949,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -112544,6 +112566,10 @@
           {
             "step": 1699,
             "value": 0.840569257736206
+          },
+          {
+            "step": 1749,
+            "value": 1.2171772718429565
           }
         ],
         "val/miou": [
@@ -115253,7 +115279,7 @@
           }
         ]
       },
-      "observed_step": 1699,
+      "observed_step": 1749,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
