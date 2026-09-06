@@ -31023,7 +31023,7 @@
           }
         ]
       },
-      "collection_phase": "diagnostics",
+      "collection_phase": "performance",
       "resolved_config": {
         "name": "hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0",
         "model": {
@@ -31490,6 +31490,10 @@
           {
             "step": 2149,
             "value": 0.18695887923240662
+          },
+          {
+            "step": 2199,
+            "value": 0.1504148542881012
           }
         ],
         "val/miou": [
@@ -35117,7 +35121,7 @@
           }
         ]
       },
-      "observed_step": 2149,
+      "observed_step": 2199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -35434,6 +35438,10 @@
           {
             "step": 1949,
             "value": 0.08930633217096329
+          },
+          {
+            "step": 1999,
+            "value": 0.08976320177316666
           }
         ],
         "val/miou": [
@@ -38605,7 +38613,7 @@
           }
         ]
       },
-      "observed_step": 1949,
+      "observed_step": 1999,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -53264,6 +53272,10 @@
           {
             "step": 1299,
             "value": 0.20994944870471954
+          },
+          {
+            "step": 1349,
+            "value": 0.0478837788105011
           }
         ],
         "val/miou": [
@@ -55553,7 +55565,7 @@
           }
         ]
       },
-      "observed_step": 1299,
+      "observed_step": 1349,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -55802,6 +55814,10 @@
           {
             "step": 1099,
             "value": 0.12141604721546173
+          },
+          {
+            "step": 1149,
+            "value": 0.05883409082889557
           }
         ],
         "val/miou": [
@@ -57671,7 +57687,7 @@
           }
         ]
       },
-      "observed_step": 1099,
+      "observed_step": 1149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
