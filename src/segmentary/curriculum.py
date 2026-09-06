@@ -206,7 +206,7 @@ def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[Callbac
     best = ModelCheckpoint(
         dirpath=out_dir,
         filename="best",
-        monitor="val/miou",
+        monitor=train_cfg.selection_metric,
         mode="max",
         # Periodic and best snapshots already provide recovery for guarded runs.
         # Write last.ckpt explicitly once at the end instead of duplicating every best.
@@ -226,7 +226,7 @@ def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[Callbac
     if train_cfg.early_stopping_patience is not None:
         callbacks.append(
             EarlyStopping(
-                monitor="val/miou",
+                monitor=train_cfg.selection_metric,
                 mode="max",
                 patience=train_cfg.early_stopping_patience,
                 min_delta=train_cfg.early_stopping_min_delta,
@@ -502,6 +502,10 @@ def run_stage(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     train_cfg = replace(cfg.train, iters=stage.iters or cfg.train.iters)
+    if train_cfg.selection_metric.startswith("val_iou/"):
+        selected_class = train_cfg.selection_metric.removeprefix("val_iou/")
+        if selected_class not in space.names:
+            raise ValueError(f"Selection class {selected_class!r} is absent from {space.name}")
     optim_cfg = stage_optim_config(cfg.optim, stage, train_cfg.iters)
 
     model = build_model(cfg.model, space.num_classes)
@@ -621,6 +625,22 @@ def run_stage(
     record_env = collect_env()
     record_env["input_normalization"] = input_normalization(model)
     record_env["validation_weights"] = lit.validation_weights
+    record_env["model_parameter_count"] = total
+    record_env["trainable_parameter_count"] = trainable
+    record_env["model_origins"] = [
+        {
+            "module": name,
+            "hf_name_or_path": getattr(getattr(module, "config", None), "name_or_path", None),
+            "hf_commit": getattr(getattr(module, "config", None), "_commit_hash", None),
+            "timm_pretrained": {
+                key: value
+                for key, value in (getattr(module, "pretrained_cfg", None) or {}).items()
+                if key in ("architecture", "tag", "url", "hf_hub_id", "file")
+            },
+        }
+        for name, module in model.named_modules()
+        if getattr(module, "config", None) is not None or getattr(module, "pretrained_cfg", None)
+    ]
     stop_callbacks = [cb for cb in checkpoint_callbacks if isinstance(cb, EarlyStopping)]
     plateau = any(cb.wait_count >= cb.patience for cb in stop_callbacks)
     record_env["training_stop"] = {
@@ -635,6 +655,7 @@ def run_stage(
         "maximum_steps": train_cfg.iters,
         "patience": train_cfg.early_stopping_patience,
         "min_delta": train_cfg.early_stopping_min_delta,
+        "monitor": train_cfg.selection_metric,
     }
     record = RunRecord(
         name=cfg.name,

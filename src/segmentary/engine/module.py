@@ -337,6 +337,13 @@ class SegLitModule(L.LightningModule):
                 "train": asdict(self.train_cfg),
                 "optim": asdict(self.optim_cfg),
             }
+            # Older checkpoints always selected val/miou. Normalize only that
+            # missing default; changing selection to a class still fails strictly.
+            if isinstance(metadata, dict) and isinstance(metadata.get("train"), dict):
+                metadata = {
+                    **metadata,
+                    "train": {"selection_metric": "val/miou", **metadata["train"]},
+                }
             if not isinstance(metadata, dict) or metadata != expected:
                 wrong = sorted(
                     key
@@ -430,12 +437,23 @@ class SegLitModule(L.LightningModule):
         self.log("val/pixel_acc", result.pixel_accuracy, sync_dist=False)
         self.log("val/boundary_f1", boundary.macro_f1, sync_dist=False)
 
-        # Per-class IoU is the point: aggregate mIoU is dominated by road,
-        # building, vegetation and sky, which every arm already gets right.
+        present = (result.support > 0) & ~torch.isnan(result.iou)
+        if bool(present.any()):
+            self.log("val/gt_present_miou", float(result.iou[present].mean()), sync_dist=False)
+
+        # Preserve class-specific curves; macro scores can hide defect failures.
         for cid, name in enumerate(self.space.names):
             iou = result.iou[cid]
             if not torch.isnan(iou):
                 self.log(f"val_iou/{name}", float(iou), sync_dist=False)
+            for prefix, values in (
+                ("val_precision", result.precision),
+                ("val_recall", result.accuracy),
+                ("val_dice", result.dice),
+            ):
+                if not torch.isnan(values[cid]):
+                    self.log(f"{prefix}/{name}", float(values[cid]), sync_dist=False)
+            self.log(f"val_support/{name}", float(result.support[cid]), sync_dist=False)
 
         thin = [self.space.names[i] for i in self.space.thin_classes]
         thin_ious = [

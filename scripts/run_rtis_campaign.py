@@ -138,6 +138,8 @@ def initialize(root, repo):
         "created_at": now(),
         "code_sha": git(repo, "rev-parse", "HEAD"),
         "plan_sha256": digest(root / "plan.json"),
+        "selection_metric": plan.get("selection_metric", "val/miou"),
+        "collection_contract": plan.get("collection_contract"),
         "split_sha256": plan["split_sha256"],
         "grouping_status": plan["grouping_status"],
         "source_checkpoints": verified,
@@ -275,7 +277,21 @@ def run_job(root, repo, job, gpu, campaign):
     if valid:
         command += ["--resume-checkpoint", str(max(valid, key=lambda item: item[0])[1])]
     with (log_dir / f"{job['name']}.log").open("a") as log:
-        subprocess.run(command, cwd=repo, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
+        if campaign.get("collection_contract"):
+            from segmentary.utils.resource_tracking import run_recorded
+
+            run_recorded(
+                command,
+                cwd=repo,
+                env=env,
+                stdout=log,
+                records=root / "attempts" / job["name"],
+                phase="training",
+            )
+        else:
+            subprocess.run(
+                command, cwd=repo, env=env, stdout=log, stderr=subprocess.STDOUT, check=True
+            )
         last = checkpoint_info(run / "last.ckpt")
         training = read(run / "results.json")
         stop = validate_stop(training, last["global_step"], campaign["target_steps"])
@@ -313,7 +329,7 @@ def run_job(root, repo, job, gpu, campaign):
     if evaluation.get("metrics", {}).get("miou") is None:
         raise RuntimeError("Evaluation has no finite mIoU")
     state.update(
-        status="completed",
+        status="collecting" if campaign.get("collection_contract") else "completed",
         finished_at=now(),
         checkpoints={"best": best, "final": last},
         evaluation=evaluation,
@@ -322,6 +338,8 @@ def run_job(root, repo, job, gpu, campaign):
         learning_curve=learning_curve(run),
     )
     write(state_path, state)
+    if campaign.get("collection_contract"):
+        return
     try:
         state["checkpoint_bytes_removed"] = cleanup(
             run, state, root / "cleanup" / f"{job['name']}.json"
@@ -331,7 +349,7 @@ def run_job(root, repo, job, gpu, campaign):
     write(state_path, state)
 
 
-def worker(root, repo, gpu):
+def worker(root, repo, gpu, run=None):
     campaign = verify_frozen(root, repo)
     with lock(root / "locks" / f"gpu-{gpu}.lock") as acquired:
         if not acquired:
@@ -347,7 +365,7 @@ def worker(root, repo, gpu):
                     continue
                 try:
                     verify_frozen(root, repo)
-                    run_job(root, repo, job, gpu, campaign)
+                    (run or run_job)(root, repo, job, gpu, campaign)
                 except Exception as error:
                     state = read(state_path)
                     detail = (

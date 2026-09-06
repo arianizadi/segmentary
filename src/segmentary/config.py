@@ -1253,6 +1253,7 @@ class TrainConfig:
     ema_decay: float | None = 0.9998
     val_every: int = 4000
     ckpt_every: int = 4000
+    selection_metric: str = "val/miou"
     early_stopping_patience: int | None = None
     early_stopping_min_delta: float = 0.0
     seed: int = 0
@@ -1273,6 +1274,11 @@ class TrainConfig:
                 f"train.val_every and train.ckpt_every must be positive, got "
                 f"{self.val_every}, {self.ckpt_every}"
             )
+        if self.selection_metric != "val/miou" and not (
+            self.selection_metric.startswith("val_iou/")
+            and self.selection_metric.removeprefix("val_iou/").strip()
+        ):
+            raise ConfigError("train.selection_metric must be val/miou or val_iou/<class>")
         if self.early_stopping_patience is not None:
             _positive_int("train.early_stopping_patience", self.early_stopping_patience)
         if not math.isfinite(self.early_stopping_min_delta) or self.early_stopping_min_delta < 0:

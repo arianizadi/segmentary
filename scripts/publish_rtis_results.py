@@ -7,6 +7,7 @@ import csv
 import io
 import json
 import re
+import statistics
 import sys
 import time
 from pathlib import Path
@@ -63,7 +64,7 @@ def capture(root):
         for directory in sorted({path.parent for path in events}):
             acc = EventAccumulator(str(directory), size_guidance={"scalars": 0}).Reload()
             for tag in acc.Tags().get("scalars", []):
-                if tag.startswith(("val/", "val_iou/")) or tag == "train/loss":
+                if tag.startswith(("val/", "val_")) or tag == "train/loss":
                     curves.setdefault(tag, []).extend(
                         {"step": int(v.step), "value": float(v.value)} for v in acc.Scalars(tag)
                     )
@@ -113,6 +114,7 @@ def summary_row(row, linked=True):
     return [
         name,
         row["protocol"],
+        row.get("seed", 0),
         row["status"],
         row.get("final_step", row.get("observed_step", "—")),
         row.get("checkpoints", {}).get("best", {}).get("global_step", "—"),
@@ -128,6 +130,7 @@ def summary_row(row, linked=True):
 HEADERS = [
     "Model",
     "Initialization path",
+    "Seed",
     "Status",
     "Steps",
     "Best step",
@@ -165,11 +168,13 @@ def model_report(model, rows, campaign):
         "",
         "[RTIS comparison](../../README.md) · [Full model records](record.json)",
         "",
-        "Mud-pumping detection is the primary application. Current pilot checkpoints were selected by overall validation mIoU, **not mud IoU**. All numbers here describe that existing policy; a mud-focused experiment must be explicitly versioned.",
+        "Primary selection and early stopping: **mud-pumping validation IoU**. A job is complete only after full statistics and isolated profiling are verified."
+        if campaign.get("collection_contract")
+        else "Mud-pumping detection is the primary application. Current pilot checkpoints were selected by overall validation mIoU, **not mud IoU**. All numbers here describe that existing policy; a mud-focused experiment must be explicitly versioned.",
         "",
         table(HEADERS, [summary_row(r, False) for r in rows]),
         "",
-        "Training: 220 images. Validation: 37 images. Test: 50 images, held out. One seed; visually grouped split with unconfirmed recording identities. Percentages are descriptive, not statistically established rankings.",
+        f"Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: {sorted({r.get('seed', 0) for r in rows})}. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.",
         "",
         f"Training code: `{campaign['code_sha']}`. Split SHA-256: `{campaign['split_sha256']}`.",
     ]
@@ -181,7 +186,7 @@ def model_report(model, rows, campaign):
         final = training.get("metrics", {})
         lines += [
             "",
-            f"## {row['protocol']}",
+            f"## {row['protocol']} — seed {row.get('seed', 0)}",
             "",
             f"Status: **{row['status']}**. Started: {row.get('started_at', '—')}. Finished: {row.get('finished_at', '—')}.",
             "",
@@ -337,6 +342,7 @@ def model_report(model, rows, campaign):
                 ],
             ),
         ]
+        lines += collection_section(row)
         curves = row.get("learning_curve", {})
         vals = {v["step"]: v["value"] for v in curves.get("val/miou", [])}
         mud = {v["step"]: v["value"] for v in curves.get("val_iou/mud-pumping", [])}
@@ -352,7 +358,7 @@ def model_report(model, rows, campaign):
                 ],
             ),
             "",
-            "All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.",
+            "All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.",
             "",
             "### Stopping and checkpoint provenance",
             "",
@@ -381,8 +387,129 @@ def model_report(model, rows, campaign):
     return "\n".join(lines) + "\n"
 
 
+def artifact_prefix(row):
+    value = f"{row['protocol']}--seed-{row.get('seed', 0)}"
+    if not re.fullmatch(r"[a-z0-9_-]+", value):
+        raise ValueError("Unsafe run report path")
+    return value
+
+
+def collection_section(row):
+    collection = row.get("collection", {})
+    if not collection:
+        return []
+    resources = collection.get("resources", {})
+    lines = [
+        "",
+        "### Full-run accounting",
+        "",
+        table(
+            ["Measurement", "Value"],
+            [
+                [
+                    "Full GPU-reserved wall seconds, all recorded worker attempts",
+                    number(resources.get("total_reserved_gpu_wall_seconds")),
+                ],
+                ["Full reserved GPU-hours", number(resources.get("total_reserved_gpu_hours"))],
+                [
+                    "Whole-run timing complete",
+                    resources.get("whole_run_accounting_complete", False),
+                ],
+            ],
+        ),
+        "",
+        table(
+            ["Phase", "Wall seconds including failed attempts"],
+            [
+                [k, number(v)]
+                for k, v in resources.get(
+                    "phase_wall_seconds_including_failed_attempts", {}
+                ).items()
+            ],
+        ),
+        "",
+        "GPU-reserved time includes model loading, training, validation, collection, profiling, checkpoint I/O and orchestration while the worker owns one GPU. It is not GPU kernel-active time. Phase timings and sampled device memory/power/utilization are retained separately; sampled device memory is not the allocator high-water mark.",
+        "",
+        "### Train/validation and raw/EMA diagnostics",
+        "",
+        table(
+            [
+                "Checkpoint / weights / split",
+                "Images",
+                "Mud IoU (%)",
+                "Mud precision (%)",
+                "Mud recall (%)",
+            ],
+            [
+                [
+                    key + " / " + r["weights"],
+                    r["images"],
+                    pct(r["mud"]["iou"]),
+                    pct(r["mud"]["precision"]),
+                    pct(r["mud"]["recall"]),
+                ]
+                for key, r in collection.get("diagnostics", {}).get("results", {}).items()
+            ],
+        ),
+        "",
+        "Train uses the evaluation transform without augmentation. Compare mud train/validation metrics for the same selected weights. Alternate EMA on running-stat BatchNorm is explicitly uncalibrated and is diagnostic only. Score-threshold curves use uncalibrated normalized scores and are pixel-level diagnostics, not event detection rates or a selected deployment operating point.",
+        "",
+        "### Downloadable evidence",
+        "",
+    ]
+    prefix = artifact_prefix(row)
+    for section, artifacts in collection.get("artifacts", {}).items():
+        links = []
+        for name in artifacts:
+            if name == "examples.jpg" and section != "best-auto-val":
+                continue
+            url = f"{prefix}/{section}/{name}"
+            links.append(f"[{name}]({url})")
+        lines.append(f"- {section}: " + " · ".join(links))
+    if "examples.jpg" in collection.get("artifacts", {}).get("best-auto-val", {}):
+        lines += [
+            "",
+            f"![Selected-checkpoint validation examples]({prefix}/best-auto-val/examples.jpg)",
+            "",
+            "Examples are two lowest and two highest mud-IoU positive images, plus up to two negative images with the most false-positive mud pixels. They are targeted diagnostic examples, not random samples. Green: true positive; red: false positive; yellow: false negative. Full predictions remain on HDRFS.",
+        ]
+    return lines
+
+
+def seed_summary(jobs):
+    rows = []
+    for model, protocol in sorted({(r["model"], r["protocol"]) for r in jobs}):
+        planned = [r for r in jobs if r["model"] == model and r["protocol"] == protocol]
+        complete = [r for r in planned if r["status"] == "completed"]
+        vals = [
+            r.get("evaluation", {}).get("metrics", {}).get("per_class_iou", {}).get(MUD)
+            for r in complete
+        ]
+        vals = [v for v in vals if v is not None]
+        rows.append(
+            [
+                f"[{model}](models/{model}/README.md)",
+                protocol,
+                f"{len(vals)}/{len(planned)}",
+                pct(statistics.mean(vals)) if vals else "—",
+                pct(statistics.stdev(vals)) if len(vals) > 1 else "—",
+            ]
+        )
+    return table(
+        [
+            "Model",
+            "Initialization",
+            "Completed seeds",
+            "Mud IoU mean (%)",
+            "Sample SD (percentage points)",
+        ],
+        rows,
+    )
+
+
 def artifacts(data):
     jobs = data["jobs"]
+    full = bool(data["campaign"].get("collection_contract"))
     models = sorted({r["model"] for r in jobs})
     if any(not re.fullmatch(r"[a-z0-9_]+", m) for m in models):
         raise ValueError("Unsafe model report path")
@@ -392,11 +519,13 @@ def artifacts(data):
         "",
         f"**{done}/{len(jobs)} completed · {sum(r['status'] == 'failed' for r in jobs)} failed**",
         "",
-        "Mud-pumping is the primary application. This pilot still selects checkpoints and stops by overall validation mIoU. Mud metrics are prominent here so aggregate accuracy cannot hide detection failures. A future mud-focused selection policy must be versioned; historical results are not relabeled.",
+        "Fresh full-statistics campaign: checkpoint selection and early stopping use **mud-pumping IoU**. Every job collects full accounting, train/validation diagnostics, raw/EMA comparison, prediction examples and isolated performance before completion."
+        if full
+        else "Mud-pumping is the primary application. This pilot still selects checkpoints and stops by overall validation mIoU. Mud metrics are prominent here so aggregate accuracy cannot hide detection failures. A future mud-focused selection policy must be versioned; historical results are not relabeled.",
         "",
         "[Dataset and preparation](../README.md) · [Mathematical mud-pumping audit](../mud-pumping-audit/README.md) · [CSV results](results.csv) · [Full machine records](status.json)",
         "",
-        "36 model recipes x four initialization paths x seed 0. Train/val/test: 220/37/50 images. Test is held out. Validation groups are provisional and lack person, truck and on-rails ground truth. Single-seed differences are descriptive.",
+        f"{len(models)} models; four initialization paths; seeds {sorted({r.get('seed', 0) for r in jobs})}. Train/val/test: 220/37/50 images. Test is held out. Validation groups are provisional and lack person, truck and on-rails ground truth. Seed variation does not establish independent-recording generalization.",
         "",
         "## Mud-pumping and quality",
         "",
@@ -406,11 +535,15 @@ def artifacts(data):
         "",
         "## Interpretation and checkpoint selection",
         "",
-        "The current best checkpoint maximizes mIoU over classes with nonzero union. False positives on an absent class add a zero-IoU class to the mean. Fixed GT-class mIoU uses the same 18 ground-truth-present validation classes and is supplementary; it does not excuse false positives. Mud IoU, precision and recall are pixel-level segmentation measures, not event-level detection rates.",
+        "The current best checkpoint maximizes mud-pumping validation IoU. Overall mIoU is supplementary."
+        if full
+        else "The current best checkpoint maximizes mIoU over classes with nonzero union. False positives on an absent class add a zero-IoU class to the mean. Fixed GT-class mIoU uses the same 18 ground-truth-present validation classes and is supplementary; it does not excuse false positives. Mud IoU, precision and recall are pixel-level segmentation measures, not event-level detection rates.",
         "",
         "`rtis_only` uses each recipe default pretrained initializer, which can include a segmentation checkpoint (EoMT: COCO panoptic; BEiT: ADE20K), not just backbone weights. Other paths load historical Cityscapes/RailSem19 endpoints and reset classifiers. Exact resolved settings are on model pages.",
         "",
-        "Validation approximately every 250 optimizer steps; stop after three checks without 0.2 percentage-point mIoU improvement. At most 4,000 steps. Keep aggregate-best and final full-state checkpoints; periodic checkpoints are removed only after successful evaluation, with an audit.",
+        "Validation approximately every 250 optimizer steps; stop after five checks without a 0.1 percentage-point mud-IoU improvement. At most 4,000 steps. Keep mud-selected and final full-state checkpoints; remove periodic snapshots only after complete verified collection."
+        if full
+        else "Validation approximately every 250 optimizer steps; stop after three checks without 0.2 percentage-point mIoU improvement. At most 4,000 steps. Keep aggregate-best and final full-state checkpoints; periodic checkpoints are removed only after successful evaluation, with an audit.",
         "",
         f"Frozen training code: `{data['campaign']['code_sha']}`. Split SHA-256: `{data['campaign']['split_sha256']}`.",
         "",
@@ -440,9 +573,50 @@ def artifacts(data):
         "",
         "Resumed invocation resource measurements are not cumulative training cost. Standardized FPS/latency and parameter memory are separate profiling evidence; missing evidence is explicit on each model page. The report publisher does not modify frozen training jobs or historical Cityscapes/RailSem19 reports.",
     ]
+    if full:
+        lines[2:2] = [
+            "",
+            "## Seed summary",
+            "",
+            seed_summary(jobs),
+            "",
+            "Mean and sample SD are descriptive optimization variability. Incomplete seed groups are provisional; source checkpoints and data split are fixed across seeds.",
+            "",
+        ]
+        previous = data["campaign"].get("previous_report_commit")
+        if previous:
+            lines += [
+                "",
+                f"[Preserved original aggregate-selected pilot](https://github.com/arianizadi/segmentary/blob/{previous}/docs/results/paul-test-rtis/live/README.md)",
+            ]
+    machine = (
+        data
+        if not full
+        else {
+            "campaign": data["campaign"],
+            "jobs": [
+                {
+                    **{
+                        k: r.get(k)
+                        for k in (
+                            "name",
+                            "model",
+                            "protocol",
+                            "seed",
+                            "status",
+                            "final_step",
+                            "observed_step",
+                        )
+                    },
+                    "record": f"models/{r['model']}/record.json",
+                }
+                for r in jobs
+            ],
+        }
+    )
     files = {
         "README.md": "\n".join(lines) + "\n",
-        "status.json": json.dumps(data, indent=2, allow_nan=False) + "\n",
+        "status.json": json.dumps(machine, indent=2, allow_nan=False) + "\n",
     }
     buf = io.StringIO()
     writer = csv.writer(buf, lineterminator="\n")
@@ -456,6 +630,21 @@ def artifacts(data):
             json.dumps({"campaign": data["campaign"], "jobs": rows}, indent=2, allow_nan=False)
             + "\n"
         )
+    for row in jobs:
+        for section, artifacts in row.get("collection", {}).get("artifacts", {}).items():
+            if not re.fullmatch(r"[a-z0-9_-]+", section):
+                raise ValueError("Unsafe evidence section")
+            for name, info in artifacts.items():
+                if name == "examples.jpg" and section != "best-auto-val":
+                    continue
+                if Path(name).name != name:
+                    raise ValueError("Unsafe evidence filename")
+                path = Path(info["path"])
+                if runtime.digest(path) != info["sha256"]:
+                    raise RuntimeError(f"Evidence hash changed: {path}")
+                files[f"models/{row['model']}/{artifact_prefix(row)}/{section}/{name}"] = (
+                    path.read_bytes()
+                )
     return files
 
 
@@ -489,7 +678,10 @@ def publish_once(root, checkout):
     for name, content in files.items():
         dest = checkout / REPORT / name
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(content)
+        if isinstance(content, bytes):
+            dest.write_bytes(content)
+        else:
+            dest.write_text(content)
     git(checkout, "add", "--", *sorted(allowed))
     if not git(checkout, "diff", "--cached", "--name-only"):
         return

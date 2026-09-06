@@ -1,0 +1,33 @@
+# Fresh campaign: same data and architectures; mud-focused selection and complete measurement.
+name: paul-test-rtis-mud-fullstats-v1
+dataset_config: configs/datasets/paul-test-rtis.yaml
+model_catalog: configs/campaigns/all_models_cityscapes_railsem19.yaml
+status: full-statistics
+publisher: true
+seeds:
+- 0
+- 1
+- 2
+target_steps: 4000
+batch_size: 2
+accumulation: 8
+validation_interval: 250
+checkpoint_interval: 500
+early_stopping_patience: 5
+early_stopping_min_delta: 0.001
+num_workers: 2
+protocols:
+  rtis_only:
+    label: Recipe pretrained initialization -> RTIS
+    source_protocol: null
+  cityscapes_to_rtis:
+    label: Cityscapes -> RTIS
+    source_protocol: cityscapes
+  railsem19_to_rtis:
+    label: RailSem19 -> RTIS
+    source_protocol: railsem19
+  cityscapes_to_railsem19_to_rtis:
+    label: Cityscapes -> RailSem19 -> RTIS
+    source_protocol: cityscapes_to_railsem19
+collection_contract: rtis-full-statistics-v1
+selection_metric: val_iou/mud-pumping
