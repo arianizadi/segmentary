@@ -9,7 +9,7 @@ Mud-pumping detection is the primary application. Current pilot checkpoints were
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | completed | 3054 | 2290 | 0.42 | 0.61 | 1.36 | 3.66 | 22.18 | 24.64 |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | completed | 1781 | 1018 | 1.38 | 2.59 | 2.86 | 1.67 | 21.79 | 23.00 |
 | hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | completed | 1272 | 509 | 2.29 | 2.68 | 13.43 | 2.34 | 25.51 | 26.93 |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | training | 2549 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | training | 2899 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 images, held out. One seed; visually grouped split with unconfirmed recording identities. Percentages are descriptive, not statistically established rankings.
 
@@ -1198,6 +1198,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2036 | 27.17 | 3.43 |
 | 2290 | 29.29 | 3.50 |
 | 2545 | 29.61 | 5.70 |
+| 2799 | 28.74 | 2.57 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
