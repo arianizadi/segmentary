@@ -14,16 +14,16 @@ Initialization: `rtis_only` = pretrained backbone; `cityscapes_to_rtis` = Citysc
 
 | Model | Initialization path | Status | Val mIoU (%) |
 | --- | --- | --- | ---: |
-| eomt_dinov3_large | rtis_only | queued | — |
-| eomt_dinov3_large | cityscapes_to_rtis | queued | — |
-| eomt_dinov3_large | railsem19_to_rtis | queued | — |
-| eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | queued | — |
-| eomt_large | rtis_only | queued | — |
-| eomt_large | cityscapes_to_rtis | queued | — |
-| eomt_large | railsem19_to_rtis | queued | — |
-| eomt_large | cityscapes_to_railsem19_to_rtis | queued | — |
-| hf_auto_beit_base_ade | rtis_only | queued | — |
-| hf_auto_beit_base_ade | cityscapes_to_rtis | queued | — |
+| eomt_dinov3_large | rtis_only | training | — |
+| eomt_dinov3_large | cityscapes_to_rtis | training | — |
+| eomt_dinov3_large | railsem19_to_rtis | training | — |
+| eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | training | — |
+| eomt_large | rtis_only | training | — |
+| eomt_large | cityscapes_to_rtis | training | — |
+| eomt_large | railsem19_to_rtis | training | — |
+| eomt_large | cityscapes_to_railsem19_to_rtis | training | — |
+| hf_auto_beit_base_ade | rtis_only | training | — |
+| hf_auto_beit_base_ade | cityscapes_to_rtis | training | — |
 | hf_auto_beit_base_ade | railsem19_to_rtis | queued | — |
 | hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | queued | — |
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | queued | — |

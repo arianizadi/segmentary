@@ -459,7 +459,10 @@
       "config_sha256": "2655929d7656cdc43aff97ffe139e7bdfca66c56a04d851fedf7a77fea439d79",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued"
+      "status": "training",
+      "gpu": 0,
+      "started_at": "2026-09-06T01:49:55.121396+00:00",
+      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
     },
     {
       "name": "eomt_dinov3_large--cityscapes_to_rtis--seed-0",
@@ -477,7 +480,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 1,
+      "started_at": "2026-09-06T01:49:58.682529+00:00",
+      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
     },
     {
       "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
@@ -495,7 +501,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-06T01:49:58.599441+00:00",
+      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
     },
     {
       "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -513,7 +522,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 3,
+      "started_at": "2026-09-06T01:49:58.469551+00:00",
+      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
     },
     {
       "name": "eomt_large--rtis_only--seed-0",
@@ -523,7 +535,10 @@
       "config_sha256": "a8021352f45e8d9149f24855f9edecfbe0f4bc2399bc7ad2d5fde67bdb8c0db6",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued"
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-06T01:49:55.135903+00:00",
+      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
     },
     {
       "name": "eomt_large--cityscapes_to_rtis--seed-0",
@@ -541,7 +556,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 5,
+      "started_at": "2026-09-06T01:49:58.446025+00:00",
+      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
     },
     {
       "name": "eomt_large--railsem19_to_rtis--seed-0",
@@ -559,7 +577,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 6,
+      "started_at": "2026-09-06T01:49:58.498781+00:00",
+      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
     },
     {
       "name": "eomt_large--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -577,7 +598,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-06T01:49:58.734415+00:00",
+      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
     },
     {
       "name": "hf_auto_beit_base_ade--rtis_only--seed-0",
@@ -587,7 +611,10 @@
       "config_sha256": "5e9a3493f374924fc4f28471b3130fdabe31b6116c82641deb2b555bdd76a481",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued"
+      "status": "training",
+      "gpu": 8,
+      "started_at": "2026-09-06T01:49:55.157423+00:00",
+      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
     },
     {
       "name": "hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0",
@@ -605,7 +632,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 9,
+      "started_at": "2026-09-06T01:49:56.797573+00:00",
+      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
     },
     {
       "name": "hf_auto_beit_base_ade--railsem19_to_rtis--seed-0",
