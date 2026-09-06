@@ -1422,7 +1422,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2290,
+      "observed_step": 2349,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1432,7 +1432,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1899,
+      "observed_step": 1999,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1442,7 +1442,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1799,
+      "observed_step": 1899,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1450,7 +1450,7 @@
       "model": "hrnet_w48_ocr",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 1781,
       "observed_step": null,
       "record": "models/hrnet_w48_ocr/record.json"
@@ -1462,7 +1462,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1799,
+      "observed_step": 1849,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1472,7 +1472,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1749,
+      "observed_step": 1849,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1482,7 +1482,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1199,
+      "observed_step": 1272,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1492,7 +1492,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1149,
+      "observed_step": 1249,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1502,7 +1502,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 999,
+      "observed_step": 1049,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1512,7 +1512,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 849,
+      "observed_step": 899,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1520,7 +1520,7 @@
       "model": "hrnet_w48_ocr",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/hrnet_w48_ocr/record.json"
