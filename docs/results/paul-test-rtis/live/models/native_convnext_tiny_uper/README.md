@@ -15,8 +15,8 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | native_convnext_tiny_uper | railsem19_to_rtis | 0 | completed | 2290 | 1018 | 1.14 | 1.88 | 2.80 | 0.95 | 43.81 | 48.68 |
 | native_convnext_tiny_uper | railsem19_to_rtis | 1 | completed | 1527 | 1527 | 1.79 | 3.27 | 3.80 | 1.79 | 40.15 | 46.84 |
 | native_convnext_tiny_uper | railsem19_to_rtis | 2 | completed | 1781 | 509 | 2.09 | 2.89 | 7.08 | 1.41 | 39.85 | 44.27 |
-| native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 0 | training | 2649 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 1 | training | 2599 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 0 | evaluating | 2800 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 1 | training | 2749 | — | — | — | — | — | — | — |
 | native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 2 | completed | 2036 | 763 | 6.16 | 12.89 | 10.55 | 4.33 | 41.96 | 48.95 |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
@@ -6121,7 +6121,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 0
 
-Status: **training**. Started: 2026-09-06T18:40:11.439992+00:00. Finished: —.
+Status: **evaluating**. Started: 2026-09-06T18:40:11.439992+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": null, "encoder_weights": null, "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": {"auxiliary_heads": [], "backbone": {"in_channels": 3, "kind": "timm", "name": "convnext_tiny.fb_in22k_ft_in1k", "out_indices": [0, 1, 2, 3], "weights": "pretrained"}, "head": {"activation": "relu", "channels": 256, "dropout": 0.1, "in_indices": [0, 1, 2, 3], "kind": "uper", "norm": "group", "pool_bins": [1, 2, 3, 6]}, "neck": {"kind": "identity"}, "task": "multiclass"}, "revision": null, "smp_arch": null, "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -6201,6 +6201,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2036 | 42.66 | 6.26 |
 | 2290 | 42.62 | 6.26 |
 | 2545 | 42.63 | 6.26 |
+| 2799 | 42.62 | 6.26 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
