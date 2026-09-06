@@ -67,7 +67,11 @@ def test_cleanup_never_follows_periodic_symlink(tmp_path):
     assert outside.read_bytes() == b"source"
 
 
-def test_publisher_real_git_updates_only_report_and_retries(tmp_path, monkeypatch):
+@pytest.mark.parametrize("detailed", [False, True])
+def test_publisher_real_git_updates_only_report_and_retries(tmp_path, monkeypatch, detailed):
+    from scripts import publish_rtis_results as reports
+
+    publish = reports.publish_once if detailed else rtis.publish_once
     remote, author, publisher = [tmp_path / name for name in ("origin.git", "author", "publisher")]
     rtis.git(tmp_path, "init", "--bare", str(remote))
     rtis.git(tmp_path, "clone", str(remote), str(author))
@@ -87,11 +91,12 @@ def test_publisher_real_git_updates_only_report_and_retries(tmp_path, monkeypatc
         "jobs": [{"model": "example", "protocol": "rtis_only", "status": "queued"}],
     }
     monkeypatch.setattr(rtis, "snapshot", lambda _: data)
+    monkeypatch.setattr(reports, "capture", lambda _: data)
     root = tmp_path / "campaign"
     root.mkdir()
-    rtis.publish_once(root, publisher)
+    publish(root, publisher)
     first = rtis.git(publisher, "rev-parse", "HEAD")
-    rtis.publish_once(root, publisher)
+    publish(root, publisher)
     assert rtis.git(publisher, "rev-parse", "HEAD") == first
     # A human publishes between automatic result updates.
     rtis.git(author, "pull", "--ff-only", "origin", "main")
@@ -108,9 +113,9 @@ def test_publisher_real_git_updates_only_report_and_retries(tmp_path, monkeypatc
 
     monkeypatch.setattr(rtis, "git", fail_push)
     with pytest.raises(RuntimeError, match="network"):
-        rtis.publish_once(root, publisher)
+        publish(root, publisher)
     monkeypatch.setattr(rtis, "git", original_git)
-    rtis.publish_once(root, publisher)
+    publish(root, publisher)
     assert (publisher / "README.md").read_text() == "New unrelated author work\n"
     assert "62.50" in (publisher / rtis.REPORT / "README.md").read_text()
     assert rtis.git(publisher, "rev-parse", "HEAD") == rtis.git(
@@ -118,7 +123,7 @@ def test_publisher_real_git_updates_only_report_and_retries(tmp_path, monkeypatc
     )
     (publisher / "README.md").write_text("Pending human edit\n")
     with pytest.raises(RuntimeError, match="unrelated edits"):
-        rtis.publish_once(root, publisher)
+        publish(root, publisher)
     assert (publisher / "README.md").read_text() == "Pending human edit\n"
 
 
@@ -236,3 +241,36 @@ def test_real_lightning_early_stopping_uses_validation_checks(tmp_path, improves
     trainer.fit(Toy(), loader, loader)
     assert trainer.global_step == expected
     assert len(list(tmp_path.glob("best*.ckpt"))) == 1
+
+
+def test_detailed_reports_keep_mud_and_denominator_changes_visible():
+    from scripts import publish_rtis_results as reports
+
+    metrics = {
+        "miou": 0.2,
+        "per_class_iou": {"mud-pumping": 0.4, "absent": 0.0},
+        "support": {"mud-pumping": 10, "absent": 0},
+        "per_class_precision": {"mud-pumping": 0.5},
+        "per_class_recall": {"mud-pumping": 0.6},
+    }
+    data = {
+        "campaign": {"code_sha": "frozen", "split_sha256": "split"},
+        "jobs": [
+            {
+                "model": "example",
+                "protocol": "rtis_only",
+                "status": "completed",
+                "evaluation": {"metrics": metrics},
+                "training": {"metrics": {"per_class_iou": {"mud-pumping": 0.7}}},
+            }
+        ],
+    }
+    files = reports.artifacts(data)
+    assert "[example](models/example/README.md)" in files["README.md"]
+    assert reports.fixed_miou(metrics) == 0.4
+    assert "70.00" in files["README.md"]
+    assert "not whole-campaign totals" in files["models/example/README.md"]
+    assert "record.json" in files["models/example/README.md"]
+    data["jobs"][0]["model"] = "../../outside"
+    with pytest.raises(ValueError, match="Unsafe"):
+        reports.artifacts(data)

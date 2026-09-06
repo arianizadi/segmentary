@@ -1,0 +1,189 @@
+[
+  {
+    "split": "train",
+    "group": "flooded-road-crossing",
+    "images": 3,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 6220800,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "train",
+    "group": "flooded-station-platform",
+    "images": 8,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 16473720,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "train",
+    "group": "flooded-stone-bridge",
+    "images": 4,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 3131014,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "train",
+    "group": "green-roadside-cab-view",
+    "images": 14,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 28873599,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "train",
+    "group": "green-water-cab-view",
+    "images": 5,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 10368000,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "train",
+    "group": "miscellaneous-flood-stills",
+    "images": 3,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 3244176,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "train",
+    "group": "miscellaneous-mud-cab-view",
+    "images": 1,
+    "mud_images": 1,
+    "mud_pixels": 46297,
+    "valid_pixels": 2073494,
+    "source_mud_union_pixels": 46297,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 2
+  },
+  {
+    "split": "train",
+    "group": "miscellaneous-numbered-cab-views",
+    "images": 18,
+    "mud_images": 2,
+    "mud_pixels": 89885,
+    "valid_pixels": 61612888,
+    "source_mud_union_pixels": 106409,
+    "mud_overpainted_pixels": 16524,
+    "mud_objects": 2
+  },
+  {
+    "split": "train",
+    "group": "overcast-mountain-stations",
+    "images": 20,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 41187022,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "train",
+    "group": "rain-water-cab-view-with-overlay",
+    "images": 14,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 28669910,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "train",
+    "group": "sunny-mainline-cab-view",
+    "images": 64,
+    "mud_images": 48,
+    "mud_pixels": 1228887,
+    "valid_pixels": 132126059,
+    "source_mud_union_pixels": 1404804,
+    "mud_overpainted_pixels": 175917,
+    "mud_objects": 98
+  },
+  {
+    "split": "train",
+    "group": "sunny-mountain-stations",
+    "images": 11,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 22701153,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "train",
+    "group": "trackside-maintenance",
+    "images": 54,
+    "mud_images": 54,
+    "mud_pixels": 62260627,
+    "valid_pixels": 106986099,
+    "source_mud_union_pixels": 79078365,
+    "mud_overpainted_pixels": 16817738,
+    "mud_objects": 115
+  },
+  {
+    "split": "train",
+    "group": "vegetation-worksite",
+    "images": 1,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 2073600,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "val",
+    "group": "evening-water-cab-view",
+    "images": 9,
+    "mud_images": 0,
+    "mud_pixels": 0,
+    "valid_pixels": 18658397,
+    "source_mud_union_pixels": 0,
+    "mud_overpainted_pixels": 0,
+    "mud_objects": 0
+  },
+  {
+    "split": "val",
+    "group": "rural-overcast-cab-view",
+    "images": 19,
+    "mud_images": 17,
+    "mud_pixels": 1213322,
+    "valid_pixels": 51751294,
+    "source_mud_union_pixels": 1334329,
+    "mud_overpainted_pixels": 121007,
+    "mud_objects": 77
+  },
+  {
+    "split": "val",
+    "group": "trackside-vegetation-closeups",
+    "images": 9,
+    "mud_images": 1,
+    "mud_pixels": 12928,
+    "valid_pixels": 18797564,
+    "source_mud_union_pixels": 13677,
+    "mud_overpainted_pixels": 749,
+    "mud_objects": 2
+  }
+]

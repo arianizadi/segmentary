@@ -166,3 +166,43 @@ The campaign amendment records old/new code and configuration hashes and resume
 steps; initial training is not discarded or presented as a fresh run.
 
 Guarded runs save best checkpoints and periodic recovery snapshots during training, and write the final `last.ckpt` once at termination. This avoids writing a duplicate multi-gigabyte last checkpoint at every validation improvement.
+
+## Mud-pumping reports and resource tracking
+
+The RTIS application prioritizes mud-pumping detection. The current pilot still
+selects and early-stops by overall mIoU; its retained checkpoints and results
+must remain labeled with that selection policy. Report selected-checkpoint mud
+IoU, precision, recall and Dice, plus the final trainer-validation mud score.
+A later mud-focused campaign should explicitly select by a declared mud metric,
+retain that checkpoint separately, and report the operating point and false
+positives. Pixel IoU/recall are not event-level defect detection rates.
+
+`scripts/publish_rtis_results.py` replaces the initial two-file publisher. It
+writes only the live RTIS index, CSV, JSON and exact per-model README/record
+paths. Every model links to all four initialization paths with resolved configs,
+per-class metrics, scalar curves, source/checkpoint hashes and hardware/software
+provenance. Completed/status changes publish on the next 60-second poll; active
+curves refresh every ten minutes. Report-only pushes remain excluded from CI.
+
+`scripts/profile_rtis_campaign.py` queues each completed selected checkpoint for
+the existing standardized inference benchmark: one L40S, BF16 public forward,
+batch one, 1024x1024, 20 warmup and 100 CUDA-event-timed forwards. It acquires the
+same per-GPU worker lock and checks for existing CUDA processes before profiling.
+It waits for a worker to release a GPU rather than preempting training. Until
+then FPS, latency, parameter memory and inference peak memory are explicitly
+pending. Failures retain a log and require review; they are not reported as zero.
+Performance applies to the exact RTIS checkpoint, not a historical RailSem19 proxy.
+
+The publisher and profiler run from a separate tools checkout. The profiler
+executes model code from the frozen training checkout and verifies its code SHA,
+evaluation provenance and checkpoint hash. Do not replace `campaign.code_sha`
+with the reporting-tools revision. Do not run two publishers: both use the same
+publisher lock. `STOP_PERFORMANCE` stops the collector after its current check;
+`STOP_PUBLISHER` stops the publisher after its current publication.
+
+Training VRAM/time from a resumed invocation do not reconstruct whole-run cost.
+Reports preserve that limitation and the earlier attempt evidence. The fixed
+GT-present-class mIoU is supplementary: the canonical mIoU includes classes with
+nonzero union, so false positives on absent classes can change its denominator.
+See the [mathematical audit](../results/paul-test-rtis/mud-pumping-audit/README.md)
+for exact counts and the distinction between hypotheses and established findings.

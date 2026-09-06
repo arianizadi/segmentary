@@ -16,7 +16,7 @@ early_stopping_min_delta: 0.002
 num_workers: 2
 protocols:
   rtis_only:
-    label: Pretrained backbone -> RTIS
+    label: Recipe pretrained initialization -> RTIS
     source_protocol: null
   cityscapes_to_rtis:
     label: Cityscapes -> RTIS
