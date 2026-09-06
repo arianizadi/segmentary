@@ -9,15 +9,15 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | 0 | completed | 2290 | 1018 | 1.80 | 2.45 | 6.38 | 1.47 | 19.76 | 21.96 |
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | 1 | completed | 3054 | 1781 | 2.55 | 3.43 | 9.02 | 0.98 | 21.82 | 24.25 |
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | 2 | completed | 2545 | 1272 | 3.20 | 4.10 | 12.74 | 0.32 | 19.96 | 22.18 |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 0 | training | 3899 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 1 | training | 3449 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 2 | evaluating | 3309 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 0 | evaluating | 4000 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 1 | training | 3499 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 2 | collecting | 3309 | 2036 | 2.66 | 3.20 | 13.41 | 1.42 | 21.06 | 23.40 |
 | hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 0 | completed | 2290 | 1018 | 4.52 | 5.17 | 26.26 | 1.78 | 23.32 | 25.92 |
 | hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 1 | completed | 1781 | 509 | 2.93 | 3.40 | 17.54 | 1.00 | 25.31 | 26.72 |
-| hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 2 | collecting | 2036 | 763 | 3.73 | 4.42 | 19.28 | 1.00 | 22.88 | 25.42 |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | 0 | training | 1849 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | 1 | training | 1781 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | 2 | training | 949 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 2 | completed | 2036 | 763 | 3.73 | 4.42 | 19.28 | 1.00 | 22.88 | 25.42 |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | 0 | training | 1899 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | 1 | training | 1849 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | 2 | training | 1049 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -2933,7 +2933,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **training**. Started: 2026-09-06T09:50:39.564043+00:00. Finished: —.
+Status: **evaluating**. Started: 2026-09-06T09:50:39.564043+00:00. Finished: —.
 
 Recipe pretrained initializer: `google/deeplabv3_mobilenet_v2_1.0_513`.
 
@@ -3018,6 +3018,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 3308 | 21.09 | 6.05 |
 | 3563 | 21.18 | 2.43 |
 | 3817 | 21.29 | 4.27 |
+| 4000 | 21.26 | 3.88 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3429,7 +3430,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 2
 
-Status: **evaluating**. Started: 2026-09-06T09:59:17.108460+00:00. Finished: —.
+Status: **collecting**. Started: 2026-09-06T09:59:17.108460+00:00. Finished: —.
 
 Recipe pretrained initializer: `google/deeplabv3_mobilenet_v2_1.0_513`.
 
@@ -3437,25 +3438,25 @@ Recipe pretrained initializer: `google/deeplabv3_mobilenet_v2_1.0_513`.
 
 Source checkpoint: `{'name': 'hf_auto_mobilenetv2_deeplabv3--cityscapes--seed-0', 'model': 'hf_auto_mobilenetv2_deeplabv3', 'protocol': 'cityscapes', 'config': '/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--cityscapes--seed-0/attempt-001/resolved-config.yaml', 'checkpoint': '/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--cityscapes--seed-0/attempt-001/train/hf_auto_mobilenetv2_deeplabv3--cityscapes_seed0/cityscapes/last.bn-recalibrated.ckpt', 'recorded_sha256': '4f3711930ae1df9eaa26a222ba7652799b210f3a244770289a5e58a1c8bf3aa5', 'exists': True}`.
 
-Config SHA-256: `2eaaba359fa8809ae84dfb2ebb3f24d8aaf2d306494bdf20a1570db8a0df1671`. Weights used for validation: `—`.
+Config SHA-256: `2eaaba359fa8809ae84dfb2ebb3f24d8aaf2d306494bdf20a1570db8a0df1671`. Weights used for validation: `raw`.
 
 ### Mud-pumping and aggregate quality
 
 | Metric | Selected checkpoint | Final training validation |
 | --- | --- | --- |
-| Mud IoU | — | — |
-| Mud precision | — | — |
-| Mud recall | — | — |
-| Mud Dice/F1 | — | — |
-| mIoU | — | — |
-| Mean accuracy | — | — |
-| Mean precision | — | — |
-| Mean Dice | — | — |
-| Mean specificity | — | — |
-| Pixel accuracy | — | — |
-| Frequency-weighted IoU | — | — |
-| Fixed GT-present class mIoU | — | — |
-| Boundary F1 | — | — |
+| Mud IoU | 2.66 | 1.42 |
+| Mud precision | 3.20 | 1.84 |
+| Mud recall | 13.41 | 5.86 |
+| Mud Dice/F1 | 5.17 | 2.80 |
+| mIoU | 21.06 | 21.44 |
+| Mean accuracy | 30.73 | 31.08 |
+| Mean precision | 38.40 | 38.29 |
+| Mean Dice | 26.48 | 27.09 |
+| Mean specificity | 98.51 | 98.48 |
+| Pixel accuracy | 75.83 | 75.25 |
+| Frequency-weighted IoU | 65.66 | 65.19 |
+| Fixed GT-present class mIoU | 23.40 | 23.83 |
+| Boundary F1 | 23.05 | 24.67 |
 
 The selected checkpoint has independent evaluation evidence. Final values are the trainer's final validation record, not a new independent evaluation. mIoU averages classes with nonzero union, so false positives on absent classes can change its denominator. The fixed GT-class mean is supplementary and excludes absent classes; their false positives remain in the confusion matrix.
 
@@ -3463,14 +3464,14 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 
 | Measurement | Value |
 | --- | --- |
-| Peak training VRAM, retained training invocation (GiB) | — |
-| Peak evaluation VRAM (GiB) | — |
-| Retained training invocation wall time (seconds) | — |
-| Retained training invocation GPU-hours (one GPU) | — |
-| Evaluation wall time (seconds) | — |
-| Full evaluation pipeline images/second | — |
-| Best full-state checkpoint (MiB) | — |
-| Final full-state checkpoint (MiB) | — |
+| Peak training VRAM, retained training invocation (GiB) | 9.88 |
+| Peak evaluation VRAM (GiB) | 6.55 |
+| Retained training invocation wall time (seconds) | 2782.37 |
+| Retained training invocation GPU-hours (one GPU) | 0.77 |
+| Evaluation wall time (seconds) | 10.65 |
+| Full evaluation pipeline images/second | 3.48 |
+| Best full-state checkpoint (MiB) | 36.06 |
+| Final full-state checkpoint (MiB) | 36.05 |
 | Audited periodic checkpoints removed (GiB) | — |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
@@ -3494,6 +3495,27 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Class | GT pixels | IoU (%) | Precision (%) | Recall (%) | Dice (%) | Boundary F1 (%) |
 | --- | --- | --- | --- | --- | --- | --- |
+| car | 29664 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| construction | 311585 | 12.55 | 13.92 | 56.00 | 22.30 | 13.59 |
+| fence | 265137 | 23.24 | 41.77 | 34.38 | 37.72 | 34.70 |
+| mud-pumping | 1226250 | 2.66 | 3.20 | 13.41 | 5.17 | 8.22 |
+| on-rails | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
+| person | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
+| pole | 628038 | 55.82 | 86.45 | 61.17 | 71.65 | 80.27 |
+| rail-embedded | 16799 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| rail-raised | 2969797 | 67.95 | 76.89 | 85.38 | 80.91 | 85.08 |
+| rail-track | 6323197 | 26.05 | 63.08 | 30.73 | 41.33 | 36.20 |
+| road | 1048831 | 5.76 | 34.54 | 6.46 | 10.89 | 17.84 |
+| sidewalk | 1297367 | 1.26 | 19.59 | 1.33 | 2.49 | 4.24 |
+| sky | 19121606 | 90.62 | 98.91 | 91.54 | 95.08 | 73.33 |
+| standing-water | 95802 | 0.19 | 0.20 | 4.27 | 0.38 | 0.97 |
+| terrain | 39239306 | 79.42 | 83.61 | 94.07 | 88.53 | 43.94 |
+| trackbed | 10643081 | 54.30 | 67.96 | 72.98 | 70.38 | 46.25 |
+| traffic-light | 19510 | 0.06 | 100.00 | 0.06 | 0.11 | 7.87 |
+| traffic-sign | 13285 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| tram-track | 56179 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| truck | 0 | — | — | — | — | — |
+| vegetation-overgrowth | 5901821 | 1.33 | 77.95 | 1.33 | 2.62 | 8.43 |
 
 ### Validation tracking
 
@@ -3519,8 +3541,28 @@ All retained scalar curves, including training loss and per-class IoU, are in re
 
 ```json
 {
-  "stopping": null,
-  "checkpoints": null,
+  "stopping": {
+    "actual_steps": 3309,
+    "maximum_steps": 4000,
+    "min_delta": 0.001,
+    "monitor": "val_iou/mud-pumping",
+    "patience": 5,
+    "reason": "validation_plateau"
+  },
+  "checkpoints": {
+    "best": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/hf_auto_mobilenetv2_deeplabv3--cityscapes_to_rtis--seed-2_seed2/rtis/best.ckpt",
+      "sha256": "9102c2f48157f0b7b38f0f22c809aacdebf97ad5a8bb625a07701441db2d2b33",
+      "global_step": 2036,
+      "bytes": 37808272
+    },
+    "final": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/hf_auto_mobilenetv2_deeplabv3--cityscapes_to_rtis--seed-2_seed2/rtis/last.ckpt",
+      "sha256": "10965533172c9c3deeebab46e9b9f947d9efcc2be8719017a200360b233de1b9",
+      "global_step": 3309,
+      "bytes": 37797648
+    }
+  },
   "cleanup_error": null
 }
 ```
@@ -3669,8 +3711,447 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ```json
 {
-  "training": null,
-  "evaluation": null
+  "training": {
+    "cuda_available": true,
+    "cuda_visible_devices": "1",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "source": "hf_image_processor",
+      "std": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "model_origins": [
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.conv_stem.first_conv",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.conv_stem.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.conv_stem.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.0.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.0.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.0.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.1.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.1.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.1.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.2.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.2.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.2.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.3.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.3.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.3.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.4.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.4.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.4.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.5.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.5.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.5.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.6.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.6.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.6.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.7.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.7.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.7.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.8.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.8.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.8.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.9.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.9.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.9.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.10.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.10.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.10.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.11.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.11.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.11.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.12.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.12.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.12.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.13.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.13.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.13.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.14.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.14.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.14.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.15.expand_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.15.conv_3x3",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.layer.15.reduce_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.mobilenet_v2.conv_1x1",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.segmentation_head.conv_pool",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.segmentation_head.conv_aspp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.segmentation_head.conv_projection",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "5282e0eaf10de7cc7f35ee5e40f47981b801bf63",
+        "hf_name_or_path": "google/deeplabv3_mobilenet_v2_1.0_513",
+        "module": "model.segmentation_head.classifier",
+        "timm_pretrained": {}
+      }
+    ],
+    "model_parameter_count": 2525717,
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8",
+    "trainable_parameter_count": 2113557,
+    "training_stop": {
+      "actual_steps": 3309,
+      "maximum_steps": 4000,
+      "min_delta": 0.001,
+      "monitor": "val_iou/mud-pumping",
+      "patience": 5,
+      "reason": "validation_plateau"
+    },
+    "validation_weights": "raw"
+  },
+  "evaluation": {
+    "cuda_available": true,
+    "cuda_visible_devices": "1",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "source": "hf_image_processor",
+      "std": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8"
+  }
 }
 ```
 
@@ -5610,7 +6091,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 2
 
-Status: **collecting**. Started: 2026-09-06T10:15:28.946777+00:00. Finished: —.
+Status: **completed**. Started: 2026-09-06T10:15:28.946777+00:00. Finished: 2026-09-06T10:46:12.874200+00:00.
 
 Recipe pretrained initializer: `google/deeplabv3_mobilenet_v2_1.0_513`.
 
@@ -5652,7 +6133,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.34 |
 | Best full-state checkpoint (MiB) | 36.06 |
 | Final full-state checkpoint (MiB) | 36.05 |
-| Audited periodic checkpoints removed (GiB) | — |
+| Audited periodic checkpoints removed (GiB) | 0.14 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -5662,12 +6143,218 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Status | Parameters | Weight MiB | FPS | p50 ms | p95 ms | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- |
-| waiting_for_idle_gpu | — | — | — | — | — | — |
+| complete | 2525717 | 9.63 | 173.85 | 5.72 | 6.01 | 0.45 |
 
 ```json
 {
-  "status": "waiting_for_idle_gpu",
-  "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+  "schema_version": 1,
+  "model_id": "hf_auto_mobilenetv2_deeplabv3",
+  "measured_at": "2026-09-06T10:46:11+00:00",
+  "status": "complete",
+  "benchmark_scope": "rtis_selected_checkpoint_model_only",
+  "applies_to": [
+    "hf_auto_mobilenetv2_deeplabv3--railsem19_to_rtis--seed-2"
+  ],
+  "source": {
+    "campaign_git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+    "git_dirty": false,
+    "config_hash": "70bee2f49001",
+    "resolved_config": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/configs/hf_auto_mobilenetv2_deeplabv3--railsem19_to_rtis--seed-2.yaml",
+    "config_sha256": "24f13745b842b3cdfc444934134efa563842456510987a640f10aa292344a295",
+    "checkpoint_sha256": "6e9365f30a386b18e3f86620affaa7728663e897af5c911805caa21369226c3a",
+    "checkpoint_global_step": 763,
+    "checkpoint_bytes": 37808272,
+    "checkpoint_kind": "resume checkpoint with optimizer and EMA state",
+    "weights": "raw",
+    "measured_checkpoint_job_id": "hf_auto_mobilenetv2_deeplabv3--railsem19_to_rtis--seed-2",
+    "result_sha256": "ded5990a81a26b8efdb4b35f26269d405f1c33969934b8115f8c6152b6eebea1",
+    "result_git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+    "result_stage": "eval:paul-test-rtis:val",
+    "result_seed": 2
+  },
+  "hardware": {
+    "gpu_name": "NVIDIA L40S",
+    "gpu_uuid": "GPU-a5ad49e5-0536-5229-ba8a-f8a902808f53",
+    "logical_device": "cuda:0",
+    "physical_visibility_token": "7",
+    "compute_capability": [
+      8,
+      9
+    ],
+    "total_memory_bytes": 47677177856
+  },
+  "model": {
+    "parameter_count": 2525717,
+    "trainable_parameter_count": 2113557,
+    "resident_parameter_bytes": 10102868,
+    "parameter_dtype_counts": {
+      "float32": 2525717
+    }
+  },
+  "contract": {
+    "backend": "pytorch",
+    "precision": "bf16_autocast",
+    "batch_size": 1,
+    "input_shape_nchw": [
+      1,
+      3,
+      1024,
+      1024
+    ],
+    "warmup_iterations": 20,
+    "measured_iterations": 100,
+    "timing": "per-forward CUDA events with end-event synchronization",
+    "includes_preprocessing": false,
+    "includes_data_loader": false,
+    "includes_sliding_window": false,
+    "input_resident_on_gpu": true,
+    "model_only": true,
+    "entrypoint": "public model(image) dense-logits forward"
+  },
+  "measurements": {
+    "latency": {
+      "p50_ms": 5.719552040100098,
+      "p95_ms": 6.012159991264343,
+      "mean_ms": 5.751931829452515,
+      "minimum_ms": 5.588992118835449,
+      "maximum_ms": 6.377471923828125,
+      "fps": 173.85463347801584,
+      "raw_ms": [
+        5.6893439292907715,
+        5.72211217880249,
+        6.178815841674805,
+        5.625855922698975,
+        5.661695957183838,
+        5.641215801239014,
+        5.620736122131348,
+        5.673952102661133,
+        6.036479949951172,
+        5.71289587020874,
+        5.709824085235596,
+        5.710847854614258,
+        5.916672229766846,
+        5.813248157501221,
+        5.796864032745361,
+        5.754879951477051,
+        5.781504154205322,
+        6.377471923828125,
+        6.260735988616943,
+        5.87775993347168,
+        5.806079864501953,
+        5.752831935882568,
+        5.734399795532227,
+        5.761023998260498,
+        5.738560199737549,
+        5.682176113128662,
+        5.965824127197266,
+        5.6145920753479,
+        5.588992118835449,
+        5.596159934997559,
+        5.607423782348633,
+        5.61356782913208,
+        5.621823787689209,
+        5.619711875915527,
+        5.640192031860352,
+        5.806079864501953,
+        5.660672187805176,
+        5.6299519538879395,
+        5.625855922698975,
+        5.682176113128662,
+        5.636096000671387,
+        5.673984050750732,
+        5.734399795532227,
+        5.82755184173584,
+        6.299647808074951,
+        5.819392204284668,
+        5.796864032745361,
+        5.839871883392334,
+        5.846015930175781,
+        5.908480167388916,
+        5.716991901397705,
+        5.703743934631348,
+        5.67091178894043,
+        5.647359848022461,
+        5.657599925994873,
+        5.699584007263184,
+        5.688320159912109,
+        5.6545281410217285,
+        5.693439960479736,
+        5.6156158447265625,
+        5.678080081939697,
+        5.634047985076904,
+        5.62175989151001,
+        5.62278413772583,
+        5.61356782913208,
+        5.608448028564453,
+        5.668863773345947,
+        5.690368175506592,
+        5.706751823425293,
+        5.708799839019775,
+        5.72211217880249,
+        5.746687889099121,
+        5.765120029449463,
+        5.749760150909424,
+        5.893119812011719,
+        5.815296173095703,
+        5.7579522132873535,
+        5.734399795532227,
+        5.781504154205322,
+        5.804031848907471,
+        5.745664119720459,
+        5.793791770935059,
+        5.747712135314941,
+        5.797887802124023,
+        5.751808166503906,
+        5.687295913696289,
+        5.665791988372803,
+        6.010879993438721,
+        5.710847854614258,
+        5.6985602378845215,
+        5.732351779937744,
+        5.711872100830078,
+        5.709824085235596,
+        5.965792179107666,
+        5.815296173095703,
+        5.811200141906738,
+        5.761023998260498,
+        5.726208209991455,
+        5.8122239112854,
+        5.772287845611572
+      ],
+      "percentile_method": "numpy linear interpolation"
+    },
+    "peak_reserved_bytes": 484442112,
+    "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
+    "benchmark_wall_clock_s": 10.348974961787462
+  },
+  "started_at": "2026-09-06T10:46:00+00:00",
+  "finished_at": "2026-09-06T10:46:11+00:00",
+  "environment": {
+    "hostname": "hdrfs-app-001",
+    "python": "3.11.15",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "cuda_available": true,
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "cuda_visible_devices": "7",
+    "packages": {
+      "segmentary": "0.1.0",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0",
+      "timm": "1.0.28",
+      "segmentation-models-pytorch": "0.5.0",
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4"
+    }
+  }
 }
 ```
 
@@ -5696,6 +6383,45 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | tram-track | 56179 | 0.87 | 50.51 | 0.88 | 1.73 | 10.03 |
 | truck | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
 | vegetation-overgrowth | 5901821 | 0.70 | 86.89 | 0.70 | 1.40 | 3.58 |
+
+### Full-run accounting
+
+| Measurement | Value |
+| --- | --- |
+| Full GPU-reserved wall seconds, all recorded worker attempts | 1843.96 |
+| Full reserved GPU-hours | 0.51 |
+| Whole-run timing complete | True |
+
+| Phase | Wall seconds including failed attempts |
+| --- | --- |
+| training | 1736.80 |
+| diagnostics | 71.58 |
+| performance | 16.93 |
+
+GPU-reserved time includes model loading, training, validation, collection, profiling, checkpoint I/O and orchestration while the worker owns one GPU. It is not GPU kernel-active time. Phase timings and sampled device memory/power/utilization are retained separately; sampled device memory is not the allocator high-water mark.
+
+### Train/validation and raw/EMA diagnostics
+
+| Checkpoint / weights / split | Images | Mud IoU (%) | Mud precision (%) | Mud recall (%) |
+| --- | --- | --- | --- | --- |
+| best-auto-train / raw | 220 | 75.57 | 79.51 | 93.84 |
+| best-auto-val / raw | 37 | 3.73 | 4.42 | 19.28 |
+| best-alternate-val / ema | 37 | 2.23 | 2.80 | 9.91 |
+| final-auto-val / raw | 37 | 1.00 | 1.39 | 3.47 |
+
+Train uses the evaluation transform without augmentation. Compare mud train/validation metrics for the same selected weights. Alternate EMA on running-stat BatchNorm is explicitly uncalibrated and is diagnostic only. Score-threshold curves use uncalibrated normalized scores and are pixel-level diagnostics, not event detection rates or a selected deployment operating point.
+
+### Downloadable evidence
+
+- best-auto-train: [per-image.csv](railsem19_to_rtis--seed-2/best-auto-train/per-image.csv) · [per-image-confusion.json.gz](railsem19_to_rtis--seed-2/best-auto-train/per-image-confusion.json.gz) · [groups.json](railsem19_to_rtis--seed-2/best-auto-train/groups.json) · [mud-score-curves.json](railsem19_to_rtis--seed-2/best-auto-train/mud-score-curves.json)
+- best-auto-val: [per-image.csv](railsem19_to_rtis--seed-2/best-auto-val/per-image.csv) · [per-image-confusion.json.gz](railsem19_to_rtis--seed-2/best-auto-val/per-image-confusion.json.gz) · [groups.json](railsem19_to_rtis--seed-2/best-auto-val/groups.json) · [mud-score-curves.json](railsem19_to_rtis--seed-2/best-auto-val/mud-score-curves.json) · [examples.jpg](railsem19_to_rtis--seed-2/best-auto-val/examples.jpg)
+- best-alternate-val: [per-image.csv](railsem19_to_rtis--seed-2/best-alternate-val/per-image.csv) · [per-image-confusion.json.gz](railsem19_to_rtis--seed-2/best-alternate-val/per-image-confusion.json.gz) · [groups.json](railsem19_to_rtis--seed-2/best-alternate-val/groups.json) · [mud-score-curves.json](railsem19_to_rtis--seed-2/best-alternate-val/mud-score-curves.json)
+- final-auto-val: [per-image.csv](railsem19_to_rtis--seed-2/final-auto-val/per-image.csv) · [per-image-confusion.json.gz](railsem19_to_rtis--seed-2/final-auto-val/per-image-confusion.json.gz) · [groups.json](railsem19_to_rtis--seed-2/final-auto-val/groups.json) · [mud-score-curves.json](railsem19_to_rtis--seed-2/final-auto-val/mud-score-curves.json)
+- resources: [telemetry.csv](railsem19_to_rtis--seed-2/resources/telemetry.csv)
+
+![Selected-checkpoint validation examples](railsem19_to_rtis--seed-2/best-auto-val/examples.jpg)
+
+Examples are two lowest and two highest mud-IoU positive images, plus up to two negative images with the most false-positive mud pixels. They are targeted diagnostic examples, not random samples. Green: true positive; red: false positive; yellow: false negative. Full predictions remain on HDRFS.
 
 ### Validation tracking
 
@@ -6887,6 +7613,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 21.44 | 1.37 |
 | 508 | 23.99 | 1.86 |
 | 763 | 23.72 | 3.53 |
+| 1017 | 24.19 | 3.66 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 

@@ -8,7 +8,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | hf_auto_mobilevit_xxs_deeplabv3 | rtis_only | 0 | training | 349 | — | — | — | — | — | — | — |
 | hf_auto_mobilevit_xxs_deeplabv3 | rtis_only | 1 | training | 149 | — | — | — | — | — | — | — |
-| hf_auto_mobilevit_xxs_deeplabv3 | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | rtis_only | 2 | training | — | — | — | — | — | — | — | — |
 | hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -490,7 +490,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## rtis_only — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T10:46:12.898559+00:00. Finished: —.
 
 Recipe pretrained initializer: `apple/deeplabv3-mobilevit-xx-small`.
 
