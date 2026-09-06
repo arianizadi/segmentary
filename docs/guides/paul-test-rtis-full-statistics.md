@@ -108,3 +108,5 @@ millions of correlated pixels do not justify a population confidence interval
 for unseen rail recordings. Pixel segmentation metrics are not event-level
 anomaly detection rates; event ground truth and an event definition would be
 needed for those claims.
+
+Training-set diagnostic inference pads RGB frames at the bottom/right to multiples of 32 before normalization, then crops predictions to the original dimensions. Padding contributes no metric pixels. Validation uses the unchanged standalone evaluation pipeline and must reproduce its confusion matrix exactly.

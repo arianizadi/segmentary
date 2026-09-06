@@ -79,7 +79,12 @@ def collect(model, cfg, samples, split, directory, names):
     assert split in ("train", "val")
     directory.mkdir(parents=True, exist_ok=True)
     dataset = Path(cfg.stages[0].data[0].root)
-    transform = build_eval_transform(aug_from_spec(cfg.aug, model))
+    # Train images include narrow, non-stride-aligned frames never seen by the
+    # standalone validation loader. Pad RGB before normalization and crop all
+    # predictions back; no added pixels enter any diagnostic denominator.
+    transform = build_eval_transform(
+        aug_from_spec(cfg.aug, model), pad_to_multiple=32 if split == "train" else None
+    )
     infer_cfg = InferenceConfig(
         sliding_window=cfg.eval.sliding_window,
         window=tuple(cfg.eval.window),
@@ -118,6 +123,10 @@ def collect(model, cfg, samples, split, directory, names):
             )
             # Diagnostic normalized scores, not calibrated defect probabilities.
             scores = logits.float().softmax(1)[0, mud].cpu().numpy()
+        if split == "train":
+            height, width = target.shape
+            pred = pred[:height, :width]
+            scores = scores[:height, :width]
         if pred.shape != target.shape:
             raise RuntimeError(f"Prediction shape mismatch: {key}")
         valid = target != 255
