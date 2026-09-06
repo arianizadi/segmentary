@@ -30,7 +30,7 @@
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | railsem19_to_rtis | 3/3 | 12.62 | 3.99 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 3/3 | 19.83 | 9.87 |
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 0/3 | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 0/3 | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 1/3 | 1.50 | — |
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | railsem19_to_rtis | 1/3 | 9.23 | — |
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 3/3 | 9.61 | 3.53 |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | cityscapes_to_railsem19_to_rtis | 0/3 | — | — |
@@ -152,7 +152,7 @@
 
 Mean and sample SD are descriptive optimization variability. Incomplete seed groups are provisional; source checkpoints and data split are fixed across seeds.
 
-**76/432 completed · 0 failed**
+**77/432 completed · 0 failed**
 
 Fresh full-statistics campaign: checkpoint selection and early stopping use **mud-pumping IoU**. Every job collects full accounting, train/validation diagnostics, raw/EMA comparison, prediction examples and isolated performance before completion.
 
@@ -241,18 +241,18 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 0 | completed | 4000 | 2800 | 5.86 | 7.17 | 24.17 | 4.42 | 30.26 | 35.30 |
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 1 | completed | 4000 | 3309 | 10.13 | 14.58 | 24.92 | 7.08 | 30.91 | 36.07 |
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 2 | completed | 3818 | 2545 | 12.86 | 16.09 | 39.02 | 9.56 | 29.52 | 32.80 |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 0 | collecting | 3818 | 2545 | 1.50 | 2.88 | 3.04 | 1.07 | 29.26 | 34.14 |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 1 | training | 3749 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 2 | training | 3599 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | railsem19_to_rtis | 0 | training | 3308 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | railsem19_to_rtis | 1 | training | 3249 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 0 | completed | 3818 | 2545 | 1.50 | 2.88 | 3.04 | 1.07 | 29.26 | 34.14 |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 1 | training | 4000 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_rtis | 2 | training | 3849 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | railsem19_to_rtis | 0 | training | 3549 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | railsem19_to_rtis | 1 | training | 3449 | — | — | — | — | — | — | — |
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | railsem19_to_rtis | 2 | completed | 2290 | 1018 | 9.23 | 17.75 | 16.12 | 5.18 | 32.50 | 36.11 |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 1399 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 699 | — | — | — | — | — | — | — |
-| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 508 | — | — | — | — | — | — | — |
-| [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | rtis_only | 0 | training | 199 | — | — | — | — | — | — | — |
-| [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | rtis_only | 1 | training | 149 | — | — | — | — | — | — | — |
-| [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 1599 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 899 | — | — | — | — | — | — | — |
+| [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 749 | — | — | — | — | — | — | — |
+| [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | rtis_only | 0 | training | 299 | — | — | — | — | — | — | — |
+| [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | rtis_only | 1 | training | 254 | — | — | — | — | — | — | — |
+| [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | rtis_only | 2 | training | — | — | — | — | — | — | — | — |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
