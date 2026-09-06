@@ -110,3 +110,5 @@ anomaly detection rates; event ground truth and an event definition would be
 needed for those claims.
 
 Training-set diagnostic inference pads RGB frames at the bottom/right to multiples of 32 before normalization, then crops predictions to the original dimensions. Padding contributes no metric pixels. Validation uses the unchanged standalone evaluation pipeline and must reproduce its confusion matrix exactly.
+
+Standalone and detailed post-training evaluations use deterministic kernels and the same contiguous input layout. Training and the standardized speed benchmark keep their normal performance settings; deterministic diagnostic timing is reported separately. This avoids cuDNN autotuning differences masquerading as inconsistent confusion counts.

@@ -113,8 +113,8 @@ def collect(model, cfg, samples, split, directory, names):
         ):
             raise RuntimeError(f"Dataset content changed: {key}")
         item = transform(image=rgb, mask=target)
-        with torch.inference_mode(), torch.autocast("cuda", dtype=torch.bfloat16):
-            logits = inference(model, item["image"].unsqueeze(0).cuda(), n, infer_cfg)
+        with torch.no_grad(), torch.autocast("cuda", dtype=torch.bfloat16):
+            logits = inference(model, item["image"].unsqueeze(0).contiguous().cuda(), n, infer_cfg)
             pred = (
                 prediction_from_inference(logits.float(), infer_cfg)[0]
                 .cpu()
@@ -259,12 +259,12 @@ def main():
     out = Path(state["checkpoints"]["best"]["path"]).parent / "diagnostics"
     results = {}
     torch.set_num_threads(4)
+    seed_everything(cfg.train.seed, deterministic=True)
     for anchor, mode, splits in [
         ("best", "auto", ["train", "val"]),
         ("best", "alternate", ["val"]),
         ("final", "auto", ["val"]),
     ]:
-        seed_everything(cfg.train.seed)
         model = build_model(cfg.model, space.num_classes)
         auto_ema = ema_evaluation_safe(model)
         use_ema = auto_ema if mode == "auto" else not auto_ema
@@ -300,6 +300,7 @@ def main():
         {
             "contract": "rtis-full-statistics-v1",
             "test_evaluated": False,
+            "deterministic": True,
             "results": results,
             "standalone_confusion_exact_match": args.limit_per_split is None,
             "smoke_limit": args.limit_per_split,

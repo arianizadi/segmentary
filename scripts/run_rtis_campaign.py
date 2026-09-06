@@ -309,6 +309,7 @@ def run_job(root, repo, job, gpu, campaign):
                 "-m",
                 "segmentary.eval",
                 job["config"],
+                *(["--deterministic"] if campaign.get("collection_contract") else []),
                 "--ckpt",
                 str(best_paths[0]),
                 "--auto-weights",

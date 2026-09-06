@@ -162,6 +162,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--device", default="cuda:0")
+    ap.add_argument("--deterministic", action="store_true", help="Reproducible evaluation kernels")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument(
         "--num-workers",
@@ -203,7 +204,7 @@ def main(argv: list[str] | None = None) -> int:
         merged = deep_merge(merged, {"train": {"seed": args.seed}})
     cfg = from_dict(ExperimentConfig, merged)
     validate_task_configuration(cfg)
-    seed_everything(cfg.train.seed)
+    seed_everything(cfg.train.seed, deterministic=args.deterministic)
 
     space = load_space(cfg.taxonomy_root, cfg.space)
     validate_task_space(cfg.loss.task, space)
@@ -350,6 +351,7 @@ def main(argv: list[str] | None = None) -> int:
         "data": to_dict(data),
         "split": split,
         "num_workers": num_workers,
+        "deterministic": args.deterministic,
         "weights": "ema" if use_ema else "raw",
         "tta": {
             "enabled": bool(args.tta),

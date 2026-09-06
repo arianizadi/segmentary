@@ -333,7 +333,13 @@ def test_seed_and_set_overrides_are_recorded_without_hash_collision(
     monkeypatch.setattr(eval_module, "peak_vram", lambda: {})
 
     seeded: list[int] = []
-    monkeypatch.setattr(eval_module, "seed_everything", seeded.append)
+    determinism: list[bool] = []
+
+    def record_seed(seed, deterministic=False):
+        seeded.append(seed)
+        determinism.append(deterministic)
+
+    monkeypatch.setattr(eval_module, "seed_everything", record_seed)
     records = []
 
     def capture_record(path, record) -> None:
@@ -358,6 +364,7 @@ def test_seed_and_set_overrides_are_recorded_without_hash_collision(
                     "eval.save_confusion=false",
                     "--seed",
                     str(seed),
+                    *(["--deterministic"] if seed == 2 else []),
                     "--out",
                     str(output),
                     "--device",
@@ -368,6 +375,8 @@ def test_seed_and_set_overrides_are_recorded_without_hash_collision(
         )
 
     assert seeded == [1, 2]
+    assert determinism == [False, True]
+    assert [r.config["evaluation"]["deterministic"] for r in records] == [False, True]
     assert len(loader_kwargs) == 2
     assert all(kwargs["multiprocessing_context"] == "spawn" for kwargs in loader_kwargs)
     assert all(kwargs["num_workers"] == 4 for kwargs in loader_kwargs)
