@@ -25628,6 +25628,10 @@
           {
             "step": 3149,
             "value": 0.8287301063537598
+          },
+          {
+            "step": 3199,
+            "value": 2.038754940032959
           }
         ],
         "val/miou": [
@@ -30845,7 +30849,7 @@
           }
         ]
       },
-      "observed_step": 3149,
+      "observed_step": 3199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -52458,10 +52462,11 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "evaluating",
       "gpu": 8,
       "started_at": "2026-09-06T04:49:52.087621+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+      "final_step": 3054,
       "resolved_config": {
         "name": "eomt_dinov3_large--railsem19_to_rtis--seed-1",
         "model": {
@@ -58157,7 +58162,6 @@
           }
         ]
       },
-      "observed_step": 3054,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -68374,6 +68378,10 @@
           {
             "step": 2349,
             "value": 0.2889171540737152
+          },
+          {
+            "step": 2399,
+            "value": 0.7745274305343628
           }
         ],
         "val/miou": [
@@ -72295,7 +72303,7 @@
           }
         ]
       },
-      "observed_step": 2349,
+      "observed_step": 2399,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -72513,6 +72521,10 @@
           {
             "step": 599,
             "value": 1.2453845739364624
+          },
+          {
+            "step": 649,
+            "value": 0.8200510740280151
           }
         ],
         "val/miou": [
@@ -73524,7 +73536,7 @@
           }
         ]
       },
-      "observed_step": 599,
+      "observed_step": 649,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
