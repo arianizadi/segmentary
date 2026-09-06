@@ -496,10 +496,6 @@ def comparison_table(jobs, metric, percent=True):
             values = [v for v in values if v is not None]
             fmt = pct if percent else number
             cell = fmt(statistics.mean(values)) if values else "—"
-            if len(values) > 1:
-                cell += f" ± {fmt(statistics.stdev(values))}"
-            if values:
-                cell += f" (n={len(values)}/{len(group)})"
             row.append(cell)
         rows.append(row)
     return table(
@@ -541,7 +537,7 @@ def artifacts(data):
         "",
         "## Quality",
         "",
-        "Validation **mIoU (%)** across classes. Cells show mean ± sample SD over completed seeds; n is the available/planned seed count. Partial groups are provisional; — means unavailable. These are the existing selected-checkpoint evaluations, not newly selected mIoU-best checkpoints. Raw/EMA settings are recorded on each model page.",
+        "Validation **mIoU (%)** across classes. Cells show the mean over completed seeds. Per-seed values are retained on model pages and in machine records. Partial groups are provisional; — means unavailable. These are the existing selected-checkpoint evaluations, not newly selected mIoU-best checkpoints. Raw/EMA settings are recorded on each model page.",
         "",
         seed_summary(jobs),
         "",
@@ -556,7 +552,7 @@ def artifacts(data):
         "",
         "## Standardized model-only inference",
         "",
-        "**FPS**, mean ± sample SD across completed, profiled seeds. Input/evaluation settings, latency and peak VRAM are on the model pages; compare speeds only under compatible settings.",
+        "**FPS**, mean across completed, profiled seeds. Input/evaluation settings, latency and peak VRAM are on the model pages; compare speeds only under compatible settings.",
         "",
         comparison_table(
             jobs,
