@@ -630,9 +630,9 @@
       "model": "eomt_large",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 3054,
+      "status": "collecting",
+      "final_step": 3054,
+      "observed_step": null,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -642,7 +642,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2849,
+      "observed_step": 2899,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -652,7 +652,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2349,
+      "observed_step": 2399,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -662,7 +662,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2099,
+      "observed_step": 2149,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -672,7 +672,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2199,
+      "observed_step": 2249,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -682,7 +682,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2049,
+      "observed_step": 2149,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -692,7 +692,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1799,
+      "observed_step": 1849,
       "record": "models/eomt_large/record.json"
     },
     {
