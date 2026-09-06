@@ -1,6 +1,6 @@
 # RTIS model comparison
 
-**199/432 completed · 0 failed**
+**200/432 completed · 0 failed**
 
 Overall segmentation quality and mud-pumping results across four initialization paths. Every completed job includes quality evaluation, training diagnostics and isolated performance profiling.
 
@@ -30,7 +30,7 @@ Validation **mIoU (%)** across classes. Cells show the mean over completed seeds
 | [native_mobilenetv3_large_lraspp](models/native_mobilenetv3_large_lraspp/README.md) | 12/12 | 15.77 | 21.35 | 34.32 | 28.76 |
 | [native_resnet101_uper](models/native_resnet101_uper/README.md) | 12/12 | 22.67 | 27.06 | 39.38 | 34.19 |
 | [native_resnet18_fpn_fcn](models/native_resnet18_fpn_fcn/README.md) | 12/12 | 22.88 | 21.92 | 34.47 | 26.67 |
-| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | 7/12 | 23.04 | 26.73 | 26.67 | 28.61 |
+| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | 8/12 | 23.04 | 26.73 | 31.52 | 28.61 |
 | [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | 0/12 | — | — | — | — |
 | [native_resnet50_deeplabv3plus](models/native_resnet50_deeplabv3plus/README.md) | 0/12 | — | — | — | — |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | 0/12 | — | — | — | — |
@@ -73,7 +73,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [native_mobilenetv3_large_lraspp](models/native_mobilenetv3_large_lraspp/README.md) | 12/12 | 1.80 | 0.93 | 2.97 | 0.67 |
 | [native_resnet101_uper](models/native_resnet101_uper/README.md) | 12/12 | 0.59 | 1.14 | 0.61 | 1.11 |
 | [native_resnet18_fpn_fcn](models/native_resnet18_fpn_fcn/README.md) | 12/12 | 0.58 | 1.37 | 1.55 | 6.13 |
-| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | 7/12 | 0.81 | 1.72 | 0.70 | 2.61 |
+| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | 8/12 | 0.81 | 1.72 | 0.91 | 2.61 |
 | [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | 0/12 | — | — | — | — |
 | [native_resnet50_deeplabv3plus](models/native_resnet50_deeplabv3plus/README.md) | 0/12 | — | — | — | — |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | 0/12 | — | — | — | — |
@@ -116,7 +116,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [native_mobilenetv3_large_lraspp](models/native_mobilenetv3_large_lraspp/README.md) | 12/12 | 226.78 | 234.35 | 241.43 | 231.42 |
 | [native_resnet101_uper](models/native_resnet101_uper/README.md) | 12/12 | 65.24 | 64.37 | 64.23 | 64.99 |
 | [native_resnet18_fpn_fcn](models/native_resnet18_fpn_fcn/README.md) | 12/12 | 220.44 | 219.42 | 214.88 | 221.69 |
-| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | 7/12 | 247.52 | 248.29 | 246.66 | 242.53 |
+| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | 8/12 | 247.52 | 248.29 | 242.97 | 242.53 |
 | [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | 0/12 | — | — | — | — |
 | [native_resnet50_deeplabv3plus](models/native_resnet50_deeplabv3plus/README.md) | 0/12 | — | — | — | — |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | 0/12 | — | — | — | — |
@@ -341,19 +341,19 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | rtis_only | 2 | completed | 2290 | 1018 | 0.50 | 1.21 | 0.86 | 0.49 | 22.08 | 25.76 |
 | [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | cityscapes_to_rtis | 0 | completed | 3818 | 2545 | 1.58 | 5.59 | 2.16 | 0.67 | 29.13 | 33.99 |
 | [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | cityscapes_to_rtis | 1 | completed | 3054 | 1781 | 1.86 | 2.79 | 5.26 | 0.57 | 24.33 | 28.38 |
-| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | cityscapes_to_rtis | 2 | training | 3499 | — | — | — | — | — | — | — |
-| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | railsem19_to_rtis | 0 | collecting | 2800 | 1527 | 1.12 | 2.25 | 2.17 | 0.04 | 36.37 | 42.43 |
-| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | railsem19_to_rtis | 1 | training | 2949 | — | — | — | — | — | — | — |
+| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | cityscapes_to_rtis | 2 | training | 3599 | — | — | — | — | — | — | — |
+| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | railsem19_to_rtis | 0 | completed | 2800 | 1527 | 1.12 | 2.25 | 2.17 | 0.04 | 36.37 | 42.43 |
+| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | railsem19_to_rtis | 1 | training | 3099 | — | — | — | — | — | — | — |
 | [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | railsem19_to_rtis | 2 | completed | 1781 | 509 | 0.70 | 0.84 | 3.85 | 0.39 | 26.67 | 31.12 |
 | [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 2036 | 763 | 2.61 | 3.15 | 13.22 | 1.44 | 28.61 | 33.38 |
-| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 2649 | — | — | — | — | — | — | — |
-| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 1849 | — | — | — | — | — | — | — |
-| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | rtis_only | 0 | training | 1299 | — | — | — | — | — | — | — |
-| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | rtis_only | 1 | training | 699 | — | — | — | — | — | — | — |
-| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | rtis_only | 2 | training | 549 | — | — | — | — | — | — | — |
-| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | cityscapes_to_rtis | 0 | training | 449 | — | — | — | — | — | — | — |
-| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | cityscapes_to_rtis | 1 | training | 99 | — | — | — | — | — | — | — |
-| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
+| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 2749 | — | — | — | — | — | — | — |
+| [native_resnet18_fpn_segformer_aux](models/native_resnet18_fpn_segformer_aux/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 1999 | — | — | — | — | — | — | — |
+| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | rtis_only | 0 | training | 1399 | — | — | — | — | — | — | — |
+| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | rtis_only | 1 | training | 799 | — | — | — | — | — | — | — |
+| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | rtis_only | 2 | training | 649 | — | — | — | — | — | — | — |
+| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | cityscapes_to_rtis | 0 | training | 549 | — | — | — | — | — | — | — |
+| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | cityscapes_to_rtis | 1 | training | 199 | — | — | — | — | — | — | — |
+| [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | cityscapes_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
 | [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
