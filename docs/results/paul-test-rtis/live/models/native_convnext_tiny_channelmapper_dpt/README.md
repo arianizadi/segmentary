@@ -14,7 +14,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | native_convnext_tiny_channelmapper_dpt | cityscapes_to_rtis | 2 | completed | 3054 | 1781 | 0.94 | 1.42 | 2.73 | 0.89 | 33.79 | 39.43 |
 | native_convnext_tiny_channelmapper_dpt | railsem19_to_rtis | 0 | completed | 2800 | 1527 | 2.44 | 13.18 | 2.91 | 2.36 | 40.63 | 47.40 |
 | native_convnext_tiny_channelmapper_dpt | railsem19_to_rtis | 1 | completed | 2545 | 1272 | 2.15 | 5.18 | 3.54 | 1.85 | 41.08 | 47.93 |
-| native_convnext_tiny_channelmapper_dpt | railsem19_to_rtis | 2 | training | 3054 | — | — | — | — | — | — | — |
+| native_convnext_tiny_channelmapper_dpt | railsem19_to_rtis | 2 | training | 3099 | — | — | — | — | — | — | — |
 | native_convnext_tiny_channelmapper_dpt | cityscapes_to_railsem19_to_rtis | 0 | completed | 2800 | 1527 | 2.53 | 3.28 | 9.95 | 2.06 | 41.92 | 48.90 |
 | native_convnext_tiny_channelmapper_dpt | cityscapes_to_railsem19_to_rtis | 1 | collecting | 2290 | 1018 | 2.24 | 3.89 | 5.02 | 1.65 | 41.69 | 48.64 |
 | native_convnext_tiny_channelmapper_dpt | cityscapes_to_railsem19_to_rtis | 2 | collecting | 2036 | 1781 | 2.25 | 5.22 | 3.82 | 2.08 | 44.37 | 49.30 |
