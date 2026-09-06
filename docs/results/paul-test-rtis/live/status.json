@@ -1750,7 +1750,7 @@
       "model": "native_convnext_tiny_uper",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2800,
       "observed_step": null,
       "record": "models/native_convnext_tiny_uper/record.json"
@@ -1762,7 +1762,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2849,
+      "observed_step": 2999,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1802,7 +1802,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2699,
+      "observed_step": 2949,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1822,7 +1822,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1849,
+      "observed_step": 2099,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1832,7 +1832,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1781,
+      "observed_step": 1999,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1842,7 +1842,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1399,
+      "observed_step": 1599,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1852,7 +1852,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1199,
+      "observed_step": 1399,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1862,7 +1862,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 763,
+      "observed_step": 949,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1872,7 +1872,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 508,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1882,7 +1882,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 249,
+      "observed_step": 449,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1890,7 +1890,7 @@
       "model": "native_efficientnet_b0_deeplabv3plus",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
