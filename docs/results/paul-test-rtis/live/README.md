@@ -1,6 +1,6 @@
 # paul-test-rtis live pilot
 
-**0/144 completed · 0 failed**
+**0/144 completed · 2 failed**
 
 36 model recipes x four initialization paths x seed 0. Each run trains for at most 4,000 optimizer steps on the same 220 training images, with validation-based early stopping.
 
@@ -16,18 +16,18 @@ Validation every 250 steps; stop after three checks without a 0.2-point mIoU imp
 
 | Model | Initialization path | Status | Steps | Best step | Val mIoU (%) |
 | --- | --- | --- | ---: | ---: | ---: |
-| eomt_dinov3_large | rtis_only | queued | — | — | — |
-| eomt_dinov3_large | cityscapes_to_rtis | queued | — | — | — |
-| eomt_dinov3_large | railsem19_to_rtis | queued | — | — | — |
-| eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | queued | — | — | — |
-| eomt_large | rtis_only | queued | — | — | — |
-| eomt_large | cityscapes_to_rtis | queued | — | — | — |
-| eomt_large | railsem19_to_rtis | queued | — | — | — |
-| eomt_large | cityscapes_to_railsem19_to_rtis | queued | — | — | — |
-| hf_auto_beit_base_ade | rtis_only | queued | — | — | — |
-| hf_auto_beit_base_ade | cityscapes_to_rtis | queued | — | — | — |
-| hf_auto_beit_base_ade | railsem19_to_rtis | queued | — | — | — |
-| hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | queued | — | — | — |
+| eomt_dinov3_large | rtis_only | training | — | — | — |
+| eomt_dinov3_large | cityscapes_to_rtis | training | — | — | — |
+| eomt_dinov3_large | railsem19_to_rtis | training | — | — | — |
+| eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | training | — | — | — |
+| eomt_large | rtis_only | training | — | — | — |
+| eomt_large | cityscapes_to_rtis | training | — | — | — |
+| eomt_large | railsem19_to_rtis | training | — | — | — |
+| eomt_large | cityscapes_to_railsem19_to_rtis | training | — | — | — |
+| hf_auto_beit_base_ade | rtis_only | failed | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_rtis | failed | — | — | — |
+| hf_auto_beit_base_ade | railsem19_to_rtis | training | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | training | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | queued | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | queued | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | queued | — | — | — |

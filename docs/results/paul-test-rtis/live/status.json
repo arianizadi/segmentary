@@ -487,9 +487,10 @@
       "config_sha256": "da023433ac56a2e17fafa6a6a8f58bcb5e3396cfd472a3d752bfa7c3f3eb0b06",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
+      "status": "training",
+      "gpu": 0,
+      "started_at": "2026-09-06T02:17:19.359883+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_dinov3_large--cityscapes_to_rtis--seed-0",
@@ -507,9 +508,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
+      "status": "training",
+      "gpu": 1,
+      "started_at": "2026-09-06T02:17:23.045563+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
@@ -527,9 +529,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-06T02:17:22.875470+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -547,9 +550,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-06T02:17:22.715621+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_large--rtis_only--seed-0",
@@ -559,9 +563,10 @@
       "config_sha256": "2e20f5ad695886b4b49d5086f63a6a08fdaa55c28d4e2797c1e5ba76047427b7",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
+      "status": "training",
+      "gpu": 5,
+      "started_at": "2026-09-06T02:17:19.378974+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_large--cityscapes_to_rtis--seed-0",
@@ -579,9 +584,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
+      "status": "training",
+      "gpu": 3,
+      "started_at": "2026-09-06T02:17:22.880882+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_large--railsem19_to_rtis--seed-0",
@@ -599,9 +605,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
+      "status": "training",
+      "gpu": 6,
+      "started_at": "2026-09-06T02:17:22.740770+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_large--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -619,9 +626,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-06T02:17:22.976901+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_beit_base_ade--rtis_only--seed-0",
@@ -631,9 +639,12 @@
       "config_sha256": "27e0e818feb87c50dd65499347f0e95a8b78e3d85e2e11b005af65c31f5d02ee",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
+      "status": "failed",
+      "gpu": 8,
+      "started_at": "2026-09-06T02:17:19.398578+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:17:38.856919+00:00",
+      "error": "Process exited 1; see logs/hf_auto_beit_base_ade--rtis_only--seed-0.log"
     },
     {
       "name": "hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0",
@@ -651,9 +662,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
+      "status": "failed",
+      "gpu": 9,
+      "started_at": "2026-09-06T02:17:21.159064+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:17:41.848191+00:00",
+      "error": "Process exited 1; see logs/hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0.log"
     },
     {
       "name": "hf_auto_beit_base_ade--railsem19_to_rtis--seed-0",
@@ -671,7 +685,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 8,
+      "started_at": "2026-09-06T02:17:40.737965+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_beit_base_ade--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -689,7 +706,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 9,
+      "started_at": "2026-09-06T02:17:43.494853+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilenetv2_deeplabv3--rtis_only--seed-0",
