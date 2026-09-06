@@ -1330,7 +1330,7 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "evaluating",
+      "status": "collecting",
       "final_step": 2036,
       "observed_step": null,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
@@ -1340,9 +1340,9 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1999,
+      "status": "collecting",
+      "final_step": 2036,
+      "observed_step": null,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1382,7 +1382,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1049,
+      "observed_step": 1099,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1392,7 +1392,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 799,
+      "observed_step": 849,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1402,7 +1402,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 763,
+      "observed_step": 849,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1412,7 +1412,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 508,
+      "observed_step": 549,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1422,7 +1422,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 399,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1432,7 +1432,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 49,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
