@@ -1422,7 +1422,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 3399,
+      "observed_step": 3499,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1432,7 +1432,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3049,
+      "observed_step": 3149,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1482,7 +1482,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2349,
+      "observed_step": 2449,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1490,7 +1490,7 @@
       "model": "hrnet_w48_ocr",
       "protocol": "railsem19_to_rtis",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2290,
       "observed_step": null,
       "record": "models/hrnet_w48_ocr/record.json"
@@ -1502,7 +1502,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2149,
+      "observed_step": 2249,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1522,7 +1522,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1017,
+      "observed_step": 1099,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1532,7 +1532,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 549,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1542,7 +1542,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 399,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1552,7 +1552,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 249,
+      "observed_step": 349,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1562,7 +1562,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 49,
+      "observed_step": 149,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1570,7 +1570,7 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
