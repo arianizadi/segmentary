@@ -15,7 +15,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | hf_auto_beit_base_ade | railsem19_to_rtis | 0 | completed | 2545 | 1272 | 4.83 | 5.34 | 33.54 | 0.82 | 25.77 | 30.06 |
 | hf_auto_beit_base_ade | railsem19_to_rtis | 1 | completed | 1527 | 254 | 4.33 | 4.70 | 35.21 | 0.04 | 21.37 | 22.55 |
 | hf_auto_beit_base_ade | railsem19_to_rtis | 2 | completed | 1781 | 509 | 5.06 | 6.13 | 22.64 | 1.12 | 20.04 | 23.38 |
-| hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 0 | training | 2649 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 0 | training | 2899 | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 1 | collecting | 2290 | 1018 | 4.63 | 4.98 | 39.42 | 3.12 | 26.82 | 29.80 |
 | hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 2 | completed | 1781 | 509 | 5.03 | 6.02 | 23.51 | 1.49 | 21.87 | 23.09 |
 
@@ -7082,6 +7082,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2036 | 30.78 | 0.23 |
 | 2290 | 29.96 | 0.17 |
 | 2545 | 29.89 | 0.19 |
+| 2799 | 29.77 | 0.22 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
