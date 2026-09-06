@@ -2,7 +2,7 @@
 
 Dataset: **307 unique annotated images**, 21 native RTIS classes, ignore 255.
 [Dataset structure and definitions](../../datasets/paul-test-rtis/README.md) ·
-[Future campaign design](../../guides/paul-test-rtis-campaign.md)
+[Campaign operation guide](../../guides/paul-test-rtis-campaign.md)
 
 ## Dataset checks
 
@@ -70,11 +70,17 @@ Full predictions, class legends, comparison images and logs are in
 The machine-readable summary here retains hashes, inference settings, class
 support and per-class scores without placing dataset images in Git.
 
-## Prepared, not launched
+## Active pilot campaign
 
-144 future configurations cover 36 distinct model recipes × four RTIS
-initializations: pretrained backbone, Cityscapes, RailSem19, and Cityscapes →
-RailSem19. The planner validated all serialized configs and found all 108 source
-checkpoint files. Only the two architectures above have completed RTIS runtime
-diagnostics. The full campaign and publisher are not running. No results were
-pushed. Confirm recording provenance and review the pilot budget before launch.
+The [live RTIS results](live/README.md) update automatically as runs complete.
+The campaign launched on HDRFS on 2026-09-06 UTC (September 5 Pacific):
+36 model recipes x four initialization paths x seed 0 = 144 runs, each with
+4,000 RTIS optimizer steps. All 108 source checkpoint hashes and all 307 dataset
+image/mask pairs passed preflight verification. Ten GPU workers share the queue.
+
+These adaptation results use native RTIS validation metrics and remain separate
+from the coarse source-only diagnostics above. Test remains held out; recording
+groups remain provisional. The best and final checkpoints are retained after
+successful evaluation; redundant periodic snapshots are removed with an audit.
+Training uses a fixed checkout and publishing uses a separate worktree, so live
+report updates cannot alter running experiments or the Cityscapes/RailSem19 study.

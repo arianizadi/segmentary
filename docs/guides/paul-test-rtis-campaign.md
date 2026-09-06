@@ -1,4 +1,4 @@
-# paul-test-rtis campaign preparation
+# paul-test-rtis campaign
 
 Start with the [dataset guide](../datasets/paul-test-rtis/README.md) and
 [diagnostic results](../results/paul-test-rtis/README.md).
@@ -34,9 +34,9 @@ endpoint files were found on HDRFS. The planner checks paths and validates each
 serialized config. It does not claim that every architecture has passed an RTIS
 runtime check: only FPN-ResNet50 and SegFormer-B2 have been checked so far.
 
-## Proposed pilot settings
+## Pilot settings
 
-The manifest proposes 4,000 RTIS optimizer steps per arm, effective batch 16
+The manifest uses 4,000 RTIS optimizer steps per arm, effective batch 16
 (batch 2 × accumulation 8), validation/checkpoint cadence 500, and the existing
 model-specific crop/objective settings. These are a reviewable starting budget,
 not the original Cityscapes/RailSem19 study's 40k/20k protocol. Source pretraining
@@ -71,7 +71,7 @@ python scripts/plan_rtis_campaign.py \
   --out /path/to/new/rtis-plan
 ```
 
-## Publisher status
+## Historical preparation status
 
 At preparation time, HDRFS had no campaign/publisher process, no tmux server,
 no user crontab, and no user systemd timers. The old campaign's recorded publisher
@@ -84,6 +84,9 @@ Cityscapes/RailSem19 report. RTIS reports and future run outputs occupy their
 own directories. No results were committed or pushed automatically.
 
 ## Running the authorized pilot
+
+Launched on HDRFS on 2026-09-06 UTC. Follow the [live report](../results/paul-test-rtis/live/README.md).
+The active campaign directory is `/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/`.
 
 `scripts/run_rtis_campaign.py` now provides the RTIS runtime. Use a clean,
 fixed-revision training worktree and a **different** clean publisher worktree
