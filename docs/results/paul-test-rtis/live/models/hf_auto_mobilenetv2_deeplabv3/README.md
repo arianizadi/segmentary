@@ -7,10 +7,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | 0 | completed | 2290 | 1018 | 1.80 | 2.45 | 6.38 | 1.47 | 19.76 | 21.96 |
-| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 1 | training | 1399 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 2 | training | 1349 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 0 | training | 299 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 1 | training | 1549 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 2 | training | 1527 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 0 | training | 449 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -1068,6 +1068,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 17.63 | 0.13 |
 | 1017 | 19.65 | 0.20 |
 | 1272 | 19.95 | 0.55 |
+| 1527 | 21.18 | 0.51 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1307,6 +1308,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 18.08 | 0.29 |
 | 1017 | 19.90 | 0.11 |
 | 1272 | 19.96 | 3.21 |
+| 1527 | 20.94 | 0.74 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1706,7 +1708,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 1
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T09:57:16.105986+00:00. Finished: —.
 
 Recipe pretrained initializer: `google/deeplabv3_mobilenet_v2_1.0_513`.
 

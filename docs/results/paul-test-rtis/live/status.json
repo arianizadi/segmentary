@@ -750,7 +750,7 @@
       "model": "hf_auto_beit_base_ade",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2036,
       "observed_step": null,
       "record": "models/hf_auto_beit_base_ade/record.json"
@@ -760,7 +760,7 @@
       "model": "hf_auto_beit_base_ade",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "evaluating",
+      "status": "collecting",
       "final_step": 2545,
       "observed_step": null,
       "record": "models/hf_auto_beit_base_ade/record.json"
@@ -792,7 +792,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1999,
+      "observed_step": 2049,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -802,7 +802,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1899,
+      "observed_step": 1949,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -812,7 +812,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1699,
+      "observed_step": 1749,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -832,7 +832,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1399,
+      "observed_step": 1549,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -842,7 +842,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1349,
+      "observed_step": 1527,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -852,7 +852,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 449,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -860,7 +860,7 @@
       "model": "hf_auto_mobilenetv2_deeplabv3",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
