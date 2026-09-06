@@ -463,7 +463,10 @@
       "config_sha256": "b467aa9c6696a7c0f9e75814b29014ef7e99a2cbd674f2eb381c990dce839c47",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-06T13:56:19.909933+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hf_auto_upernet_swin_tiny--rtis_only--seed-0",
         "model": {
@@ -612,7 +615,10 @@
       "config_sha256": "7f32814fc43bb671a08a581bc897302bf9a3f700db40db53e06a397c04d3a8c8",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 0,
+      "started_at": "2026-09-06T13:56:56.315948+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hf_auto_upernet_swin_tiny--rtis_only--seed-1",
         "model": {
