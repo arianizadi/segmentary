@@ -701,10 +701,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 8,
       "started_at": "2026-09-06T02:17:40.737965+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:21:46.944103+00:00",
+      "error": "[Errno 2] No such file or directory: '/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_beit_base_ade--railsem19_to_rtis--seed-0_seed0/rtis/last.ckpt'"
     },
     {
       "name": "hf_auto_beit_base_ade--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -722,10 +724,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 9,
       "started_at": "2026-09-06T02:17:43.494853+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:21:46.756622+00:00",
+      "error": "[Errno 2] No such file or directory: '/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_beit_base_ade--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/last.ckpt'"
     },
     {
       "name": "hf_auto_mobilenetv2_deeplabv3--rtis_only--seed-0",
@@ -735,10 +739,12 @@
       "config_sha256": "2bb0ec7a862af1c70e004aa4f5d101238b9e092b28c399e0fe831476958c107e",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "training",
+      "status": "failed",
       "gpu": 0,
       "started_at": "2026-09-06T02:17:51.908573+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:21:45.167776+00:00",
+      "error": "[Errno 2] No such file or directory: '/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_mobilenetv2_deeplabv3--rtis_only--seed-0_seed0/rtis/last.ckpt'"
     },
     {
       "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_rtis--seed-0",
@@ -756,10 +762,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 5,
       "started_at": "2026-09-06T02:17:54.195925+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:21:45.485164+00:00",
+      "error": "[Errno 2] No such file or directory: '/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_mobilenetv2_deeplabv3--cityscapes_to_rtis--seed-0_seed0/rtis/last.ckpt'"
     },
     {
       "name": "hf_auto_mobilenetv2_deeplabv3--railsem19_to_rtis--seed-0",
@@ -777,10 +785,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 2,
       "started_at": "2026-09-06T02:17:58.029714+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:21:46.123696+00:00",
+      "error": "[Errno 2] No such file or directory: '/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_mobilenetv2_deeplabv3--railsem19_to_rtis--seed-0_seed0/rtis/last.ckpt'"
     },
     {
       "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -798,10 +808,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 4,
       "started_at": "2026-09-06T02:17:59.198046+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:21:45.956711+00:00",
+      "error": "[Errno 2] No such file or directory: '/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/last.ckpt'"
     },
     {
       "name": "hf_auto_mobilevit_xxs_deeplabv3--rtis_only--seed-0",
@@ -811,10 +823,12 @@
       "config_sha256": "3bc0b61648ff9b8ff901950ec2eee1b2e4ea4a78bd61ca087e988738776cb647",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "training",
+      "status": "failed",
       "gpu": 3,
       "started_at": "2026-09-06T02:17:59.304138+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:21:45.354678+00:00",
+      "error": "[Errno 2] No such file or directory: '/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_mobilevit_xxs_deeplabv3--rtis_only--seed-0_seed0/rtis/last.ckpt'"
     },
     {
       "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_rtis--seed-0",
@@ -832,10 +846,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 1,
       "started_at": "2026-09-06T02:17:59.380856+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:21:45.610903+00:00",
+      "error": "[Errno 2] No such file or directory: '/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_rtis--seed-0_seed0/rtis/last.ckpt'"
     },
     {
       "name": "hf_auto_mobilevit_xxs_deeplabv3--railsem19_to_rtis--seed-0",
@@ -853,10 +869,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 7,
       "started_at": "2026-09-06T02:18:00.099066+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:21:44.992202+00:00",
+      "error": "[Errno 2] No such file or directory: '/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_mobilevit_xxs_deeplabv3--railsem19_to_rtis--seed-0_seed0/rtis/last.ckpt'"
     },
     {
       "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -874,10 +892,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 6,
       "started_at": "2026-09-06T02:18:00.328606+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:21:44.725384+00:00",
+      "error": "[Errno 2] No such file or directory: '/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/last.ckpt'"
     },
     {
       "name": "hf_auto_mobilevitv2_deeplabv3--rtis_only--seed-0",
