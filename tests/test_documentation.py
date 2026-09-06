@@ -117,6 +117,10 @@ def test_legacy_brand_only_appears_in_immutable_or_explicitly_archived_records()
         except UnicodeDecodeError:
             continue
         legacy_brand = "rail" + "yard"
+        # Live machine records retain the actual interpreter path used by jobs.
+        # Exempt that exact historical environment path, not arbitrary old branding.
+        if relative.match("docs/results/paul-test-rtis/live/models/*/record.json"):
+            text = text.replace(f"/data/izadia1/envs/{legacy_brand}/", "/recorded-env/")
         if re.search(legacy_brand, text, flags=re.IGNORECASE):
             stale.append(str(relative))
 
