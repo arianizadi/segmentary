@@ -23,7 +23,7 @@
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | rtis_only | 3/3 | 2.52 | 0.70 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 0/3 | — | — |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_rtis | 3/3 | 25.28 | 2.14 |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 0/3 | — | — |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 1/3 | 9.09 | — |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | rtis_only | 3/3 | 13.16 | 1.88 |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 0/3 | — | — |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_rtis | 0/3 | — | — |
@@ -152,7 +152,7 @@
 
 Mean and sample SD are descriptive optimization variability. Incomplete seed groups are provisional; source checkpoints and data split are fixed across seeds.
 
-**54/432 completed · 0 failed**
+**55/432 completed · 0 failed**
 
 Fresh full-statistics campaign: checkpoint selection and early stopping use **mud-pumping IoU**. Every job collects full accounting, train/validation diagnostics, raw/EMA comparison, prediction examples and isolated performance before completion.
 
@@ -220,17 +220,17 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_rtis | 0 | completed | 3309 | 2036 | 25.20 | 50.79 | 33.34 | 9.75 | 26.89 | 31.37 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_rtis | 1 | completed | 2800 | 1527 | 23.18 | 37.21 | 38.08 | 13.61 | 24.31 | 28.36 |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_rtis | 2 | completed | 3309 | 2036 | 27.45 | 69.40 | 31.23 | 24.03 | 24.83 | 28.96 |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 0 | collecting | 3563 | 2290 | 9.09 | 29.95 | 11.54 | 7.35 | 28.20 | 32.90 |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 1 | training | 3549 | — | — | — | — | — | — | — |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 2 | training | 2899 | — | — | — | — | — | — | — |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 2349 | — | — | — | — | — | — | — |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 899 | — | — | — | — | — | — | — |
-| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 499 | — | — | — | — | — | — | — |
-| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 0 | training | 1017 | — | — | — | — | — | — | — |
-| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 1 | training | 849 | — | — | — | — | — | — | — |
-| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 2 | training | 449 | — | — | — | — | — | — | — |
-| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
-| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 0 | completed | 3563 | 2290 | 9.09 | 29.95 | 11.54 | 7.35 | 28.20 | 32.90 |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 1 | training | 3599 | — | — | — | — | — | — | — |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | 2 | training | 2949 | — | — | — | — | — | — | — |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 2399 | — | — | — | — | — | — | — |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 999 | — | — | — | — | — | — | — |
+| [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 549 | — | — | — | — | — | — | — |
+| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 0 | training | 1149 | — | — | — | — | — | — | — |
+| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 1 | training | 1049 | — | — | — | — | — | — | — |
+| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | rtis_only | 2 | training | 599 | — | — | — | — | — | — | — |
+| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_rtis | 0 | training | 149 | — | — | — | — | — | — | — |
+| [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilevitv2_deeplabv3](models/hf_auto_mobilevitv2_deeplabv3/README.md) | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
