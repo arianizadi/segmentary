@@ -6,10 +6,10 @@ Mud-pumping detection is the primary application. Current pilot checkpoints were
 
 | Model | Initialization path | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_beit_base_ade | rtis_only | training | 2299 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | cityscapes_to_rtis | training | 2299 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | railsem19_to_rtis | training | 1299 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | training | 1099 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | rtis_only | training | 2399 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_rtis | training | 2399 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | railsem19_to_rtis | training | 1399 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | training | 1199 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 images, held out. One seed; visually grouped split with unconfirmed recording identities. Percentages are descriptive, not statistically established rankings.
 

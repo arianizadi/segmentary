@@ -6,7 +6,7 @@ Mud-pumping detection is the primary application. Current pilot checkpoints were
 
 | Model | Initialization path | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| eomt_large | rtis_only | training | 3099 | — | — | — | — | — | — | — |
+| eomt_large | rtis_only | training | 3249 | — | — | — | — | — | — | — |
 | eomt_large | cityscapes_to_rtis | completed | 1527 | 1527 | 10.26 | 13.26 | 31.21 | 10.26 | 50.69 | 53.50 |
 | eomt_large | railsem19_to_rtis | completed | 1781 | 1018 | 4.40 | 5.81 | 15.31 | 3.64 | 53.74 | 59.71 |
 | eomt_large | cityscapes_to_railsem19_to_rtis | completed | 1527 | 763 | 13.33 | 16.58 | 40.49 | 14.81 | 58.34 | 58.34 |

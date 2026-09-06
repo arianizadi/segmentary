@@ -6,7 +6,7 @@ Mud-pumping detection is the primary application. Current pilot checkpoints were
 
 | Model | Initialization path | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| eomt_dinov3_large | rtis_only | training | 2999 | — | — | — | — | — | — | — |
+| eomt_dinov3_large | rtis_only | training | 3149 | — | — | — | — | — | — | — |
 | eomt_dinov3_large | cityscapes_to_rtis | completed | 1272 | 509 | 2.06 | 2.71 | 7.95 | 12.46 | 47.03 | 49.64 |
 | eomt_dinov3_large | railsem19_to_rtis | completed | 1781 | 1018 | 17.34 | 24.29 | 37.74 | 26.13 | 54.56 | 60.62 |
 | eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | completed | 1781 | 1018 | 7.85 | 9.50 | 31.21 | 8.39 | 50.65 | 53.47 |
@@ -97,6 +97,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2290 | 45.42 | 9.57 |
 | 2545 | 45.50 | 9.54 |
 | 2799 | 45.50 | 9.52 |
+| 3054 | 45.58 | 9.52 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
