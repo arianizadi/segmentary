@@ -1752,7 +1752,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1999,
+      "observed_step": 2149,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1762,7 +1762,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1949,
+      "observed_step": 2099,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1772,7 +1772,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1549,
+      "observed_step": 1749,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1780,9 +1780,9 @@
       "model": "native_efficientnet_b0_deeplabv3plus",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2099,
+      "status": "evaluating",
+      "final_step": 2290,
+      "observed_step": null,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1802,7 +1802,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1449,
+      "observed_step": 1699,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1812,7 +1812,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1149,
+      "observed_step": 1349,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1822,7 +1822,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 599,
+      "observed_step": 799,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1832,7 +1832,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 508,
+      "observed_step": 763,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1842,7 +1842,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 99,
+      "observed_step": 349,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1852,7 +1852,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 149,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
