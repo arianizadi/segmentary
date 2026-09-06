@@ -6,12 +6,12 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_segformer_b0 | rtis_only | 0 | training | 1349 | — | — | — | — | — | — | — |
-| hf_auto_segformer_b0 | rtis_only | 1 | training | 1099 | — | — | — | — | — | — | — |
-| hf_auto_segformer_b0 | rtis_only | 2 | training | 899 | — | — | — | — | — | — | — |
-| hf_auto_segformer_b0 | cityscapes_to_rtis | 0 | training | 254 | — | — | — | — | — | — | — |
-| hf_auto_segformer_b0 | cityscapes_to_rtis | 1 | training | 254 | — | — | — | — | — | — | — |
-| hf_auto_segformer_b0 | cityscapes_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | rtis_only | 0 | training | 1499 | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | rtis_only | 1 | training | 1249 | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | rtis_only | 2 | training | 999 | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | cityscapes_to_rtis | 0 | training | 349 | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | cityscapes_to_rtis | 1 | training | 349 | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | cityscapes_to_rtis | 2 | training | 99 | — | — | — | — | — | — | — |
 | hf_auto_segformer_b0 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_segformer_b0 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_segformer_b0 | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
