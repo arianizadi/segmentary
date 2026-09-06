@@ -10,7 +10,7 @@
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | 3/3 | 20.64 | 3.47 |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | 3/3 | 8.47 | 0.33 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 0/3 | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 1/3 | 9.20 | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 2/3 | 10.38 | 1.67 |
 | [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 0/3 | — | — |
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 3/3 | 15.55 | 8.15 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | 0/3 | — | — |
@@ -152,7 +152,7 @@
 
 Mean and sample SD are descriptive optimization variability. Incomplete seed groups are provisional; source checkpoints and data split are fixed across seeds.
 
-**16/432 completed · 0 failed**
+**17/432 completed · 0 failed**
 
 Fresh full-statistics campaign: checkpoint selection and early stopping use **mud-pumping IoU**. Every job collects full accounting, train/validation diagnostics, raw/EMA comparison, prediction examples and isolated performance before completion.
 
@@ -182,17 +182,17 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 1 | completed | 2290 | 1018 | 24.76 | 42.02 | 37.60 | 17.76 | 45.89 | 50.99 |
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 2 | completed | 2036 | 763 | 9.29 | 10.45 | 45.40 | 4.17 | 41.29 | 45.88 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 0 | completed | 2545 | 2036 | 9.20 | 13.98 | 21.21 | 9.08 | 52.85 | 55.79 |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 1 | collecting | 3054 | 1781 | 11.56 | 17.05 | 26.43 | 9.88 | 53.29 | 56.25 |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 2 | training | 2049 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 0 | training | 1849 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 1 | training | 1349 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 2 | training | 1199 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 1199 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 1049 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 949 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 0 | training | 499 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 1 | training | 249 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 1 | completed | 3054 | 1781 | 11.56 | 17.05 | 26.43 | 9.88 | 53.29 | 56.25 |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 2 | training | 2249 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 0 | training | 1999 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 1 | training | 1499 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 2 | training | 1349 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 1349 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 1249 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 1049 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 0 | training | 599 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 1 | training | 299 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 2 | training | — | — | — | — | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
