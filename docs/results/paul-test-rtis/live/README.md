@@ -1,6 +1,6 @@
 # paul-test-rtis — mud-pumping detection
 
-**11/144 completed · 0 failed**
+**12/144 completed · 0 failed**
 
 Mud-pumping is the primary application. This pilot still selects checkpoints and stops by overall validation mIoU. Mud metrics are prominent here so aggregate accuracy cannot hide detection failures. A future mud-focused selection policy must be versioned; historical results are not relabeled.
 
@@ -18,7 +18,7 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | completed | 1272 | 509 | 2.06 | 2.71 | 7.95 | 12.46 | 47.03 | 49.64 |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | completed | 1781 | 1018 | 17.34 | 24.29 | 37.74 | 26.13 | 54.56 | 60.62 |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | completed | 1781 | 1018 | 7.85 | 9.50 | 31.21 | 8.39 | 50.65 | 53.47 |
-| [eomt_large](models/eomt_large/README.md) | rtis_only | evaluating | 4000 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | rtis_only | completed | 4000 | 3818 | 9.68 | 11.78 | 35.15 | 9.68 | 48.53 | 53.92 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | completed | 1527 | 1527 | 10.26 | 13.26 | 31.21 | 10.26 | 50.69 | 53.50 |
 | [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | completed | 1781 | 1018 | 4.40 | 5.81 | 15.31 | 3.64 | 53.74 | 59.71 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | completed | 1527 | 763 | 13.33 | 16.58 | 40.49 | 14.81 | 58.34 | 58.34 |
@@ -177,7 +177,7 @@ Frozen training code: `4f5ebf0095cc097d491ad42ea5e6f77939b7119b`. Split SHA-256:
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | 17.29 | 8.11 | 1103.09 | 13.62 |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | 17.30 | 8.11 | 2131.49 | 13.36 |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | 17.29 | 8.11 | 2162.97 | 13.39 |
-| [eomt_large](models/eomt_large/README.md) | rtis_only | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | rtis_only | 17.16 | 8.16 | 5584.85 | 12.52 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 17.25 | 8.16 | 1679.79 | 12.67 |
 | [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 17.25 | 8.16 | 1974.41 | 12.61 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 17.16 | 8.16 | 1511.22 | 12.63 |
