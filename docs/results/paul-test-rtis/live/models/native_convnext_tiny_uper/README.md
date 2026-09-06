@@ -7,13 +7,13 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | native_convnext_tiny_uper | rtis_only | 0 | completed | 1527 | 254 | 14.15 | 46.83 | 16.85 | 7.73 | 26.55 | 28.02 |
-| native_convnext_tiny_uper | rtis_only | 1 | training | 2799 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | rtis_only | 2 | training | 2399 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | cityscapes_to_rtis | 0 | training | 1949 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | cityscapes_to_rtis | 1 | training | 1549 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | cityscapes_to_rtis | 2 | training | 1499 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | railsem19_to_rtis | 0 | training | 1299 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | rtis_only | 1 | training | 2899 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | rtis_only | 2 | training | 2499 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | cityscapes_to_rtis | 0 | evaluating | 2036 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | cityscapes_to_rtis | 1 | training | 1649 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | cityscapes_to_rtis | 2 | training | 1549 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | railsem19_to_rtis | 0 | training | 1399 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | railsem19_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
 | native_convnext_tiny_uper | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -1257,7 +1257,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **training**. Started: 2026-09-06T18:09:10.938730+00:00. Finished: —.
+Status: **evaluating**. Started: 2026-09-06T18:09:10.938730+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": null, "encoder_weights": null, "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": {"auxiliary_heads": [], "backbone": {"in_channels": 3, "kind": "timm", "name": "convnext_tiny.fb_in22k_ft_in1k", "out_indices": [0, 1, 2, 3], "weights": "pretrained"}, "head": {"activation": "relu", "channels": 256, "dropout": 0.1, "in_indices": [0, 1, 2, 3], "kind": "uper", "norm": "group", "pool_bins": [1, 2, 3, 6]}, "neck": {"kind": "identity"}, "task": "multiclass"}, "revision": null, "smp_arch": null, "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -1334,6 +1334,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1272 | 35.94 | 2.28 |
 | 1527 | 35.38 | 2.16 |
 | 1781 | 35.74 | 2.56 |
+| 2036 | 35.45 | 2.12 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1883,6 +1884,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 35.53 | 6.95 |
 | 1017 | 34.44 | 5.21 |
 | 1272 | 34.88 | 6.71 |
+| 1527 | 34.77 | 5.26 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -2356,7 +2358,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 1
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T18:37:27.266807+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": null, "encoder_weights": null, "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": {"auxiliary_heads": [], "backbone": {"in_channels": 3, "kind": "timm", "name": "convnext_tiny.fb_in22k_ft_in1k", "out_indices": [0, 1, 2, 3], "weights": "pretrained"}, "head": {"activation": "relu", "channels": 256, "dropout": 0.1, "in_indices": [0, 1, 2, 3], "kind": "uper", "norm": "group", "pool_bins": [1, 2, 3, 6]}, "neck": {"kind": "identity"}, "task": "multiclass"}, "revision": null, "smp_arch": null, "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 

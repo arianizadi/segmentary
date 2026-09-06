@@ -1622,7 +1622,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2999,
+      "observed_step": 3054,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1630,7 +1630,7 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2800,
       "observed_step": null,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
@@ -1640,7 +1640,7 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 1,
-      "status": "evaluating",
+      "status": "collecting",
       "final_step": 2290,
       "observed_step": null,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
@@ -1650,9 +1650,9 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1999,
+      "status": "collecting",
+      "final_step": 2036,
+      "observed_step": null,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1672,7 +1672,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2799,
+      "observed_step": 2899,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1682,7 +1682,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2399,
+      "observed_step": 2499,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1690,9 +1690,9 @@
       "model": "native_convnext_tiny_uper",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1949,
+      "status": "evaluating",
+      "final_step": 2036,
+      "observed_step": null,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1702,7 +1702,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1549,
+      "observed_step": 1649,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1712,7 +1712,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1499,
+      "observed_step": 1549,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1722,7 +1722,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1299,
+      "observed_step": 1399,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1730,7 +1730,7 @@
       "model": "native_convnext_tiny_uper",
       "protocol": "railsem19_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/native_convnext_tiny_uper/record.json"
