@@ -660,6 +660,14 @@
           {
             "step": 349,
             "value": 0.7134984731674194
+          },
+          {
+            "step": 399,
+            "value": 0.2754232883453369
+          },
+          {
+            "step": 449,
+            "value": 0.7962844371795654
           }
         ],
         "val/miou": [
@@ -1275,7 +1283,7 @@
           }
         ]
       },
-      "observed_step": 349,
+      "observed_step": 449,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1486,6 +1494,14 @@
           {
             "step": 349,
             "value": 1.0583033561706543
+          },
+          {
+            "step": 399,
+            "value": 0.5852179527282715
+          },
+          {
+            "step": 449,
+            "value": 0.3341033458709717
           }
         ],
         "val/miou": [
@@ -2083,7 +2099,7 @@
           }
         ]
       },
-      "observed_step": 349,
+      "observed_step": 449,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2265,6 +2281,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.2918012142181396
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2286,7 +2311,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-06T23:01:29.186142+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_resnet50_deeplabv3plus--cityscapes_to_rtis--seed-0",
         "model": {
