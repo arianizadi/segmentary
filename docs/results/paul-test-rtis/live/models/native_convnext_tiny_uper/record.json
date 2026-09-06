@@ -99979,7 +99979,7 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "collecting",
+      "status": "completed",
       "gpu": 6,
       "started_at": "2026-09-06T18:40:53.758089+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
@@ -107703,7 +107703,7 @@
           }
         ]
       },
-      "collection_phase": "cleanup",
+      "collection_phase": "complete",
       "performance": {
         "schema_version": 1,
         "model_id": "native_convnext_tiny_uper",
@@ -110881,11 +110881,25 @@
               "telemetry_samples": 4,
               "sampled_peak_device_used_mib": 1795.0
             }
-          ]
+          ],
+          "worker_attempts": [
+            {
+              "started_at": "2026-09-06T18:40:53.320923+00:00",
+              "status": "completed",
+              "gpu": 6,
+              "finished_at": "2026-09-06T19:26:21.114919+00:00",
+              "wall_clock_s": 2727.794022500515
+            }
+          ],
+          "total_reserved_gpu_wall_seconds": 2727.794022500515,
+          "total_reserved_gpu_hours": 0.7577205618056986,
+          "whole_run_accounting_complete": true
         },
         "verified": true,
         "smoke": false
       },
+      "checkpoint_bytes_removed": 3539770830,
+      "finished_at": "2026-09-06T19:26:21.116512+00:00",
       "resolved_config": {
         "name": "native_convnext_tiny_uper--cityscapes_to_railsem19_to_rtis--seed-1",
         "model": {
