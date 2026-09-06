@@ -2572,7 +2572,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2699,
+      "observed_step": 2949,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2602,7 +2602,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1699,
+      "observed_step": 1999,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2610,9 +2610,9 @@
       "model": "native_resnet50_aspp",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1549,
+      "status": "collecting",
+      "final_step": 1781,
+      "observed_step": null,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2622,7 +2622,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1399,
+      "observed_step": 1749,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2632,7 +2632,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1399,
+      "observed_step": 1699,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2642,7 +2642,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1017,
+      "observed_step": 1349,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2652,7 +2652,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 949,
+      "observed_step": 1272,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2662,7 +2662,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 799,
+      "observed_step": 1099,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2672,7 +2672,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 599,
+      "observed_step": 949,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2682,7 +2682,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 299,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
