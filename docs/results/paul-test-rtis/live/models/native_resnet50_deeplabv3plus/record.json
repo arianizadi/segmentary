@@ -463,7 +463,10 @@
       "config_sha256": "fabe1a78bdbb4f147211f43b2acbb8860edc0e25d5d717cc51fd95d0db99b0d0",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-06T22:56:35.059256+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_resnet50_deeplabv3plus--rtis_only--seed-0",
         "model": {
@@ -641,7 +644,10 @@
       "config_sha256": "963a6a4465c14ea1e4642d5569087d404d0ec9fd894a15731fe2b68ea72cdda3",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 8,
+      "started_at": "2026-09-06T22:56:35.823643+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_resnet50_deeplabv3plus--rtis_only--seed-1",
         "model": {
