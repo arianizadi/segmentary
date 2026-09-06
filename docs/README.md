@@ -37,6 +37,8 @@ evaluate an exact checkpoint
 
 ## Bring your own data or model
 
+- [paul-test-rtis dataset](datasets/paul-test-rtis/README.md) explains the prepared
+  rail/anomaly images, labels, exclusions, and manually reviewed scene splits.
 - [Custom datasets and loaders](guides/custom-data.md) covers the default
   `images/<split>` + `masks/<split>` layout, advanced directory options,
   native-ID mappings, group-safe video manifests, and Python loader extensions.
@@ -57,6 +59,8 @@ evaluate an exact checkpoint
 
 ## Design and report a fair experiment
 
+- [Results by dataset](results/README.md) separates the Cityscapes/RailSem19
+  benchmark from [RTIS campaign preparation](guides/paul-test-rtis-campaign.md).
 - [Evaluation and results](guides/evaluation-and-results.md) explains native and
   common endpoints, EMA versus raw weights, final versus best checkpoints, TTA,
   multi-seed aggregation, and reproducible result records.

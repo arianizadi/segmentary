@@ -16,7 +16,7 @@ def test_results_tree_is_either_clean_start_or_complete_live_bundle() -> None:
     )
     assert all(not path.exists() for path in historical)
 
-    comparison = ROOT / "docs/results/model-comparison"
+    comparison = ROOT / "docs/results/cityscapes-railsem19"
     if not comparison.exists():
         return
     assert (comparison / "README.md").is_file()
@@ -36,7 +36,7 @@ def test_markdown_never_uses_plus_minus_result_formatting() -> None:
 
 
 def test_live_comparison_ends_with_accuracy_speed_leaderboard() -> None:
-    readme = ROOT / "docs/results/model-comparison/README.md"
+    readme = ROOT / "docs/results/cityscapes-railsem19/README.md"
     if not readme.is_file():
         return
     content = readme.read_text(encoding="utf-8")
@@ -72,7 +72,7 @@ def test_live_comparison_ends_with_accuracy_speed_leaderboard() -> None:
 
 
 def test_paper_quality_bundle_uses_raw_weights_at_every_public_level() -> None:
-    comparison = ROOT / "docs/results/model-comparison"
+    comparison = ROOT / "docs/results/cityscapes-railsem19"
     manifest_path = comparison / "raw-evaluation-manifest.json"
     if not manifest_path.is_file():
         return
@@ -118,7 +118,7 @@ def test_paper_quality_bundle_uses_raw_weights_at_every_public_level() -> None:
 
 
 def test_resumed_cells_never_publish_partial_segments_as_total_costs() -> None:
-    comparison = ROOT / "docs/results/model-comparison"
+    comparison = ROOT / "docs/results/cityscapes-railsem19"
     corrections_path = comparison / "paper-review-corrections.json"
     assert corrections_path.is_file()
     corrections = json.loads(corrections_path.read_text())
@@ -145,7 +145,7 @@ def test_resumed_cells_never_publish_partial_segments_as_total_costs() -> None:
 
 
 def test_missing_transfer_source_provenance_is_not_claimed_as_reused() -> None:
-    comparison = ROOT / "docs/results/model-comparison"
+    comparison = ROOT / "docs/results/cityscapes-railsem19"
     corrections = json.loads((comparison / "paper-review-corrections.json").read_text())
     rows = list(csv.DictReader((comparison / "results.csv").open()))
     by_model = {row["model"]: row for row in rows}
@@ -160,7 +160,7 @@ def test_missing_transfer_source_provenance_is_not_claimed_as_reused() -> None:
 
 
 def test_paper_corrections_are_present_in_raw_override_views() -> None:
-    comparison = ROOT / "docs/results/model-comparison/records"
+    comparison = ROOT / "docs/results/cityscapes-railsem19/records"
     mobile = json.loads((comparison / "hf_auto_mobilenetv2_deeplabv3.json").read_text())
     for protocol_id in ("cityscapes", "railsem19", "cityscapes_to_railsem19"):
         for family in ("protocols", "paper_raw_protocols"):

@@ -1,0 +1,17 @@
+name: paul-test-rtis
+space: paul-test-rtis
+taxonomy_root: taxonomy
+output_root: runs/paul-test-rtis
+stages:
+- name: rtis
+  data:
+  - name: paul-test-rtis
+    root: data/paul-test-rtis
+    loader: folder
+    mapping: paul-test-rtis
+    train_split: train
+    val_split: val
+    split_file: splits.json
+    loader_options:
+      require_groups: true
+  init_from: pretrained

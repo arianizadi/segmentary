@@ -1,0 +1,179 @@
+# Manually reviewed visual groups; original recording identities are unconfirmed.
+schema_version: 1
+status: provisional_until_recording_provenance_confirmed
+default_split: train
+groups:
+- name: trackside-maintenance
+  family: numbered
+  ranges:
+  - - 0
+    - 91
+  split: train
+- name: rural-overcast-cab-view
+  family: numbered
+  ranges:
+  - - 92
+    - 108
+  - - 138
+    - 139
+  split: val
+- name: trackside-vegetation-closeups
+  family: numbered
+  ranges:
+  - - 110
+    - 111
+  - - 116
+    - 119
+  - - 125
+    - 127
+  split: val
+- name: sunny-mountain-cab-view
+  family: numbered
+  ranges:
+  - - 109
+    - 109
+  - - 114
+    - 115
+  - - 123
+    - 124
+  - - 131
+    - 137
+  - - 140
+    - 141
+  split: test
+- name: miscellaneous-numbered-cab-views
+  family: numbered
+  ranges:
+  - - 112
+    - 113
+  - - 120
+    - 122
+  - - 128
+    - 130
+  - - 142
+    - 151
+  split: train
+- name: sunny-mountain-cab-view
+  family: mudpumping
+  ranges:
+  - - 0
+    - 9
+  split: test
+- name: sunny-mainline-cab-view
+  family: mudpumping
+  ranges:
+  - - 10
+    - 128
+  split: train
+- name: miscellaneous-mud-cab-view
+  family: mud_pumping
+  ranges:
+  - - 233
+    - 233
+  split: train
+- name: sunny-mainline-cab-view
+  family: no_anomalies
+  ranges:
+  - - 251
+    - 265
+  split: train
+- name: winter-town-cab-view
+  family: no_anomalies
+  ranges:
+  - - 661
+    - 675
+  split: test
+- name: green-roadside-cab-view
+  family: no_anomalies
+  ranges:
+  - - 676
+    - 689
+  split: train
+- name: overcast-mountain-stations
+  family: no_anomalies
+  ranges:
+  - - 690
+    - 696
+  - - 709
+    - 722
+  split: train
+- name: rural-non-electrified-cab-view
+  family: no_anomalies
+  ranges:
+  - - 697
+    - 704
+  split: test
+- name: sunny-mountain-stations
+  family: no_anomalies
+  ranges:
+  - - 705
+    - 708
+  - - 727
+    - 749
+  split: train
+- name: vegetation-worksite
+  family: vegetation
+  ranges:
+  - - 105
+    - 105
+  split: train
+- name: green-water-cab-view
+  family: water
+  ranges:
+  - - 1
+    - 19
+  split: train
+- name: rain-water-cab-view-with-overlay
+  family: water
+  ranges:
+  - - 24
+    - 27
+  - - 41
+    - 94
+  split: train
+- name: flooded-stone-bridge
+  family: water
+  ranges:
+  - - 28
+    - 29
+  - - 211
+    - 213
+  split: train
+- name: flooded-road-crossing
+  family: water
+  ranges:
+  - - 32
+    - 37
+  split: train
+- name: miscellaneous-flood-stills
+  family: water
+  ranges:
+  - - 39
+    - 40
+  - - 245
+    - 245
+  split: train
+- name: evening-water-cab-view
+  family: water
+  ranges:
+  - - 154
+    - 163
+  split: val
+- name: flooded-station-platform
+  family: water
+  ranges:
+  - - 183
+    - 190
+  split: train
+- name: flooded-trackside-woodland
+  family: water
+  ranges:
+  - - 206
+    - 209
+  split: test
+- name: overcast-mountain-stations
+  family: water
+  ranges:
+  - - 223
+    - 223
+  split: train

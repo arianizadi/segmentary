@@ -16,7 +16,7 @@ from scripts import run_benchmark_campaign as campaign
 
 EXPECTED_EVALUATION_SHA = "a1a85ebcd593a1eeb3ad2e2445c14bbe6f5c5270"
 TRAINING_SOURCE_SHA = "b9eb3e1f390b70aad63e78b2e723bd79b5266471"
-COMPARISON_ROOT = campaign.REPO_ROOT / "docs/results/model-comparison"
+COMPARISON_ROOT = campaign.REPO_ROOT / "docs/results/cityscapes-railsem19"
 
 RESUMED_CELLS: dict[tuple[str, str], list[int]] = {
     ("native_resnet18_fpn_fcn", "cityscapes"): [12_008, 20_013],

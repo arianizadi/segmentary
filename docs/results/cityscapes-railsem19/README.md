@@ -1,4 +1,4 @@
-# Model comparison: Cityscapes and RailSem19
+# Cityscapes, RailSem19, and Cityscapes → RailSem19
 
 This live comparison covers every shipped model recipe. Compatible results are reused instead of retrained. `—` means evidence is unavailable, not zero or failure. Quality tables use raw checkpoint weights for every model and show one clean value; individual seeds remain in machine records. The separate [raw versus EMA analysis](RAW_VS_EMA.md) quantifies cells that were also evaluated with EMA weights.
 

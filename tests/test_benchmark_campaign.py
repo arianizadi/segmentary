@@ -1161,7 +1161,7 @@ def test_existing_obsolete_transfer_evidence_is_removed(tmp_path: Path) -> None:
         "historical_protocols": {"old_transfer": {"obsolete": True}},
         "model_profile": {},
     }
-    destination = tmp_path / "docs/results/model-comparison/records/segformer_b2.json"
+    destination = tmp_path / "docs/results/cityscapes-railsem19/records/segformer_b2.json"
     destination.parent.mkdir(parents=True)
     destination.write_text(json.dumps(existing), encoding="utf-8")
 

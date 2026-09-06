@@ -4208,7 +4208,7 @@ def _sanitised_performance(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _load_existing_records(root: Path) -> dict[str, dict[str, Any]]:
-    directory = root / "docs/results/model-comparison/records"
+    directory = root / "docs/results/cityscapes-railsem19/records"
     records: dict[str, dict[str, Any]] = {}
     for path in sorted(directory.glob("*.json")):
         record = _load_json_object(path)
@@ -5556,7 +5556,7 @@ def _central_readme(
             "withheld for those cells."
         )
     lines = [
-        "# Model comparison: Cityscapes and RailSem19",
+        "# Cityscapes, RailSem19, and Cityscapes → RailSem19",
         "",
         "This live comparison covers every shipped model recipe. Compatible results are reused "
         "instead of retrained. `—` means evidence is unavailable, not zero or failure. Quality "
@@ -5908,7 +5908,7 @@ def report_campaign(campaign: Path, *, write: bool, publisher_root: Path | None 
     cells = _available_job_records(record)
     records = _comparison_records(publish_root, manifest, cells, record)
     status = _comparison_status(manifest, records, record)
-    comparison = publish_root / "docs/results/model-comparison"
+    comparison = publish_root / "docs/results/cityscapes-railsem19"
     planned_writes: dict[Path, str] = {
         comparison / "README.md": _central_readme(
             manifest, status, records, record["source"]["expected_git_sha"]
@@ -6080,10 +6080,10 @@ def _publish_snapshot(record: dict[str, Any], campaign: Path, count: int) -> str
     for line in changed.splitlines():
         path = line[3:]
         comparison_file = path in {
-            "docs/results/model-comparison/README.md",
-            "docs/results/model-comparison/results.csv",
-            "docs/results/model-comparison/status.json",
-        } or (path.startswith("docs/results/model-comparison/records/") and path.endswith(".json"))
+            "docs/results/cityscapes-railsem19/README.md",
+            "docs/results/cityscapes-railsem19/results.csv",
+            "docs/results/cityscapes-railsem19/status.json",
+        } or (path.startswith("docs/results/cityscapes-railsem19/records/") and path.endswith(".json"))
         if not comparison_file and not (
             path.startswith("docs/catalog/models/") and path.endswith("/README.md")
         ):
@@ -6110,7 +6110,7 @@ def _publish_snapshot(record: dict[str, Any], campaign: Path, count: int) -> str
         env=environment,
     )
     _run_checked(
-        ["git", "add", "docs/results/model-comparison", "docs/catalog/models"],
+        ["git", "add", "docs/results/cityscapes-railsem19", "docs/catalog/models"],
         cwd=root,
     )
     logical = record["logical_cell_count"]

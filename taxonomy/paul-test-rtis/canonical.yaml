@@ -1,0 +1,136 @@
+name: paul-test-rtis
+description: RTIS native rail and anomaly labels
+ignore_index: 255
+classes:
+- id: 0
+  name: person
+  color:
+  - 220
+  - 20
+  - 60
+- id: 1
+  name: truck
+  color:
+  - 0
+  - 0
+  - 69
+- id: 2
+  name: rail-track
+  color:
+  - 230
+  - 149
+  - 139
+- id: 3
+  name: vegetation-overgrowth
+  color:
+  - 106
+  - 142
+  - 34
+- id: 4
+  name: car
+  color:
+  - 0
+  - 0
+  - 142
+- id: 5
+  name: on-rails
+  color:
+  - 0
+  - 80
+  - 100
+- id: 6
+  name: traffic-sign
+  color:
+  - 220
+  - 220
+  - 0
+- id: 7
+  name: road
+  color:
+  - 128
+  - 64
+  - 128
+- id: 8
+  name: sidewalk
+  color:
+  - 244
+  - 35
+  - 232
+- id: 9
+  name: construction
+  color:
+  - 70
+  - 70
+  - 70
+- id: 10
+  name: tram-track
+  color:
+  - 192
+  - 0
+  - 128
+- id: 11
+  name: pole
+  color:
+  - 153
+  - 153
+  - 153
+- id: 12
+  name: traffic-light
+  color:
+  - 250
+  - 170
+  - 30
+- id: 13
+  name: mud-pumping
+  color:
+  - 255
+  - 255
+  - 0
+- id: 14
+  name: fence
+  color:
+  - 190
+  - 153
+  - 153
+- id: 15
+  name: terrain
+  color:
+  - 152
+  - 251
+  - 152
+- id: 16
+  name: sky
+  color:
+  - 70
+  - 130
+  - 180
+- id: 17
+  name: rail-embedded
+  color:
+  - 0
+  - 68
+  - 63
+- id: 18
+  name: rail-raised
+  color:
+  - 0
+  - 255
+  - 255
+- id: 19
+  name: trackbed
+  color:
+  - 90
+  - 40
+  - 41
+- id: 20
+  name: standing-water
+  color:
+  - 156
+  - 0
+  - 0
+thin_classes:
+- 18
+- 17
+- 11
+- 12
+- 6

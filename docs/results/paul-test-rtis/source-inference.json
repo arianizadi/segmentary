@@ -1,0 +1,686 @@
+[
+  {
+    "name": "smp_fpn_resnet50--cityscapes--seed-0",
+    "model": "smp_fpn_resnet50",
+    "protocol": "cityscapes",
+    "checkpoint_sha256": "556c5d27ea6d8d034aa1d6c86a7defd74bcdd36b3e3962cc39034d22d32628d6",
+    "config_sha256": "e48818636e157b217b3de3fead74dcb0507663c6807649beeb043603429efe1d",
+    "weights": "raw",
+    "source_space": "cityscapes19",
+    "target_dataset": "paul-test-rtis",
+    "target_split": "val",
+    "target_split_sha256": "71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d",
+    "inference": {
+      "sliding_window": true,
+      "window": [
+        1024,
+        1024
+      ],
+      "stride": [
+        768,
+        768
+      ],
+      "scales": [
+        1.0
+      ],
+      "flip": false,
+      "task": "multiclass",
+      "threshold": 0.5
+    },
+    "normalization": {
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "channel_order": "rgb",
+      "source": "smp_encoder_settings"
+    },
+    "autocast": "bf16",
+    "shared_coarse_miou_on_supported_classes": 0.27297557435538833,
+    "shared_coarse_pixel_accuracy": 0.7079634451865641,
+    "classes": [
+      {
+        "name": "road",
+        "target_pixels": 1048831,
+        "iou": 0.33755316908227584
+      },
+      {
+        "name": "sidewalk",
+        "target_pixels": 1297367,
+        "iou": 0.05034747477657192
+      },
+      {
+        "name": "construction",
+        "target_pixels": 311585,
+        "iou": 0.013591349116376678
+      },
+      {
+        "name": "fence",
+        "target_pixels": 265137,
+        "iou": 0.14396568861550274
+      },
+      {
+        "name": "pole",
+        "target_pixels": 628038,
+        "iou": 0.36855175639013865
+      },
+      {
+        "name": "traffic-light",
+        "target_pixels": 19510,
+        "iou": 0.10728925325253966
+      },
+      {
+        "name": "traffic-sign",
+        "target_pixels": 13285,
+        "iou": 0.19720892785257413
+      },
+      {
+        "name": "natural-surroundings",
+        "target_pixels": 45141127,
+        "iou": 0.7109238882229566
+      },
+      {
+        "name": "sky",
+        "target_pixels": 19121606,
+        "iou": 0.7228732361790119
+      },
+      {
+        "name": "person",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "car",
+        "target_pixels": 29664,
+        "iou": 0.07745100006593526
+      },
+      {
+        "name": "truck",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "on-rails",
+        "target_pixels": 0,
+        "iou": null
+      }
+    ],
+    "caveat": "Validation diagnostic only. Natural surroundings merges terrain/vegetation/overgrowth; mud, water, rail-specific targets and void excluded. Source recording overlap unverified. Not RTIS anomaly accuracy."
+  },
+  {
+    "name": "smp_fpn_resnet50--cityscapes_to_railsem19--seed-0",
+    "model": "smp_fpn_resnet50",
+    "protocol": "cityscapes_to_railsem19",
+    "checkpoint_sha256": "985c7a6172c91f8abb1b11d51bfe5522f1ab8168e096f824699e7bcb49c5aa4f",
+    "config_sha256": "a32420e8dfda3809e61eaee8f881da70029b861704f0f4e6c3e195a683b731ea",
+    "weights": "raw",
+    "source_space": "rail_union",
+    "target_dataset": "paul-test-rtis",
+    "target_split": "val",
+    "target_split_sha256": "71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d",
+    "inference": {
+      "sliding_window": true,
+      "window": [
+        1024,
+        1024
+      ],
+      "stride": [
+        768,
+        768
+      ],
+      "scales": [
+        1.0
+      ],
+      "flip": false,
+      "task": "multiclass",
+      "threshold": 0.5
+    },
+    "normalization": {
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "channel_order": "rgb",
+      "source": "smp_encoder_settings"
+    },
+    "autocast": "bf16",
+    "shared_coarse_miou_on_supported_classes": 0.5798682758009348,
+    "shared_coarse_pixel_accuracy": 0.9596135314097809,
+    "classes": [
+      {
+        "name": "road",
+        "target_pixels": 1048831,
+        "iou": 0.5629129950794306
+      },
+      {
+        "name": "sidewalk",
+        "target_pixels": 1297367,
+        "iou": 0.39418862345810585
+      },
+      {
+        "name": "construction",
+        "target_pixels": 311585,
+        "iou": 0.34565376439479917
+      },
+      {
+        "name": "fence",
+        "target_pixels": 265137,
+        "iou": 0.21614796903314534
+      },
+      {
+        "name": "pole",
+        "target_pixels": 628038,
+        "iou": 0.6827433143204122
+      },
+      {
+        "name": "traffic-light",
+        "target_pixels": 19510,
+        "iou": 0.6144457448587193
+      },
+      {
+        "name": "traffic-sign",
+        "target_pixels": 13285,
+        "iou": 0.42463697967086156
+      },
+      {
+        "name": "natural-surroundings",
+        "target_pixels": 45141127,
+        "iou": 0.9569439697099136
+      },
+      {
+        "name": "sky",
+        "target_pixels": 19121606,
+        "iou": 0.9865540008474559
+      },
+      {
+        "name": "person",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "car",
+        "target_pixels": 29664,
+        "iou": 0.6144553966365045
+      },
+      {
+        "name": "truck",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "on-rails",
+        "target_pixels": 0,
+        "iou": null
+      }
+    ],
+    "caveat": "Validation diagnostic only. Natural surroundings merges terrain/vegetation/overgrowth; mud, water, rail-specific targets and void excluded. Source recording overlap unverified. Not RTIS anomaly accuracy."
+  },
+  {
+    "name": "segformer_b2--cityscapes--seed-0",
+    "model": "segformer_b2",
+    "protocol": "cityscapes",
+    "checkpoint_sha256": "d0f4f619c4d1200c143ff218ddb7e8693decd082345af09049cc50b8f8c42977",
+    "config_sha256": "86be859d8f27259512c7b76f6d1481ef38ee58f59abb3bb0933cecf1fd075ac7",
+    "weights": "raw",
+    "source_space": "cityscapes19",
+    "target_dataset": "paul-test-rtis",
+    "target_split": "val",
+    "target_split_sha256": "71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d",
+    "inference": {
+      "sliding_window": true,
+      "window": [
+        1024,
+        1024
+      ],
+      "stride": [
+        768,
+        768
+      ],
+      "scales": [
+        1.0
+      ],
+      "flip": false,
+      "task": "multiclass",
+      "threshold": 0.5
+    },
+    "normalization": {
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "channel_order": "rgb",
+      "source": "imagenet"
+    },
+    "autocast": "bf16",
+    "shared_coarse_miou_on_supported_classes": 0.3511189998725769,
+    "shared_coarse_pixel_accuracy": 0.8481025072871694,
+    "classes": [
+      {
+        "name": "road",
+        "target_pixels": 1048831,
+        "iou": 0.15244643837451857
+      },
+      {
+        "name": "sidewalk",
+        "target_pixels": 1297367,
+        "iou": 0.02850550698240578
+      },
+      {
+        "name": "construction",
+        "target_pixels": 311585,
+        "iou": 0.058926395705337975
+      },
+      {
+        "name": "fence",
+        "target_pixels": 265137,
+        "iou": 0.0721193320498917
+      },
+      {
+        "name": "pole",
+        "target_pixels": 628038,
+        "iou": 0.590003719371267
+      },
+      {
+        "name": "traffic-light",
+        "target_pixels": 19510,
+        "iou": 0.21436086270384008
+      },
+      {
+        "name": "traffic-sign",
+        "target_pixels": 13285,
+        "iou": 0.28396251495414065
+      },
+      {
+        "name": "natural-surroundings",
+        "target_pixels": 45141127,
+        "iou": 0.8389224309416315
+      },
+      {
+        "name": "sky",
+        "target_pixels": 19121606,
+        "iou": 0.8640786094227508
+      },
+      {
+        "name": "person",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "car",
+        "target_pixels": 29664,
+        "iou": 0.4078641882199843
+      },
+      {
+        "name": "truck",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "on-rails",
+        "target_pixels": 0,
+        "iou": null
+      }
+    ],
+    "caveat": "Validation diagnostic only. Natural surroundings merges terrain/vegetation/overgrowth; mud, water, rail-specific targets and void excluded. Source recording overlap unverified. Not RTIS anomaly accuracy."
+  },
+  {
+    "name": "segformer_b2--cityscapes_to_railsem19--seed-0",
+    "model": "segformer_b2",
+    "protocol": "cityscapes_to_railsem19",
+    "checkpoint_sha256": "2917e287b856d7b272db0d1edd93bd31e4d79e045ff37648653c6cdcf0929bd7",
+    "config_sha256": "35b987687e1fb30709bef8084a19168dc67e94794647c6fee169e5216bdca873",
+    "weights": "raw",
+    "source_space": "rail_union",
+    "target_dataset": "paul-test-rtis",
+    "target_split": "val",
+    "target_split_sha256": "71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d",
+    "inference": {
+      "sliding_window": true,
+      "window": [
+        1024,
+        1024
+      ],
+      "stride": [
+        768,
+        768
+      ],
+      "scales": [
+        1.0
+      ],
+      "flip": false,
+      "task": "multiclass",
+      "threshold": 0.5
+    },
+    "normalization": {
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "channel_order": "rgb",
+      "source": "imagenet"
+    },
+    "autocast": "bf16",
+    "shared_coarse_miou_on_supported_classes": 0.6084202128262461,
+    "shared_coarse_pixel_accuracy": 0.9491480291678299,
+    "classes": [
+      {
+        "name": "road",
+        "target_pixels": 1048831,
+        "iou": 0.44999955432880434
+      },
+      {
+        "name": "sidewalk",
+        "target_pixels": 1297367,
+        "iou": 0.33840700554526054
+      },
+      {
+        "name": "construction",
+        "target_pixels": 311585,
+        "iou": 0.5988536307968094
+      },
+      {
+        "name": "fence",
+        "target_pixels": 265137,
+        "iou": 0.2270284817494852
+      },
+      {
+        "name": "pole",
+        "target_pixels": 628038,
+        "iou": 0.7283391189036216
+      },
+      {
+        "name": "traffic-light",
+        "target_pixels": 19510,
+        "iou": 0.674221069643327
+      },
+      {
+        "name": "traffic-sign",
+        "target_pixels": 13285,
+        "iou": 0.5049693072201111
+      },
+      {
+        "name": "natural-surroundings",
+        "target_pixels": 45141127,
+        "iou": 0.9433491399257563
+      },
+      {
+        "name": "sky",
+        "target_pixels": 19121606,
+        "iou": 0.9869996137095153
+      },
+      {
+        "name": "person",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "car",
+        "target_pixels": 29664,
+        "iou": 0.6320352064397708
+      },
+      {
+        "name": "truck",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "on-rails",
+        "target_pixels": 0,
+        "iou": null
+      }
+    ],
+    "caveat": "Validation diagnostic only. Natural surroundings merges terrain/vegetation/overgrowth; mud, water, rail-specific targets and void excluded. Source recording overlap unverified. Not RTIS anomaly accuracy."
+  },
+  {
+    "name": "segformer_b2--railsem19--seed-0",
+    "model": "segformer_b2",
+    "protocol": "railsem19",
+    "checkpoint_sha256": "a017480f6fc66e45651f83f3103f582591fa2f5f82b7dc048429508393ccfc20",
+    "config_sha256": "2f20188b10c6b076e1814f8bef255272dcf8ac62381c9353b5592c0aab3e9c85",
+    "weights": "raw",
+    "source_space": "rail_union",
+    "target_dataset": "paul-test-rtis",
+    "target_split": "val",
+    "target_split_sha256": "71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d",
+    "inference": {
+      "sliding_window": true,
+      "window": [
+        1024,
+        1024
+      ],
+      "stride": [
+        768,
+        768
+      ],
+      "scales": [
+        1.0
+      ],
+      "flip": false,
+      "task": "multiclass",
+      "threshold": 0.5
+    },
+    "normalization": {
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "channel_order": "rgb",
+      "source": "imagenet"
+    },
+    "autocast": "bf16",
+    "shared_coarse_miou_on_supported_classes": 0.6440918736961407,
+    "shared_coarse_pixel_accuracy": 0.9347226087513802,
+    "classes": [
+      {
+        "name": "road",
+        "target_pixels": 1048831,
+        "iou": 0.5327063148719502
+      },
+      {
+        "name": "sidewalk",
+        "target_pixels": 1297367,
+        "iou": 0.4665193719870414
+      },
+      {
+        "name": "construction",
+        "target_pixels": 311585,
+        "iou": 0.5986937066075012
+      },
+      {
+        "name": "fence",
+        "target_pixels": 265137,
+        "iou": 0.28591381250459436
+      },
+      {
+        "name": "pole",
+        "target_pixels": 628038,
+        "iou": 0.7202421240025253
+      },
+      {
+        "name": "traffic-light",
+        "target_pixels": 19510,
+        "iou": 0.8104835065521916
+      },
+      {
+        "name": "traffic-sign",
+        "target_pixels": 13285,
+        "iou": 0.43911119222521333
+      },
+      {
+        "name": "natural-surroundings",
+        "target_pixels": 45141127,
+        "iou": 0.9175764048166982
+      },
+      {
+        "name": "sky",
+        "target_pixels": 19121606,
+        "iou": 0.9868875670115186
+      },
+      {
+        "name": "person",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "car",
+        "target_pixels": 29664,
+        "iou": 0.6827847363821731
+      },
+      {
+        "name": "truck",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "on-rails",
+        "target_pixels": 0,
+        "iou": null
+      }
+    ],
+    "caveat": "Validation diagnostic only. Natural surroundings merges terrain/vegetation/overgrowth; mud, water, rail-specific targets and void excluded. Source recording overlap unverified. Not RTIS anomaly accuracy."
+  },
+  {
+    "name": "smp_fpn_resnet50--railsem19--seed-0",
+    "model": "smp_fpn_resnet50",
+    "protocol": "railsem19",
+    "checkpoint_sha256": "3937cfdc1cbd07489ea1eaf7771f305d8a2c6ccc6a141373c1d8f2142f0a9248",
+    "config_sha256": "2f30d0ec79ada80bf2e87152112801065beac7f35abfb4188bdc535000a55c22",
+    "weights": "raw",
+    "source_space": "rail_union",
+    "target_dataset": "paul-test-rtis",
+    "target_split": "val",
+    "target_split_sha256": "71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d",
+    "inference": {
+      "sliding_window": true,
+      "window": [
+        1024,
+        1024
+      ],
+      "stride": [
+        768,
+        768
+      ],
+      "scales": [
+        1.0
+      ],
+      "flip": false,
+      "task": "multiclass",
+      "threshold": 0.5
+    },
+    "normalization": {
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "channel_order": "rgb",
+      "source": "smp_encoder_settings"
+    },
+    "autocast": "bf16",
+    "shared_coarse_miou_on_supported_classes": 0.5978499292197298,
+    "shared_coarse_pixel_accuracy": 0.9538694961337671,
+    "classes": [
+      {
+        "name": "road",
+        "target_pixels": 1048831,
+        "iou": 0.4832891587803725
+      },
+      {
+        "name": "sidewalk",
+        "target_pixels": 1297367,
+        "iou": 0.42371633025793953
+      },
+      {
+        "name": "construction",
+        "target_pixels": 311585,
+        "iou": 0.40654820885746434
+      },
+      {
+        "name": "fence",
+        "target_pixels": 265137,
+        "iou": 0.24893748983243857
+      },
+      {
+        "name": "pole",
+        "target_pixels": 628038,
+        "iou": 0.6475025734785749
+      },
+      {
+        "name": "traffic-light",
+        "target_pixels": 19510,
+        "iou": 0.7120972002113048
+      },
+      {
+        "name": "traffic-sign",
+        "target_pixels": 13285,
+        "iou": 0.4541419380579522
+      },
+      {
+        "name": "natural-surroundings",
+        "target_pixels": 45141127,
+        "iou": 0.949688213343206
+      },
+      {
+        "name": "sky",
+        "target_pixels": 19121606,
+        "iou": 0.9860418132985451
+      },
+      {
+        "name": "person",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "car",
+        "target_pixels": 29664,
+        "iou": 0.6665363660794996
+      },
+      {
+        "name": "truck",
+        "target_pixels": 0,
+        "iou": null
+      },
+      {
+        "name": "on-rails",
+        "target_pixels": 0,
+        "iou": null
+      }
+    ],
+    "caveat": "Validation diagnostic only. Natural surroundings merges terrain/vegetation/overgrowth; mud, water, rail-specific targets and void excluded. Source recording overlap unverified. Not RTIS anomaly accuracy."
+  }
+]

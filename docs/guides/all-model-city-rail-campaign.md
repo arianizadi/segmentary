@@ -123,7 +123,7 @@ Whenever another cell becomes reportable, the publisher:
 
 1. fast-forwards the clean publisher checkout;
 2. validates every available result and checkpoint/hash contract;
-3. creates `docs/results/model-comparison/README.md` and the corresponding
+3. creates `docs/results/cityscapes-railsem19/README.md` and the corresponding
    model catalog READMEs;
 4. runs documentation/campaign tests and `git diff --check`;
 5. commits and pushes a progress-labeled result update.
