@@ -463,7 +463,10 @@
       "config_sha256": "526bba24a4ad12eb16aed8d4f8fea3408d1d962d22a7139b9238b072a96e3bca",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 6,
+      "started_at": "2026-09-06T13:11:23.521598+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hf_auto_segformer_b0--rtis_only--seed-0",
         "model": {
