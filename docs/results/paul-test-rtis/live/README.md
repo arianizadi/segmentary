@@ -166,17 +166,17 @@ Click any model for all initialization paths, full class metrics, training/valid
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | 0 | training | 2599 | — | — | — | — | — | — | — |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | 1 | training | 2749 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | 0 | training | 2649 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | 1 | training | 2799 | — | — | — | — | — | — | — |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | 2 | collecting | 2800 | 1527 | 8.85 | 9.99 | 43.73 | 8.40 | 43.20 | 48.00 |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | 0 | training | 2599 | — | — | — | — | — | — | — |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | 1 | training | 2699 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | 0 | training | 2649 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | 1 | training | 2749 | — | — | — | — | — | — | — |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | 2 | collecting | 2545 | 1272 | 11.47 | 12.83 | 51.97 | 10.09 | 45.99 | 51.10 |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | 0 | training | 2449 | — | — | — | — | — | — | — |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | 1 | training | 2499 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | 0 | training | 2499 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | 1 | training | 2549 | — | — | — | — | — | — | — |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | 2 | completed | 2290 | 1018 | 17.93 | 24.33 | 40.54 | 17.29 | 53.99 | 59.99 |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 1799 | — | — | — | — | — | — | — |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 99 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 1849 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 149 | — | — | — | — | — | — | — |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 1 | queued | — | — | — | — | — | — | — | — |
