@@ -83,6 +83,24 @@ def verify_frozen(root, repo):
     return campaign
 
 
+def verify_samples(data_root, samples):
+    # The preparation audit hashes encoded image files but decoded uint8 mask
+    # pixels, so equivalent PNG compression must not invalidate a mask.
+    from PIL import Image
+
+    for sample in samples:
+        image = data_root / "images" / sample["split"] / (sample["key"] + sample["image_extension"])
+        mask = data_root / "masks" / sample["split"] / (sample["key"] + ".png")
+        if digest(image) != sample["image_sha256"]:
+            raise RuntimeError(f"Dataset content changed: {image}")
+        with Image.open(mask) as decoded:
+            if decoded.mode != "L" or decoded.size != (sample["width"], sample["height"]):
+                raise RuntimeError(f"Mask encoding or dimensions changed: {mask}")
+            actual = hashlib.sha256(decoded.tobytes()).hexdigest()
+        if actual != sample["mask_sha256"]:
+            raise RuntimeError(f"Dataset content changed: {mask}")
+
+
 def initialize(root, repo):
     if (root / "campaign.json").exists():
         raise RuntimeError("Campaign already initialized; use worker to resume")
@@ -94,14 +112,7 @@ def initialize(root, repo):
     data_cfg = load_experiment([Path(plan["jobs"][0]["config"])])
     data_root = Path(data_cfg.stages[0].data[0].root)
     samples = read(data_root / "audit/samples.json")
-    for sample in samples:
-        for kind, suffix, field in [
-            ("images", sample["image_extension"], "image_sha256"),
-            ("masks", ".png", "mask_sha256"),
-        ]:
-            path = data_root / kind / sample["split"] / (sample["key"] + suffix)
-            if digest(path) != sample[field]:
-                raise RuntimeError(f"Dataset content changed: {path}")
+    verify_samples(data_root, samples)
     verified = {}
     for job in plan["jobs"]:
         if digest(job["config"]) != job["config_sha256"]:

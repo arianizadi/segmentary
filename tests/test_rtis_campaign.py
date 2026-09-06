@@ -138,3 +138,32 @@ def test_worker_records_failure_and_continues(tmp_path, monkeypatch):
     rtis.worker(tmp_path, Path.cwd(), 0)
     assert rtis.read(tmp_path / "state/bad.json")["status"] == "failed"
     assert rtis.read(tmp_path / "state/good.json")["status"] == "completed"
+
+
+def test_dataset_audit_uses_decoded_mask_hash(tmp_path):
+    import hashlib
+
+    from PIL import Image
+
+    image = tmp_path / "images/train/example.png"
+    mask = tmp_path / "masks/train/example.png"
+    image.parent.mkdir(parents=True)
+    mask.parent.mkdir(parents=True)
+    Image.new("RGB", (3, 2), "red").save(image)
+    pixels = Image.new("L", (3, 2), 2)
+    pixels.save(mask, compress_level=0)
+    sample = {
+        "split": "train",
+        "key": "example",
+        "image_extension": ".png",
+        "width": 3,
+        "height": 2,
+        "image_sha256": rtis.digest(image),
+        "mask_sha256": hashlib.sha256(pixels.tobytes()).hexdigest(),
+    }
+    rtis.verify_samples(tmp_path, [sample])
+    pixels.save(mask, compress_level=9)
+    rtis.verify_samples(tmp_path, [sample])
+    Image.new("L", (3, 2), 3).save(mask)
+    with pytest.raises(RuntimeError, match="content changed"):
+        rtis.verify_samples(tmp_path, [sample])
