@@ -6,7 +6,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 0 | training | 2099 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 0 | evaluating | 2290 | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | 1 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -25,7 +25,7 @@ Training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256: `71fef
 
 ## rtis_only — seed 0
 
-Status: **training**. Started: 2026-09-06T09:01:24.653383+00:00. Finished: —.
+Status: **evaluating**. Started: 2026-09-06T09:01:24.653383+00:00. Finished: —.
 
 Recipe pretrained initializer: `google/deeplabv3_mobilenet_v2_1.0_513`.
 
@@ -103,6 +103,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1527 | 21.73 | 0.25 |
 | 1781 | 20.81 | 0.60 |
 | 2036 | 21.26 | 0.92 |
+| 2290 | 23.10 | 1.47 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
