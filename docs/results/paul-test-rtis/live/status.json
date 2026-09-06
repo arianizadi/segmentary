@@ -2652,7 +2652,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2549,
+      "observed_step": 2799,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2662,7 +2662,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2449,
+      "observed_step": 2649,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2680,9 +2680,9 @@
       "model": "native_resnet50_deeplabv3plus",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1599,
+      "status": "collecting",
+      "final_step": 1781,
+      "observed_step": null,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2692,7 +2692,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 1349,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2702,7 +2702,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 799,
+      "observed_step": 1049,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2712,7 +2712,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 699,
+      "observed_step": 899,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2722,7 +2722,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 649,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2732,7 +2732,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 399,
       "record": "models/native_resnet50_deeplabv3plus/record.json"
     },
     {
@@ -2742,7 +2742,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 49,
+      "observed_step": 149,
       "record": "models/native_resnet50_fpn_ocr/record.json"
     },
     {
@@ -2752,7 +2752,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 99,
       "record": "models/native_resnet50_fpn_ocr/record.json"
     },
     {
