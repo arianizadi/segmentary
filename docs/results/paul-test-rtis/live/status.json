@@ -487,10 +487,12 @@
       "config_sha256": "da023433ac56a2e17fafa6a6a8f58bcb5e3396cfd472a3d752bfa7c3f3eb0b06",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "training",
+      "status": "failed",
       "gpu": 0,
       "started_at": "2026-09-06T02:17:19.359883+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:17:51.874988+00:00",
+      "error": "Process exited 1; see logs/eomt_dinov3_large--rtis_only--seed-0.log"
     },
     {
       "name": "eomt_dinov3_large--cityscapes_to_rtis--seed-0",
@@ -508,10 +510,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 1,
       "started_at": "2026-09-06T02:17:23.045563+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:17:59.315692+00:00",
+      "error": "Process exited 1; see logs/eomt_dinov3_large--cityscapes_to_rtis--seed-0.log"
     },
     {
       "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
@@ -529,10 +533,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 2,
       "started_at": "2026-09-06T02:17:22.875470+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:17:57.973472+00:00",
+      "error": "Process exited 1; see logs/eomt_dinov3_large--railsem19_to_rtis--seed-0.log"
     },
     {
       "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -550,10 +556,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 4,
       "started_at": "2026-09-06T02:17:22.715621+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:17:59.120504+00:00",
+      "error": "Process exited 1; see logs/eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0.log"
     },
     {
       "name": "eomt_large--rtis_only--seed-0",
@@ -563,10 +571,12 @@
       "config_sha256": "2e20f5ad695886b4b49d5086f63a6a08fdaa55c28d4e2797c1e5ba76047427b7",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "training",
+      "status": "failed",
       "gpu": 5,
       "started_at": "2026-09-06T02:17:19.378974+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:17:54.144328+00:00",
+      "error": "Process exited 1; see logs/eomt_large--rtis_only--seed-0.log"
     },
     {
       "name": "eomt_large--cityscapes_to_rtis--seed-0",
@@ -584,10 +594,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 3,
       "started_at": "2026-09-06T02:17:22.880882+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:17:59.276902+00:00",
+      "error": "Process exited 1; see logs/eomt_large--cityscapes_to_rtis--seed-0.log"
     },
     {
       "name": "eomt_large--railsem19_to_rtis--seed-0",
@@ -605,10 +617,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 6,
       "started_at": "2026-09-06T02:17:22.740770+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:18:00.281694+00:00",
+      "error": "Process exited 1; see logs/eomt_large--railsem19_to_rtis--seed-0.log"
     },
     {
       "name": "eomt_large--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -626,10 +640,12 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "failed",
       "gpu": 7,
       "started_at": "2026-09-06T02:17:22.976901+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "finished_at": "2026-09-06T02:18:00.054540+00:00",
+      "error": "Process exited 1; see logs/eomt_large--cityscapes_to_railsem19_to_rtis--seed-0.log"
     },
     {
       "name": "hf_auto_beit_base_ade--rtis_only--seed-0",
@@ -719,7 +735,10 @@
       "config_sha256": "2bb0ec7a862af1c70e004aa4f5d101238b9e092b28c399e0fe831476958c107e",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued"
+      "status": "training",
+      "gpu": 0,
+      "started_at": "2026-09-06T02:17:51.908573+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_rtis--seed-0",
@@ -737,7 +756,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 5,
+      "started_at": "2026-09-06T02:17:54.195925+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilenetv2_deeplabv3--railsem19_to_rtis--seed-0",
@@ -755,7 +777,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-06T02:17:58.029714+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -773,7 +798,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-06T02:17:59.198046+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilevit_xxs_deeplabv3--rtis_only--seed-0",
@@ -783,7 +811,10 @@
       "config_sha256": "3bc0b61648ff9b8ff901950ec2eee1b2e4ea4a78bd61ca087e988738776cb647",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued"
+      "status": "training",
+      "gpu": 3,
+      "started_at": "2026-09-06T02:17:59.304138+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_rtis--seed-0",
@@ -801,7 +832,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 1,
+      "started_at": "2026-09-06T02:17:59.380856+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilevit_xxs_deeplabv3--railsem19_to_rtis--seed-0",
@@ -819,7 +853,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-06T02:18:00.099066+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -837,7 +874,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued"
+      "status": "training",
+      "gpu": 6,
+      "started_at": "2026-09-06T02:18:00.328606+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilevitv2_deeplabv3--rtis_only--seed-0",
