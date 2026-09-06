@@ -1340,7 +1340,7 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2036,
       "observed_step": null,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
@@ -1382,7 +1382,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1249,
+      "observed_step": 1299,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1392,7 +1392,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 949,
+      "observed_step": 999,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1402,7 +1402,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 949,
+      "observed_step": 999,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1412,7 +1412,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 649,
+      "observed_step": 699,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1422,7 +1422,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 508,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1432,7 +1432,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 99,
+      "observed_step": 149,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1442,7 +1442,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 49,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1452,7 +1452,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 49,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1470,7 +1470,7 @@
       "model": "hrnet_w48_ocr",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/hrnet_w48_ocr/record.json"
