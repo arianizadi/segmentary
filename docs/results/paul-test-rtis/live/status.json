@@ -1962,7 +1962,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2349,
+      "observed_step": 2799,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -1972,7 +1972,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2199,
+      "observed_step": 2599,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -1980,9 +1980,9 @@
       "model": "native_mobilenetv3_large_deeplabv3plus",
       "protocol": "railsem19_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1649,
+      "status": "collecting",
+      "final_step": 2036,
+      "observed_step": null,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -1992,7 +1992,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1272,
+      "observed_step": 1699,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -2002,7 +2002,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1149,
+      "observed_step": 1599,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -2012,7 +2012,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 1549,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -2022,7 +2022,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 549,
+      "observed_step": 999,
       "record": "models/native_mobilenetv3_large_lraspp/record.json"
     },
     {
@@ -2032,7 +2032,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 508,
+      "observed_step": 949,
       "record": "models/native_mobilenetv3_large_lraspp/record.json"
     },
     {
@@ -2042,7 +2042,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 149,
+      "observed_step": 549,
       "record": "models/native_mobilenetv3_large_lraspp/record.json"
     },
     {
@@ -2052,7 +2052,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 399,
       "record": "models/native_mobilenetv3_large_lraspp/record.json"
     },
     {
