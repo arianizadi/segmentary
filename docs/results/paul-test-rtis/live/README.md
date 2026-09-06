@@ -21,7 +21,7 @@ Validation every 250 steps; stop after three checks without a 0.2-point mIoU imp
 | eomt_dinov3_large | railsem19_to_rtis | training | — | — | — |
 | eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | training | — | — | — |
 | eomt_large | rtis_only | training | — | — | — |
-| eomt_large | cityscapes_to_rtis | training | — | — | — |
+| eomt_large | cityscapes_to_rtis | evaluating | 1527 | — | — |
 | eomt_large | railsem19_to_rtis | training | — | — | — |
 | eomt_large | cityscapes_to_railsem19_to_rtis | completed | 1527 | 763 | 58.34 |
 | hf_auto_beit_base_ade | rtis_only | training | — | — | — |

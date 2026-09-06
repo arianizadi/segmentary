@@ -2906,10 +2906,11 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "evaluating",
       "gpu": 5,
       "started_at": "2026-09-06T02:31:23.353790+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "final_step": 1527
     },
     {
       "name": "eomt_large--railsem19_to_rtis--seed-0",
