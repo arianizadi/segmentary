@@ -102832,152 +102832,2339 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "collecting",
       "gpu": 1,
       "started_at": "2026-09-06T05:09:36.388144+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
-      "resolved_config": {
-        "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
-        "model": {
-          "arch": "eomt_dinov3_large",
-          "checkpoint": null,
-          "tuning": "full",
-          "head": "unified_head",
-          "lora_r": 16,
-          "lora_alpha": 32,
-          "lora_dropout": 0.05,
-          "lora_targets": [],
-          "drop_path": null,
-          "revision": null,
-          "subfolder": null,
-          "local_files_only": false,
-          "trust_remote_code": false,
-          "backbone_path": null,
-          "head_paths": [],
-          "classifier_path": null,
-          "inactive_parameter_paths": [],
-          "smp_arch": null,
-          "encoder_name": null,
-          "encoder_weights": null,
-          "native": null,
-          "batch_norm_momentum": null
+      "final_step": 4000,
+      "checkpoints": {
+        "best": {
+          "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/best.ckpt",
+          "sha256": "928c97922d0dbc773cb1d91575c6e860bd77c9dc306bdf2290fcaede0584ccde",
+          "global_step": 3818,
+          "bytes": 5039394745
         },
-        "space": "paul-test-rtis",
-        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
-        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
-        "optim": {
-          "backbone_lr": 1e-05,
-          "head_lr_mult": 10.0,
-          "weight_decay": 0.05,
-          "llrd": 0.75,
-          "warmup_iters": 1500,
-          "warmup_ratio": 1e-06,
-          "poly_power": 0.9,
-          "min_lr_ratio": 0.0,
-          "betas": [
-            0.9,
-            0.999
-          ],
-          "grad_clip": 1.0
-        },
-        "train": {
-          "iters": 4000,
-          "batch_size": 2,
-          "accum": 8,
-          "num_workers": 2,
-          "precision": "bf16-mixed",
-          "ema_decay": 0.9998,
-          "val_every": 250,
-          "ckpt_every": 500,
-          "selection_metric": "val_iou/mud-pumping",
-          "early_stopping_patience": 5,
-          "early_stopping_min_delta": 0.001,
-          "seed": 0,
-          "devices": 1
-        },
-        "eval": {
-          "sliding_window": true,
-          "window": [
-            1024,
-            1024
-          ],
-          "stride": [
-            768,
-            768
-          ],
-          "batch_size": 1,
-          "num_workers": 2,
-          "tta_scales": [],
-          "tta_flip": false,
-          "threshold": 0.5,
-          "boundary_tolerance_frac": 0.0075,
-          "save_confusion": true
-        },
-        "loss": {
-          "task": "multiclass",
-          "activation": "auto",
-          "terms": [],
-          "aux": "none",
-          "aux_weight": 0.0,
-          "ce_weight": 1.0,
-          "label_smoothing": 0.0,
-          "class_weights": null,
-          "query": {
-            "kind": "hungarian_query",
-            "classification_weight": 2.0,
-            "mask_bce_weight": 5.0,
-            "dice_weight": 5.0,
-            "no_object_coefficient": 0.1,
-            "match_class_cost": 2.0,
-            "match_mask_bce_cost": 5.0,
-            "match_dice_cost": 5.0,
-            "matching_num_points": 8192,
-            "auxiliary_layer_weight": 1.0,
-            "dice_smooth": 1.0
-          }
-        },
-        "aug": {
-          "crop": [
-            1024,
-            1024
-          ],
-          "scale_min": 0.5,
-          "scale_max": 2.0,
-          "hflip_p": 0.5,
-          "color_jitter_p": 0.5,
-          "brightness": 0.25,
-          "contrast": 0.25,
-          "saturation": 0.25,
-          "hue": 0.05
-        },
-        "stages": [
-          {
-            "name": "rtis",
-            "data": [
-              {
-                "name": "paul-test-rtis",
-                "root": "/data/izadia1/datasets/paul-test-rtis",
-                "variant": null,
-                "split_file": "splits.json",
-                "train_split": "train",
-                "val_split": "val",
-                "limit": null,
-                "loader": "folder",
-                "mapping": "paul-test-rtis",
-                "loader_options": {
-                  "require_groups": true
-                }
-              }
+        "final": {
+          "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/last.ckpt",
+          "sha256": "d2f3607246c1acecb6509f40a18f229b7206b95adb10acd171403f3f6882b707",
+          "global_step": 4000,
+          "bytes": 5039373945
+        }
+      },
+      "evaluation": {
+        "config": {
+          "aug": {
+            "brightness": 0.25,
+            "color_jitter_p": 0.5,
+            "contrast": 0.25,
+            "crop": [
+              1024,
+              1024
             ],
-            "iters": null,
-            "lr_scale": 0.1,
-            "head_group_lr_scale": 1.0,
-            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
-            "reset_head": true,
-            "freeze": null,
-            "sample_weights": null
+            "hflip_p": 0.5,
+            "hue": 0.05,
+            "saturation": 0.25,
+            "scale_max": 2.0,
+            "scale_min": 0.5
+          },
+          "eval": {
+            "batch_size": 1,
+            "boundary_tolerance_frac": 0.0075,
+            "num_workers": 2,
+            "save_confusion": true,
+            "sliding_window": true,
+            "stride": [
+              768,
+              768
+            ],
+            "threshold": 0.5,
+            "tta_flip": false,
+            "tta_scales": [],
+            "window": [
+              1024,
+              1024
+            ]
+          },
+          "evaluation": {
+            "data": {
+              "limit": null,
+              "loader": "folder",
+              "loader_options": {
+                "require_groups": true
+              },
+              "mapping": "paul-test-rtis",
+              "name": "paul-test-rtis",
+              "root": "/data/izadia1/datasets/paul-test-rtis",
+              "split_file": "splits.json",
+              "train_split": "train",
+              "val_split": "val",
+              "variant": null
+            },
+            "deterministic": true,
+            "num_workers": 2,
+            "prediction": {
+              "activation": "softmax",
+              "task": "multiclass",
+              "threshold": null
+            },
+            "split": "val",
+            "tta": {
+              "enabled": false,
+              "flip": false,
+              "scales": [
+                1.0
+              ]
+            },
+            "weights": "ema"
+          },
+          "loss": {
+            "activation": "auto",
+            "aux": "none",
+            "aux_weight": 0.0,
+            "ce_weight": 1.0,
+            "class_weights": null,
+            "label_smoothing": 0.0,
+            "query": {
+              "auxiliary_layer_weight": 1.0,
+              "classification_weight": 2.0,
+              "dice_smooth": 1.0,
+              "dice_weight": 5.0,
+              "kind": "hungarian_query",
+              "mask_bce_weight": 5.0,
+              "match_class_cost": 2.0,
+              "match_dice_cost": 5.0,
+              "match_mask_bce_cost": 5.0,
+              "matching_num_points": 8192,
+              "no_object_coefficient": 0.1
+            },
+            "task": "multiclass",
+            "terms": []
+          },
+          "model": {
+            "arch": "eomt_dinov3_large",
+            "backbone_path": null,
+            "batch_norm_momentum": null,
+            "checkpoint": null,
+            "classifier_path": null,
+            "drop_path": null,
+            "encoder_name": null,
+            "encoder_weights": null,
+            "head": "unified_head",
+            "head_paths": [],
+            "inactive_parameter_paths": [],
+            "local_files_only": false,
+            "lora_alpha": 32,
+            "lora_dropout": 0.05,
+            "lora_r": 16,
+            "lora_targets": [],
+            "native": null,
+            "revision": null,
+            "smp_arch": null,
+            "subfolder": null,
+            "trust_remote_code": false,
+            "tuning": "full"
+          },
+          "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
+          "optim": {
+            "backbone_lr": 1e-05,
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "grad_clip": 1.0,
+            "head_lr_mult": 10.0,
+            "llrd": 0.75,
+            "min_lr_ratio": 0.0,
+            "poly_power": 0.9,
+            "warmup_iters": 1500,
+            "warmup_ratio": 1e-06,
+            "weight_decay": 0.05
+          },
+          "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+          "space": "paul-test-rtis",
+          "stages": [
+            {
+              "data": [
+                {
+                  "limit": null,
+                  "loader": "folder",
+                  "loader_options": {
+                    "require_groups": true
+                  },
+                  "mapping": "paul-test-rtis",
+                  "name": "paul-test-rtis",
+                  "root": "/data/izadia1/datasets/paul-test-rtis",
+                  "split_file": "splits.json",
+                  "train_split": "train",
+                  "val_split": "val",
+                  "variant": null
+                }
+              ],
+              "freeze": null,
+              "head_group_lr_scale": 1.0,
+              "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+              "iters": null,
+              "lr_scale": 0.1,
+              "name": "rtis",
+              "reset_head": true,
+              "sample_weights": null
+            }
+          ],
+          "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+          "train": {
+            "accum": 8,
+            "batch_size": 2,
+            "ckpt_every": 500,
+            "devices": 1,
+            "early_stopping_min_delta": 0.001,
+            "early_stopping_patience": 5,
+            "ema_decay": 0.9998,
+            "iters": 4000,
+            "num_workers": 2,
+            "precision": "bf16-mixed",
+            "seed": 0,
+            "selection_metric": "val_iou/mud-pumping",
+            "val_every": 250
           }
-        ]
+        },
+        "config_hash": "87da9496e44b",
+        "dataset_sizes": {
+          "eval": 37
+        },
+        "env": {
+          "cuda_available": true,
+          "cuda_visible_devices": "1",
+          "cudnn": 91900,
+          "driver_version": "570.133.20",
+          "gpu_count": 1,
+          "gpu_names": [
+            "NVIDIA L40S"
+          ],
+          "hostname": "hdrfs-app-001",
+          "input_normalization": {
+            "channel_order": "rgb",
+            "mean": [
+              0.485,
+              0.456,
+              0.406
+            ],
+            "source": "imagenet",
+            "std": [
+              0.229,
+              0.224,
+              0.225
+            ]
+          },
+          "packages": {
+            "albumentations": "2.0.8",
+            "lightning": "2.6.5",
+            "numpy": "2.4.4",
+            "segmentary": "0.1.0",
+            "segmentation-models-pytorch": "0.5.0",
+            "timm": "1.0.28",
+            "torch": "2.11.0+cu128",
+            "torchvision": "0.26.0+cu128",
+            "transformers": "5.15.0"
+          },
+          "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+          "python": "3.11.15",
+          "torch": "2.11.0+cu128",
+          "torch_cuda": "12.8"
+        },
+        "finished_at": "2026-09-06T07:03:26+00:00",
+        "git_dirty": false,
+        "git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+        "metrics": {
+          "boundary": {
+            "gt_contour_pixels": {
+              "car": 1122,
+              "construction": 19036,
+              "fence": 10732,
+              "mud-pumping": 54436,
+              "on-rails": 0,
+              "person": 0,
+              "pole": 74224,
+              "rail-embedded": 3430,
+              "rail-raised": 208160,
+              "rail-track": 203735,
+              "road": 23872,
+              "sidewalk": 42754,
+              "sky": 135616,
+              "standing-water": 8116,
+              "terrain": 241890,
+              "trackbed": 264168,
+              "traffic-light": 1026,
+              "traffic-sign": 2018,
+              "tram-track": 1516,
+              "truck": 0,
+              "vegetation-overgrowth": 225630
+            },
+            "macro_f1": 0.5865502257774013,
+            "macro_precision": 0.5526479876741757,
+            "macro_recall": 0.6733232657453287,
+            "per_class_f1": {
+              "car": 0.5335463258785943,
+              "construction": 0.6098410306465534,
+              "fence": 0.6425544448282082,
+              "mud-pumping": 0.1121725458154028,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9397110652825339,
+              "rail-embedded": 0.9131933569393301,
+              "rail-raised": 0.9536593654683595,
+              "rail-track": 0.6954235632974748,
+              "road": 0.224474728961771,
+              "sidewalk": 0.6151420775637716,
+              "sky": 0.9873029331236897,
+              "standing-water": 0.6419195808697974,
+              "terrain": 0.7535174633387767,
+              "trackbed": 0.7373434965683924,
+              "traffic-light": 0.7935199658945574,
+              "traffic-sign": 0.8346146508604515,
+              "tram-track": 0.13924450243566092,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.6038234177746995
+            },
+            "per_class_precision": {
+              "car": 0.3638344226579521,
+              "construction": 0.4685195019767511,
+              "fence": 0.5345904537418975,
+              "mud-pumping": 0.06492394247429065,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9165421646746348,
+              "rail-embedded": 0.985949177877429,
+              "rail-raised": 0.9504183513166125,
+              "rail-track": 0.6219279229002554,
+              "road": 0.17758777043658505,
+              "sidewalk": 0.6019087339608108,
+              "sky": 0.9816686156699866,
+              "standing-water": 0.7616722016018753,
+              "terrain": 0.6670204854733015,
+              "trackbed": 0.677326501659065,
+              "traffic-light": 0.7166324435318275,
+              "traffic-sign": 0.7841880341880342,
+              "tram-track": 0.08739561079821324,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.6908534185439917
+            },
+            "per_class_recall": {
+              "car": 1.0,
+              "construction": 0.8732401765076697,
+              "fence": 0.8051621319418562,
+              "mud-pumping": 0.41202513042839295,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9640816986419487,
+              "rail-embedded": 0.8504373177842566,
+              "rail-raised": 0.9569225595695618,
+              "rail-track": 0.7886175669374432,
+              "road": 0.30500167560321717,
+              "sidewalk": 0.6289703887355569,
+              "sky": 0.9930023006134969,
+              "standing-water": 0.5547067520946279,
+              "terrain": 0.86579023523089,
+              "trackbed": 0.8090306168801672,
+              "traffic-light": 0.8888888888888888,
+              "traffic-sign": 0.8919722497522299,
+              "tram-track": 0.3423482849604222,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.5362673403359483
+            },
+            "pred_contour_pixels": {
+              "car": 3213,
+              "construction": 33894,
+              "fence": 16970,
+              "mud-pumping": 303586,
+              "on-rails": 456,
+              "person": 0,
+              "pole": 72288,
+              "rail-embedded": 3345,
+              "rail-raised": 203059,
+              "rail-track": 279534,
+              "road": 38595,
+              "sidewalk": 53229,
+              "sky": 123995,
+              "standing-water": 5119,
+              "terrain": 314662,
+              "trackbed": 341156,
+              "traffic-light": 1461,
+              "traffic-sign": 1872,
+              "tram-track": 5149,
+              "truck": 3231,
+              "vegetation-overgrowth": 149903
+            },
+            "tolerance_frac": 0.0075
+          },
+          "confusion": [
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              4557779,
+              69915,
+              0,
+              0,
+              0,
+              670,
+              0,
+              0,
+              48343,
+              0,
+              0,
+              1524071,
+              0,
+              121,
+              0,
+              278,
+              101963,
+              20017,
+              40
+            ],
+            [
+              0,
+              0,
+              674478,
+              1772146,
+              0,
+              0,
+              77,
+              3561,
+              45432,
+              14850,
+              0,
+              0,
+              0,
+              790920,
+              49,
+              1767427,
+              0,
+              0,
+              142029,
+              690850,
+              2
+            ],
+            [
+              0,
+              1726,
+              0,
+              0,
+              26664,
+              0,
+              0,
+              92,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1182,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              6,
+              6,
+              0,
+              0,
+              9012,
+              0,
+              0,
+              141,
+              0,
+              1541,
+              169,
+              0,
+              0,
+              2047,
+              315,
+              0,
+              24,
+              24,
+              0
+            ],
+            [
+              0,
+              0,
+              15,
+              536,
+              69,
+              0,
+              0,
+              159197,
+              10962,
+              0,
+              861,
+              240,
+              0,
+              19671,
+              34,
+              787943,
+              0,
+              246,
+              685,
+              68372,
+              0
+            ],
+            [
+              0,
+              5018,
+              0,
+              5071,
+              0,
+              915,
+              0,
+              273668,
+              659471,
+              80875,
+              40,
+              970,
+              0,
+              29,
+              570,
+              213872,
+              0,
+              0,
+              10306,
+              46562,
+              0
+            ],
+            [
+              0,
+              1086,
+              0,
+              5,
+              106,
+              0,
+              0,
+              1533,
+              1110,
+              242629,
+              62,
+              9660,
+              3,
+              0,
+              1962,
+              48281,
+              1567,
+              0,
+              0,
+              3581,
+              0
+            ],
+            [
+              0,
+              0,
+              1483,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              493,
+              0,
+              0,
+              53461,
+              0,
+              0,
+              0,
+              275,
+              373,
+              94,
+              0
+            ],
+            [
+              0,
+              1065,
+              0,
+              0,
+              0,
+              0,
+              1108,
+              150,
+              207,
+              1711,
+              63,
+              556151,
+              211,
+              0,
+              8953,
+              34375,
+              22595,
+              0,
+              795,
+              654,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1016,
+              0,
+              0,
+              0,
+              0,
+              4556,
+              13655,
+              0,
+              0,
+              207,
+              76,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              389203,
+              0,
+              0,
+              0,
+              0,
+              5182,
+              0,
+              0,
+              0,
+              0,
+              0,
+              392574,
+              0,
+              5019,
+              0,
+              1,
+              8025,
+              426246,
+              0
+            ],
+            [
+              0,
+              2281,
+              0,
+              0,
+              5953,
+              0,
+              21,
+              1867,
+              0,
+              8774,
+              0,
+              6233,
+              0,
+              0,
+              149958,
+              86252,
+              3798,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              966,
+              82,
+              45554,
+              5622,
+              24,
+              389,
+              116020,
+              5373,
+              18884,
+              62,
+              20518,
+              182,
+              24355,
+              37059,
+              38786579,
+              67015,
+              0,
+              235,
+              102622,
+              7765
+            ],
+            [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              70,
+              0,
+              0,
+              3944,
+              0,
+              40635,
+              241,
+              0,
+              51,
+              73717,
+              19002932,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              106,
+              0,
+              0,
+              0,
+              0,
+              101,
+              164,
+              0,
+              212,
+              0,
+              0,
+              1281,
+              0,
+              0,
+              0,
+              7882,
+              6918,
+              135,
+              0
+            ],
+            [
+              0,
+              623,
+              98798,
+              7890,
+              0,
+              46,
+              6,
+              166,
+              40,
+              723,
+              263,
+              105,
+              0,
+              4857,
+              1093,
+              9379,
+              0,
+              65,
+              2722255,
+              123424,
+              64
+            ],
+            [
+              0,
+              63,
+              80796,
+              48505,
+              0,
+              34,
+              181,
+              8023,
+              2473,
+              1238,
+              376,
+              2540,
+              0,
+              474284,
+              58,
+              685994,
+              0,
+              486,
+              126008,
+              9211061,
+              961
+            ],
+            [
+              0,
+              0,
+              2527,
+              2848,
+              0,
+              0,
+              0,
+              2111,
+              2,
+              0,
+              14185,
+              0,
+              0,
+              9125,
+              0,
+              12370,
+              0,
+              0,
+              88,
+              3949,
+              48597
+            ]
+          ],
+          "freqw_iou": 0.8079486933142995,
+          "macc": 0.6254358531536582,
+          "mdice": 0.5852608448761905,
+          "miou": 0.4809598946156021,
+          "mprecision": 0.6504622485065095,
+          "mspecificity": 0.9924132951295969,
+          "per_class_acc": {
+            "car": 0.8988673139158576,
+            "construction": 0.7786928125551615,
+            "fence": 0.5655868475542832,
+            "mud-pumping": 0.32014189602446486,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.8855371808712211,
+            "rail-embedded": 0.46919459491636406,
+            "rail-raised": 0.9166468280491898,
+            "rail-track": 0.7208029419295334,
+            "road": 0.15178517797433524,
+            "sidewalk": 0.5083149178297275,
+            "sky": 0.9937937221381928,
+            "standing-water": 0.507264984029561,
+            "terrain": 0.9884624106246935,
+            "trackbed": 0.8654506152870584,
+            "traffic-light": 0.6998974884674526,
+            "traffic-sign": 0.6783590515619119,
+            "tram-track": 0.00877552110219121,
+            "truck": null,
+            "vegetation-overgrowth": 0.30027105193464865
+          },
+          "per_class_dice": {
+            "car": 0.7833367607744058,
+            "construction": 0.7080399326479454,
+            "fence": 0.645086078584887,
+            "mud-pumping": 0.17367157441541223,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.8750105216620372,
+            "rail-embedded": 0.6055623847572219,
+            "rail-raised": 0.8940814690727532,
+            "rail-track": 0.7515835055864425,
+            "road": 0.19639742112496392,
+            "sidewalk": 0.652101922227864,
+            "sky": 0.9943997766190098,
+            "standing-water": 0.6342972375041603,
+            "terrain": 0.9488598800174733,
+            "trackbed": 0.8632400141851203,
+            "traffic-light": 0.8039209914338701,
+            "traffic-sign": 0.7162328631035167,
+            "tram-track": 0.008139410099142307,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.45125515370758196
+          },
+          "per_class_iou": {
+            "car": 0.6438402472593809,
+            "construction": 0.5480354621943645,
+            "fence": 0.47610853234952344,
+            "mud-pumping": 0.09509328770361873,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.777794404757243,
+            "rail-embedded": 0.4342699724517906,
+            "rail-raised": 0.8084514763697098,
+            "rail-track": 0.6020294580772085,
+            "road": 0.10889173891482412,
+            "sidewalk": 0.48379171465670917,
+            "sky": 0.9888619289240782,
+            "standing-water": 0.46444750272378005,
+            "terrain": 0.9026959032191127,
+            "trackbed": 0.7593863480040703,
+            "traffic-light": 0.672130340618232,
+            "traffic-sign": 0.5579149384015353,
+            "tram-track": 0.004086335228685576,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.29136830045817674
+          },
+          "per_class_precision": {
+            "car": 0.6941219347113031,
+            "construction": 0.6491415821001741,
+            "fence": 0.7505893776872369,
+            "mud-pumping": 0.11915578936377642,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.8647311898176006,
+            "rail-embedded": 0.8536770280515542,
+            "rail-raised": 0.8726004133725507,
+            "rail-track": 0.7851101920615964,
+            "road": 0.2781506130086784,
+            "sidewalk": 0.9093216810022696,
+            "sky": 0.9950065707425866,
+            "standing-water": 0.8462101029096798,
+            "terrain": 0.9123084415496593,
+            "trackbed": 0.8610406772889335,
+            "traffic-light": 0.9442638821658254,
+            "traffic-sign": 0.7585858585858586,
+            "tram-track": 0.007589285714285714,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.9076403499966197
+          },
+          "per_class_recall": {
+            "car": 0.8988673139158576,
+            "construction": 0.7786928125551615,
+            "fence": 0.5655868475542832,
+            "mud-pumping": 0.32014189602446486,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.8855371808712211,
+            "rail-embedded": 0.46919459491636406,
+            "rail-raised": 0.9166468280491898,
+            "rail-track": 0.7208029419295334,
+            "road": 0.15178517797433524,
+            "sidewalk": 0.5083149178297275,
+            "sky": 0.9937937221381928,
+            "standing-water": 0.507264984029561,
+            "terrain": 0.9884624106246935,
+            "trackbed": 0.8654506152870584,
+            "traffic-light": 0.6998974884674526,
+            "traffic-sign": 0.6783590515619119,
+            "tram-track": 0.00877552110219121,
+            "truck": null,
+            "vegetation-overgrowth": 0.30027105193464865
+          },
+          "per_class_specificity": {
+            "car": 0.9998682404417046,
+            "construction": 0.9985247875402705,
+            "fence": 0.9994397592375751,
+            "mud-pumping": 0.9670149937477982,
+            "on-rails": 0.9999885771622499,
+            "person": 1.0,
+            "pole": 0.999017850880303,
+            "rail-embedded": 0.9999848526393901,
+            "rail-raised": 0.9953912254695634,
+            "rail-track": 0.9849489270904183,
+            "road": 0.9953136185828367,
+            "sidewalk": 0.9992519271552252,
+            "sky": 0.9986392934736182,
+            "standing-water": 0.9999008881608069,
+            "terrain": 0.9253884525058252,
+            "trackbed": 0.9810787802593075,
+            "traffic-light": 0.9999909628839703,
+            "traffic-sign": 0.9999678453599498,
+            "tram-track": 0.9992768791708134,
+            "truck": 0.9998560206790356,
+            "vegetation-overgrowth": 0.9978353152808735
+          },
+          "pixel_accuracy": 0.8779446806204271,
+          "support": {
+            "car": 29664,
+            "construction": 311585,
+            "fence": 265137,
+            "mud-pumping": 1226250,
+            "on-rails": 0,
+            "person": 0,
+            "pole": 628038,
+            "rail-embedded": 16799,
+            "rail-raised": 2969797,
+            "rail-track": 6323197,
+            "road": 1048831,
+            "sidewalk": 1297367,
+            "sky": 19121606,
+            "standing-water": 95802,
+            "terrain": 39239306,
+            "trackbed": 10643081,
+            "traffic-light": 19510,
+            "traffic-sign": 13285,
+            "tram-track": 56179,
+            "truck": 0,
+            "vegetation-overgrowth": 5901821
+          }
+        },
+        "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
+        "notes": "checkpoint=/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/best.ckpt ema=True tta=False",
+        "peak_vram_bytes": {
+          "cuda:0": 11559501824
+        },
+        "seed": 0,
+        "stage": "eval:paul-test-rtis:val",
+        "started_at": "2026-09-06T07:03:04+00:00",
+        "wall_clock_s": 22.070158433169127
+      },
+      "training": {
+        "config": {
+          "aug": {
+            "brightness": 0.25,
+            "color_jitter_p": 0.5,
+            "contrast": 0.25,
+            "crop": [
+              1024,
+              1024
+            ],
+            "hflip_p": 0.5,
+            "hue": 0.05,
+            "saturation": 0.25,
+            "scale_max": 2.0,
+            "scale_min": 0.5
+          },
+          "eval": {
+            "batch_size": 1,
+            "boundary_tolerance_frac": 0.0075,
+            "num_workers": 2,
+            "save_confusion": true,
+            "sliding_window": true,
+            "stride": [
+              768,
+              768
+            ],
+            "threshold": 0.5,
+            "tta_flip": false,
+            "tta_scales": [],
+            "window": [
+              1024,
+              1024
+            ]
+          },
+          "loss": {
+            "activation": "auto",
+            "aux": "none",
+            "aux_weight": 0.0,
+            "ce_weight": 1.0,
+            "class_weights": null,
+            "label_smoothing": 0.0,
+            "query": {
+              "auxiliary_layer_weight": 1.0,
+              "classification_weight": 2.0,
+              "dice_smooth": 1.0,
+              "dice_weight": 5.0,
+              "kind": "hungarian_query",
+              "mask_bce_weight": 5.0,
+              "match_class_cost": 2.0,
+              "match_dice_cost": 5.0,
+              "match_mask_bce_cost": 5.0,
+              "matching_num_points": 8192,
+              "no_object_coefficient": 0.1
+            },
+            "task": "multiclass",
+            "terms": []
+          },
+          "model": {
+            "arch": "eomt_dinov3_large",
+            "backbone_path": null,
+            "batch_norm_momentum": null,
+            "checkpoint": null,
+            "classifier_path": null,
+            "drop_path": null,
+            "encoder_name": null,
+            "encoder_weights": null,
+            "head": "unified_head",
+            "head_paths": [],
+            "inactive_parameter_paths": [],
+            "local_files_only": false,
+            "lora_alpha": 32,
+            "lora_dropout": 0.05,
+            "lora_r": 16,
+            "lora_targets": [],
+            "native": null,
+            "revision": null,
+            "smp_arch": null,
+            "subfolder": null,
+            "trust_remote_code": false,
+            "tuning": "full"
+          },
+          "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
+          "optim": {
+            "backbone_lr": 1e-05,
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "grad_clip": 1.0,
+            "head_lr_mult": 10.0,
+            "llrd": 0.75,
+            "min_lr_ratio": 0.0,
+            "poly_power": 0.9,
+            "warmup_iters": 1500,
+            "warmup_ratio": 1e-06,
+            "weight_decay": 0.05
+          },
+          "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+          "space": "paul-test-rtis",
+          "stages": [
+            {
+              "data": [
+                {
+                  "limit": null,
+                  "loader": "folder",
+                  "loader_options": {
+                    "require_groups": true
+                  },
+                  "mapping": "paul-test-rtis",
+                  "name": "paul-test-rtis",
+                  "root": "/data/izadia1/datasets/paul-test-rtis",
+                  "split_file": "splits.json",
+                  "train_split": "train",
+                  "val_split": "val",
+                  "variant": null
+                }
+              ],
+              "freeze": null,
+              "head_group_lr_scale": 1.0,
+              "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+              "iters": null,
+              "lr_scale": 0.1,
+              "name": "rtis",
+              "reset_head": true,
+              "sample_weights": null
+            }
+          ],
+          "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+          "train": {
+            "accum": 8,
+            "batch_size": 2,
+            "ckpt_every": 500,
+            "devices": 1,
+            "early_stopping_min_delta": 0.001,
+            "early_stopping_patience": 5,
+            "ema_decay": 0.9998,
+            "iters": 4000,
+            "num_workers": 2,
+            "precision": "bf16-mixed",
+            "seed": 0,
+            "selection_metric": "val_iou/mud-pumping",
+            "val_every": 250
+          }
+        },
+        "config_hash": "658652b43341",
+        "dataset_sizes": {
+          "train": 220,
+          "train:paul-test-rtis": 220,
+          "val": 37
+        },
+        "env": {
+          "cuda_available": true,
+          "cuda_visible_devices": "1",
+          "cudnn": 91900,
+          "driver_version": "570.133.20",
+          "gpu_count": 1,
+          "gpu_names": [
+            "NVIDIA L40S"
+          ],
+          "hostname": "hdrfs-app-001",
+          "input_normalization": {
+            "channel_order": "rgb",
+            "mean": [
+              0.485,
+              0.456,
+              0.406
+            ],
+            "source": "imagenet",
+            "std": [
+              0.229,
+              0.224,
+              0.225
+            ]
+          },
+          "model_origins": [
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.embeddings",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.0.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.0.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.1.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.1.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.2.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.2.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.3.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.3.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.4.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.4.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.5.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.5.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.6.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.6.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.7.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.7.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.8.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.8.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.9.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.9.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.10.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.10.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.11.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.11.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.12.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.12.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.13.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.13.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.14.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.14.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.15.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.15.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.16.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.16.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.17.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.17.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.18.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.18.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.19.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.19.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.20.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.20.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.21.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.21.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.22.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.22.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.23.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.23.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.rope_embeddings",
+              "timm_pretrained": {}
+            }
+          ],
+          "model_parameter_count": 314917910,
+          "packages": {
+            "albumentations": "2.0.8",
+            "lightning": "2.6.5",
+            "numpy": "2.4.4",
+            "segmentary": "0.1.0",
+            "segmentation-models-pytorch": "0.5.0",
+            "timm": "1.0.28",
+            "torch": "2.11.0+cu128",
+            "torchvision": "0.26.0+cu128",
+            "transformers": "5.15.0"
+          },
+          "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+          "python": "3.11.15",
+          "torch": "2.11.0+cu128",
+          "torch_cuda": "12.8",
+          "trainable_parameter_count": 314917910,
+          "training_stop": {
+            "actual_steps": 4000,
+            "maximum_steps": 4000,
+            "min_delta": 0.001,
+            "monitor": "val_iou/mud-pumping",
+            "patience": 5,
+            "reason": "budget_complete"
+          },
+          "validation_weights": "ema"
+        },
+        "finished_at": "2026-09-06T07:02:38+00:00",
+        "git_dirty": false,
+        "git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+        "metrics": {
+          "boundary": {
+            "gt_contour_pixels": {
+              "car": 1122,
+              "construction": 19036,
+              "fence": 10732,
+              "mud-pumping": 54436,
+              "on-rails": 0,
+              "person": 0,
+              "pole": 74224,
+              "rail-embedded": 3430,
+              "rail-raised": 208160,
+              "rail-track": 203735,
+              "road": 23872,
+              "sidewalk": 42754,
+              "sky": 135616,
+              "standing-water": 8116,
+              "terrain": 241890,
+              "trackbed": 264168,
+              "traffic-light": 1026,
+              "traffic-sign": 2018,
+              "tram-track": 1516,
+              "truck": 0,
+              "vegetation-overgrowth": 225630
+            },
+            "macro_f1": 0.5867908974627662,
+            "macro_precision": 0.5530421975818235,
+            "macro_recall": 0.6730698532513442,
+            "per_class_f1": {
+              "car": 0.5317206754906436,
+              "construction": 0.6105442017342116,
+              "fence": 0.6430906056600212,
+              "mud-pumping": 0.11230311588128039,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9406447110898637,
+              "rail-embedded": 0.913542247710215,
+              "rail-raised": 0.9538880240895022,
+              "rail-track": 0.6950983150138128,
+              "road": 0.22381880315075067,
+              "sidewalk": 0.6149127920069476,
+              "sky": 0.9874358930691739,
+              "standing-water": 0.640940712989688,
+              "terrain": 0.753154216724223,
+              "trackbed": 0.7373380803381199,
+              "traffic-light": 0.7923097314970272,
+              "traffic-sign": 0.8366948722098223,
+              "tram-track": 0.1447879368601543,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.6035930137398676
+            },
+            "per_class_precision": {
+              "car": 0.3621386384830588,
+              "construction": 0.46927423888280717,
+              "fence": 0.5353743095545893,
+              "mud-pumping": 0.06503206735464119,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9166274661722793,
+              "rail-embedded": 0.98676293622142,
+              "rail-raised": 0.9506877514737532,
+              "rail-track": 0.6218535182655097,
+              "road": 0.17629320343307817,
+              "sidewalk": 0.6011920430188396,
+              "sky": 0.9817513541397989,
+              "standing-water": 0.7589216446858029,
+              "terrain": 0.6666867720399864,
+              "trackbed": 0.6776839410263846,
+              "traffic-light": 0.7178423236514523,
+              "traffic-sign": 0.7909880564603692,
+              "tram-track": 0.09166666666666666,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.6900670201060318
+            },
+            "per_class_recall": {
+              "car": 1.0,
+              "construction": 0.8735028367304055,
+              "fence": 0.8050689526649273,
+              "mud-pumping": 0.4111984715996767,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.965954408277646,
+              "rail-embedded": 0.8504373177842566,
+              "rail-raised": 0.9571099154496541,
+              "rail-track": 0.7879009497631727,
+              "road": 0.30642593833780163,
+              "sidewalk": 0.6292744538522711,
+              "sky": 0.9931866446436999,
+              "standing-water": 0.5547067520946279,
+              "terrain": 0.865393360618463,
+              "trackbed": 0.8085082220405196,
+              "traffic-light": 0.8840155945419104,
+              "traffic-sign": 0.88800792864222,
+              "tram-track": 0.34432717678100266,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.536378141204627
+            },
+            "pred_contour_pixels": {
+              "car": 3217,
+              "construction": 33799,
+              "fence": 17018,
+              "mud-pumping": 303112,
+              "on-rails": 492,
+              "person": 0,
+              "pole": 72278,
+              "rail-embedded": 3324,
+              "rail-raised": 203053,
+              "rail-track": 279598,
+              "road": 38799,
+              "sidewalk": 53186,
+              "sky": 124064,
+              "standing-water": 5156,
+              "terrain": 315007,
+              "trackbed": 341373,
+              "traffic-light": 1446,
+              "traffic-sign": 1842,
+              "tram-track": 5160,
+              "truck": 3277,
+              "vegetation-overgrowth": 149955
+            },
+            "tolerance_frac": 0.0075
+          },
+          "confusion": [
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              4555389,
+              69246,
+              0,
+              0,
+              0,
+              674,
+              0,
+              0,
+              48338,
+              0,
+              0,
+              1527919,
+              0,
+              124,
+              0,
+              276,
+              101166,
+              20027,
+              38
+            ],
+            [
+              0,
+              0,
+              674683,
+              1769482,
+              0,
+              0,
+              78,
+              3560,
+              45447,
+              14947,
+              0,
+              0,
+              0,
+              792995,
+              50,
+              1767407,
+              0,
+              0,
+              141763,
+              691404,
+              5
+            ],
+            [
+              0,
+              1793,
+              0,
+              0,
+              26598,
+              0,
+              0,
+              93,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1180,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              6,
+              6,
+              0,
+              0,
+              8987,
+              0,
+              0,
+              141,
+              0,
+              1569,
+              164,
+              0,
+              0,
+              2050,
+              315,
+              0,
+              23,
+              24,
+              0
+            ],
+            [
+              0,
+              0,
+              20,
+              533,
+              68,
+              0,
+              0,
+              159099,
+              10603,
+              0,
+              840,
+              237,
+              0,
+              19657,
+              34,
+              788862,
+              0,
+              250,
+              683,
+              67945,
+              0
+            ],
+            [
+              0,
+              4933,
+              0,
+              5050,
+              0,
+              1002,
+              0,
+              272654,
+              660639,
+              81557,
+              35,
+              974,
+              0,
+              26,
+              576,
+              213024,
+              0,
+              0,
+              10276,
+              46621,
+              0
+            ],
+            [
+              0,
+              1113,
+              0,
+              7,
+              103,
+              0,
+              0,
+              1542,
+              1117,
+              242344,
+              57,
+              9698,
+              3,
+              0,
+              1941,
+              48458,
+              1569,
+              0,
+              0,
+              3633,
+              0
+            ],
+            [
+              0,
+              0,
+              1483,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              521,
+              0,
+              0,
+              53429,
+              0,
+              0,
+              0,
+              279,
+              373,
+              94,
+              0
+            ],
+            [
+              0,
+              1107,
+              0,
+              0,
+              0,
+              0,
+              1112,
+              149,
+              206,
+              1706,
+              61,
+              556152,
+              215,
+              0,
+              8961,
+              34384,
+              22572,
+              0,
+              754,
+              659,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1027,
+              0,
+              0,
+              0,
+              0,
+              4603,
+              13598,
+              0,
+              0,
+              205,
+              77,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              389003,
+              0,
+              0,
+              0,
+              0,
+              5185,
+              0,
+              0,
+              0,
+              0,
+              0,
+              392584,
+              0,
+              5008,
+              0,
+              0,
+              8004,
+              426466,
+              0
+            ],
+            [
+              0,
+              2257,
+              0,
+              0,
+              5914,
+              0,
+              21,
+              1851,
+              0,
+              8765,
+              0,
+              6234,
+              0,
+              0,
+              150075,
+              86229,
+              3791,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              964,
+              72,
+              45539,
+              5612,
+              27,
+              379,
+              116330,
+              5367,
+              18787,
+              62,
+              20518,
+              180,
+              24277,
+              37184,
+              38785778,
+              67009,
+              0,
+              236,
+              103024,
+              7961
+            ],
+            [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              69,
+              0,
+              0,
+              3944,
+              0,
+              40629,
+              239,
+              0,
+              52,
+              73550,
+              19003107,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              110,
+              0,
+              0,
+              0,
+              0,
+              103,
+              162,
+              0,
+              212,
+              0,
+              0,
+              1270,
+              0,
+              0,
+              0,
+              7909,
+              6898,
+              135,
+              0
+            ],
+            [
+              0,
+              628,
+              99127,
+              7912,
+              0,
+              56,
+              6,
+              166,
+              41,
+              694,
+              263,
+              107,
+              0,
+              4917,
+              1110,
+              9318,
+              0,
+              63,
+              2721890,
+              123430,
+              69
+            ],
+            [
+              0,
+              61,
+              80091,
+              48331,
+              0,
+              39,
+              181,
+              7999,
+              2492,
+              1205,
+              367,
+              2542,
+              0,
+              468994,
+              59,
+              687654,
+              0,
+              493,
+              125849,
+              9215768,
+              956
+            ],
+            [
+              0,
+              0,
+              2540,
+              2848,
+              0,
+              0,
+              0,
+              2131,
+              2,
+              0,
+              14166,
+              0,
+              0,
+              9099,
+              0,
+              12368,
+              0,
+              0,
+              87,
+              3948,
+              48613
+            ]
+          ],
+          "freqw_iou": 0.8079350177230094,
+          "macc": 0.6251617570146261,
+          "mdice": 0.5850857431805775,
+          "miou": 0.48071228260363286,
+          "mprecision": 0.6502756090382651,
+          "mspecificity": 0.992412355859696,
+          "per_class_acc": {
+            "car": 0.8966423948220065,
+            "construction": 0.7777781343774572,
+            "fence": 0.5660281288541396,
+            "mud-pumping": 0.3201500509683996,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.8855387731315622,
+            "rail-embedded": 0.4708018334424668,
+            "rail-raised": 0.9165239240257835,
+            "rail-track": 0.7204249685720688,
+            "road": 0.15169174061407414,
+            "sidewalk": 0.5092152027915,
+            "sky": 0.9938028740891325,
+            "standing-water": 0.5074319951566774,
+            "terrain": 0.9884419974196281,
+            "trackbed": 0.865892874441151,
+            "traffic-light": 0.6969759097898514,
+            "traffic-sign": 0.6764772299585999,
+            "tram-track": 0.009273927980206128,
+            "truck": null,
+            "vegetation-overgrowth": 0.2998196658285638
+          },
+          "per_class_dice": {
+            "car": 0.7827660795479627,
+            "construction": 0.7068771648375688,
+            "fence": 0.6452354899941742,
+            "mud-pumping": 0.17365529434688284,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.8749336309811759,
+            "rail-embedded": 0.6067743296635851,
+            "rail-raised": 0.89421152045263,
+            "rail-track": 0.751359692343243,
+            "road": 0.19637403131512798,
+            "sidewalk": 0.6529850359016784,
+            "sky": 0.9944052395959962,
+            "standing-water": 0.6336252965251167,
+            "terrain": 0.9488306053318758,
+            "trackbed": 0.8634550906554633,
+            "traffic-light": 0.8020289598631631,
+            "traffic-sign": 0.7148140783455955,
+            "tram-track": 0.008604388072765708,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.4507789358375447
+          },
+          "per_class_iou": {
+            "car": 0.6430695582795387,
+            "construction": 0.5466434785746993,
+            "fence": 0.47627132629227176,
+            "mud-pumping": 0.09508352602297065,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.777672904527588,
+            "rail-embedded": 0.43551762114537446,
+            "rail-raised": 0.8086641676884313,
+            "rail-track": 0.6017423013944435,
+            "road": 0.10887735856803817,
+            "sidewalk": 0.4847645002509532,
+            "sky": 0.9888727335815554,
+            "standing-water": 0.46372733256384085,
+            "terrain": 0.9026429138297364,
+            "trackbed": 0.7597192891862332,
+            "traffic-light": 0.669489439220127,
+            "traffic-sign": 0.5561950736477287,
+            "tram-track": 0.004320782882733455,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.29097134441639305
+          },
+          "per_class_precision": {
+            "car": 0.6945554249902076,
+            "construction": 0.6478227164586062,
+            "fence": 0.7502174543345898,
+            "mud-pumping": 0.11913933345411629,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.8645794954785212,
+            "rail-embedded": 0.8531823085221143,
+            "rail-raised": 0.8729596709687807,
+            "rail-track": 0.7850702556335829,
+            "road": 0.2783709162677417,
+            "sidewalk": 0.9098758256711419,
+            "sky": 0.9950083357593604,
+            "standing-water": 0.8433607439020159,
+            "terrain": 0.9122717052628142,
+            "trackbed": 0.8610309947195123,
+            "traffic-light": 0.9443711368845059,
+            "traffic-sign": 0.7577571669477234,
+            "tram-track": 0.008025014632944149,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.9079136808770243
+          },
+          "per_class_recall": {
+            "car": 0.8966423948220065,
+            "construction": 0.7777781343774572,
+            "fence": 0.5660281288541396,
+            "mud-pumping": 0.3201500509683996,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.8855387731315622,
+            "rail-embedded": 0.4708018334424668,
+            "rail-raised": 0.9165239240257835,
+            "rail-track": 0.7204249685720688,
+            "road": 0.15169174061407414,
+            "sidewalk": 0.5092152027915,
+            "sky": 0.9938028740891325,
+            "standing-water": 0.5074319951566774,
+            "terrain": 0.9884419974196281,
+            "trackbed": 0.865892874441151,
+            "traffic-light": 0.6969759097898514,
+            "traffic-sign": 0.6764772299585999,
+            "tram-track": 0.009273927980206128,
+            "truck": null,
+            "vegetation-overgrowth": 0.2998196658285638
+          },
+          "per_class_specificity": {
+            "car": 0.9998688347614144,
+            "construction": 0.9985179705603209,
+            "fence": 0.9994382076666984,
+            "mud-pumping": 0.9670089810863152,
+            "on-rails": 0.9999874001279381,
+            "person": 1.0,
+            "pole": 0.9990165751860282,
+            "rail-embedded": 0.9999847405197704,
+            "rail-raised": 0.995406729173302,
+            "rail-track": 0.9849532584420516,
+            "road": 0.9953216382361826,
+            "sidewalk": 0.9992556354980227,
+            "sky": 0.9986397643260748,
+            "standing-water": 0.9998986774460966,
+            "terrain": 0.925355731531026,
+            "trackbed": 0.9810675792251058,
+            "traffic-light": 0.999991018945484,
+            "traffic-sign": 0.9999677893023485,
+            "tram-track": 0.9992776194871725,
+            "truck": 0.9998557068032191,
+            "vegetation-overgrowth": 0.9978456147290463
+          },
+          "pixel_accuracy": 0.8779390532754314,
+          "support": {
+            "car": 29664,
+            "construction": 311585,
+            "fence": 265137,
+            "mud-pumping": 1226250,
+            "on-rails": 0,
+            "person": 0,
+            "pole": 628038,
+            "rail-embedded": 16799,
+            "rail-raised": 2969797,
+            "rail-track": 6323197,
+            "road": 1048831,
+            "sidewalk": 1297367,
+            "sky": 19121606,
+            "standing-water": 95802,
+            "terrain": 39239306,
+            "trackbed": 10643081,
+            "traffic-light": 19510,
+            "traffic-sign": 13285,
+            "tram-track": 56179,
+            "truck": 0,
+            "vegetation-overgrowth": 5901821
+          }
+        },
+        "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
+        "notes": "stage rtis of curriculum eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0; validation_weights=ema",
+        "peak_vram_bytes": {
+          "cuda:0": 19155386368
+        },
+        "seed": 0,
+        "stage": "rtis",
+        "started_at": "2026-09-06T05:09:45+00:00",
+        "wall_clock_s": 6773.368484612554
+      },
+      "stopping": {
+        "actual_steps": 4000,
+        "maximum_steps": 4000,
+        "min_delta": 0.001,
+        "monitor": "val_iou/mud-pumping",
+        "patience": 5,
+        "reason": "budget_complete"
       },
       "learning_curve": {
         "train/loss": [
@@ -103362,6 +105549,10 @@
           {
             "step": 3817,
             "value": 0.48091065883636475
+          },
+          {
+            "step": 4000,
+            "value": 0.48071229457855225
           }
         ],
         "val/macc": [
@@ -103424,6 +105615,10 @@
           {
             "step": 3817,
             "value": 0.6254839301109314
+          },
+          {
+            "step": 4000,
+            "value": 0.6251617670059204
           }
         ],
         "val/pixel_acc": [
@@ -103486,6 +105681,10 @@
           {
             "step": 3817,
             "value": 0.8779152631759644
+          },
+          {
+            "step": 4000,
+            "value": 0.8779390454292297
           }
         ],
         "val/boundary_f1": [
@@ -103548,6 +105747,10 @@
           {
             "step": 3817,
             "value": 0.5865722894668579
+          },
+          {
+            "step": 4000,
+            "value": 0.586790919303894
           }
         ],
         "val/gt_present_miou": [
@@ -103610,6 +105813,10 @@
           {
             "step": 3817,
             "value": 0.5343451499938965
+          },
+          {
+            "step": 4000,
+            "value": 0.5341247320175171
           }
         ],
         "val_support/person": [
@@ -103671,6 +105878,10 @@
           },
           {
             "step": 3817,
+            "value": 0.0
+          },
+          {
+            "step": 4000,
             "value": 0.0
           }
         ],
@@ -103734,6 +105945,10 @@
           {
             "step": 3817,
             "value": 0.0
+          },
+          {
+            "step": 4000,
+            "value": 0.0
           }
         ],
         "val_iou/rail-track": [
@@ -103796,6 +106011,10 @@
           {
             "step": 3817,
             "value": 0.601771354675293
+          },
+          {
+            "step": 4000,
+            "value": 0.6017423272132874
           }
         ],
         "val_precision/rail-track": [
@@ -103858,6 +106077,10 @@
           {
             "step": 3817,
             "value": 0.785071849822998
+          },
+          {
+            "step": 4000,
+            "value": 0.7850702404975891
           }
         ],
         "val_recall/rail-track": [
@@ -103920,6 +106143,10 @@
           {
             "step": 3817,
             "value": 0.7204653024673462
+          },
+          {
+            "step": 4000,
+            "value": 0.7204249501228333
           }
         ],
         "val_dice/rail-track": [
@@ -103982,6 +106209,10 @@
           {
             "step": 3817,
             "value": 0.7513823509216309
+          },
+          {
+            "step": 4000,
+            "value": 0.7513597011566162
           }
         ],
         "val_support/rail-track": [
@@ -104043,6 +106274,10 @@
           },
           {
             "step": 3817,
+            "value": 6323197.0
+          },
+          {
+            "step": 4000,
             "value": 6323197.0
           }
         ],
@@ -104106,6 +106341,10 @@
           {
             "step": 3817,
             "value": 0.2914086580276489
+          },
+          {
+            "step": 4000,
+            "value": 0.2909713387489319
           }
         ],
         "val_precision/vegetation-overgrowth": [
@@ -104168,6 +106407,10 @@
           {
             "step": 3817,
             "value": 0.9077363014221191
+          },
+          {
+            "step": 4000,
+            "value": 0.9079136848449707
           }
         ],
         "val_recall/vegetation-overgrowth": [
@@ -104230,6 +106473,10 @@
           {
             "step": 3817,
             "value": 0.3003034293651581
+          },
+          {
+            "step": 4000,
+            "value": 0.299819678068161
           }
         ],
         "val_dice/vegetation-overgrowth": [
@@ -104292,6 +106539,10 @@
           {
             "step": 3817,
             "value": 0.4513035714626312
+          },
+          {
+            "step": 4000,
+            "value": 0.45077893137931824
           }
         ],
         "val_support/vegetation-overgrowth": [
@@ -104353,6 +106604,10 @@
           },
           {
             "step": 3817,
+            "value": 5901821.0
+          },
+          {
+            "step": 4000,
             "value": 5901821.0
           }
         ],
@@ -104416,6 +106671,10 @@
           {
             "step": 3817,
             "value": 0.6440039873123169
+          },
+          {
+            "step": 4000,
+            "value": 0.6430695652961731
           }
         ],
         "val_precision/car": [
@@ -104478,6 +106737,10 @@
           {
             "step": 3817,
             "value": 0.6941112279891968
+          },
+          {
+            "step": 4000,
+            "value": 0.694555401802063
           }
         ],
         "val_recall/car": [
@@ -104540,6 +106803,10 @@
           {
             "step": 3817,
             "value": 0.899204432964325
+          },
+          {
+            "step": 4000,
+            "value": 0.8966423869132996
           }
         ],
         "val_dice/car": [
@@ -104602,6 +106869,10 @@
           {
             "step": 3817,
             "value": 0.7834579348564148
+          },
+          {
+            "step": 4000,
+            "value": 0.7827661037445068
           }
         ],
         "val_support/car": [
@@ -104663,6 +106934,10 @@
           },
           {
             "step": 3817,
+            "value": 29664.0
+          },
+          {
+            "step": 4000,
             "value": 29664.0
           }
         ],
@@ -104726,6 +107001,10 @@
           {
             "step": 3817,
             "value": 0.0
+          },
+          {
+            "step": 4000,
+            "value": 0.0
           }
         ],
         "val_iou/traffic-sign": [
@@ -104788,6 +107067,10 @@
           {
             "step": 3817,
             "value": 0.557012140750885
+          },
+          {
+            "step": 4000,
+            "value": 0.556195080280304
           }
         ],
         "val_precision/traffic-sign": [
@@ -104850,6 +107133,10 @@
           {
             "step": 3817,
             "value": 0.7572929859161377
+          },
+          {
+            "step": 4000,
+            "value": 0.7577571868896484
           }
         ],
         "val_recall/traffic-sign": [
@@ -104912,6 +107199,10 @@
           {
             "step": 3817,
             "value": 0.6780579686164856
+          },
+          {
+            "step": 4000,
+            "value": 0.6764772534370422
           }
         ],
         "val_dice/traffic-sign": [
@@ -104974,6 +107265,10 @@
           {
             "step": 3817,
             "value": 0.7154884934425354
+          },
+          {
+            "step": 4000,
+            "value": 0.7148140668869019
           }
         ],
         "val_support/traffic-sign": [
@@ -105035,6 +107330,10 @@
           },
           {
             "step": 3817,
+            "value": 13285.0
+          },
+          {
+            "step": 4000,
             "value": 13285.0
           }
         ],
@@ -105098,6 +107397,10 @@
           {
             "step": 3817,
             "value": 0.10891157388687134
+          },
+          {
+            "step": 4000,
+            "value": 0.10887736082077026
           }
         ],
         "val_precision/road": [
@@ -105160,6 +107463,10 @@
           {
             "step": 3817,
             "value": 0.278398722410202
+          },
+          {
+            "step": 4000,
+            "value": 0.2783709168434143
           }
         ],
         "val_recall/road": [
@@ -105222,6 +107529,10 @@
           {
             "step": 3817,
             "value": 0.1517498940229416
+          },
+          {
+            "step": 4000,
+            "value": 0.151691734790802
           }
         ],
         "val_dice/road": [
@@ -105284,6 +107595,10 @@
           {
             "step": 3817,
             "value": 0.19642968475818634
+          },
+          {
+            "step": 4000,
+            "value": 0.19637402892112732
           }
         ],
         "val_support/road": [
@@ -105345,6 +107660,10 @@
           },
           {
             "step": 3817,
+            "value": 1048831.0
+          },
+          {
+            "step": 4000,
             "value": 1048831.0
           }
         ],
@@ -105408,6 +107727,10 @@
           {
             "step": 3817,
             "value": 0.4839516878128052
+          },
+          {
+            "step": 4000,
+            "value": 0.4847644865512848
           }
         ],
         "val_precision/sidewalk": [
@@ -105470,6 +107793,10 @@
           {
             "step": 3817,
             "value": 0.9094551205635071
+          },
+          {
+            "step": 4000,
+            "value": 0.9098758101463318
           }
         ],
         "val_recall/sidewalk": [
@@ -105532,6 +107859,10 @@
           {
             "step": 3817,
             "value": 0.5084497928619385
+          },
+          {
+            "step": 4000,
+            "value": 0.5092151761054993
           }
         ],
         "val_dice/sidewalk": [
@@ -105594,6 +107925,10 @@
           {
             "step": 3817,
             "value": 0.6522472500801086
+          },
+          {
+            "step": 4000,
+            "value": 0.6529850363731384
           }
         ],
         "val_support/sidewalk": [
@@ -105655,6 +107990,10 @@
           },
           {
             "step": 3817,
+            "value": 1297367.0
+          },
+          {
+            "step": 4000,
             "value": 1297367.0
           }
         ],
@@ -105718,6 +108057,10 @@
           {
             "step": 3817,
             "value": 0.5470461249351501
+          },
+          {
+            "step": 4000,
+            "value": 0.5466434955596924
           }
         ],
         "val_precision/construction": [
@@ -105780,6 +108123,10 @@
           {
             "step": 3817,
             "value": 0.6479007005691528
+          },
+          {
+            "step": 4000,
+            "value": 0.6478227376937866
           }
         ],
         "val_recall/construction": [
@@ -105842,6 +108189,10 @@
           {
             "step": 3817,
             "value": 0.7784810066223145
+          },
+          {
+            "step": 4000,
+            "value": 0.777778148651123
           }
         ],
         "val_dice/construction": [
@@ -105904,6 +108255,10 @@
           {
             "step": 3817,
             "value": 0.7072137594223022
+          },
+          {
+            "step": 4000,
+            "value": 0.7068771719932556
           }
         ],
         "val_support/construction": [
@@ -105965,6 +108320,10 @@
           },
           {
             "step": 3817,
+            "value": 311585.0
+          },
+          {
+            "step": 4000,
             "value": 311585.0
           }
         ],
@@ -106028,6 +108387,10 @@
           {
             "step": 3817,
             "value": 0.004104647785425186
+          },
+          {
+            "step": 4000,
+            "value": 0.004320783074945211
           }
         ],
         "val_precision/tram-track": [
@@ -106090,6 +108453,10 @@
           {
             "step": 3817,
             "value": 0.007625826168805361
+          },
+          {
+            "step": 4000,
+            "value": 0.008025014773011208
           }
         ],
         "val_recall/tram-track": [
@@ -106152,6 +108519,10 @@
           {
             "step": 3817,
             "value": 0.008811121806502342
+          },
+          {
+            "step": 4000,
+            "value": 0.00927392765879631
           }
         ],
         "val_dice/tram-track": [
@@ -106214,6 +108585,10 @@
           {
             "step": 3817,
             "value": 0.008175737224519253
+          },
+          {
+            "step": 4000,
+            "value": 0.008604387752711773
           }
         ],
         "val_support/tram-track": [
@@ -106275,6 +108650,10 @@
           },
           {
             "step": 3817,
+            "value": 56179.0
+          },
+          {
+            "step": 4000,
             "value": 56179.0
           }
         ],
@@ -106338,6 +108717,10 @@
           {
             "step": 3817,
             "value": 0.7777496576309204
+          },
+          {
+            "step": 4000,
+            "value": 0.7776728868484497
           }
         ],
         "val_precision/pole": [
@@ -106400,6 +108783,10 @@
           {
             "step": 3817,
             "value": 0.8647563457489014
+          },
+          {
+            "step": 4000,
+            "value": 0.8645794987678528
           }
         ],
         "val_recall/pole": [
@@ -106462,6 +108849,10 @@
           {
             "step": 3817,
             "value": 0.8854528069496155
+          },
+          {
+            "step": 4000,
+            "value": 0.8855387568473816
           }
         ],
         "val_dice/pole": [
@@ -106524,6 +108915,10 @@
           {
             "step": 3817,
             "value": 0.8749821782112122
+          },
+          {
+            "step": 4000,
+            "value": 0.874933660030365
           }
         ],
         "val_support/pole": [
@@ -106585,6 +108980,10 @@
           },
           {
             "step": 3817,
+            "value": 628038.0
+          },
+          {
+            "step": 4000,
             "value": 628038.0
           }
         ],
@@ -106648,6 +109047,10 @@
           {
             "step": 3817,
             "value": 0.6748031377792358
+          },
+          {
+            "step": 4000,
+            "value": 0.6694894433021545
           }
         ],
         "val_precision/traffic-light": [
@@ -106710,6 +109113,10 @@
           {
             "step": 3817,
             "value": 0.9442225694656372
+          },
+          {
+            "step": 4000,
+            "value": 0.9443711638450623
           }
         ],
         "val_recall/traffic-light": [
@@ -106772,6 +109179,10 @@
           {
             "step": 3817,
             "value": 0.7028190493583679
+          },
+          {
+            "step": 4000,
+            "value": 0.6969758868217468
           }
         ],
         "val_dice/traffic-light": [
@@ -106834,6 +109245,10 @@
           {
             "step": 3817,
             "value": 0.8058298230171204
+          },
+          {
+            "step": 4000,
+            "value": 0.8020289540290833
           }
         ],
         "val_support/traffic-light": [
@@ -106895,6 +109310,10 @@
           },
           {
             "step": 3817,
+            "value": 19510.0
+          },
+          {
+            "step": 4000,
             "value": 19510.0
           }
         ],
@@ -106958,6 +109377,10 @@
           {
             "step": 3817,
             "value": 0.09506622701883316
+          },
+          {
+            "step": 4000,
+            "value": 0.09508352726697922
           }
         ],
         "val_precision/mud-pumping": [
@@ -107020,6 +109443,10 @@
           {
             "step": 3817,
             "value": 0.11909659951925278
+          },
+          {
+            "step": 4000,
+            "value": 0.11913933604955673
           }
         ],
         "val_recall/mud-pumping": [
@@ -107082,6 +109509,10 @@
           {
             "step": 3817,
             "value": 0.3202625811100006
+          },
+          {
+            "step": 4000,
+            "value": 0.3201500475406647
           }
         ],
         "val_dice/mud-pumping": [
@@ -107144,6 +109575,10 @@
           {
             "step": 3817,
             "value": 0.17362643778324127
+          },
+          {
+            "step": 4000,
+            "value": 0.17365530133247375
           }
         ],
         "val_support/mud-pumping": [
@@ -107205,6 +109640,10 @@
           },
           {
             "step": 3817,
+            "value": 1226250.0
+          },
+          {
+            "step": 4000,
             "value": 1226250.0
           }
         ],
@@ -107268,6 +109707,10 @@
           {
             "step": 3817,
             "value": 0.47596558928489685
+          },
+          {
+            "step": 4000,
+            "value": 0.4762713313102722
           }
         ],
         "val_precision/fence": [
@@ -107330,6 +109773,10 @@
           {
             "step": 3817,
             "value": 0.7502076029777527
+          },
+          {
+            "step": 4000,
+            "value": 0.7502174377441406
           }
         ],
         "val_recall/fence": [
@@ -107392,6 +109839,10 @@
           {
             "step": 3817,
             "value": 0.5656019449234009
+          },
+          {
+            "step": 4000,
+            "value": 0.5660281181335449
           }
         ],
         "val_dice/fence": [
@@ -107454,6 +109905,10 @@
           {
             "step": 3817,
             "value": 0.6449548602104187
+          },
+          {
+            "step": 4000,
+            "value": 0.6452354788780212
           }
         ],
         "val_support/fence": [
@@ -107515,6 +109970,10 @@
           },
           {
             "step": 3817,
+            "value": 265137.0
+          },
+          {
+            "step": 4000,
             "value": 265137.0
           }
         ],
@@ -107578,6 +110037,10 @@
           {
             "step": 3817,
             "value": 0.9026893377304077
+          },
+          {
+            "step": 4000,
+            "value": 0.9026429057121277
           }
         ],
         "val_precision/terrain": [
@@ -107640,6 +110103,10 @@
           {
             "step": 3817,
             "value": 0.9122996926307678
+          },
+          {
+            "step": 4000,
+            "value": 0.9122716784477234
           }
         ],
         "val_recall/terrain": [
@@ -107702,6 +110169,10 @@
           {
             "step": 3817,
             "value": 0.9884648323059082
+          },
+          {
+            "step": 4000,
+            "value": 0.9884420037269592
           }
         ],
         "val_dice/terrain": [
@@ -107764,6 +110235,10 @@
           {
             "step": 3817,
             "value": 0.9488562345504761
+          },
+          {
+            "step": 4000,
+            "value": 0.9488306045532227
           }
         ],
         "val_support/terrain": [
@@ -107825,6 +110300,10 @@
           },
           {
             "step": 3817,
+            "value": 39239304.0
+          },
+          {
+            "step": 4000,
             "value": 39239304.0
           }
         ],
@@ -107888,6 +110367,10 @@
           {
             "step": 3817,
             "value": 0.9888603091239929
+          },
+          {
+            "step": 4000,
+            "value": 0.9888727068901062
           }
         ],
         "val_precision/sky": [
@@ -107950,6 +110433,10 @@
           {
             "step": 3817,
             "value": 0.995004415512085
+          },
+          {
+            "step": 4000,
+            "value": 0.9950083494186401
           }
         ],
         "val_recall/sky": [
@@ -108012,6 +110499,10 @@
           {
             "step": 3817,
             "value": 0.9937942028045654
+          },
+          {
+            "step": 4000,
+            "value": 0.9938028454780579
           }
         ],
         "val_dice/sky": [
@@ -108074,6 +110565,10 @@
           {
             "step": 3817,
             "value": 0.9943989515304565
+          },
+          {
+            "step": 4000,
+            "value": 0.994405210018158
           }
         ],
         "val_support/sky": [
@@ -108135,6 +110630,10 @@
           },
           {
             "step": 3817,
+            "value": 19121606.0
+          },
+          {
+            "step": 4000,
             "value": 19121606.0
           }
         ],
@@ -108198,6 +110697,10 @@
           {
             "step": 3817,
             "value": 0.43250536918640137
+          },
+          {
+            "step": 4000,
+            "value": 0.4355176091194153
           }
         ],
         "val_precision/rail-embedded": [
@@ -108260,6 +110763,10 @@
           {
             "step": 3817,
             "value": 0.8525675535202026
+          },
+          {
+            "step": 4000,
+            "value": 0.853182315826416
           }
         ],
         "val_recall/rail-embedded": [
@@ -108322,6 +110829,10 @@
           {
             "step": 3817,
             "value": 0.4674682915210724
+          },
+          {
+            "step": 4000,
+            "value": 0.47080183029174805
           }
         ],
         "val_dice/rail-embedded": [
@@ -108384,6 +110895,10 @@
           {
             "step": 3817,
             "value": 0.6038447022438049
+          },
+          {
+            "step": 4000,
+            "value": 0.6067743301391602
           }
         ],
         "val_support/rail-embedded": [
@@ -108445,6 +110960,10 @@
           },
           {
             "step": 3817,
+            "value": 16799.0
+          },
+          {
+            "step": 4000,
             "value": 16799.0
           }
         ],
@@ -108508,6 +111027,10 @@
           {
             "step": 3817,
             "value": 0.808440089225769
+          },
+          {
+            "step": 4000,
+            "value": 0.8086641430854797
           }
         ],
         "val_precision/rail-raised": [
@@ -108570,6 +111093,10 @@
           {
             "step": 3817,
             "value": 0.8725709915161133
+          },
+          {
+            "step": 4000,
+            "value": 0.8729596734046936
           }
         ],
         "val_recall/rail-raised": [
@@ -108632,6 +111159,10 @@
           {
             "step": 3817,
             "value": 0.9166646599769592
+          },
+          {
+            "step": 4000,
+            "value": 0.9165239334106445
           }
         ],
         "val_dice/rail-raised": [
@@ -108694,6 +111225,10 @@
           {
             "step": 3817,
             "value": 0.8940744996070862
+          },
+          {
+            "step": 4000,
+            "value": 0.8942115306854248
           }
         ],
         "val_support/rail-raised": [
@@ -108755,6 +111290,10 @@
           },
           {
             "step": 3817,
+            "value": 2969797.0
+          },
+          {
+            "step": 4000,
             "value": 2969797.0
           }
         ],
@@ -108818,6 +111357,10 @@
           {
             "step": 3817,
             "value": 0.7593132853507996
+          },
+          {
+            "step": 4000,
+            "value": 0.7597193121910095
           }
         ],
         "val_precision/trackbed": [
@@ -108880,6 +111423,10 @@
           {
             "step": 3817,
             "value": 0.8610439896583557
+          },
+          {
+            "step": 4000,
+            "value": 0.8610309958457947
           }
         ],
         "val_recall/trackbed": [
@@ -108942,6 +111489,10 @@
           {
             "step": 3817,
             "value": 0.8653523325920105
+          },
+          {
+            "step": 4000,
+            "value": 0.8658928871154785
           }
         ],
         "val_dice/trackbed": [
@@ -109004,6 +111555,10 @@
           {
             "step": 3817,
             "value": 0.8631927967071533
+          },
+          {
+            "step": 4000,
+            "value": 0.8634551167488098
           }
         ],
         "val_support/trackbed": [
@@ -109065,6 +111620,10 @@
           },
           {
             "step": 3817,
+            "value": 10643081.0
+          },
+          {
+            "step": 4000,
             "value": 10643081.0
           }
         ],
@@ -109128,6 +111687,10 @@
           {
             "step": 3817,
             "value": 0.4646100699901581
+          },
+          {
+            "step": 4000,
+            "value": 0.46372732520103455
           }
         ],
         "val_precision/standing-water": [
@@ -109190,6 +111753,10 @@
           {
             "step": 3817,
             "value": 0.8466335535049438
+          },
+          {
+            "step": 4000,
+            "value": 0.8433607220649719
           }
         ],
         "val_recall/standing-water": [
@@ -109252,6 +111819,10 @@
           {
             "step": 3817,
             "value": 0.5073067545890808
+          },
+          {
+            "step": 4000,
+            "value": 0.5074319839477539
           }
         ],
         "val_dice/standing-water": [
@@ -109314,6 +111885,10 @@
           {
             "step": 3817,
             "value": 0.6344488263130188
+          },
+          {
+            "step": 4000,
+            "value": 0.6336252689361572
           }
         ],
         "val_support/standing-water": [
@@ -109375,6 +111950,10 @@
           },
           {
             "step": 3817,
+            "value": 95802.0
+          },
+          {
+            "step": 4000,
             "value": 95802.0
           }
         ],
@@ -109438,6 +112017,10 @@
           {
             "step": 3817,
             "value": 0.6501020789146423
+          },
+          {
+            "step": 4000,
+            "value": 0.6495078206062317
           }
         ],
         "val_iou/truck": [
@@ -109495,6 +112078,10 @@
           },
           {
             "step": 3817,
+            "value": 0.0
+          },
+          {
+            "step": 4000,
             "value": 0.0
           }
         ],
@@ -109554,6 +112141,10 @@
           {
             "step": 3817,
             "value": 0.0
+          },
+          {
+            "step": 4000,
+            "value": 0.0
           }
         ],
         "val_dice/truck": [
@@ -109612,6 +112203,10 @@
           {
             "step": 3817,
             "value": 0.0
+          },
+          {
+            "step": 4000,
+            "value": 0.0
           }
         ],
         "val_iou/on-rails": [
@@ -109653,6 +112248,10 @@
           },
           {
             "step": 3817,
+            "value": 0.0
+          },
+          {
+            "step": 4000,
             "value": 0.0
           }
         ],
@@ -109696,6 +112295,10 @@
           {
             "step": 3817,
             "value": 0.0
+          },
+          {
+            "step": 4000,
+            "value": 0.0
           }
         ],
         "val_dice/on-rails": [
@@ -109738,10 +112341,157 @@
           {
             "step": 3817,
             "value": 0.0
+          },
+          {
+            "step": 4000,
+            "value": 0.0
           }
         ]
       },
-      "observed_step": 3999,
+      "collection_phase": "diagnostics",
+      "resolved_config": {
+        "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
+        "model": {
+          "arch": "eomt_dinov3_large",
+          "checkpoint": null,
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": null,
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 1e-05,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 0.75,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 0,
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": {
+            "kind": "hungarian_query",
+            "classification_weight": 2.0,
+            "mask_bce_weight": 5.0,
+            "dice_weight": 5.0,
+            "no_object_coefficient": 0.1,
+            "match_class_cost": 2.0,
+            "match_mask_bce_cost": 5.0,
+            "match_dice_cost": 5.0,
+            "matching_num_points": 8192,
+            "auxiliary_layer_weight": 1.0,
+            "dice_smooth": 1.0
+          }
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 0.1,
+            "head_group_lr_scale": 1.0,
+            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+            "reset_head": true,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -119544,152 +122294,2339 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "collecting",
       "gpu": 6,
       "started_at": "2026-09-06T06:00:18.176004+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
-      "resolved_config": {
-        "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-2",
-        "model": {
-          "arch": "eomt_dinov3_large",
-          "checkpoint": null,
-          "tuning": "full",
-          "head": "unified_head",
-          "lora_r": 16,
-          "lora_alpha": 32,
-          "lora_dropout": 0.05,
-          "lora_targets": [],
-          "drop_path": null,
-          "revision": null,
-          "subfolder": null,
-          "local_files_only": false,
-          "trust_remote_code": false,
-          "backbone_path": null,
-          "head_paths": [],
-          "classifier_path": null,
-          "inactive_parameter_paths": [],
-          "smp_arch": null,
-          "encoder_name": null,
-          "encoder_weights": null,
-          "native": null,
-          "batch_norm_momentum": null
+      "final_step": 2290,
+      "checkpoints": {
+        "best": {
+          "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-2_seed2/rtis/best.ckpt",
+          "sha256": "d707bac0e655dcea035d0df3750101ffb2c66b49ef358b68359f05933a95eb79",
+          "global_step": 1018,
+          "bytes": 5039394745
         },
-        "space": "paul-test-rtis",
-        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
-        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
-        "optim": {
-          "backbone_lr": 1e-05,
-          "head_lr_mult": 10.0,
-          "weight_decay": 0.05,
-          "llrd": 0.75,
-          "warmup_iters": 1500,
-          "warmup_ratio": 1e-06,
-          "poly_power": 0.9,
-          "min_lr_ratio": 0.0,
-          "betas": [
-            0.9,
-            0.999
-          ],
-          "grad_clip": 1.0
-        },
-        "train": {
-          "iters": 4000,
-          "batch_size": 2,
-          "accum": 8,
-          "num_workers": 2,
-          "precision": "bf16-mixed",
-          "ema_decay": 0.9998,
-          "val_every": 250,
-          "ckpt_every": 500,
-          "selection_metric": "val_iou/mud-pumping",
-          "early_stopping_patience": 5,
-          "early_stopping_min_delta": 0.001,
-          "seed": 2,
-          "devices": 1
-        },
-        "eval": {
-          "sliding_window": true,
-          "window": [
-            1024,
-            1024
-          ],
-          "stride": [
-            768,
-            768
-          ],
-          "batch_size": 1,
-          "num_workers": 2,
-          "tta_scales": [],
-          "tta_flip": false,
-          "threshold": 0.5,
-          "boundary_tolerance_frac": 0.0075,
-          "save_confusion": true
-        },
-        "loss": {
-          "task": "multiclass",
-          "activation": "auto",
-          "terms": [],
-          "aux": "none",
-          "aux_weight": 0.0,
-          "ce_weight": 1.0,
-          "label_smoothing": 0.0,
-          "class_weights": null,
-          "query": {
-            "kind": "hungarian_query",
-            "classification_weight": 2.0,
-            "mask_bce_weight": 5.0,
-            "dice_weight": 5.0,
-            "no_object_coefficient": 0.1,
-            "match_class_cost": 2.0,
-            "match_mask_bce_cost": 5.0,
-            "match_dice_cost": 5.0,
-            "matching_num_points": 8192,
-            "auxiliary_layer_weight": 1.0,
-            "dice_smooth": 1.0
-          }
-        },
-        "aug": {
-          "crop": [
-            1024,
-            1024
-          ],
-          "scale_min": 0.5,
-          "scale_max": 2.0,
-          "hflip_p": 0.5,
-          "color_jitter_p": 0.5,
-          "brightness": 0.25,
-          "contrast": 0.25,
-          "saturation": 0.25,
-          "hue": 0.05
-        },
-        "stages": [
-          {
-            "name": "rtis",
-            "data": [
-              {
-                "name": "paul-test-rtis",
-                "root": "/data/izadia1/datasets/paul-test-rtis",
-                "variant": null,
-                "split_file": "splits.json",
-                "train_split": "train",
-                "val_split": "val",
-                "limit": null,
-                "loader": "folder",
-                "mapping": "paul-test-rtis",
-                "loader_options": {
-                  "require_groups": true
-                }
-              }
+        "final": {
+          "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-2_seed2/rtis/last.ckpt",
+          "sha256": "f0bc479f96e739fc3a5820bfb76159fdc3dbf764cdc89e8d1d6dd03c877bacbf",
+          "global_step": 2290,
+          "bytes": 5039374073
+        }
+      },
+      "evaluation": {
+        "config": {
+          "aug": {
+            "brightness": 0.25,
+            "color_jitter_p": 0.5,
+            "contrast": 0.25,
+            "crop": [
+              1024,
+              1024
             ],
-            "iters": null,
-            "lr_scale": 0.1,
-            "head_group_lr_scale": 1.0,
-            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
-            "reset_head": true,
-            "freeze": null,
-            "sample_weights": null
+            "hflip_p": 0.5,
+            "hue": 0.05,
+            "saturation": 0.25,
+            "scale_max": 2.0,
+            "scale_min": 0.5
+          },
+          "eval": {
+            "batch_size": 1,
+            "boundary_tolerance_frac": 0.0075,
+            "num_workers": 2,
+            "save_confusion": true,
+            "sliding_window": true,
+            "stride": [
+              768,
+              768
+            ],
+            "threshold": 0.5,
+            "tta_flip": false,
+            "tta_scales": [],
+            "window": [
+              1024,
+              1024
+            ]
+          },
+          "evaluation": {
+            "data": {
+              "limit": null,
+              "loader": "folder",
+              "loader_options": {
+                "require_groups": true
+              },
+              "mapping": "paul-test-rtis",
+              "name": "paul-test-rtis",
+              "root": "/data/izadia1/datasets/paul-test-rtis",
+              "split_file": "splits.json",
+              "train_split": "train",
+              "val_split": "val",
+              "variant": null
+            },
+            "deterministic": true,
+            "num_workers": 2,
+            "prediction": {
+              "activation": "softmax",
+              "task": "multiclass",
+              "threshold": null
+            },
+            "split": "val",
+            "tta": {
+              "enabled": false,
+              "flip": false,
+              "scales": [
+                1.0
+              ]
+            },
+            "weights": "ema"
+          },
+          "loss": {
+            "activation": "auto",
+            "aux": "none",
+            "aux_weight": 0.0,
+            "ce_weight": 1.0,
+            "class_weights": null,
+            "label_smoothing": 0.0,
+            "query": {
+              "auxiliary_layer_weight": 1.0,
+              "classification_weight": 2.0,
+              "dice_smooth": 1.0,
+              "dice_weight": 5.0,
+              "kind": "hungarian_query",
+              "mask_bce_weight": 5.0,
+              "match_class_cost": 2.0,
+              "match_dice_cost": 5.0,
+              "match_mask_bce_cost": 5.0,
+              "matching_num_points": 8192,
+              "no_object_coefficient": 0.1
+            },
+            "task": "multiclass",
+            "terms": []
+          },
+          "model": {
+            "arch": "eomt_dinov3_large",
+            "backbone_path": null,
+            "batch_norm_momentum": null,
+            "checkpoint": null,
+            "classifier_path": null,
+            "drop_path": null,
+            "encoder_name": null,
+            "encoder_weights": null,
+            "head": "unified_head",
+            "head_paths": [],
+            "inactive_parameter_paths": [],
+            "local_files_only": false,
+            "lora_alpha": 32,
+            "lora_dropout": 0.05,
+            "lora_r": 16,
+            "lora_targets": [],
+            "native": null,
+            "revision": null,
+            "smp_arch": null,
+            "subfolder": null,
+            "trust_remote_code": false,
+            "tuning": "full"
+          },
+          "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-2",
+          "optim": {
+            "backbone_lr": 1e-05,
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "grad_clip": 1.0,
+            "head_lr_mult": 10.0,
+            "llrd": 0.75,
+            "min_lr_ratio": 0.0,
+            "poly_power": 0.9,
+            "warmup_iters": 1500,
+            "warmup_ratio": 1e-06,
+            "weight_decay": 0.05
+          },
+          "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+          "space": "paul-test-rtis",
+          "stages": [
+            {
+              "data": [
+                {
+                  "limit": null,
+                  "loader": "folder",
+                  "loader_options": {
+                    "require_groups": true
+                  },
+                  "mapping": "paul-test-rtis",
+                  "name": "paul-test-rtis",
+                  "root": "/data/izadia1/datasets/paul-test-rtis",
+                  "split_file": "splits.json",
+                  "train_split": "train",
+                  "val_split": "val",
+                  "variant": null
+                }
+              ],
+              "freeze": null,
+              "head_group_lr_scale": 1.0,
+              "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+              "iters": null,
+              "lr_scale": 0.1,
+              "name": "rtis",
+              "reset_head": true,
+              "sample_weights": null
+            }
+          ],
+          "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+          "train": {
+            "accum": 8,
+            "batch_size": 2,
+            "ckpt_every": 500,
+            "devices": 1,
+            "early_stopping_min_delta": 0.001,
+            "early_stopping_patience": 5,
+            "ema_decay": 0.9998,
+            "iters": 4000,
+            "num_workers": 2,
+            "precision": "bf16-mixed",
+            "seed": 2,
+            "selection_metric": "val_iou/mud-pumping",
+            "val_every": 250
           }
-        ]
+        },
+        "config_hash": "9b9bceba854c",
+        "dataset_sizes": {
+          "eval": 37
+        },
+        "env": {
+          "cuda_available": true,
+          "cuda_visible_devices": "6",
+          "cudnn": 91900,
+          "driver_version": "570.133.20",
+          "gpu_count": 1,
+          "gpu_names": [
+            "NVIDIA L40S"
+          ],
+          "hostname": "hdrfs-app-001",
+          "input_normalization": {
+            "channel_order": "rgb",
+            "mean": [
+              0.485,
+              0.456,
+              0.406
+            ],
+            "source": "imagenet",
+            "std": [
+              0.229,
+              0.224,
+              0.225
+            ]
+          },
+          "packages": {
+            "albumentations": "2.0.8",
+            "lightning": "2.6.5",
+            "numpy": "2.4.4",
+            "segmentary": "0.1.0",
+            "segmentation-models-pytorch": "0.5.0",
+            "timm": "1.0.28",
+            "torch": "2.11.0+cu128",
+            "torchvision": "0.26.0+cu128",
+            "transformers": "5.15.0"
+          },
+          "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+          "python": "3.11.15",
+          "torch": "2.11.0+cu128",
+          "torch_cuda": "12.8"
+        },
+        "finished_at": "2026-09-06T07:03:28+00:00",
+        "git_dirty": false,
+        "git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+        "metrics": {
+          "boundary": {
+            "gt_contour_pixels": {
+              "car": 1122,
+              "construction": 19036,
+              "fence": 10732,
+              "mud-pumping": 54436,
+              "on-rails": 0,
+              "person": 0,
+              "pole": 74224,
+              "rail-embedded": 3430,
+              "rail-raised": 208160,
+              "rail-track": 203735,
+              "road": 23872,
+              "sidewalk": 42754,
+              "sky": 135616,
+              "standing-water": 8116,
+              "terrain": 241890,
+              "trackbed": 264168,
+              "traffic-light": 1026,
+              "traffic-sign": 2018,
+              "tram-track": 1516,
+              "truck": 0,
+              "vegetation-overgrowth": 225630
+            },
+            "macro_f1": 0.5731374746274753,
+            "macro_precision": 0.5344119275981034,
+            "macro_recall": 0.6626569654063289,
+            "per_class_f1": {
+              "car": 0.5265035677879715,
+              "construction": 0.6012904328822697,
+              "fence": 0.6139395565280407,
+              "mud-pumping": 0.12628275849718204,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9542036865915898,
+              "rail-embedded": 0.9011413030989762,
+              "rail-raised": 0.9577535440098145,
+              "rail-track": 0.7019631542302948,
+              "road": 0.24197947164566486,
+              "sidewalk": 0.6583913942370851,
+              "sky": 0.9881447237687462,
+              "standing-water": 0.45982027807702136,
+              "terrain": 0.7567365063160205,
+              "trackbed": 0.741758339994815,
+              "traffic-light": 0.8278457196613358,
+              "traffic-sign": 0.8084205020046681,
+              "tram-track": 0.0,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.5965745532180108
+            },
+            "per_class_precision": {
+              "car": 0.3573158076790038,
+              "construction": 0.4530212238391829,
+              "fence": 0.5045396345012222,
+              "mud-pumping": 0.07205865867994976,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9419667231817006,
+              "rail-embedded": 0.9524202420242024,
+              "rail-raised": 0.9538226732137371,
+              "rail-track": 0.6569887683349772,
+              "road": 0.2117153016184404,
+              "sidewalk": 0.636489485148918,
+              "sky": 0.9834573960685837,
+              "standing-water": 0.35679411578213177,
+              "terrain": 0.6707083496693168,
+              "trackbed": 0.6932711410555411,
+              "traffic-light": 0.8,
+              "traffic-sign": 0.7486284289276808,
+              "tram-track": 0.0,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.6950406022374795
+            },
+            "per_class_recall": {
+              "car": 1.0,
+              "construction": 0.8938327379701618,
+              "fence": 0.7839172568020872,
+              "mud-pumping": 0.5102321992798883,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9667627721491701,
+              "rail-embedded": 0.8551020408163266,
+              "rail-raised": 0.961716948501153,
+              "rail-track": 0.7535475004294795,
+              "road": 0.2823391420911528,
+              "sidewalk": 0.6818543294194696,
+              "sky": 0.9928769466729589,
+              "standing-water": 0.6465007392804337,
+              "terrain": 0.8680805324734383,
+              "trackbed": 0.7975379304079222,
+              "traffic-light": 0.8576998050682261,
+              "traffic-sign": 0.8785926660059464,
+              "tram-track": 0.0,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.5225457607587644
+            },
+            "pred_contour_pixels": {
+              "car": 2891,
+              "construction": 33877,
+              "fence": 17182,
+              "mud-pumping": 347911,
+              "on-rails": 403,
+              "person": 0,
+              "pole": 69598,
+              "rail-embedded": 3636,
+              "rail-raised": 205079,
+              "rail-track": 251432,
+              "road": 32624,
+              "sidewalk": 49121,
+              "sky": 122653,
+              "standing-water": 15771,
+              "terrain": 311174,
+              "trackbed": 324156,
+              "traffic-light": 1195,
+              "traffic-sign": 2005,
+              "tram-track": 8,
+              "truck": 1882,
+              "vegetation-overgrowth": 143465
+            },
+            "tolerance_frac": 0.0075
+          },
+          "confusion": [
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              3868863,
+              103637,
+              0,
+              0,
+              0,
+              1388,
+              0,
+              0,
+              4,
+              0,
+              0,
+              2190380,
+              0,
+              63,
+              0,
+              341,
+              131573,
+              15388,
+              11560
+            ],
+            [
+              0,
+              0,
+              391597,
+              1722162,
+              0,
+              0,
+              99,
+              4383,
+              51591,
+              19688,
+              0,
+              0,
+              0,
+              955132,
+              93,
+              1849605,
+              0,
+              0,
+              140744,
+              766514,
+              213
+            ],
+            [
+              0,
+              128,
+              0,
+              0,
+              28383,
+              0,
+              0,
+              81,
+              0,
+              4,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1068,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              9016,
+              0,
+              0,
+              142,
+              0,
+              1849,
+              166,
+              0,
+              0,
+              1815,
+              275,
+              0,
+              11,
+              10,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              295,
+              37,
+              0,
+              0,
+              153167,
+              15013,
+              0,
+              0,
+              232,
+              0,
+              20289,
+              46,
+              834122,
+              0,
+              403,
+              513,
+              23773,
+              941
+            ],
+            [
+              0,
+              3175,
+              0,
+              2856,
+              0,
+              920,
+              0,
+              220013,
+              744504,
+              76417,
+              0,
+              838,
+              0,
+              1771,
+              1328,
+              209671,
+              0,
+              0,
+              13298,
+              22576,
+              0
+            ],
+            [
+              0,
+              849,
+              0,
+              0,
+              433,
+              0,
+              106,
+              2213,
+              1265,
+              252427,
+              0,
+              4235,
+              28,
+              0,
+              3357,
+              42498,
+              1289,
+              0,
+              0,
+              2446,
+              439
+            ],
+            [
+              0,
+              0,
+              857,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              54325,
+              0,
+              0,
+              0,
+              219,
+              265,
+              94,
+              419
+            ],
+            [
+              0,
+              0,
+              4,
+              0,
+              0,
+              0,
+              1232,
+              115,
+              277,
+              1896,
+              0,
+              554005,
+              215,
+              0,
+              11441,
+              35020,
+              23073,
+              0,
+              22,
+              736,
+              2
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1042,
+              0,
+              0,
+              0,
+              0,
+              464,
+              17715,
+              0,
+              0,
+              230,
+              59,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              293624,
+              0,
+              0,
+              0,
+              0,
+              367,
+              3,
+              0,
+              0,
+              0,
+              0,
+              503246,
+              0,
+              18132,
+              0,
+              35,
+              8306,
+              402443,
+              94
+            ],
+            [
+              0,
+              1851,
+              0,
+              0,
+              5536,
+              0,
+              35,
+              2057,
+              0,
+              9204,
+              0,
+              5602,
+              0,
+              0,
+              153029,
+              84501,
+              3279,
+              0,
+              0,
+              0,
+              43
+            ],
+            [
+              0,
+              219,
+              0,
+              43737,
+              6151,
+              0,
+              461,
+              108787,
+              8561,
+              19498,
+              0,
+              21083,
+              177,
+              20037,
+              47275,
+              38766655,
+              72352,
+              0,
+              310,
+              105628,
+              18375
+            ],
+            [
+              0,
+              14,
+              0,
+              0,
+              0,
+              0,
+              141,
+              0,
+              0,
+              3448,
+              0,
+              42515,
+              349,
+              0,
+              54,
+              75543,
+              18999542,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              37,
+              0,
+              0,
+              0,
+              0,
+              124,
+              8,
+              0,
+              4,
+              0,
+              0,
+              1495,
+              0,
+              0,
+              0,
+              8125,
+              6613,
+              96,
+              297
+            ],
+            [
+              0,
+              517,
+              79746,
+              9083,
+              0,
+              35,
+              9,
+              121,
+              116,
+              423,
+              0,
+              106,
+              0,
+              8263,
+              1235,
+              7894,
+              0,
+              216,
+              2734644,
+              127082,
+              307
+            ],
+            [
+              0,
+              56,
+              28815,
+              49940,
+              0,
+              36,
+              195,
+              7734,
+              3451,
+              1115,
+              0,
+              2057,
+              0,
+              759565,
+              158,
+              748985,
+              0,
+              679,
+              122401,
+              8915970,
+              1924
+            ],
+            [
+              0,
+              0,
+              1335,
+              2766,
+              0,
+              0,
+              0,
+              1210,
+              7,
+              0,
+              0,
+              0,
+              0,
+              20447,
+              0,
+              22168,
+              0,
+              0,
+              93,
+              4500,
+              43276
+            ]
+          ],
+          "freqw_iou": 0.7989327133572928,
+          "macc": 0.6401299909978403,
+          "mdice": 0.5840579215090969,
+          "miou": 0.4835004782796271,
+          "mprecision": 0.6323401019867616,
+          "mspecificity": 0.9918864208741196,
+          "per_class_acc": {
+            "car": 0.9568163430420712,
+            "construction": 0.8101384854855016,
+            "fence": 0.5771695387667508,
+            "mud-pumping": 0.41039429153924567,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.8821201901795751,
+            "rail-embedded": 0.4836597416512888,
+            "rail-raised": 0.9208184936546168,
+            "rail-track": 0.6118523588621388,
+            "road": 0.14603591999092322,
+            "sidewalk": 0.5738576671057611,
+            "sky": 0.9936164357742755,
+            "standing-water": 0.4517233460679318,
+            "terrain": 0.9879546544477622,
+            "trackbed": 0.8377245273243715,
+            "traffic-light": 0.9079958995386981,
+            "traffic-sign": 0.6786601430184418,
+            "tram-track": 0.0,
+            "truck": null,
+            "vegetation-overgrowth": 0.2918018015117707
+          },
+          "per_class_dice": {
+            "car": 0.8085864053330295,
+            "construction": 0.7255244328135352,
+            "fence": 0.6334597943094631,
+            "mud-pumping": 0.17470179823647852,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.8786589311543634,
+            "rail-embedded": 0.6059589066636835,
+            "rail-raised": 0.8924219110757939,
+            "rail-track": 0.7041930456426626,
+            "road": 0.19755951117993076,
+            "sidewalk": 0.7016463862577945,
+            "sky": 0.994181517065995,
+            "standing-water": 0.4983073486401216,
+            "terrain": 0.9462519842617174,
+            "trackbed": 0.8479150857164105,
+            "traffic-light": 0.9284591194968553,
+            "traffic-sign": 0.7037976659771281,
+            "tram-track": 0.0,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.43953458635697623
+          },
+          "per_class_iou": {
+            "car": 0.6786781760359628,
+            "construction": 0.5692729240900275,
+            "fence": 0.463550059977463,
+            "mud-pumping": 0.09571137366359614,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.7835786591308013,
+            "rail-embedded": 0.4346779370853841,
+            "rail-raised": 0.805741753109802,
+            "rail-track": 0.5434397795711098,
+            "road": 0.10960667628436323,
+            "sidewalk": 0.540412395229879,
+            "sky": 0.988430351931827,
+            "standing-water": 0.3318304502515029,
+            "terrain": 0.8979869666456732,
+            "trackbed": 0.735983151245129,
+            "traffic-light": 0.8664710198092443,
+            "traffic-sign": 0.542968985245408,
+            "tram-track": 0.0,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.28166890628536884
+          },
+          "per_class_precision": {
+            "car": 0.7001233349777997,
+            "construction": 0.6569137723740572,
+            "fence": 0.7019163731102305,
+            "mud-pumping": 0.11097057299418957,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.8752247285090033,
+            "rail-embedded": 0.811040127770014,
+            "rail-raised": 0.8657243447101473,
+            "rail-track": 0.829359953250653,
+            "road": 0.30525948660714286,
+            "sidewalk": 0.902652292203163,
+            "sky": 0.9947472414601377,
+            "standing-water": 0.5556040570034664,
+            "terrain": 0.9079273557970086,
+            "trackbed": 0.8583566246947221,
+            "traffic-light": 0.9498659517426273,
+            "traffic-sign": 0.7308690012970168,
+            "tram-track": 0.0,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.8902468212338529
+          },
+          "per_class_recall": {
+            "car": 0.9568163430420712,
+            "construction": 0.8101384854855016,
+            "fence": 0.5771695387667508,
+            "mud-pumping": 0.41039429153924567,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.8821201901795751,
+            "rail-embedded": 0.4836597416512888,
+            "rail-raised": 0.9208184936546168,
+            "rail-track": 0.6118523588621388,
+            "road": 0.14603591999092322,
+            "sidewalk": 0.5738576671057611,
+            "sky": 0.9936164357742755,
+            "standing-water": 0.4517233460679318,
+            "terrain": 0.9879546544477622,
+            "trackbed": 0.8377245273243715,
+            "traffic-light": 0.9079958995386981,
+            "traffic-sign": 0.6786601430184418,
+            "tram-track": 0.0,
+            "truck": null,
+            "vegetation-overgrowth": 0.2918018015117707
+          },
+          "per_class_specificity": {
+            "car": 0.999863676514877,
+            "construction": 0.9985169693866979,
+            "fence": 0.9992693337930181,
+            "mud-pumping": 0.9541752904504784,
+            "on-rails": 0.9999888910380663,
+            "person": 1.0,
+            "pole": 0.9991083574378401,
+            "rail-embedded": 0.9999787757560069,
+            "rail-raised": 0.9950816152303562,
+            "rail-track": 0.9903960421435929,
+            "road": 0.9960458344854259,
+            "sidewalk": 0.9990866556444709,
+            "sky": 0.9985685086543181,
+            "standing-water": 0.9996115650813145,
+            "terrain": 0.9213232666403818,
+            "trackbed": 0.9812728127199556,
+            "traffic-light": 0.9999895164969134,
+            "traffic-sign": 0.999962777752801,
+            "tram-track": 0.9999999102646837,
+            "truck": 0.9999236721273399,
+            "vegetation-overgrowth": 0.997451366737973
+          },
+          "pixel_accuracy": 0.8684801365090765,
+          "support": {
+            "car": 29664,
+            "construction": 311585,
+            "fence": 265137,
+            "mud-pumping": 1226250,
+            "on-rails": 0,
+            "person": 0,
+            "pole": 628038,
+            "rail-embedded": 16799,
+            "rail-raised": 2969797,
+            "rail-track": 6323197,
+            "road": 1048831,
+            "sidewalk": 1297367,
+            "sky": 19121606,
+            "standing-water": 95802,
+            "terrain": 39239306,
+            "trackbed": 10643081,
+            "traffic-light": 19510,
+            "traffic-sign": 13285,
+            "tram-track": 56179,
+            "truck": 0,
+            "vegetation-overgrowth": 5901821
+          }
+        },
+        "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-2",
+        "notes": "checkpoint=/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-2_seed2/rtis/best.ckpt ema=True tta=False",
+        "peak_vram_bytes": {
+          "cuda:0": 11559501824
+        },
+        "seed": 2,
+        "stage": "eval:paul-test-rtis:val",
+        "started_at": "2026-09-06T07:03:06+00:00",
+        "wall_clock_s": 22.517961107194424
+      },
+      "training": {
+        "config": {
+          "aug": {
+            "brightness": 0.25,
+            "color_jitter_p": 0.5,
+            "contrast": 0.25,
+            "crop": [
+              1024,
+              1024
+            ],
+            "hflip_p": 0.5,
+            "hue": 0.05,
+            "saturation": 0.25,
+            "scale_max": 2.0,
+            "scale_min": 0.5
+          },
+          "eval": {
+            "batch_size": 1,
+            "boundary_tolerance_frac": 0.0075,
+            "num_workers": 2,
+            "save_confusion": true,
+            "sliding_window": true,
+            "stride": [
+              768,
+              768
+            ],
+            "threshold": 0.5,
+            "tta_flip": false,
+            "tta_scales": [],
+            "window": [
+              1024,
+              1024
+            ]
+          },
+          "loss": {
+            "activation": "auto",
+            "aux": "none",
+            "aux_weight": 0.0,
+            "ce_weight": 1.0,
+            "class_weights": null,
+            "label_smoothing": 0.0,
+            "query": {
+              "auxiliary_layer_weight": 1.0,
+              "classification_weight": 2.0,
+              "dice_smooth": 1.0,
+              "dice_weight": 5.0,
+              "kind": "hungarian_query",
+              "mask_bce_weight": 5.0,
+              "match_class_cost": 2.0,
+              "match_dice_cost": 5.0,
+              "match_mask_bce_cost": 5.0,
+              "matching_num_points": 8192,
+              "no_object_coefficient": 0.1
+            },
+            "task": "multiclass",
+            "terms": []
+          },
+          "model": {
+            "arch": "eomt_dinov3_large",
+            "backbone_path": null,
+            "batch_norm_momentum": null,
+            "checkpoint": null,
+            "classifier_path": null,
+            "drop_path": null,
+            "encoder_name": null,
+            "encoder_weights": null,
+            "head": "unified_head",
+            "head_paths": [],
+            "inactive_parameter_paths": [],
+            "local_files_only": false,
+            "lora_alpha": 32,
+            "lora_dropout": 0.05,
+            "lora_r": 16,
+            "lora_targets": [],
+            "native": null,
+            "revision": null,
+            "smp_arch": null,
+            "subfolder": null,
+            "trust_remote_code": false,
+            "tuning": "full"
+          },
+          "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-2",
+          "optim": {
+            "backbone_lr": 1e-05,
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "grad_clip": 1.0,
+            "head_lr_mult": 10.0,
+            "llrd": 0.75,
+            "min_lr_ratio": 0.0,
+            "poly_power": 0.9,
+            "warmup_iters": 1500,
+            "warmup_ratio": 1e-06,
+            "weight_decay": 0.05
+          },
+          "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+          "space": "paul-test-rtis",
+          "stages": [
+            {
+              "data": [
+                {
+                  "limit": null,
+                  "loader": "folder",
+                  "loader_options": {
+                    "require_groups": true
+                  },
+                  "mapping": "paul-test-rtis",
+                  "name": "paul-test-rtis",
+                  "root": "/data/izadia1/datasets/paul-test-rtis",
+                  "split_file": "splits.json",
+                  "train_split": "train",
+                  "val_split": "val",
+                  "variant": null
+                }
+              ],
+              "freeze": null,
+              "head_group_lr_scale": 1.0,
+              "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+              "iters": null,
+              "lr_scale": 0.1,
+              "name": "rtis",
+              "reset_head": true,
+              "sample_weights": null
+            }
+          ],
+          "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+          "train": {
+            "accum": 8,
+            "batch_size": 2,
+            "ckpt_every": 500,
+            "devices": 1,
+            "early_stopping_min_delta": 0.001,
+            "early_stopping_patience": 5,
+            "ema_decay": 0.9998,
+            "iters": 4000,
+            "num_workers": 2,
+            "precision": "bf16-mixed",
+            "seed": 2,
+            "selection_metric": "val_iou/mud-pumping",
+            "val_every": 250
+          }
+        },
+        "config_hash": "f1b12e02efa5",
+        "dataset_sizes": {
+          "train": 220,
+          "train:paul-test-rtis": 220,
+          "val": 37
+        },
+        "env": {
+          "cuda_available": true,
+          "cuda_visible_devices": "6",
+          "cudnn": 91900,
+          "driver_version": "570.133.20",
+          "gpu_count": 1,
+          "gpu_names": [
+            "NVIDIA L40S"
+          ],
+          "hostname": "hdrfs-app-001",
+          "input_normalization": {
+            "channel_order": "rgb",
+            "mean": [
+              0.485,
+              0.456,
+              0.406
+            ],
+            "source": "imagenet",
+            "std": [
+              0.229,
+              0.224,
+              0.225
+            ]
+          },
+          "model_origins": [
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.embeddings",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.0.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.0.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.1.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.1.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.2.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.2.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.3.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.3.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.4.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.4.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.5.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.5.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.6.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.6.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.7.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.7.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.8.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.8.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.9.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.9.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.10.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.10.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.11.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.11.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.12.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.12.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.13.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.13.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.14.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.14.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.15.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.15.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.16.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.16.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.17.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.17.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.18.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.18.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.19.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.19.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.20.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.20.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.21.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.21.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.22.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.22.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.23.attention",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.layers.23.mlp",
+              "timm_pretrained": {}
+            },
+            {
+              "hf_commit": "e8c0564219d89c9000add20d89d052d9f7464236",
+              "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+              "module": "model.rope_embeddings",
+              "timm_pretrained": {}
+            }
+          ],
+          "model_parameter_count": 314917910,
+          "packages": {
+            "albumentations": "2.0.8",
+            "lightning": "2.6.5",
+            "numpy": "2.4.4",
+            "segmentary": "0.1.0",
+            "segmentation-models-pytorch": "0.5.0",
+            "timm": "1.0.28",
+            "torch": "2.11.0+cu128",
+            "torchvision": "0.26.0+cu128",
+            "transformers": "5.15.0"
+          },
+          "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+          "python": "3.11.15",
+          "torch": "2.11.0+cu128",
+          "torch_cuda": "12.8",
+          "trainable_parameter_count": 314917910,
+          "training_stop": {
+            "actual_steps": 2290,
+            "maximum_steps": 4000,
+            "min_delta": 0.001,
+            "monitor": "val_iou/mud-pumping",
+            "patience": 5,
+            "reason": "validation_plateau"
+          },
+          "validation_weights": "ema"
+        },
+        "finished_at": "2026-09-06T07:02:39+00:00",
+        "git_dirty": false,
+        "git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+        "metrics": {
+          "boundary": {
+            "gt_contour_pixels": {
+              "car": 1122,
+              "construction": 19036,
+              "fence": 10732,
+              "mud-pumping": 54436,
+              "on-rails": 0,
+              "person": 0,
+              "pole": 74224,
+              "rail-embedded": 3430,
+              "rail-raised": 208160,
+              "rail-track": 203735,
+              "road": 23872,
+              "sidewalk": 42754,
+              "sky": 135616,
+              "standing-water": 8116,
+              "terrain": 241890,
+              "trackbed": 264168,
+              "traffic-light": 1026,
+              "traffic-sign": 2018,
+              "tram-track": 1516,
+              "truck": 0,
+              "vegetation-overgrowth": 225630
+            },
+            "macro_f1": 0.5757125577644664,
+            "macro_precision": 0.5376181586895535,
+            "macro_recall": 0.6673604934381501,
+            "per_class_f1": {
+              "car": 0.5663046223793887,
+              "construction": 0.5729663880725785,
+              "fence": 0.6344387216405323,
+              "mud-pumping": 0.11179409252167566,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9455556826360516,
+              "rail-embedded": 0.9323545688415535,
+              "rail-raised": 0.9579988669701419,
+              "rail-track": 0.6831832647770743,
+              "road": 0.2833673883629063,
+              "sidewalk": 0.6556852100194885,
+              "sky": 0.9872395249686922,
+              "standing-water": 0.4282327990524231,
+              "terrain": 0.7491122029876282,
+              "trackbed": 0.7314550312703166,
+              "traffic-light": 0.8326439351593069,
+              "traffic-sign": 0.829542431347974,
+              "tram-track": 0.005173192045456466,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.6072032322361398
+            },
+            "per_class_precision": {
+              "car": 0.3949964763918252,
+              "construction": 0.4252524423282161,
+              "fence": 0.5218078203464425,
+              "mud-pumping": 0.06406271158388878,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9277157675178984,
+              "rail-embedded": 0.9781318338019369,
+              "rail-raised": 0.9563903557771336,
+              "rail-track": 0.6771529847740272,
+              "road": 0.23056300268096513,
+              "sidewalk": 0.6613278974956319,
+              "sky": 0.9820914122940472,
+              "standing-water": 0.3187453579386391,
+              "terrain": 0.6568829423073917,
+              "trackbed": 0.6694517946279316,
+              "traffic-light": 0.8072837632776935,
+              "traffic-sign": 0.7888768898488121,
+              "tram-track": 0.002654632333421821,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.6889750884651694
+            },
+            "per_class_recall": {
+              "car": 1.0,
+              "construction": 0.8779155284723681,
+              "fence": 0.8090756615728661,
+              "mud-pumping": 0.43853332353589536,
+              "on-rails": 0.0,
+              "person": null,
+              "pole": 0.9640951713731407,
+              "rail-embedded": 0.89067055393586,
+              "rail-raised": 0.9596127978478094,
+              "rail-track": 0.6893219132696886,
+              "road": 0.3675435656836461,
+              "sidewalk": 0.6501379987837396,
+              "sky": 0.99244189476168,
+              "standing-water": 0.6522917693445047,
+              "terrain": 0.8714705031212535,
+              "trackbed": 0.8061158050937283,
+              "traffic-light": 0.8596491228070176,
+              "traffic-sign": 0.8746283448959365,
+              "tram-track": 0.10092348284960422,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.5427824314142623
+            },
+            "pred_contour_pixels": {
+              "car": 2838,
+              "construction": 36543,
+              "fence": 17723,
+              "mud-pumping": 332315,
+              "on-rails": 798,
+              "person": 0,
+              "pole": 70956,
+              "rail-embedded": 3201,
+              "rail-raised": 203189,
+              "rail-track": 223434,
+              "road": 38792,
+              "sidewalk": 48076,
+              "sky": 123572,
+              "standing-water": 17503,
+              "terrain": 319885,
+              "trackbed": 342773,
+              "traffic-light": 1318,
+              "traffic-sign": 1852,
+              "tram-track": 3767,
+              "truck": 2084,
+              "vegetation-overgrowth": 155711
+            },
+            "tolerance_frac": 0.0075
+          },
+          "confusion": [
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              3812346,
+              74829,
+              0,
+              0,
+              0,
+              560,
+              0,
+              0,
+              37732,
+              0,
+              0,
+              2277990,
+              0,
+              140,
+              0,
+              236,
+              92345,
+              14318,
+              12701
+            ],
+            [
+              0,
+              0,
+              372397,
+              1782519,
+              0,
+              0,
+              106,
+              3743,
+              48980,
+              21195,
+              0,
+              0,
+              0,
+              1119306,
+              56,
+              1712081,
+              0,
+              0,
+              126670,
+              714670,
+              98
+            ],
+            [
+              0,
+              1008,
+              0,
+              0,
+              27343,
+              0,
+              0,
+              132,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1181,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              9018,
+              0,
+              0,
+              111,
+              0,
+              1728,
+              74,
+              0,
+              0,
+              1999,
+              328,
+              0,
+              8,
+              18,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              286,
+              56,
+              0,
+              0,
+              185513,
+              6019,
+              0,
+              2031,
+              245,
+              0,
+              13986,
+              40,
+              777817,
+              0,
+              277,
+              531,
+              61664,
+              366
+            ],
+            [
+              0,
+              980,
+              0,
+              5986,
+              0,
+              4516,
+              0,
+              290281,
+              649152,
+              106290,
+              0,
+              993,
+              0,
+              1078,
+              594,
+              190650,
+              0,
+              0,
+              8786,
+              38061,
+              0
+            ],
+            [
+              0,
+              469,
+              0,
+              49,
+              79,
+              0,
+              0,
+              1858,
+              1155,
+              245590,
+              0,
+              7440,
+              16,
+              0,
+              2267,
+              46010,
+              1556,
+              0,
+              0,
+              4796,
+              300
+            ],
+            [
+              0,
+              0,
+              1121,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              54173,
+              0,
+              0,
+              0,
+              164,
+              277,
+              94,
+              340
+            ],
+            [
+              0,
+              343,
+              0,
+              0,
+              0,
+              0,
+              1049,
+              236,
+              195,
+              1793,
+              0,
+              555410,
+              129,
+              0,
+              10236,
+              35456,
+              22603,
+              0,
+              5,
+              556,
+              27
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              995,
+              0,
+              0,
+              0,
+              0,
+              1789,
+              16438,
+              0,
+              0,
+              219,
+              69,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              342528,
+              26,
+              0,
+              0,
+              0,
+              956,
+              0,
+              0,
+              0,
+              0,
+              0,
+              416797,
+              0,
+              10022,
+              0,
+              21,
+              8414,
+              429072,
+              18414
+            ],
+            [
+              0,
+              2402,
+              0,
+              2,
+              5492,
+              0,
+              32,
+              2471,
+              0,
+              8125,
+              0,
+              6106,
+              0,
+              0,
+              150477,
+              86042,
+              3988,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              561,
+              0,
+              40408,
+              5601,
+              47,
+              344,
+              99699,
+              3891,
+              19252,
+              0,
+              20970,
+              190,
+              10917,
+              43330,
+              38795047,
+              68485,
+              0,
+              155,
+              101092,
+              29317
+            ],
+            [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              62,
+              0,
+              0,
+              2715,
+              0,
+              40146,
+              315,
+              0,
+              26,
+              74647,
+              19003679,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              59,
+              0,
+              0,
+              0,
+              0,
+              228,
+              33,
+              0,
+              136,
+              0,
+              0,
+              1577,
+              0,
+              0,
+              0,
+              9378,
+              5079,
+              129,
+              180
+            ],
+            [
+              0,
+              370,
+              90680,
+              10482,
+              0,
+              286,
+              8,
+              132,
+              11,
+              1849,
+              201,
+              100,
+              0,
+              13733,
+              971,
+              9136,
+              0,
+              96,
+              2721855,
+              119196,
+              691
+            ],
+            [
+              0,
+              42,
+              28131,
+              47056,
+              0,
+              56,
+              179,
+              9725,
+              2776,
+              1494,
+              6,
+              2392,
+              0,
+              673880,
+              114,
+              705318,
+              0,
+              644,
+              122478,
+              9046823,
+              1967
+            ],
+            [
+              0,
+              0,
+              1886,
+              2425,
+              0,
+              0,
+              0,
+              1414,
+              0,
+              0,
+              3285,
+              0,
+              0,
+              18007,
+              0,
+              15713,
+              0,
+              0,
+              108,
+              3749,
+              49215
+            ]
+          ],
+          "freqw_iou": 0.8020594812798624,
+          "macc": 0.6348037088388482,
+          "mdice": 0.5811235182968544,
+          "miou": 0.4796026546272813,
+          "mprecision": 0.630863717463189,
+          "mspecificity": 0.9919968779218852,
+          "per_class_acc": {
+            "car": 0.9217570118662352,
+            "construction": 0.7881958374119422,
+            "fence": 0.5675443261408253,
+            "mud-pumping": 0.3398956167176351,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.8843573159585885,
+            "rail-embedded": 0.5582475147330198,
+            "rail-raised": 0.9165121387084706,
+            "rail-track": 0.6029143169191155,
+            "road": 0.17687596953179302,
+            "sidewalk": 0.5003611160142042,
+            "sky": 0.9938327878944896,
+            "standing-water": 0.5137157888144298,
+            "terrain": 0.9886782146452845,
+            "trackbed": 0.85001918147574,
+            "traffic-light": 0.8425422860071758,
+            "traffic-sign": 0.6788106887467068,
+            "tram-track": 0.00017800245643389878,
+            "truck": null,
+            "vegetation-overgrowth": 0.30202864505717814
+          },
+          "per_class_dice": {
+            "car": 0.8014362130871254,
+            "construction": 0.6821953919380443,
+            "fence": 0.6359329569274461,
+            "mud-pumping": 0.14304011157758112,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.8778708301293627,
+            "rail-embedded": 0.6791960890820207,
+            "rail-raised": 0.898819914049482,
+            "rail-track": 0.6949008621219985,
+            "road": 0.2254409613927508,
+            "sidewalk": 0.6460577066141714,
+            "sky": 0.9943761646665349,
+            "standing-water": 0.47001690399106094,
+            "terrain": 0.9496860397324951,
+            "trackbed": 0.8543879421186412,
+            "traffic-light": 0.8964877835951134,
+            "traffic-sign": 0.7191961081425952,
+            "tram-track": 0.0002008435428800964,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.4532275432277848
+          },
+          "per_class_iou": {
+            "car": 0.6686637973197691,
+            "construction": 0.5176756764732541,
+            "fence": 0.4662035932596175,
+            "mud-pumping": 0.07702918758202199,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.7823260046172461,
+            "rail-embedded": 0.5142293140319132,
+            "rail-raised": 0.816233353215462,
+            "rail-track": 0.5324506330238314,
+            "road": 0.12704055288557017,
+            "sidewalk": 0.4771678303944276,
+            "sky": 0.9888152306342256,
+            "standing-water": 0.30720398494410217,
+            "terrain": 0.9041925325743735,
+            "trackbed": 0.7457916807358907,
+            "traffic-light": 0.8123949787486409,
+            "traffic-sign": 0.561519302615193,
+            "tram-track": 0.00010043185698503566,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.2930150076331034
+          },
+          "per_class_precision": {
+            "car": 0.7089004692644733,
+            "construction": 0.6013261053734691,
+            "fence": 0.723061250967032,
+            "mud-pumping": 0.09057960935741041,
+            "on-rails": 0.0,
+            "person": null,
+            "pole": 0.8714788041781274,
+            "rail-embedded": 0.8670488165680473,
+            "rail-raised": 0.8817978100314542,
+            "rail-track": 0.82000960175929,
+            "road": 0.3107691122174796,
+            "sidewalk": 0.9114589476167209,
+            "sky": 0.994920135944699,
+            "standing-water": 0.4331696239966202,
+            "terrain": 0.9136527701649952,
+            "trackbed": 0.8588018421455829,
+            "traffic-light": 0.9578137746183428,
+            "traffic-sign": 0.7646909183413889,
+            "tram-track": 0.0002304094375705629,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.9075643472810783
+          },
+          "per_class_recall": {
+            "car": 0.9217570118662352,
+            "construction": 0.7881958374119422,
+            "fence": 0.5675443261408253,
+            "mud-pumping": 0.3398956167176351,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.8843573159585885,
+            "rail-embedded": 0.5582475147330198,
+            "rail-raised": 0.9165121387084706,
+            "rail-track": 0.6029143169191155,
+            "road": 0.17687596953179302,
+            "sidewalk": 0.5003611160142042,
+            "sky": 0.9938327878944896,
+            "standing-water": 0.5137157888144298,
+            "terrain": 0.9886782146452845,
+            "trackbed": 0.85001918147574,
+            "traffic-light": 0.8425422860071758,
+            "traffic-sign": 0.6788106887467068,
+            "tram-track": 0.00017800245643389878,
+            "truck": null,
+            "vegetation-overgrowth": 0.30202864505717814
+          },
+          "per_class_specificity": {
+            "car": 0.9998740939301668,
+            "construction": 0.9981683697304942,
+            "fence": 0.9993520055369044,
+            "mud-pumping": 0.9524369265843236,
+            "on-rails": 0.9999450156828612,
+            "person": 1.0,
+            "pole": 0.999075302279992,
+            "rail-embedded": 0.9999838771986994,
+            "rail-raised": 0.9957691702832892,
+            "rail-track": 0.9899039450988271,
+            "road": 0.9953330041380958,
+            "sidewalk": 0.9992826745496479,
+            "sky": 0.9986155653634597,
+            "standing-water": 0.9992772982839815,
+            "terrain": 0.9266243447374636,
+            "trackbed": 0.9810675155828661,
+            "traffic-light": 0.9999918822927971,
+            "traffic-sign": 0.9999688880313322,
+            "tram-track": 0.9995132868615069,
+            "truck": 0.9999305998150039,
+            "vegetation-overgrowth": 0.9978206703778771
+          },
+          "pixel_accuracy": 0.8685012222380344,
+          "support": {
+            "car": 29664,
+            "construction": 311585,
+            "fence": 265137,
+            "mud-pumping": 1226250,
+            "on-rails": 0,
+            "person": 0,
+            "pole": 628038,
+            "rail-embedded": 16799,
+            "rail-raised": 2969797,
+            "rail-track": 6323197,
+            "road": 1048831,
+            "sidewalk": 1297367,
+            "sky": 19121606,
+            "standing-water": 95802,
+            "terrain": 39239306,
+            "trackbed": 10643081,
+            "traffic-light": 19510,
+            "traffic-sign": 13285,
+            "tram-track": 56179,
+            "truck": 0,
+            "vegetation-overgrowth": 5901821
+          }
+        },
+        "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-2",
+        "notes": "stage rtis of curriculum eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-2; validation_weights=ema",
+        "peak_vram_bytes": {
+          "cuda:0": 19153289216
+        },
+        "seed": 2,
+        "stage": "rtis",
+        "started_at": "2026-09-06T06:00:27+00:00",
+        "wall_clock_s": 3732.231279294938
+      },
+      "stopping": {
+        "actual_steps": 2290,
+        "maximum_steps": 4000,
+        "min_delta": 0.001,
+        "monitor": "val_iou/mud-pumping",
+        "patience": 5,
+        "reason": "validation_plateau"
       },
       "learning_curve": {
         "train/loss": [
@@ -123841,7 +128778,150 @@
           }
         ]
       },
-      "observed_step": 2290,
+      "collection_phase": "diagnostics",
+      "resolved_config": {
+        "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-2",
+        "model": {
+          "arch": "eomt_dinov3_large",
+          "checkpoint": null,
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": null,
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 1e-05,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 0.75,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 2,
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": {
+            "kind": "hungarian_query",
+            "classification_weight": 2.0,
+            "mask_bce_weight": 5.0,
+            "dice_weight": 5.0,
+            "no_object_coefficient": 0.1,
+            "match_class_cost": 2.0,
+            "match_mask_bce_cost": 5.0,
+            "match_dice_cost": 5.0,
+            "matching_num_points": 8192,
+            "auxiliary_layer_weight": 1.0,
+            "dice_smooth": 1.0
+          }
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 0.1,
+            "head_group_lr_scale": 1.0,
+            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+            "reset_head": true,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
