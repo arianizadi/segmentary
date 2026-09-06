@@ -6,16 +6,16 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| eomt_large | rtis_only | 0 | collecting | 2290 | 1018 | 12.60 | 14.96 | 44.36 | 11.17 | 46.14 | 51.27 |
-| eomt_large | rtis_only | 1 | training | 1949 | — | — | — | — | — | — | — |
+| eomt_large | rtis_only | 0 | completed | 2290 | 1018 | 12.60 | 14.96 | 44.36 | 11.17 | 46.14 | 51.27 |
+| eomt_large | rtis_only | 1 | training | 1999 | — | — | — | — | — | — | — |
 | eomt_large | rtis_only | 2 | training | 1949 | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_rtis | 0 | training | 1849 | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_rtis | 1 | training | 1781 | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_rtis | 2 | training | 899 | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 0 | training | 749 | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 1 | training | 199 | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_rtis | 0 | training | 1899 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_rtis | 1 | training | 1799 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_rtis | 2 | training | 949 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 0 | training | 763 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 1 | training | 249 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | eomt_large | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | eomt_large | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 
@@ -25,7 +25,7 @@ Training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256: `71fef
 
 ## rtis_only — seed 0
 
-Status: **collecting**. Started: 2026-09-06T06:01:49.063967+00:00. Finished: —.
+Status: **completed**. Started: 2026-09-06T06:01:49.063967+00:00. Finished: 2026-09-06T07:06:48.207773+00:00.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
@@ -67,7 +67,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 1.68 |
 | Best full-state checkpoint (MiB) | 4831.36 |
 | Final full-state checkpoint (MiB) | 4831.34 |
-| Audited periodic checkpoints removed (GiB) | — |
+| Audited periodic checkpoints removed (GiB) | 18.87 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -322,9 +322,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Measurement | Value |
 | --- | --- |
-| Full GPU-reserved wall seconds, all recorded worker attempts | — |
-| Full reserved GPU-hours | — |
-| Whole-run timing complete | False |
+| Full GPU-reserved wall seconds, all recorded worker attempts | 3899.15 |
+| Full reserved GPU-hours | 1.08 |
+| Whole-run timing complete | True |
 
 | Phase | Wall seconds including failed attempts |
 | --- | --- |
@@ -2134,6 +2134,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 31.53 | 0.00 |
 | 508 | 48.92 | 2.12 |
+| 763 | 50.34 | 2.20 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -2552,7 +2553,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T07:06:51.910137+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
@@ -2796,7 +2797,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T07:07:33.696167+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
