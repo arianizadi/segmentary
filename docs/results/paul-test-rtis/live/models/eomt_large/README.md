@@ -14,7 +14,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | eomt_large | cityscapes_to_rtis | 2 | completed | 3054 | 1781 | 5.74 | 7.07 | 23.39 | 5.46 | 51.42 | 54.27 |
 | eomt_large | railsem19_to_rtis | 0 | completed | 3309 | 2290 | 3.24 | 4.25 | 12.05 | 3.22 | 49.29 | 57.50 |
 | eomt_large | railsem19_to_rtis | 1 | completed | 2800 | 1527 | 3.61 | 5.02 | 11.33 | 3.33 | 49.83 | 58.13 |
-| eomt_large | railsem19_to_rtis | 2 | training | 3349 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 2 | training | 3563 | — | — | — | — | — | — | — |
 | eomt_large | cityscapes_to_railsem19_to_rtis | 0 | completed | 3309 | 2036 | 18.04 | 26.91 | 35.38 | 17.60 | 56.39 | 59.52 |
 | eomt_large | cityscapes_to_railsem19_to_rtis | 1 | completed | 2290 | 1018 | 10.29 | 15.41 | 23.66 | 8.36 | 49.80 | 55.33 |
 | eomt_large | cityscapes_to_railsem19_to_rtis | 2 | completed | 2800 | 1781 | 14.14 | 20.57 | 31.14 | 13.37 | 52.27 | 55.18 |
@@ -6408,6 +6408,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2799 | 50.62 | 20.81 |
 | 3054 | 50.58 | 20.71 |
 | 3308 | 50.60 | 20.64 |
+| 3563 | 50.60 | 20.54 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
