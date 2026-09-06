@@ -6,14 +6,14 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hrnet_w48_ocr | rtis_only | 0 | training | 949 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | rtis_only | 1 | training | 599 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | rtis_only | 2 | training | 508 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | cityscapes_to_rtis | 0 | training | 499 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | cityscapes_to_rtis | 1 | training | 449 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | cityscapes_to_rtis | 2 | training | 399 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 0 | training | 1049 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 1 | training | 699 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 2 | training | 599 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | cityscapes_to_rtis | 0 | training | 599 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | cityscapes_to_rtis | 1 | training | 549 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | cityscapes_to_rtis | 2 | training | 508 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | railsem19_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -98,6 +98,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 22.96 | 0.26 |
 | 508 | 27.08 | 0.10 |
 | 763 | 27.51 | 2.56 |
+| 1017 | 29.12 | 3.58 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -799,6 +800,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 21.11 | 0.47 |
+| 508 | 21.60 | 13.87 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1032,6 +1034,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 20.64 | 2.74 |
+| 508 | 20.71 | 8.53 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1265,6 +1268,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 20.92 | 1.21 |
+| 508 | 21.16 | 4.36 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1427,7 +1431,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T15:11:42.680050+00:00. Finished: —.
 
 Recipe pretrained initializer: `timm hrnet_w48 pretrained ImageNet backbone; fresh OCR head`.
 
@@ -1659,7 +1663,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 1
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T15:11:47.504178+00:00. Finished: —.
 
 Recipe pretrained initializer: `timm hrnet_w48 pretrained ImageNet backbone; fresh OCR head`.
 
