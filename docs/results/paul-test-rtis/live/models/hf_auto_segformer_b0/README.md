@@ -6,11 +6,11 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_segformer_b0 | rtis_only | 0 | training | 949 | — | — | — | — | — | — | — |
-| hf_auto_segformer_b0 | rtis_only | 1 | training | 699 | — | — | — | — | — | — | — |
-| hf_auto_segformer_b0 | rtis_only | 2 | training | 449 | — | — | — | — | — | — | — |
-| hf_auto_segformer_b0 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| hf_auto_segformer_b0 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | rtis_only | 0 | training | 1149 | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | rtis_only | 1 | training | 899 | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | rtis_only | 2 | training | 649 | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | cityscapes_to_rtis | 0 | training | 49 | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
 | hf_auto_segformer_b0 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_segformer_b0 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_segformer_b0 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -98,6 +98,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 19.75 | 0.12 |
 | 508 | 26.54 | 0.21 |
 | 763 | 26.84 | 1.15 |
+| 1017 | 26.59 | 1.42 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -332,6 +333,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 21.27 | 0.13 |
 | 508 | 24.94 | 1.70 |
+| 763 | 26.35 | 2.76 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -565,6 +567,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 20.92 | 1.48 |
+| 508 | 27.93 | 1.72 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -727,7 +730,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T13:22:32.919358+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/segformer-b0-finetuned-ade-512-512`.
 
@@ -959,7 +962,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 1
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T13:22:39.979481+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/segformer-b0-finetuned-ade-512-512`.
 
