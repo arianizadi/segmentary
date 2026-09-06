@@ -1,6 +1,6 @@
 # paul-test-rtis live pilot
 
-**0/144 completed · 0 failed**
+**1/144 completed · 0 failed**
 
 36 model recipes x four initialization paths x seed 0. Each run trains for at most 4,000 optimizer steps on the same 220 training images, with validation-based early stopping.
 
@@ -17,7 +17,7 @@ Validation every 250 steps; stop after three checks without a 0.2-point mIoU imp
 | Model | Initialization path | Status | Steps | Best step | Val mIoU (%) |
 | --- | --- | --- | ---: | ---: | ---: |
 | eomt_dinov3_large | rtis_only | training | — | — | — |
-| eomt_dinov3_large | cityscapes_to_rtis | evaluating | 1272 | — | — |
+| eomt_dinov3_large | cityscapes_to_rtis | completed | 1272 | 509 | 47.03 |
 | eomt_dinov3_large | railsem19_to_rtis | training | — | — | — |
 | eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | training | — | — | — |
 | eomt_large | rtis_only | training | — | — | — |
