@@ -6,12 +6,12 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| native_resnet101_uper | rtis_only | 0 | training | 1499 | — | — | — | — | — | — | — |
-| native_resnet101_uper | rtis_only | 1 | training | 1099 | — | — | — | — | — | — | — |
-| native_resnet101_uper | rtis_only | 2 | training | 999 | — | — | — | — | — | — | — |
-| native_resnet101_uper | cityscapes_to_rtis | 0 | training | 449 | — | — | — | — | — | — | — |
-| native_resnet101_uper | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
-| native_resnet101_uper | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
+| native_resnet101_uper | rtis_only | 0 | training | 1649 | — | — | — | — | — | — | — |
+| native_resnet101_uper | rtis_only | 1 | training | 1249 | — | — | — | — | — | — | — |
+| native_resnet101_uper | rtis_only | 2 | training | 1149 | — | — | — | — | — | — | — |
+| native_resnet101_uper | cityscapes_to_rtis | 0 | training | 599 | — | — | — | — | — | — | — |
+| native_resnet101_uper | cityscapes_to_rtis | 1 | training | 149 | — | — | — | — | — | — | — |
+| native_resnet101_uper | cityscapes_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
 | native_resnet101_uper | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | native_resnet101_uper | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | native_resnet101_uper | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -100,6 +100,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 23.48 | 0.00 |
 | 1017 | 22.10 | 0.93 |
 | 1272 | 26.19 | 0.06 |
+| 1527 | 27.59 | 0.78 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -645,6 +646,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 13.83 | 0.00 |
 | 508 | 21.97 | 0.08 |
 | 763 | 22.04 | 0.14 |
+| 1017 | 23.59 | 0.12 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -915,6 +917,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 24.48 | 0.38 |
+| 508 | 24.78 | 0.27 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1383,7 +1386,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T20:43:46.190499+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": null, "encoder_weights": null, "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": {"auxiliary_heads": [], "backbone": {"in_channels": 3, "kind": "timm", "name": "resnet101.a1_in1k", "out_indices": [1, 2, 3, 4], "weights": "pretrained"}, "head": {"activation": "relu", "channels": 256, "dropout": 0.1, "in_indices": [0, 1, 2, 3], "kind": "uper", "norm": "group", "pool_bins": [1, 2, 3, 6]}, "neck": {"kind": "identity"}, "task": "multiclass"}, "revision": null, "smp_arch": null, "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
