@@ -116635,6 +116635,14 @@
           {
             "step": 2399,
             "value": 0.15539678931236267
+          },
+          {
+            "step": 2449,
+            "value": 0.2438427060842514
+          },
+          {
+            "step": 2499,
+            "value": 0.12740124762058258
           }
         ],
         "val/miou": [
@@ -120670,7 +120678,7 @@
           }
         ]
       },
-      "observed_step": 2399,
+      "observed_step": 2499,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
