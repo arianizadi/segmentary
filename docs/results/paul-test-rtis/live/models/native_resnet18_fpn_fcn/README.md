@@ -6,14 +6,14 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| native_resnet18_fpn_fcn | rtis_only | 0 | training | 1649 | — | — | — | — | — | — | — |
-| native_resnet18_fpn_fcn | rtis_only | 1 | training | 1399 | — | — | — | — | — | — | — |
-| native_resnet18_fpn_fcn | rtis_only | 2 | training | 599 | — | — | — | — | — | — | — |
-| native_resnet18_fpn_fcn | cityscapes_to_rtis | 0 | training | 399 | — | — | — | — | — | — | — |
-| native_resnet18_fpn_fcn | cityscapes_to_rtis | 1 | training | 349 | — | — | — | — | — | — | — |
-| native_resnet18_fpn_fcn | cityscapes_to_rtis | 2 | training | 199 | — | — | — | — | — | — | — |
-| native_resnet18_fpn_fcn | railsem19_to_rtis | 0 | training | 199 | — | — | — | — | — | — | — |
-| native_resnet18_fpn_fcn | railsem19_to_rtis | 1 | training | 49 | — | — | — | — | — | — | — |
+| native_resnet18_fpn_fcn | rtis_only | 0 | training | 1849 | — | — | — | — | — | — | — |
+| native_resnet18_fpn_fcn | rtis_only | 1 | training | 1599 | — | — | — | — | — | — | — |
+| native_resnet18_fpn_fcn | rtis_only | 2 | training | 849 | — | — | — | — | — | — | — |
+| native_resnet18_fpn_fcn | cityscapes_to_rtis | 0 | training | 649 | — | — | — | — | — | — | — |
+| native_resnet18_fpn_fcn | cityscapes_to_rtis | 1 | training | 599 | — | — | — | — | — | — | — |
+| native_resnet18_fpn_fcn | cityscapes_to_rtis | 2 | training | 399 | — | — | — | — | — | — | — |
+| native_resnet18_fpn_fcn | railsem19_to_rtis | 0 | training | 399 | — | — | — | — | — | — | — |
+| native_resnet18_fpn_fcn | railsem19_to_rtis | 1 | training | 299 | — | — | — | — | — | — | — |
 | native_resnet18_fpn_fcn | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | native_resnet18_fpn_fcn | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | native_resnet18_fpn_fcn | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -101,6 +101,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1017 | 20.54 | 0.27 |
 | 1272 | 21.87 | 0.49 |
 | 1527 | 25.33 | 0.68 |
+| 1781 | 24.06 | 0.36 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -376,6 +377,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 19.72 | 0.15 |
 | 1017 | 21.45 | 0.13 |
 | 1272 | 21.01 | 0.35 |
+| 1527 | 22.54 | 0.37 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -648,6 +650,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 18.06 | 0.15 |
 | 508 | 19.51 | 0.45 |
+| 763 | 19.81 | 0.08 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -919,6 +922,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 21.13 | 0.48 |
+| 508 | 22.54 | 0.21 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1190,6 +1194,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 19.54 | 0.27 |
+| 508 | 19.88 | 0.18 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1460,6 +1465,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 19.61 | 0.05 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1730,6 +1736,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 27.46 | 0.10 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -2000,6 +2007,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 27.92 | 0.08 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
