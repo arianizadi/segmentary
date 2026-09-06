@@ -7,14 +7,14 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | 0 | completed | 2290 | 1018 | 1.80 | 2.45 | 6.38 | 1.47 | 19.76 | 21.96 |
-| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 1 | training | 2749 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 1 | training | 2849 | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | 2 | completed | 2545 | 1272 | 3.20 | 4.10 | 12.74 | 0.32 | 19.96 | 22.18 |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 0 | training | 1649 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 1 | training | 1149 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 2 | training | 1017 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 0 | training | 899 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 0 | training | 1749 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 1 | training | 1249 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 2 | training | 1099 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 0 | training | 999 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 1 | training | 49 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -1073,6 +1073,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2036 | 21.02 | 1.07 |
 | 2290 | 22.43 | 0.64 |
 | 2545 | 22.75 | 0.57 |
+| 2799 | 23.82 | 1.59 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3393,7 +3394,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T10:15:28.946777+00:00. Finished: —.
 
 Recipe pretrained initializer: `google/deeplabv3_mobilenet_v2_1.0_513`.
 
