@@ -6,12 +6,12 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| native_efficientnet_b0_deeplabv3plus | rtis_only | 0 | training | 1499 | — | — | — | — | — | — | — |
-| native_efficientnet_b0_deeplabv3plus | rtis_only | 1 | training | 1349 | — | — | — | — | — | — | — |
-| native_efficientnet_b0_deeplabv3plus | rtis_only | 2 | training | 899 | — | — | — | — | — | — | — |
-| native_efficientnet_b0_deeplabv3plus | cityscapes_to_rtis | 0 | training | 549 | — | — | — | — | — | — | — |
-| native_efficientnet_b0_deeplabv3plus | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
-| native_efficientnet_b0_deeplabv3plus | cityscapes_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
+| native_efficientnet_b0_deeplabv3plus | rtis_only | 0 | training | 1749 | — | — | — | — | — | — | — |
+| native_efficientnet_b0_deeplabv3plus | rtis_only | 1 | collecting | 1527 | 254 | 1.50 | 1.86 | 7.15 | 0.79 | 21.96 | 23.18 |
+| native_efficientnet_b0_deeplabv3plus | rtis_only | 2 | training | 1099 | — | — | — | — | — | — | — |
+| native_efficientnet_b0_deeplabv3plus | cityscapes_to_rtis | 0 | training | 763 | — | — | — | — | — | — | — |
+| native_efficientnet_b0_deeplabv3plus | cityscapes_to_rtis | 1 | training | 249 | — | — | — | — | — | — | — |
+| native_efficientnet_b0_deeplabv3plus | cityscapes_to_rtis | 2 | training | 149 | — | — | — | — | — | — | — |
 | native_efficientnet_b0_deeplabv3plus | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | native_efficientnet_b0_deeplabv3plus | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | native_efficientnet_b0_deeplabv3plus | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -100,6 +100,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 22.19 | 0.24 |
 | 1017 | 24.82 | 2.82 |
 | 1272 | 24.61 | 0.01 |
+| 1527 | 24.20 | 0.72 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -295,7 +296,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## rtis_only — seed 1
 
-Status: **training**. Started: 2026-09-06T18:47:36.787446+00:00. Finished: —.
+Status: **collecting**. Started: 2026-09-06T18:47:36.787446+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": null, "encoder_weights": null, "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": {"auxiliary_heads": [], "backbone": {"in_channels": 3, "kind": "timm", "name": "efficientnet_b0.ra_in1k", "out_indices": [1, 2, 3, 4], "weights": "pretrained"}, "head": {"activation": "relu", "channels": 160, "dilation_rates": [6, 12, 18], "dropout": 0.1, "high_index": 3, "kind": "deeplabv3plus", "low_channels": 32, "low_index": 0, "norm": "group"}, "neck": {"kind": "identity"}, "task": "multiclass"}, "revision": null, "smp_arch": null, "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -303,25 +304,25 @@ Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch
 
 Source checkpoint: `Recipe pretrained initialization`.
 
-Config SHA-256: `b4ce17972a9da100000960bc84be4862c6c8a8b539e07d4f818e08cfc7391272`. Weights used for validation: `—`.
+Config SHA-256: `b4ce17972a9da100000960bc84be4862c6c8a8b539e07d4f818e08cfc7391272`. Weights used for validation: `raw`.
 
 ### Mud-pumping and aggregate quality
 
 | Metric | Selected checkpoint | Final training validation |
 | --- | --- | --- |
-| Mud IoU | — | — |
-| Mud precision | — | — |
-| Mud recall | — | — |
-| Mud Dice/F1 | — | — |
-| mIoU | — | — |
-| Mean accuracy | — | — |
-| Mean precision | — | — |
-| Mean Dice | — | — |
-| Mean specificity | — | — |
-| Pixel accuracy | — | — |
-| Frequency-weighted IoU | — | — |
-| Fixed GT-present class mIoU | — | — |
-| Boundary F1 | — | — |
+| Mud IoU | 1.50 | 0.79 |
+| Mud precision | 1.86 | 0.98 |
+| Mud recall | 7.15 | 3.94 |
+| Mud Dice/F1 | 2.96 | 1.57 |
+| mIoU | 21.96 | 25.96 |
+| Mean accuracy | 30.23 | 36.57 |
+| Mean precision | 33.89 | 51.66 |
+| Mean Dice | 27.57 | 33.08 |
+| Mean specificity | 98.71 | 98.84 |
+| Pixel accuracy | 78.92 | 81.14 |
+| Frequency-weighted IoU | 69.22 | 72.11 |
+| Fixed GT-present class mIoU | 23.18 | 30.29 |
+| Boundary F1 | 23.60 | 31.70 |
 
 The selected checkpoint has independent evaluation evidence. Final values are the trainer's final validation record, not a new independent evaluation. mIoU averages classes with nonzero union, so false positives on absent classes can change its denominator. The fixed GT-class mean is supplementary and excludes absent classes; their false positives remain in the confusion matrix.
 
@@ -329,14 +330,14 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 
 | Measurement | Value |
 | --- | --- |
-| Peak training VRAM, retained training invocation (GiB) | — |
-| Peak evaluation VRAM (GiB) | — |
-| Retained training invocation wall time (seconds) | — |
-| Retained training invocation GPU-hours (one GPU) | — |
-| Evaluation wall time (seconds) | — |
-| Full evaluation pipeline images/second | — |
-| Best full-state checkpoint (MiB) | — |
-| Final full-state checkpoint (MiB) | — |
+| Peak training VRAM, retained training invocation (GiB) | 8.31 |
+| Peak evaluation VRAM (GiB) | 6.78 |
+| Retained training invocation wall time (seconds) | 968.97 |
+| Retained training invocation GPU-hours (one GPU) | 0.27 |
+| Evaluation wall time (seconds) | 10.85 |
+| Full evaluation pipeline images/second | 3.41 |
+| Best full-state checkpoint (MiB) | 88.07 |
+| Final full-state checkpoint (MiB) | 88.06 |
 | Audited periodic checkpoints removed (GiB) | — |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
@@ -360,6 +361,27 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Class | GT pixels | IoU (%) | Precision (%) | Recall (%) | Dice (%) | Boundary F1 (%) |
 | --- | --- | --- | --- | --- | --- | --- |
+| car | 29664 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| construction | 311585 | 13.14 | 14.81 | 53.86 | 23.23 | 22.44 |
+| fence | 265137 | 6.82 | 13.83 | 11.85 | 12.76 | 25.03 |
+| mud-pumping | 1226250 | 1.50 | 1.86 | 7.15 | 2.96 | 2.41 |
+| on-rails | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
+| person | 0 | — | — | — | — | — |
+| pole | 628038 | 39.35 | 61.76 | 52.02 | 56.48 | 69.65 |
+| rail-embedded | 16799 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| rail-raised | 2969797 | 62.55 | 71.95 | 82.72 | 76.96 | 84.69 |
+| rail-track | 6323197 | 32.65 | 63.58 | 40.15 | 49.22 | 40.90 |
+| road | 1048831 | 0.17 | 1.83 | 0.19 | 0.35 | 0.35 |
+| sidewalk | 1297367 | 26.32 | 92.38 | 26.90 | 41.67 | 12.74 |
+| sky | 19121606 | 95.95 | 98.09 | 97.78 | 97.93 | 81.95 |
+| standing-water | 95802 | 0.00 | 0.00 | 0.01 | 0.00 | 0.00 |
+| terrain | 39239306 | 84.07 | 86.99 | 96.15 | 91.34 | 54.87 |
+| trackbed | 10643081 | 54.66 | 66.60 | 75.30 | 70.68 | 52.30 |
+| traffic-light | 19510 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| traffic-sign | 13285 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| tram-track | 56179 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| truck | 0 | — | — | — | — | — |
+| vegetation-overgrowth | 5901821 | 0.09 | 70.21 | 0.09 | 0.17 | 1.15 |
 
 ### Validation tracking
 
@@ -370,6 +392,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 22.37 | 0.01 |
 | 1017 | 24.06 | 0.31 |
 | 1272 | 24.10 | 0.10 |
+| 1527 | 25.96 | 0.79 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -377,8 +400,28 @@ All retained scalar curves, including training loss and per-class IoU, are in re
 
 ```json
 {
-  "stopping": null,
-  "checkpoints": null,
+  "stopping": {
+    "actual_steps": 1527,
+    "maximum_steps": 4000,
+    "min_delta": 0.001,
+    "monitor": "val_iou/mud-pumping",
+    "patience": 5,
+    "reason": "validation_plateau"
+  },
+  "checkpoints": {
+    "best": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/native_efficientnet_b0_deeplabv3plus--rtis_only--seed-1_seed1/rtis/best.ckpt",
+      "sha256": "79749ccd822a02e9f042397a231ff2e4b37cc30c3aa3926b271d9cfe468c8342",
+      "global_step": 254,
+      "bytes": 92351064
+    },
+    "final": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/native_efficientnet_b0_deeplabv3plus--rtis_only--seed-1_seed1/rtis/last.ckpt",
+      "sha256": "365e7b8e71b4b397c6f34d5d3c69b0826410ffccb08bc71a6e08c715e6e94294",
+      "global_step": 1527,
+      "bytes": 92337624
+    }
+  },
   "cleanup_error": null
 }
 ```
@@ -558,8 +601,121 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ```json
 {
-  "training": null,
-  "evaluation": null
+  "training": {
+    "cuda_available": true,
+    "cuda_visible_devices": "1",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "source": "timm_pretrained_cfg",
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "model_origins": [
+      {
+        "hf_commit": null,
+        "hf_name_or_path": null,
+        "module": "backbone",
+        "timm_pretrained": {
+          "architecture": "efficientnet_b0",
+          "hf_hub_id": "timm/efficientnet_b0.ra_in1k",
+          "tag": "ra_in1k",
+          "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b0_ra-3dd342df.pth"
+        }
+      },
+      {
+        "hf_commit": null,
+        "hf_name_or_path": null,
+        "module": "backbone.model",
+        "timm_pretrained": {
+          "architecture": "efficientnet_b0",
+          "hf_hub_id": "timm/efficientnet_b0.ra_in1k",
+          "tag": "ra_in1k",
+          "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b0_ra-3dd342df.pth"
+        }
+      }
+    ],
+    "model_parameter_count": 5721681,
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8",
+    "trainable_parameter_count": 5721681,
+    "training_stop": {
+      "actual_steps": 1527,
+      "maximum_steps": 4000,
+      "min_delta": 0.001,
+      "monitor": "val_iou/mud-pumping",
+      "patience": 5,
+      "reason": "validation_plateau"
+    },
+    "validation_weights": "raw"
+  },
+  "evaluation": {
+    "cuda_available": true,
+    "cuda_visible_devices": "1",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "source": "timm_pretrained_cfg",
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8"
+  }
 }
 ```
 
@@ -638,6 +794,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 22.66 | 0.10 |
 | 508 | 21.22 | 0.79 |
 | 763 | 22.06 | 0.11 |
+| 1017 | 25.73 | 2.26 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -905,6 +1062,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 20.02 | 0.58 |
 | 508 | 20.23 | 4.40 |
+| 763 | 20.11 | 0.69 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 

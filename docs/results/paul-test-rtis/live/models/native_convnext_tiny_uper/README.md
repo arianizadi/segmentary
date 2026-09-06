@@ -14,10 +14,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | native_convnext_tiny_uper | cityscapes_to_rtis | 2 | completed | 2036 | 763 | 6.94 | 27.95 | 8.46 | 3.46 | 35.53 | 41.45 |
 | native_convnext_tiny_uper | railsem19_to_rtis | 0 | completed | 2290 | 1018 | 1.14 | 1.88 | 2.80 | 0.95 | 43.81 | 48.68 |
 | native_convnext_tiny_uper | railsem19_to_rtis | 1 | completed | 1527 | 1527 | 1.79 | 3.27 | 3.80 | 1.79 | 40.15 | 46.84 |
-| native_convnext_tiny_uper | railsem19_to_rtis | 2 | training | 1599 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 0 | training | 1549 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 1 | training | 1527 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 2 | training | 1149 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | railsem19_to_rtis | 2 | training | 1749 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 0 | training | 1699 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 1 | training | 1649 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 2 | training | 1299 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -6345,6 +6345,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 41.32 | 4.11 |
 | 763 | 41.95 | 6.16 |
 | 1017 | 40.44 | 4.37 |
+| 1272 | 40.54 | 4.80 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
