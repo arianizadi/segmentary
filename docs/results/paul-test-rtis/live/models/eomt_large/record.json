@@ -83127,10 +83127,11 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "evaluating",
       "gpu": 3,
       "started_at": "2026-09-06T07:06:51.910137+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+      "final_step": 3563,
       "resolved_config": {
         "name": "eomt_large--railsem19_to_rtis--seed-2",
         "model": {
@@ -89802,7 +89803,6 @@
           }
         ]
       },
-      "observed_step": 3563,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
