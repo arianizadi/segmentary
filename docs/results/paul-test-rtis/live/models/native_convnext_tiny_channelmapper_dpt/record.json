@@ -463,7 +463,7 @@
       "config_sha256": "16a0169c38c62025902783d36fb80a005992975cb50df49aaa0b2b7a4ccf390e",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "collecting",
+      "status": "completed",
       "gpu": 7,
       "started_at": "2026-09-06T16:10:11.812045+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
@@ -9989,7 +9989,7 @@
           }
         ]
       },
-      "collection_phase": "cleanup",
+      "collection_phase": "complete",
       "performance": {
         "schema_version": 1,
         "model_id": "native_convnext_tiny_channelmapper_dpt",
@@ -13167,11 +13167,25 @@
               "telemetry_samples": 4,
               "sampled_peak_device_used_mib": 2515.0
             }
-          ]
+          ],
+          "worker_attempts": [
+            {
+              "started_at": "2026-09-06T16:10:11.804480+00:00",
+              "status": "completed",
+              "gpu": 7,
+              "finished_at": "2026-09-06T18:03:08.589005+00:00",
+              "wall_clock_s": 6776.784551993012
+            }
+          ],
+          "total_reserved_gpu_wall_seconds": 6776.784551993012,
+          "total_reserved_gpu_hours": 1.8824401533313924,
+          "whole_run_accounting_complete": true
         },
         "verified": true,
         "smoke": false
       },
+      "checkpoint_bytes_removed": 4896758440,
+      "finished_at": "2026-09-06T18:03:08.590445+00:00",
       "resolved_config": {
         "name": "native_convnext_tiny_channelmapper_dpt--rtis_only--seed-0",
         "model": {
@@ -54884,6 +54898,10 @@
           {
             "step": 2699,
             "value": 0.10432510823011398
+          },
+          {
+            "step": 2749,
+            "value": 0.01878819800913334
           }
         ],
         "val/miou": [
@@ -59399,7 +59417,7 @@
           }
         ]
       },
-      "observed_step": 2699,
+      "observed_step": 2749,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -59809,6 +59827,10 @@
           {
             "step": 2699,
             "value": 0.02681322768330574
+          },
+          {
+            "step": 2749,
+            "value": 0.03211493790149689
           }
         ],
         "val/miou": [
@@ -64324,7 +64346,7 @@
           }
         ]
       },
-      "observed_step": 2699,
+      "observed_step": 2749,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -64686,6 +64708,10 @@
           {
             "step": 2099,
             "value": 0.03431238979101181
+          },
+          {
+            "step": 2149,
+            "value": 0.11170118302106857
           }
         ],
         "val/miou": [
@@ -68337,7 +68363,7 @@
           }
         ]
       },
-      "observed_step": 2099,
+      "observed_step": 2149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -72208,6 +72234,10 @@
           {
             "step": 1649,
             "value": 0.11001822352409363
+          },
+          {
+            "step": 1699,
+            "value": 0.06335579603910446
           }
         ],
         "val/miou": [
@@ -74959,7 +74989,7 @@
           }
         ]
       },
-      "observed_step": 1649,
+      "observed_step": 1699,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -75237,6 +75267,10 @@
           {
             "step": 1049,
             "value": 0.06284189224243164
+          },
+          {
+            "step": 1099,
+            "value": 0.1276538074016571
           }
         ],
         "val/miou": [
@@ -77160,7 +77194,7 @@
           }
         ]
       },
-      "observed_step": 1049,
+      "observed_step": 1099,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -77414,6 +77448,10 @@
           {
             "step": 749,
             "value": 0.09041488170623779
+          },
+          {
+            "step": 799,
+            "value": 0.1048324853181839
           }
         ],
         "val/miou": [
@@ -78887,7 +78925,7 @@
           }
         ]
       },
-      "observed_step": 763,
+      "observed_step": 799,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
