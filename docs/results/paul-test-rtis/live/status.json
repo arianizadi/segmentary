@@ -1672,7 +1672,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3399,
+      "observed_step": 3549,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1682,7 +1682,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2999,
+      "observed_step": 3149,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1700,7 +1700,7 @@
       "model": "native_convnext_tiny_uper",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2036,
       "observed_step": null,
       "record": "models/native_convnext_tiny_uper/record.json"
@@ -1710,7 +1710,7 @@
       "model": "native_convnext_tiny_uper",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2036,
       "observed_step": null,
       "record": "models/native_convnext_tiny_uper/record.json"
@@ -1722,7 +1722,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1899,
+      "observed_step": 2049,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1732,7 +1732,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 599,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1742,7 +1742,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 399,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1752,7 +1752,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 399,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1762,7 +1762,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 349,
       "record": "models/native_convnext_tiny_uper/record.json"
     },
     {
@@ -1770,7 +1770,7 @@
       "model": "native_convnext_tiny_uper",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/native_convnext_tiny_uper/record.json"
@@ -1780,7 +1780,7 @@
       "model": "native_efficientnet_b0_deeplabv3plus",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
