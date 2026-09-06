@@ -6,7 +6,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hrnet_w48_ocr | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 0 | training | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | rtis_only | 1 | queued | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -25,7 +25,7 @@ Training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256: `71fef
 
 ## rtis_only — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T14:41:04.358120+00:00. Finished: —.
 
 Recipe pretrained initializer: `timm hrnet_w48 pretrained ImageNet backbone; fresh OCR head`.
 
