@@ -6,7 +6,7 @@
 
 Validation: 37 images; best validation checkpoint, native RTIS classes, no TTA. Test: 50 held-out images, not evaluated. Recording groups are provisional; validation lacks person, truck and on-rails. These single-seed pilot results do not establish independent-recording generalization.
 
-Frozen training code: `2cf41f9f731751cbde5c8f73e915ca02f273d249`. Split SHA-256: `71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d`.
+Frozen training code: `d070133fd0ead4ba64f945a3bcaa89326e2c8750`. Split SHA-256: `71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d`.
 
 Initialization: `rtis_only` = pretrained backbone; `cityscapes_to_rtis` = Cityscapes endpoint; `railsem19_to_rtis` = RailSem19 endpoint; `cityscapes_to_railsem19_to_rtis` = Cityscapes → RailSem19 endpoint. All transferred classifiers are reset.
 

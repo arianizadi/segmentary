@@ -3,7 +3,7 @@
     "schema_version": 1,
     "dataset": "paul-test-rtis",
     "created_at": "2026-09-06T01:42:24.078964+00:00",
-    "code_sha": "2cf41f9f731751cbde5c8f73e915ca02f273d249",
+    "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750",
     "plan_sha256": "fe6fc49630a2aa33843aceea23d4ef770bf6428c7c01c0c3f9d2e39f697b28ad",
     "split_sha256": "71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d",
     "grouping_status": "provisional_until_recording_provenance_confirmed",
@@ -446,7 +446,9 @@
     "target_steps": 4000,
     "selection": "best validation checkpoint; auto raw/EMA-safe weights; no TTA",
     "test": "held out; not evaluated",
-    "retention": "Keep best and final; delete periodic snapshots only after successful validation. Keep failed-run checkpoints for recovery."
+    "retention": "Keep best and final; delete periodic snapshots only after successful validation. Keep failed-run checkpoints for recovery.",
+    "preflight_code_sha": "2cf41f9f731751cbde5c8f73e915ca02f273d249",
+    "revision_note": "Added initial live report before launch; training, runner, configs and taxonomy identical to smoke-tested preflight revision."
   },
   "jobs": [
     {
