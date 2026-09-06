@@ -11,7 +11,7 @@
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | 3/3 | 8.47 | 0.33 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 3/3 | 14.16 | 3.88 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 3/3 | 8.84 | 2.93 |
-| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 2/3 | 3.42 | 0.26 |
+| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 3/3 | 9.26 | 10.10 |
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 3/3 | 15.55 | 8.15 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | 0/3 | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 0/3 | — | — |
@@ -152,7 +152,7 @@
 
 Mean and sample SD are descriptive optimization variability. Incomplete seed groups are provisional; source checkpoints and data split are fixed across seeds.
 
-**24/432 completed · 0 failed**
+**25/432 completed · 0 failed**
 
 Fresh full-statistics campaign: checkpoint selection and early stopping use **mud-pumping IoU**. Every job collects full accounting, train/validation diagnostics, raw/EMA comparison, prediction examples and isolated performance before completion.
 
@@ -186,21 +186,21 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 2 | completed | 3054 | 1781 | 5.74 | 7.07 | 23.39 | 5.46 | 51.42 | 54.27 |
 | [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 0 | completed | 3309 | 2290 | 3.24 | 4.25 | 12.05 | 3.22 | 49.29 | 57.50 |
 | [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 1 | completed | 2800 | 1527 | 3.61 | 5.02 | 11.33 | 3.33 | 49.83 | 58.13 |
-| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 2 | collecting | 3563 | 2545 | 20.92 | 40.44 | 30.24 | 20.54 | 50.56 | 58.99 |
+| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 2 | completed | 3563 | 2545 | 20.92 | 40.44 | 30.24 | 20.54 | 50.56 | 58.99 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 3309 | 2036 | 18.04 | 26.91 | 35.38 | 17.60 | 56.39 | 59.52 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 1 | completed | 2290 | 1018 | 10.29 | 15.41 | 23.66 | 8.36 | 49.80 | 55.33 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 2 | completed | 2800 | 1781 | 14.14 | 20.57 | 31.14 | 13.37 | 52.27 | 55.18 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 0 | completed | 1527 | 254 | 23.83 | 29.99 | 53.71 | 1.05 | 20.08 | 22.31 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 1 | collecting | 1527 | 254 | 5.32 | 32.20 | 5.99 | 0.45 | 18.24 | 20.27 |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 2 | evaluating | 1527 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 0 | training | 899 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 1 | training | 749 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 2 | training | 549 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | 0 | training | 599 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | 1 | training | 249 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | 2 | training | 249 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 49 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 2 | collecting | 1527 | 254 | 2.91 | 19.85 | 3.30 | 0.04 | 18.98 | 20.03 |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 0 | training | 949 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 1 | training | 799 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 2 | training | 649 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | 0 | training | 649 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | 1 | training | 299 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | 2 | training | 254 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 149 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | rtis_only | 1 | queued | — | — | — | — | — | — | — | — |
@@ -639,7 +639,7 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 17.70 | 10.80 | 4382.64 | 21.08 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 15.36 | 7.39 | 3531.35 | 119.21 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 15.36 | 7.39 | 3577.49 | 118.87 |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 15.36 | 7.39 | 3521.23 | 119.05 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | — | — | — | — |
