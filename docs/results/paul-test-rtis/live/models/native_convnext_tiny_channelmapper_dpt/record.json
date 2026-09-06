@@ -643,10 +643,18 @@
           {
             "step": 99,
             "value": 1.4237797260284424
+          },
+          {
+            "step": 149,
+            "value": 0.6106842160224915
+          },
+          {
+            "step": 199,
+            "value": 0.7414953708648682
           }
         ]
       },
-      "observed_step": 99,
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -836,10 +844,18 @@
           {
             "step": 49,
             "value": 1.2094829082489014
+          },
+          {
+            "step": 99,
+            "value": 1.0663373470306396
+          },
+          {
+            "step": 149,
+            "value": 1.2732075452804565
           }
         ]
       },
-      "observed_step": 49,
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -853,7 +869,10 @@
       "config_sha256": "b944813023fad2809dc39cc1d12d3eadb912858c2e1b41cdd4a98fe9aedb8f62",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 9,
+      "started_at": "2026-09-06T16:16:18.283857+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_convnext_tiny_channelmapper_dpt--rtis_only--seed-2",
         "model": {
