@@ -1420,9 +1420,9 @@
       "model": "hrnet_w48_ocr",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 3499,
+      "status": "collecting",
+      "final_step": 3818,
+      "observed_step": null,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1432,7 +1432,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3149,
+      "observed_step": 3449,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1482,7 +1482,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2449,
+      "observed_step": 2799,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1502,7 +1502,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2249,
+      "observed_step": 2549,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1522,7 +1522,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 1449,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1532,7 +1532,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 549,
+      "observed_step": 849,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1542,7 +1542,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 399,
+      "observed_step": 749,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1552,7 +1552,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 699,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1562,7 +1562,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 149,
+      "observed_step": 508,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -1572,7 +1572,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 299,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
