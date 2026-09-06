@@ -6,13 +6,13 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| native_convnext_tiny_channelmapper_dpt | rtis_only | 0 | training | 1799 | — | — | — | — | — | — | — |
-| native_convnext_tiny_channelmapper_dpt | rtis_only | 1 | training | 1781 | — | — | — | — | — | — | — |
-| native_convnext_tiny_channelmapper_dpt | rtis_only | 2 | training | 1549 | — | — | — | — | — | — | — |
-| native_convnext_tiny_channelmapper_dpt | cityscapes_to_rtis | 0 | training | 1399 | — | — | — | — | — | — | — |
-| native_convnext_tiny_channelmapper_dpt | cityscapes_to_rtis | 1 | training | 899 | — | — | — | — | — | — | — |
-| native_convnext_tiny_channelmapper_dpt | cityscapes_to_rtis | 2 | training | 349 | — | — | — | — | — | — | — |
-| native_convnext_tiny_channelmapper_dpt | railsem19_to_rtis | 0 | training | 349 | — | — | — | — | — | — | — |
+| native_convnext_tiny_channelmapper_dpt | rtis_only | 0 | training | 1899 | — | — | — | — | — | — | — |
+| native_convnext_tiny_channelmapper_dpt | rtis_only | 1 | training | 1849 | — | — | — | — | — | — | — |
+| native_convnext_tiny_channelmapper_dpt | rtis_only | 2 | training | 1649 | — | — | — | — | — | — | — |
+| native_convnext_tiny_channelmapper_dpt | cityscapes_to_rtis | 0 | training | 1449 | — | — | — | — | — | — | — |
+| native_convnext_tiny_channelmapper_dpt | cityscapes_to_rtis | 1 | training | 1017 | — | — | — | — | — | — | — |
+| native_convnext_tiny_channelmapper_dpt | cityscapes_to_rtis | 2 | training | 449 | — | — | — | — | — | — | — |
+| native_convnext_tiny_channelmapper_dpt | railsem19_to_rtis | 0 | training | 449 | — | — | — | — | — | — | — |
 | native_convnext_tiny_channelmapper_dpt | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | native_convnext_tiny_channelmapper_dpt | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | native_convnext_tiny_channelmapper_dpt | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -1195,6 +1195,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 23.62 | 0.25 |
 | 508 | 27.78 | 0.25 |
 | 763 | 36.48 | 0.48 |
+| 1017 | 36.94 | 0.45 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
