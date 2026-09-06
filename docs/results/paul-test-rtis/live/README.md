@@ -35,7 +35,7 @@
 | [hf_auto_segformer_b0](models/hf_auto_segformer_b0/README.md) | rtis_only | 3/3 | 9.61 | 3.53 |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | cityscapes_to_railsem19_to_rtis | 3/3 | 11.41 | 6.70 |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | cityscapes_to_rtis | 3/3 | 3.67 | 1.44 |
-| [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | railsem19_to_rtis | 2/3 | 5.98 | 1.83 |
+| [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | railsem19_to_rtis | 3/3 | 7.43 | 2.82 |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | rtis_only | 3/3 | 14.19 | 5.07 |
 | [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 0/3 | — | — |
 | [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_rtis | 0/3 | — | — |
@@ -152,7 +152,7 @@
 
 Mean and sample SD are descriptive optimization variability. Incomplete seed groups are provisional; source checkpoints and data split are fixed across seeds.
 
-**95/432 completed · 0 failed**
+**96/432 completed · 0 failed**
 
 Fresh full-statistics campaign: checkpoint selection and early stopping use **mud-pumping IoU**. Every job collects full accounting, train/validation diagnostics, raw/EMA comparison, prediction examples and isolated performance before completion.
 
@@ -258,20 +258,20 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | cityscapes_to_rtis | 2 | completed | 1781 | 509 | 5.33 | 10.68 | 9.63 | 2.73 | 26.60 | 29.56 |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | railsem19_to_rtis | 0 | completed | 1781 | 509 | 7.27 | 20.48 | 10.13 | 2.35 | 45.13 | 47.64 |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | railsem19_to_rtis | 1 | completed | 1527 | 254 | 4.69 | 6.16 | 16.47 | 3.89 | 32.94 | 34.77 |
-| [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | railsem19_to_rtis | 2 | collecting | 2290 | 1018 | 10.33 | 13.43 | 30.91 | 2.39 | 44.26 | 49.17 |
+| [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | railsem19_to_rtis | 2 | completed | 2290 | 1018 | 10.33 | 13.43 | 30.91 | 2.39 | 44.26 | 49.17 |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 1527 | 254 | 4.74 | 6.56 | 14.63 | 1.67 | 30.09 | 33.43 |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | cityscapes_to_railsem19_to_rtis | 1 | completed | 1527 | 254 | 18.14 | 25.10 | 39.55 | 4.04 | 32.87 | 34.70 |
 | [hf_auto_upernet_swin_tiny](models/hf_auto_upernet_swin_tiny/README.md) | cityscapes_to_railsem19_to_rtis | 2 | completed | 1527 | 254 | 11.36 | 15.02 | 31.78 | 1.99 | 29.31 | 32.57 |
-| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | rtis_only | 0 | training | 1299 | — | — | — | — | — | — | — |
-| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | rtis_only | 1 | training | 949 | — | — | — | — | — | — | — |
-| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | rtis_only | 2 | training | 899 | — | — | — | — | — | — | — |
-| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_rtis | 0 | training | 849 | — | — | — | — | — | — | — |
-| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_rtis | 1 | training | 799 | — | — | — | — | — | — | — |
-| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_rtis | 2 | training | 799 | — | — | — | — | — | — | — |
-| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | railsem19_to_rtis | 0 | training | 254 | — | — | — | — | — | — | — |
-| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | railsem19_to_rtis | 1 | training | 254 | — | — | — | — | — | — | — |
-| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | railsem19_to_rtis | 2 | training | 49 | — | — | — | — | — | — | — |
-| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | rtis_only | 0 | training | 1399 | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | rtis_only | 1 | training | 1049 | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | rtis_only | 2 | training | 949 | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_rtis | 0 | training | 949 | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_rtis | 1 | training | 899 | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_rtis | 2 | training | 899 | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | railsem19_to_rtis | 0 | training | 299 | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | railsem19_to_rtis | 1 | training | 299 | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | railsem19_to_rtis | 2 | training | 99 | — | — | — | — | — | — | — |
+| [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | [native_convnext_tiny_channelmapper_dpt](models/native_convnext_tiny_channelmapper_dpt/README.md) | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
