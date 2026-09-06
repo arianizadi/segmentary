@@ -6,9 +6,9 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_upernet_swin_tiny | rtis_only | 0 | training | 299 | — | — | — | — | — | — | — |
-| hf_auto_upernet_swin_tiny | rtis_only | 1 | training | 254 | — | — | — | — | — | — | — |
-| hf_auto_upernet_swin_tiny | rtis_only | 2 | training | — | — | — | — | — | — | — | — |
+| hf_auto_upernet_swin_tiny | rtis_only | 0 | training | 349 | — | — | — | — | — | — | — |
+| hf_auto_upernet_swin_tiny | rtis_only | 1 | training | 299 | — | — | — | — | — | — | — |
+| hf_auto_upernet_swin_tiny | rtis_only | 2 | training | 49 | — | — | — | — | — | — | — |
 | hf_auto_upernet_swin_tiny | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_upernet_swin_tiny | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_upernet_swin_tiny | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
