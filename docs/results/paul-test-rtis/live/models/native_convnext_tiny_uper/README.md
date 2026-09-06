@@ -6,9 +6,9 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| native_convnext_tiny_uper | rtis_only | 0 | training | 1049 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | rtis_only | 1 | training | 508 | — | — | — | — | — | — | — |
-| native_convnext_tiny_uper | rtis_only | 2 | training | 99 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | rtis_only | 0 | training | 1149 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | rtis_only | 1 | training | 599 | — | — | — | — | — | — | — |
+| native_convnext_tiny_uper | rtis_only | 2 | training | 199 | — | — | — | — | — | — | — |
 | native_convnext_tiny_uper | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | native_convnext_tiny_uper | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | native_convnext_tiny_uper | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
