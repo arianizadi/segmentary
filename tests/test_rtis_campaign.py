@@ -274,3 +274,21 @@ def test_detailed_reports_keep_mud_and_denominator_changes_visible():
     data["jobs"][0]["model"] = "../../outside"
     with pytest.raises(ValueError, match="Unsafe"):
         reports.artifacts(data)
+
+
+def test_comparison_table_averages_only_completed_seeds_and_keeps_zero():
+    from scripts import publish_rtis_results as reports
+
+    jobs = [
+        {
+            "model": "example",
+            "protocol": "rtis_only",
+            "status": status,
+            "evaluation": {"metrics": {"miou": value}},
+        }
+        for status, value in [("completed", 0.0), ("completed", 0.4), ("training", 0.99)]
+    ]
+    summary = reports.seed_summary(jobs)
+    assert "20.00 ± 28.28 (n=2/3)" in summary
+    assert "City → RTIS" in summary
+    assert "| — | — | — |" in summary

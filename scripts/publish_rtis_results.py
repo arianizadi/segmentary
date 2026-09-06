@@ -476,35 +476,47 @@ def collection_section(row):
     return lines
 
 
-def seed_summary(jobs):
+def comparison_table(jobs, metric, percent=True):
+    protocols = [
+        "rtis_only",
+        "cityscapes_to_rtis",
+        "railsem19_to_rtis",
+        "cityscapes_to_railsem19_to_rtis",
+    ]
     rows = []
-    for model, protocol in sorted({(r["model"], r["protocol"]) for r in jobs}):
-        planned = [r for r in jobs if r["model"] == model and r["protocol"] == protocol]
-        complete = [r for r in planned if r["status"] == "completed"]
-        vals = [
-            r.get("evaluation", {}).get("metrics", {}).get("per_class_iou", {}).get(MUD)
-            for r in complete
+    for model in sorted({r["model"] for r in jobs}):
+        planned = [r for r in jobs if r["model"] == model]
+        row = [
+            f"[{model}](models/{model}/README.md)",
+            f"{sum(r['status'] == 'completed' for r in planned)}/{len(planned)}",
         ]
-        vals = [v for v in vals if v is not None]
-        rows.append(
-            [
-                f"[{model}](models/{model}/README.md)",
-                protocol,
-                f"{len(vals)}/{len(planned)}",
-                pct(statistics.mean(vals)) if vals else "—",
-                pct(statistics.stdev(vals)) if len(vals) > 1 else "—",
-            ]
-        )
+        for protocol in protocols:
+            group = [r for r in planned if r["protocol"] == protocol]
+            values = [metric(r) for r in group if r["status"] == "completed"]
+            values = [v for v in values if v is not None]
+            fmt = pct if percent else number
+            cell = fmt(statistics.mean(values)) if values else "—"
+            if len(values) > 1:
+                cell += f" ± {fmt(statistics.stdev(values))}"
+            if values:
+                cell += f" (n={len(values)}/{len(group)})"
+            row.append(cell)
+        rows.append(row)
     return table(
         [
             "Model",
-            "Initialization",
-            "Completed seeds",
-            "Mud IoU mean (%)",
-            "Sample SD (percentage points)",
+            "Completed runs",
+            "RTIS only",
+            "City → RTIS",
+            "Rail → RTIS",
+            "City → Rail → RTIS",
         ],
         rows,
     )
+
+
+def seed_summary(jobs):
+    return comparison_table(jobs, lambda r: r.get("evaluation", {}).get("metrics", {}).get("miou"))
 
 
 def artifacts(data):
@@ -515,27 +527,57 @@ def artifacts(data):
         raise ValueError("Unsafe model report path")
     done = sum(r["status"] == "completed" for r in jobs)
     lines = [
-        "# paul-test-rtis — mud-pumping detection",
+        "# RTIS model comparison",
         "",
         f"**{done}/{len(jobs)} completed · {sum(r['status'] == 'failed' for r in jobs)} failed**",
         "",
-        "Fresh full-statistics campaign: checkpoint selection and early stopping use **mud-pumping IoU**. Every job collects full accounting, train/validation diagnostics, raw/EMA comparison, prediction examples and isolated performance before completion."
+        "Overall segmentation quality and mud-pumping results across four initialization paths. Every completed job includes quality evaluation, training diagnostics and isolated performance profiling."
         if full
-        else "Mud-pumping is the primary application. This pilot still selects checkpoints and stops by overall validation mIoU. Mud metrics are prominent here so aggregate accuracy cannot hide detection failures. A future mud-focused selection policy must be versioned; historical results are not relabeled.",
+        else "Overall segmentation quality and mud-pumping results across four initialization paths. This pilot selects checkpoints by overall validation mIoU.",
         "",
         "[Dataset and preparation](../README.md) · [Mathematical mud-pumping audit](../mud-pumping-audit/README.md) · [CSV results](results.csv) · [Full machine records](status.json)",
         "",
         f"{len(models)} models; four initialization paths; seeds {sorted({r.get('seed', 0) for r in jobs})}. Train/val/test: 220/37/50 images. Test is held out. Validation groups are provisional and lack person, truck and on-rails ground truth. Seed variation does not establish independent-recording generalization.",
         "",
-        "## Mud-pumping and quality",
+        "## Quality",
+        "",
+        "Validation **mIoU (%)** across classes. Cells show mean ± sample SD over completed seeds; n is the available/planned seed count. Partial groups are provisional; — means unavailable. These are the existing selected-checkpoint evaluations, not newly selected mIoU-best checkpoints. Raw/EMA settings are recorded on each model page.",
+        "",
+        seed_summary(jobs),
+        "",
+        "## Mud-pumping",
+        "",
+        "Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, per-class scores and examples are on each model page and in the CSV.",
+        "",
+        comparison_table(
+            jobs,
+            lambda r: r.get("evaluation", {}).get("metrics", {}).get("per_class_iou", {}).get(MUD),
+        ),
+        "",
+        "## Standardized model-only inference",
+        "",
+        "**FPS**, mean ± sample SD across completed, profiled seeds. Input/evaluation settings, latency and peak VRAM are on the model pages; compare speeds only under compatible settings.",
+        "",
+        comparison_table(
+            jobs,
+            lambda r: (
+                r.get("performance", {}).get("measurements", {}).get("latency", {}).get("fps")
+            ),
+            percent=False,
+        ),
+        "",
+        "<details>",
+        "<summary>Individual runs: quality, mud precision/recall, steps and status</summary>",
         "",
         "Click any model for all initialization paths, full class metrics, training/validation curves, VRAM, timing, config, checkpoint and software provenance. — means unavailable, never zero.",
         "",
         table(HEADERS, [summary_row(r) for r in jobs]),
         "",
-        "## Interpretation and checkpoint selection",
+        "</details>",
         "",
-        "The current best checkpoint maximizes mud-pumping validation IoU. Overall mIoU is supplementary."
+        "## Training specification and interpretation",
+        "",
+        "This campaign selects checkpoints and early-stops by **mud-pumping validation IoU**. Both overall mIoU and mud IoU above describe that same selected checkpoint. This report layout does not change the training objective or selection policy. mIoU averages classes with nonzero union; fixed GT-class means, mud precision/recall and raw/EMA diagnostics remain on model pages. Seed SD describes optimization variability, not independent-recording uncertainty."
         if full
         else "The current best checkpoint maximizes mIoU over classes with nonzero union. False positives on an absent class add a zero-IoU class to the mean. Fixed GT-class mIoU uses the same 18 ground-truth-present validation classes and is supplementary; it does not excuse false positives. Mud IoU, precision and recall are pixel-level segmentation measures, not event-level detection rates.",
         "",
@@ -547,12 +589,16 @@ def artifacts(data):
         "",
         f"Frozen training code: `{data['campaign']['code_sha']}`. Split SHA-256: `{data['campaign']['split_sha256']}`.",
         "",
-        "## Training resources",
+        "## Training cost",
+        "",
+        "<details>",
+        "<summary>Per-run training and evaluation memory and time</summary>",
         "",
         table(
             [
                 "Model",
                 "Initialization",
+                "Seed",
                 "Train peak GiB (retained invocation)",
                 "Eval peak GiB",
                 "Train seconds (retained invocation)",
@@ -562,6 +608,7 @@ def artifacts(data):
                 [
                     f"[{r['model']}](models/{r['model']}/README.md)",
                     r["protocol"],
+                    r.get("seed", 0),
                     number(peak(r.get("training", {})), 2**30),
                     number(peak(r.get("evaluation", {})), 2**30),
                     number(r.get("training", {}).get("wall_clock_s")),
@@ -571,18 +618,11 @@ def artifacts(data):
             ],
         ),
         "",
+        "</details>",
+        "",
         "Resumed invocation resource measurements are not cumulative training cost. Standardized FPS/latency and parameter memory are separate profiling evidence; missing evidence is explicit on each model page. The report publisher does not modify frozen training jobs or historical Cityscapes/RailSem19 reports.",
     ]
     if full:
-        lines[2:2] = [
-            "",
-            "## Seed summary",
-            "",
-            seed_summary(jobs),
-            "",
-            "Mean and sample SD are descriptive optimization variability. Incomplete seed groups are provisional; source checkpoints and data split are fixed across seeds.",
-            "",
-        ]
         previous = data["campaign"].get("previous_report_commit")
         if previous:
             lines += [
@@ -685,7 +725,7 @@ def publish_once(root, checkout):
     git(checkout, "add", "--", *sorted(allowed))
     if not git(checkout, "diff", "--cached", "--name-only"):
         return
-    git(checkout, "commit", "-m", "Update RTIS mud-pumping and per-model reports")
+    git(checkout, "commit", "-m", "Update RTIS comparison and per-model reports")
     git(checkout, "push", "origin", "HEAD:main")
     runtime.write(
         root / "publisher-status.json",
