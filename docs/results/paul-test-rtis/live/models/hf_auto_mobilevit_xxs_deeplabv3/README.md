@@ -12,12 +12,12 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_rtis | 0 | completed | 3309 | 2036 | 25.20 | 50.79 | 33.34 | 9.75 | 26.89 | 31.37 |
 | hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_rtis | 1 | completed | 2800 | 1527 | 23.18 | 37.21 | 38.08 | 13.61 | 24.31 | 28.36 |
 | hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_rtis | 2 | completed | 3309 | 2036 | 27.45 | 69.40 | 31.23 | 24.03 | 24.83 | 28.96 |
-| hf_auto_mobilevit_xxs_deeplabv3 | railsem19_to_rtis | 0 | training | 3499 | — | — | — | — | — | — | — |
-| hf_auto_mobilevit_xxs_deeplabv3 | railsem19_to_rtis | 1 | training | 3399 | — | — | — | — | — | — | — |
-| hf_auto_mobilevit_xxs_deeplabv3 | railsem19_to_rtis | 2 | training | 2749 | — | — | — | — | — | — | — |
-| hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_railsem19_to_rtis | 0 | training | 2199 | — | — | — | — | — | — | — |
-| hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_railsem19_to_rtis | 1 | training | 799 | — | — | — | — | — | — | — |
-| hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_railsem19_to_rtis | 2 | training | 349 | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | railsem19_to_rtis | 0 | evaluating | 3563 | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | railsem19_to_rtis | 1 | training | 3499 | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | railsem19_to_rtis | 2 | training | 2849 | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_railsem19_to_rtis | 0 | training | 2299 | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_railsem19_to_rtis | 1 | training | 849 | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_railsem19_to_rtis | 2 | training | 449 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -3623,7 +3623,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **training**. Started: 2026-09-06T10:55:25.611569+00:00. Finished: —.
+Status: **evaluating**. Started: 2026-09-06T10:55:25.611569+00:00. Finished: —.
 
 Recipe pretrained initializer: `apple/deeplabv3-mobilevit-xx-small`.
 
@@ -3706,6 +3706,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2799 | 27.13 | 9.11 |
 | 3054 | 28.54 | 6.05 |
 | 3308 | 28.12 | 6.89 |
+| 3563 | 29.46 | 7.35 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -4193,6 +4194,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2036 | 26.76 | 8.71 |
 | 2290 | 26.47 | 10.35 |
 | 2545 | 27.92 | 8.35 |
+| 2799 | 27.15 | 7.66 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -4433,6 +4435,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1527 | 25.57 | 16.37 |
 | 1781 | 25.29 | 6.18 |
 | 2036 | 27.39 | 10.73 |
+| 2290 | 26.34 | 8.20 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
