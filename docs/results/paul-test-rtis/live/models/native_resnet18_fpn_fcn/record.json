@@ -905,6 +905,14 @@
           {
             "step": 3349,
             "value": 0.14105314016342163
+          },
+          {
+            "step": 3399,
+            "value": 0.23900625109672546
+          },
+          {
+            "step": 3449,
+            "value": 0.06903290003538132
           }
         ],
         "val/miou": [
@@ -6692,7 +6700,7 @@
           }
         ]
       },
-      "observed_step": 3349,
+      "observed_step": 3449,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -32006,7 +32014,7 @@
           }
         ]
       },
-      "collection_phase": "diagnostics",
+      "collection_phase": "performance",
       "resolved_config": {
         "name": "native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-0",
         "model": {
@@ -32177,8 +32185,214 @@
         ]
       },
       "performance": {
-        "status": "waiting_for_idle_gpu",
-        "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+        "schema_version": 1,
+        "model_id": "native_resnet18_fpn_fcn",
+        "measured_at": "2026-09-06T21:42:39+00:00",
+        "status": "complete",
+        "benchmark_scope": "rtis_selected_checkpoint_model_only",
+        "applies_to": [
+          "native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-0"
+        ],
+        "source": {
+          "campaign_git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+          "git_dirty": false,
+          "config_hash": "f4a13b787646",
+          "resolved_config": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/configs/native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-0.yaml",
+          "config_sha256": "16adeea6cc93b2e1b490a59ef0f37863325c6064f63e4e301b0d9451bee99a3c",
+          "checkpoint_sha256": "233c12a8172e895ebaf02e53fbcf041ae74606de0c5172ca97eceb4f0d99dc24",
+          "checkpoint_global_step": 763,
+          "checkpoint_bytes": 202363737,
+          "checkpoint_kind": "resume checkpoint with optimizer and EMA state",
+          "weights": "raw",
+          "measured_checkpoint_job_id": "native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-0",
+          "result_sha256": "d9b3954808cd84964fbac53f4b8afe154827ceaa4853dfbb8a943fba895d120a",
+          "result_git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+          "result_stage": "eval:paul-test-rtis:val",
+          "result_seed": 0
+        },
+        "hardware": {
+          "gpu_name": "NVIDIA L40S",
+          "gpu_uuid": "GPU-fc5dde96-210d-0afa-ac74-7f88477d622b",
+          "logical_device": "cuda:0",
+          "physical_visibility_token": "4",
+          "compute_capability": [
+            8,
+            9
+          ],
+          "total_memory_bytes": 47677177856
+        },
+        "model": {
+          "parameter_count": 12631253,
+          "trainable_parameter_count": 12631253,
+          "resident_parameter_bytes": 50525012,
+          "parameter_dtype_counts": {
+            "float32": 12631253
+          }
+        },
+        "contract": {
+          "backend": "pytorch",
+          "precision": "bf16_autocast",
+          "batch_size": 1,
+          "input_shape_nchw": [
+            1,
+            3,
+            1024,
+            1024
+          ],
+          "warmup_iterations": 20,
+          "measured_iterations": 100,
+          "timing": "per-forward CUDA events with end-event synchronization",
+          "includes_preprocessing": false,
+          "includes_data_loader": false,
+          "includes_sliding_window": false,
+          "input_resident_on_gpu": true,
+          "model_only": true,
+          "entrypoint": "public model(image) dense-logits forward"
+        },
+        "measurements": {
+          "latency": {
+            "p50_ms": 4.550112009048462,
+            "p95_ms": 5.329377436637878,
+            "mean_ms": 4.696401920318603,
+            "minimum_ms": 4.346879959106445,
+            "maximum_ms": 6.901760101318359,
+            "fps": 212.92896497499092,
+            "raw_ms": [
+              5.006336212158203,
+              4.483071804046631,
+              4.428927898406982,
+              4.563968181610107,
+              4.365312099456787,
+              4.346879959106445,
+              6.634496212005615,
+              4.456448078155518,
+              4.430848121643066,
+              4.956160068511963,
+              4.607999801635742,
+              4.432896137237549,
+              4.403200149536133,
+              4.384768009185791,
+              4.389887809753418,
+              4.459519863128662,
+              4.403200149536133,
+              4.7626237869262695,
+              4.767744064331055,
+              4.878335952758789,
+              4.418560028076172,
+              6.592512130737305,
+              4.459519863128662,
+              4.418560028076172,
+              4.456448078155518,
+              4.611072063446045,
+              4.75545597076416,
+              4.75545597076416,
+              4.922368049621582,
+              4.672512054443359,
+              4.465792179107666,
+              4.420608043670654,
+              4.417535781860352,
+              4.81385612487793,
+              4.837376117706299,
+              4.50764799118042,
+              4.631552219390869,
+              4.495359897613525,
+              4.471807956695557,
+              4.504640102386475,
+              4.462463855743408,
+              4.4462080001831055,
+              4.513792037963867,
+              6.901760101318359,
+              5.083136081695557,
+              4.704224109649658,
+              4.8752641677856445,
+              4.611072063446045,
+              4.634624004364014,
+              5.013440132141113,
+              4.739071846008301,
+              5.325791835784912,
+              6.4686079025268555,
+              4.547584056854248,
+              4.438015937805176,
+              4.55782413482666,
+              4.7923197746276855,
+              4.536320209503174,
+              4.505504131317139,
+              4.896768093109131,
+              4.6981120109558105,
+              4.600831985473633,
+              4.552639961242676,
+              4.592639923095703,
+              4.473855972290039,
+              4.832255840301514,
+              4.531199932098389,
+              4.464640140533447,
+              4.471807956695557,
+              4.417535781860352,
+              4.438015937805176,
+              4.582399845123291,
+              4.514815807342529,
+              4.480000019073486,
+              4.7861762046813965,
+              4.516863822937012,
+              4.4236159324646,
+              4.418560028076172,
+              4.456511974334717,
+              4.425727844238281,
+              4.417535781860352,
+              4.660223960876465,
+              4.5352959632873535,
+              4.627456188201904,
+              5.0575361251831055,
+              4.711423873901367,
+              5.397503852844238,
+              5.140480041503906,
+              5.301248073577881,
+              4.697055816650391,
+              4.5649919509887695,
+              4.527103900909424,
+              4.538368225097656,
+              4.531199932098389,
+              4.601856231689453,
+              4.603903770446777,
+              4.587520122528076,
+              4.544511795043945,
+              4.604000091552734,
+              4.467711925506592
+            ],
+            "percentile_method": "numpy linear interpolation"
+          },
+          "peak_reserved_bytes": 685768704,
+          "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
+          "benchmark_wall_clock_s": 8.964971978217363
+        },
+        "started_at": "2026-09-06T21:42:30+00:00",
+        "finished_at": "2026-09-06T21:42:39+00:00",
+        "environment": {
+          "hostname": "hdrfs-app-001",
+          "python": "3.11.15",
+          "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+          "torch": "2.11.0+cu128",
+          "torch_cuda": "12.8",
+          "cudnn": 91900,
+          "driver_version": "570.133.20",
+          "cuda_available": true,
+          "gpu_count": 1,
+          "gpu_names": [
+            "NVIDIA L40S"
+          ],
+          "cuda_visible_devices": "4",
+          "packages": {
+            "segmentary": "0.1.0",
+            "torch": "2.11.0+cu128",
+            "torchvision": "0.26.0+cu128",
+            "transformers": "5.15.0",
+            "timm": "1.0.28",
+            "segmentation-models-pytorch": "0.5.0",
+            "albumentations": "2.0.8",
+            "lightning": "2.6.5",
+            "numpy": "2.4.4"
+          }
+        }
       }
     },
     {
@@ -32197,179 +32411,2107 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "evaluating",
+      "status": "collecting",
       "gpu": 1,
       "started_at": "2026-09-06T21:20:40.763968+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "final_step": 2036,
-      "resolved_config": {
-        "name": "native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-1",
-        "model": {
-          "arch": "native",
-          "checkpoint": null,
-          "tuning": "full",
-          "head": "unified_head",
-          "lora_r": 16,
-          "lora_alpha": 32,
-          "lora_dropout": 0.05,
-          "lora_targets": [],
-          "drop_path": null,
-          "revision": null,
-          "subfolder": null,
-          "local_files_only": false,
-          "trust_remote_code": false,
-          "backbone_path": null,
-          "head_paths": [],
-          "classifier_path": null,
-          "inactive_parameter_paths": [],
-          "smp_arch": null,
-          "encoder_name": null,
-          "encoder_weights": null,
-          "native": {
-            "task": "multiclass",
-            "backbone": {
-              "kind": "timm",
-              "name": "resnet18.a1_in1k",
-              "weights": "pretrained",
-              "out_indices": [
-                1,
-                2,
-                3,
-                4
-              ],
-              "in_channels": 3
-            },
-            "neck": {
-              "kind": "fpn",
-              "out_channels": 128,
-              "num_outputs": 4,
-              "norm": "group",
-              "activation": "relu"
-            },
-            "head": {
-              "kind": "fcn",
-              "in_indices": [
-                0,
-                1,
-                2,
-                3
-              ],
-              "channels": 128,
-              "num_convs": 2,
-              "kernel_size": 3,
-              "dilation": 1,
-              "dropout": 0.1,
-              "norm": "group",
-              "activation": "relu"
-            },
-            "auxiliary_heads": []
-          },
-          "batch_norm_momentum": null
+      "checkpoints": {
+        "best": {
+          "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-1_seed1/rtis/best.ckpt",
+          "sha256": "a45b2973877cbd12e217c1b89662701e459aa6a244066321f78f79ad8bc7f3d6",
+          "global_step": 763,
+          "bytes": 202363737
         },
-        "space": "paul-test-rtis",
-        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
-        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
-        "optim": {
-          "backbone_lr": 0.0001,
-          "head_lr_mult": 10.0,
-          "weight_decay": 0.05,
-          "llrd": 1.0,
-          "warmup_iters": 1500,
-          "warmup_ratio": 1e-06,
-          "poly_power": 0.9,
-          "min_lr_ratio": 0.0,
-          "betas": [
-            0.9,
-            0.999
-          ],
-          "grad_clip": 1.0
-        },
-        "train": {
-          "iters": 4000,
-          "batch_size": 2,
-          "accum": 8,
-          "num_workers": 2,
-          "precision": "bf16-mixed",
-          "ema_decay": 0.9998,
-          "val_every": 250,
-          "ckpt_every": 500,
-          "selection_metric": "val_iou/mud-pumping",
-          "early_stopping_patience": 5,
-          "early_stopping_min_delta": 0.001,
-          "seed": 1,
-          "devices": 1
-        },
-        "eval": {
-          "sliding_window": true,
-          "window": [
-            1024,
-            1024
-          ],
-          "stride": [
-            768,
-            768
-          ],
-          "batch_size": 1,
-          "num_workers": 2,
-          "tta_scales": [],
-          "tta_flip": false,
-          "threshold": 0.5,
-          "boundary_tolerance_frac": 0.0075,
-          "save_confusion": true
-        },
-        "loss": {
-          "task": "multiclass",
-          "activation": "auto",
-          "terms": [],
-          "aux": "none",
-          "aux_weight": 0.0,
-          "ce_weight": 1.0,
-          "label_smoothing": 0.0,
-          "class_weights": null,
-          "query": null
-        },
-        "aug": {
-          "crop": [
-            1024,
-            1024
-          ],
-          "scale_min": 0.5,
-          "scale_max": 2.0,
-          "hflip_p": 0.5,
-          "color_jitter_p": 0.5,
-          "brightness": 0.25,
-          "contrast": 0.25,
-          "saturation": 0.25,
-          "hue": 0.05
-        },
-        "stages": [
-          {
-            "name": "rtis",
-            "data": [
-              {
-                "name": "paul-test-rtis",
-                "root": "/data/izadia1/datasets/paul-test-rtis",
-                "variant": null,
-                "split_file": "splits.json",
-                "train_split": "train",
-                "val_split": "val",
-                "limit": null,
-                "loader": "folder",
-                "mapping": "paul-test-rtis",
-                "loader_options": {
-                  "require_groups": true
-                }
-              }
+        "final": {
+          "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-1_seed1/rtis/last.ckpt",
+          "sha256": "c8db161950d204c58d0990499ff8b51738ad60bcdee323e2b368c6e373f9d249",
+          "global_step": 2036,
+          "bytes": 202358617
+        }
+      },
+      "evaluation": {
+        "config": {
+          "aug": {
+            "brightness": 0.25,
+            "color_jitter_p": 0.5,
+            "contrast": 0.25,
+            "crop": [
+              1024,
+              1024
             ],
-            "iters": null,
-            "lr_scale": 0.1,
-            "head_group_lr_scale": 1.0,
-            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--cityscapes--seed-0/attempt-001/train/native_resnet18_fpn_fcn--cityscapes_seed0/cityscapes/last.ckpt",
-            "reset_head": true,
-            "freeze": null,
-            "sample_weights": null
+            "hflip_p": 0.5,
+            "hue": 0.05,
+            "saturation": 0.25,
+            "scale_max": 2.0,
+            "scale_min": 0.5
+          },
+          "eval": {
+            "batch_size": 1,
+            "boundary_tolerance_frac": 0.0075,
+            "num_workers": 2,
+            "save_confusion": true,
+            "sliding_window": true,
+            "stride": [
+              768,
+              768
+            ],
+            "threshold": 0.5,
+            "tta_flip": false,
+            "tta_scales": [],
+            "window": [
+              1024,
+              1024
+            ]
+          },
+          "evaluation": {
+            "data": {
+              "limit": null,
+              "loader": "folder",
+              "loader_options": {
+                "require_groups": true
+              },
+              "mapping": "paul-test-rtis",
+              "name": "paul-test-rtis",
+              "root": "/data/izadia1/datasets/paul-test-rtis",
+              "split_file": "splits.json",
+              "train_split": "train",
+              "val_split": "val",
+              "variant": null
+            },
+            "deterministic": true,
+            "num_workers": 2,
+            "prediction": {
+              "activation": "softmax",
+              "task": "multiclass",
+              "threshold": null
+            },
+            "split": "val",
+            "tta": {
+              "enabled": false,
+              "flip": false,
+              "scales": [
+                1.0
+              ]
+            },
+            "weights": "raw"
+          },
+          "loss": {
+            "activation": "auto",
+            "aux": "none",
+            "aux_weight": 0.0,
+            "ce_weight": 1.0,
+            "class_weights": null,
+            "label_smoothing": 0.0,
+            "query": null,
+            "task": "multiclass",
+            "terms": []
+          },
+          "model": {
+            "arch": "native",
+            "backbone_path": null,
+            "batch_norm_momentum": null,
+            "checkpoint": null,
+            "classifier_path": null,
+            "drop_path": null,
+            "encoder_name": null,
+            "encoder_weights": null,
+            "head": "unified_head",
+            "head_paths": [],
+            "inactive_parameter_paths": [],
+            "local_files_only": false,
+            "lora_alpha": 32,
+            "lora_dropout": 0.05,
+            "lora_r": 16,
+            "lora_targets": [],
+            "native": {
+              "auxiliary_heads": [],
+              "backbone": {
+                "in_channels": 3,
+                "kind": "timm",
+                "name": "resnet18.a1_in1k",
+                "out_indices": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "weights": "pretrained"
+              },
+              "head": {
+                "activation": "relu",
+                "channels": 128,
+                "dilation": 1,
+                "dropout": 0.1,
+                "in_indices": [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "kernel_size": 3,
+                "kind": "fcn",
+                "norm": "group",
+                "num_convs": 2
+              },
+              "neck": {
+                "activation": "relu",
+                "kind": "fpn",
+                "norm": "group",
+                "num_outputs": 4,
+                "out_channels": 128
+              },
+              "task": "multiclass"
+            },
+            "revision": null,
+            "smp_arch": null,
+            "subfolder": null,
+            "trust_remote_code": false,
+            "tuning": "full"
+          },
+          "name": "native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-1",
+          "optim": {
+            "backbone_lr": 0.0001,
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "grad_clip": 1.0,
+            "head_lr_mult": 10.0,
+            "llrd": 1.0,
+            "min_lr_ratio": 0.0,
+            "poly_power": 0.9,
+            "warmup_iters": 1500,
+            "warmup_ratio": 1e-06,
+            "weight_decay": 0.05
+          },
+          "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+          "space": "paul-test-rtis",
+          "stages": [
+            {
+              "data": [
+                {
+                  "limit": null,
+                  "loader": "folder",
+                  "loader_options": {
+                    "require_groups": true
+                  },
+                  "mapping": "paul-test-rtis",
+                  "name": "paul-test-rtis",
+                  "root": "/data/izadia1/datasets/paul-test-rtis",
+                  "split_file": "splits.json",
+                  "train_split": "train",
+                  "val_split": "val",
+                  "variant": null
+                }
+              ],
+              "freeze": null,
+              "head_group_lr_scale": 1.0,
+              "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--cityscapes--seed-0/attempt-001/train/native_resnet18_fpn_fcn--cityscapes_seed0/cityscapes/last.ckpt",
+              "iters": null,
+              "lr_scale": 0.1,
+              "name": "rtis",
+              "reset_head": true,
+              "sample_weights": null
+            }
+          ],
+          "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+          "train": {
+            "accum": 8,
+            "batch_size": 2,
+            "ckpt_every": 500,
+            "devices": 1,
+            "early_stopping_min_delta": 0.001,
+            "early_stopping_patience": 5,
+            "ema_decay": 0.9998,
+            "iters": 4000,
+            "num_workers": 2,
+            "precision": "bf16-mixed",
+            "seed": 1,
+            "selection_metric": "val_iou/mud-pumping",
+            "val_every": 250
           }
-        ]
+        },
+        "config_hash": "8ff9a541d4e1",
+        "dataset_sizes": {
+          "eval": 37
+        },
+        "env": {
+          "cuda_available": true,
+          "cuda_visible_devices": "1",
+          "cudnn": 91900,
+          "driver_version": "570.133.20",
+          "gpu_count": 1,
+          "gpu_names": [
+            "NVIDIA L40S"
+          ],
+          "hostname": "hdrfs-app-001",
+          "input_normalization": {
+            "channel_order": "rgb",
+            "mean": [
+              0.485,
+              0.456,
+              0.406
+            ],
+            "source": "timm_pretrained_cfg",
+            "std": [
+              0.229,
+              0.224,
+              0.225
+            ]
+          },
+          "packages": {
+            "albumentations": "2.0.8",
+            "lightning": "2.6.5",
+            "numpy": "2.4.4",
+            "segmentary": "0.1.0",
+            "segmentation-models-pytorch": "0.5.0",
+            "timm": "1.0.28",
+            "torch": "2.11.0+cu128",
+            "torchvision": "0.26.0+cu128",
+            "transformers": "5.15.0"
+          },
+          "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+          "python": "3.11.15",
+          "torch": "2.11.0+cu128",
+          "torch_cuda": "12.8"
+        },
+        "finished_at": "2026-09-06T21:41:33+00:00",
+        "git_dirty": false,
+        "git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+        "metrics": {
+          "boundary": {
+            "gt_contour_pixels": {
+              "car": 1122,
+              "construction": 19036,
+              "fence": 10732,
+              "mud-pumping": 54436,
+              "on-rails": 0,
+              "person": 0,
+              "pole": 74224,
+              "rail-embedded": 3430,
+              "rail-raised": 208160,
+              "rail-track": 203735,
+              "road": 23872,
+              "sidewalk": 42754,
+              "sky": 135616,
+              "standing-water": 8116,
+              "terrain": 241890,
+              "trackbed": 264168,
+              "traffic-light": 1026,
+              "traffic-sign": 2018,
+              "tram-track": 1516,
+              "truck": 0,
+              "vegetation-overgrowth": 225630
+            },
+            "macro_f1": 0.2674432982613639,
+            "macro_precision": 0.23766266748413512,
+            "macro_recall": 0.3633460686451755,
+            "per_class_f1": {
+              "car": 0.0,
+              "construction": 0.21188450644116785,
+              "fence": 0.21346095379507457,
+              "mud-pumping": 0.06612939519409375,
+              "on-rails": 0.0,
+              "person": 0.0,
+              "pole": 0.871588886491776,
+              "rail-embedded": 0.0,
+              "rail-raised": 0.8688565396980356,
+              "rail-track": 0.3761202990316278,
+              "road": 0.2349031369052444,
+              "sidewalk": 0.055086230234472976,
+              "sky": 0.9187040005863019,
+              "standing-water": 0.012827353216788209,
+              "terrain": 0.45913532537479185,
+              "trackbed": 0.4780648235071502,
+              "traffic-light": 0.5656273962037407,
+              "traffic-sign": 0.0,
+              "tram-track": 0.005869736990630996,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.2780506798177461
+            },
+            "per_class_precision": {
+              "car": 0.0,
+              "construction": 0.12166576372733356,
+              "fence": 0.1400184733439121,
+              "mud-pumping": 0.03791261539835456,
+              "on-rails": 0.0,
+              "person": 0.0,
+              "pole": 0.8418478332520336,
+              "rail-embedded": 0.0,
+              "rail-raised": 0.8032919034967221,
+              "rail-track": 0.39774816903190247,
+              "road": 0.20154111494380772,
+              "sidewalk": 0.10956739316520708,
+              "sky": 0.8808351639037414,
+              "standing-water": 0.006824853488199574,
+              "terrain": 0.31621165686882324,
+              "trackbed": 0.361949453784986,
+              "traffic-light": 0.5201048951048951,
+              "traffic-sign": 0.0,
+              "tram-track": 0.003209480311072707,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.2481872473458459
+            },
+            "per_class_recall": {
+              "car": 0.0,
+              "construction": 0.8197625551586468,
+              "fence": 0.4489377562430116,
+              "mud-pumping": 0.25857888162245574,
+              "on-rails": 0.0,
+              "person": 0.0,
+              "pole": 0.9035082992024143,
+              "rail-embedded": 0.0,
+              "rail-raised": 0.9460751345119139,
+              "rail-track": 0.356723194345596,
+              "road": 0.28150134048257375,
+              "sidewalk": 0.036791879122421295,
+              "sky": 0.9599752241623407,
+              "standing-water": 0.10645638245441104,
+              "terrain": 0.8378188432758692,
+              "trackbed": 0.7038702643772144,
+              "traffic-light": 0.6198830409356725,
+              "traffic-sign": 0.0,
+              "tram-track": 0.03430079155672823,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.31608385409741613
+            },
+            "pred_contour_pixels": {
+              "car": 0,
+              "construction": 125516,
+              "fence": 42223,
+              "mud-pumping": 358324,
+              "on-rails": 3212,
+              "person": 695,
+              "pole": 75851,
+              "rail-embedded": 0,
+              "rail-raised": 243142,
+              "rail-track": 221331,
+              "road": 35948,
+              "sidewalk": 15187,
+              "sky": 141577,
+              "standing-water": 94361,
+              "terrain": 682293,
+              "trackbed": 568549,
+              "traffic-light": 1144,
+              "traffic-sign": 0,
+              "tram-track": 8101,
+              "truck": 1859,
+              "vegetation-overgrowth": 267411
+            },
+            "tolerance_frac": 0.0075
+          },
+          "confusion": [
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              2096242,
+              9131,
+              0,
+              0,
+              0,
+              0,
+              560,
+              7570,
+              0,
+              0,
+              0,
+              3515006,
+              2342,
+              10057,
+              0,
+              0,
+              201477,
+              444422,
+              36390
+            ],
+            [
+              0,
+              0,
+              31387,
+              1005588,
+              0,
+              37,
+              0,
+              0,
+              129,
+              72817,
+              0,
+              418,
+              0,
+              2403289,
+              92059,
+              1076333,
+              0,
+              0,
+              89987,
+              1117045,
+              12732
+            ],
+            [
+              0,
+              14594,
+              55,
+              0,
+              0,
+              11898,
+              0,
+              22,
+              0,
+              1223,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1872,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              134,
+              3,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1240,
+              0,
+              5561,
+              1451,
+              6,
+              0,
+              3015,
+              238,
+              0,
+              460,
+              1177,
+              0
+            ],
+            [
+              0,
+              0,
+              21441,
+              1550,
+              0,
+              0,
+              0,
+              101168,
+              1075,
+              577,
+              0,
+              411,
+              0,
+              723,
+              1471,
+              617438,
+              0,
+              0,
+              2360,
+              238933,
+              61684
+            ],
+            [
+              106,
+              1457,
+              45172,
+              12045,
+              0,
+              2,
+              0,
+              144833,
+              65086,
+              18197,
+              80225,
+              2045,
+              5,
+              400059,
+              19594,
+              65028,
+              10674,
+              0,
+              61084,
+              352435,
+              19320
+            ],
+            [
+              0,
+              119,
+              0,
+              0,
+              0,
+              484,
+              0,
+              13,
+              77,
+              220901,
+              0,
+              2472,
+              8,
+              66,
+              6510,
+              67088,
+              1773,
+              0,
+              193,
+              11881,
+              0
+            ],
+            [
+              0,
+              0,
+              45499,
+              24,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              42,
+              0,
+              0,
+              3272,
+              0,
+              0,
+              0,
+              0,
+              4212,
+              3130,
+              0
+            ],
+            [
+              137,
+              101,
+              292,
+              284,
+              0,
+              0,
+              0,
+              638,
+              89,
+              17431,
+              0,
+              449538,
+              6,
+              73,
+              3593,
+              110604,
+              32670,
+              0,
+              8432,
+              2744,
+              1406
+            ],
+            [
+              1020,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              9959,
+              7947,
+              0,
+              0,
+              354,
+              230,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              460418,
+              4127,
+              0,
+              0,
+              0,
+              3895,
+              0,
+              0,
+              2307,
+              0,
+              0,
+              148676,
+              0,
+              14690,
+              0,
+              0,
+              19129,
+              512900,
+              60108
+            ],
+            [
+              980,
+              0,
+              650,
+              27377,
+              0,
+              21,
+              0,
+              20,
+              0,
+              40276,
+              0,
+              12264,
+              0,
+              5577,
+              65273,
+              95926,
+              7957,
+              0,
+              8292,
+              484,
+              40
+            ],
+            [
+              120,
+              4146,
+              229117,
+              1176867,
+              0,
+              11598,
+              0,
+              68399,
+              867,
+              1205019,
+              180,
+              20616,
+              410,
+              654367,
+              107813,
+              33957026,
+              82689,
+              0,
+              25689,
+              1203674,
+              490709
+            ],
+            [
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              3578,
+              0,
+              21001,
+              0,
+              38298,
+              0,
+              578,
+              1790,
+              269164,
+              18784034,
+              0,
+              15,
+              11,
+              3136
+            ],
+            [
+              0,
+              0,
+              1103,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              152,
+              0,
+              21,
+              126,
+              0,
+              0,
+              0,
+              15367,
+              30,
+              0
+            ],
+            [
+              0,
+              594,
+              71396,
+              1135,
+              0,
+              352,
+              0,
+              1,
+              291,
+              26685,
+              0,
+              33,
+              0,
+              220111,
+              23013,
+              16660,
+              0,
+              0,
+              2581738,
+              27381,
+              407
+            ],
+            [
+              0,
+              104,
+              683936,
+              27851,
+              0,
+              0,
+              0,
+              765,
+              494,
+              6423,
+              152,
+              156,
+              0,
+              2107678,
+              1841,
+              367477,
+              79,
+              0,
+              193352,
+              7239170,
+              13603
+            ],
+            [
+              0,
+              0,
+              18981,
+              5554,
+              0,
+              0,
+              0,
+              731,
+              1087,
+              37,
+              0,
+              0,
+              0,
+              6747,
+              0,
+              44390,
+              0,
+              0,
+              1458,
+              16083,
+              734
+            ]
+          ],
+          "freqw_iou": 0.6829951910361264,
+          "macc": 0.3474263458892367,
+          "mdice": 0.2892937100454072,
+          "miou": 0.2283020192300014,
+          "mprecision": 0.3625484552445456,
+          "mspecificity": 0.9863370711579823,
+          "per_class_acc": {
+            "car": 0.0,
+            "construction": 0.7089590320458302,
+            "fence": 0.2461859340642762,
+            "mud-pumping": 0.12124444444444445,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.715781529143141,
+            "rail-embedded": 0.0,
+            "rail-raised": 0.8693314728245736,
+            "rail-track": 0.33151616184028426,
+            "road": 0.09645786594789818,
+            "sidewalk": 0.05016776286124127,
+            "sky": 0.9823460435279338,
+            "standing-water": 0.007661635456462287,
+            "terrain": 0.8653829402589333,
+            "trackbed": 0.6801761632745255,
+            "traffic-light": 0.4073295745771399,
+            "traffic-sign": 0.0,
+            "tram-track": 0.0007476103170223749,
+            "truck": null,
+            "vegetation-overgrowth": 0.17038605542255517
+          },
+          "per_class_dice": {
+            "car": 0.0,
+            "construction": 0.2264510897589009,
+            "fence": 0.2210538436269181,
+            "mud-pumping": 0.02780940171235929,
+            "on-rails": 0.0,
+            "person": 0.0,
+            "pole": 0.7684666411957322,
+            "rail-embedded": 0.0,
+            "rail-raised": 0.8351028506680045,
+            "rail-track": 0.4180408472087528,
+            "road": 0.14737918586576967,
+            "sidewalk": 0.09521608166644967,
+            "sky": 0.9875431727343104,
+            "standing-water": 0.0018440566230901515,
+            "terrain": 0.8941185596563335,
+            "trackbed": 0.6637001187416801,
+            "traffic-light": 0.5417731874424788,
+            "traffic-sign": 0.0,
+            "tram-track": 0.0006039472265161592,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.24606492682625433
+          },
+          "per_class_iou": {
+            "car": 0.0,
+            "construction": 0.12768246111020234,
+            "fence": 0.12426112102099987,
+            "mud-pumping": 0.01410076781448247,
+            "on-rails": 0.0,
+            "person": 0.0,
+            "pole": 0.6239917381871484,
+            "rail-embedded": 0.0,
+            "rail-raised": 0.7168897710384905,
+            "rail-track": 0.26425514620346,
+            "road": 0.07955172733749251,
+            "sidewalk": 0.04998786515887425,
+            "sky": 0.9753928722090178,
+            "standing-water": 0.0009228792323254168,
+            "terrain": 0.8085121307203375,
+            "trackbed": 0.4966700424434001,
+            "traffic-light": 0.3715287517531557,
+            "traffic-sign": 0.0,
+            "tram-track": 0.0003020648288658904,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.1402930647717762
+          },
+          "per_class_precision": {
+            "car": 0.0,
+            "construction": 0.1347452752444954,
+            "fence": 0.20057770607666897,
+            "mud-pumping": 0.015705904207675078,
+            "on-rails": 0.0,
+            "person": 0.0,
+            "pole": 0.8295237515292763,
+            "rail-embedded": 0.0,
+            "rail-raised": 0.8034675227067964,
+            "rail-track": 0.5656821174146023,
+            "road": 0.312186210705943,
+            "sidewalk": 0.9330657300551932,
+            "sky": 0.9927955855348085,
+            "standing-water": 0.001048168632339858,
+            "terrain": 0.9248280951867632,
+            "trackbed": 0.648003401512778,
+            "traffic-light": 0.8086903429327363,
+            "traffic-sign": 0.0,
+            "tram-track": 0.0005065978336911683,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.4426911505616909
+          },
+          "per_class_recall": {
+            "car": 0.0,
+            "construction": 0.7089590320458302,
+            "fence": 0.2461859340642762,
+            "mud-pumping": 0.12124444444444445,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.715781529143141,
+            "rail-embedded": 0.0,
+            "rail-raised": 0.8693314728245736,
+            "rail-track": 0.33151616184028426,
+            "road": 0.09645786594789818,
+            "sidewalk": 0.05016776286124127,
+            "sky": 0.9823460435279338,
+            "standing-water": 0.007661635456462287,
+            "terrain": 0.8653829402589333,
+            "trackbed": 0.6801761632745255,
+            "traffic-light": 0.4073295745771399,
+            "traffic-sign": 0.0,
+            "tram-track": 0.0007476103170223749,
+            "truck": null,
+            "vegetation-overgrowth": 0.17038605542255517
+          },
+          "per_class_specificity": {
+            "car": 1.0,
+            "construction": 0.9840431373091625,
+            "fence": 0.9970750415455589,
+            "mud-pumping": 0.894095628937178,
+            "on-rails": 0.9997265693244344,
+            "person": 0.9999720090030794,
+            "pole": 0.998957035260314,
+            "rail-embedded": 1.0,
+            "rail-raised": 0.9926771148565163,
+            "rail-track": 0.9805819473752118,
+            "road": 0.997471653985103,
+            "sidewalk": 0.9999468887959452,
+            "sky": 0.9980550939893558,
+            "standing-water": 0.9921498867266815,
+            "terrain": 0.9447626717678567,
+            "trackbed": 0.9499475422474372,
+            "traffic-light": 0.999978920870799,
+            "traffic-sign": 1.0,
+            "tram-track": 0.9990705215941533,
+            "truck": 0.9997632703752627,
+            "vegetation-overgrowth": 0.9848035603535779
+          },
+          "pixel_accuracy": 0.7479566880518854,
+          "support": {
+            "car": 29664,
+            "construction": 311585,
+            "fence": 265137,
+            "mud-pumping": 1226250,
+            "on-rails": 0,
+            "person": 0,
+            "pole": 628038,
+            "rail-embedded": 16799,
+            "rail-raised": 2969797,
+            "rail-track": 6323197,
+            "road": 1048831,
+            "sidewalk": 1297367,
+            "sky": 19121606,
+            "standing-water": 95802,
+            "terrain": 39239306,
+            "trackbed": 10643081,
+            "traffic-light": 19510,
+            "traffic-sign": 13285,
+            "tram-track": 56179,
+            "truck": 0,
+            "vegetation-overgrowth": 5901821
+          }
+        },
+        "name": "native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-1",
+        "notes": "checkpoint=/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-1_seed1/rtis/best.ckpt ema=False tta=False",
+        "peak_vram_bytes": {
+          "cuda:0": 7564427264
+        },
+        "seed": 1,
+        "stage": "eval:paul-test-rtis:val",
+        "started_at": "2026-09-06T21:41:22+00:00",
+        "wall_clock_s": 11.137385871261358
+      },
+      "training": {
+        "config": {
+          "aug": {
+            "brightness": 0.25,
+            "color_jitter_p": 0.5,
+            "contrast": 0.25,
+            "crop": [
+              1024,
+              1024
+            ],
+            "hflip_p": 0.5,
+            "hue": 0.05,
+            "saturation": 0.25,
+            "scale_max": 2.0,
+            "scale_min": 0.5
+          },
+          "eval": {
+            "batch_size": 1,
+            "boundary_tolerance_frac": 0.0075,
+            "num_workers": 2,
+            "save_confusion": true,
+            "sliding_window": true,
+            "stride": [
+              768,
+              768
+            ],
+            "threshold": 0.5,
+            "tta_flip": false,
+            "tta_scales": [],
+            "window": [
+              1024,
+              1024
+            ]
+          },
+          "loss": {
+            "activation": "auto",
+            "aux": "none",
+            "aux_weight": 0.0,
+            "ce_weight": 1.0,
+            "class_weights": null,
+            "label_smoothing": 0.0,
+            "query": null,
+            "task": "multiclass",
+            "terms": []
+          },
+          "model": {
+            "arch": "native",
+            "backbone_path": null,
+            "batch_norm_momentum": null,
+            "checkpoint": null,
+            "classifier_path": null,
+            "drop_path": null,
+            "encoder_name": null,
+            "encoder_weights": null,
+            "head": "unified_head",
+            "head_paths": [],
+            "inactive_parameter_paths": [],
+            "local_files_only": false,
+            "lora_alpha": 32,
+            "lora_dropout": 0.05,
+            "lora_r": 16,
+            "lora_targets": [],
+            "native": {
+              "auxiliary_heads": [],
+              "backbone": {
+                "in_channels": 3,
+                "kind": "timm",
+                "name": "resnet18.a1_in1k",
+                "out_indices": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "weights": "pretrained"
+              },
+              "head": {
+                "activation": "relu",
+                "channels": 128,
+                "dilation": 1,
+                "dropout": 0.1,
+                "in_indices": [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "kernel_size": 3,
+                "kind": "fcn",
+                "norm": "group",
+                "num_convs": 2
+              },
+              "neck": {
+                "activation": "relu",
+                "kind": "fpn",
+                "norm": "group",
+                "num_outputs": 4,
+                "out_channels": 128
+              },
+              "task": "multiclass"
+            },
+            "revision": null,
+            "smp_arch": null,
+            "subfolder": null,
+            "trust_remote_code": false,
+            "tuning": "full"
+          },
+          "name": "native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-1",
+          "optim": {
+            "backbone_lr": 0.0001,
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "grad_clip": 1.0,
+            "head_lr_mult": 10.0,
+            "llrd": 1.0,
+            "min_lr_ratio": 0.0,
+            "poly_power": 0.9,
+            "warmup_iters": 1500,
+            "warmup_ratio": 1e-06,
+            "weight_decay": 0.05
+          },
+          "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+          "space": "paul-test-rtis",
+          "stages": [
+            {
+              "data": [
+                {
+                  "limit": null,
+                  "loader": "folder",
+                  "loader_options": {
+                    "require_groups": true
+                  },
+                  "mapping": "paul-test-rtis",
+                  "name": "paul-test-rtis",
+                  "root": "/data/izadia1/datasets/paul-test-rtis",
+                  "split_file": "splits.json",
+                  "train_split": "train",
+                  "val_split": "val",
+                  "variant": null
+                }
+              ],
+              "freeze": null,
+              "head_group_lr_scale": 1.0,
+              "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--cityscapes--seed-0/attempt-001/train/native_resnet18_fpn_fcn--cityscapes_seed0/cityscapes/last.ckpt",
+              "iters": null,
+              "lr_scale": 0.1,
+              "name": "rtis",
+              "reset_head": true,
+              "sample_weights": null
+            }
+          ],
+          "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+          "train": {
+            "accum": 8,
+            "batch_size": 2,
+            "ckpt_every": 500,
+            "devices": 1,
+            "early_stopping_min_delta": 0.001,
+            "early_stopping_patience": 5,
+            "ema_decay": 0.9998,
+            "iters": 4000,
+            "num_workers": 2,
+            "precision": "bf16-mixed",
+            "seed": 1,
+            "selection_metric": "val_iou/mud-pumping",
+            "val_every": 250
+          }
+        },
+        "config_hash": "a4497742192b",
+        "dataset_sizes": {
+          "train": 220,
+          "train:paul-test-rtis": 220,
+          "val": 37
+        },
+        "env": {
+          "cuda_available": true,
+          "cuda_visible_devices": "1",
+          "cudnn": 91900,
+          "driver_version": "570.133.20",
+          "gpu_count": 1,
+          "gpu_names": [
+            "NVIDIA L40S"
+          ],
+          "hostname": "hdrfs-app-001",
+          "input_normalization": {
+            "channel_order": "rgb",
+            "mean": [
+              0.485,
+              0.456,
+              0.406
+            ],
+            "source": "timm_pretrained_cfg",
+            "std": [
+              0.229,
+              0.224,
+              0.225
+            ]
+          },
+          "model_origins": [
+            {
+              "hf_commit": null,
+              "hf_name_or_path": null,
+              "module": "backbone",
+              "timm_pretrained": {
+                "architecture": "resnet18",
+                "hf_hub_id": "timm/resnet18.a1_in1k",
+                "tag": "a1_in1k",
+                "url": "https://github.com/huggingface/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet18_a1_0-d63eafa0.pth"
+              }
+            },
+            {
+              "hf_commit": null,
+              "hf_name_or_path": null,
+              "module": "backbone.model",
+              "timm_pretrained": {
+                "architecture": "resnet18",
+                "hf_hub_id": "timm/resnet18.a1_in1k",
+                "tag": "a1_in1k",
+                "url": "https://github.com/huggingface/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet18_a1_0-d63eafa0.pth"
+              }
+            }
+          ],
+          "model_parameter_count": 12631253,
+          "packages": {
+            "albumentations": "2.0.8",
+            "lightning": "2.6.5",
+            "numpy": "2.4.4",
+            "segmentary": "0.1.0",
+            "segmentation-models-pytorch": "0.5.0",
+            "timm": "1.0.28",
+            "torch": "2.11.0+cu128",
+            "torchvision": "0.26.0+cu128",
+            "transformers": "5.15.0"
+          },
+          "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+          "python": "3.11.15",
+          "torch": "2.11.0+cu128",
+          "torch_cuda": "12.8",
+          "trainable_parameter_count": 12631253,
+          "training_stop": {
+            "actual_steps": 2036,
+            "maximum_steps": 4000,
+            "min_delta": 0.001,
+            "monitor": "val_iou/mud-pumping",
+            "patience": 5,
+            "reason": "validation_plateau"
+          },
+          "validation_weights": "raw"
+        },
+        "finished_at": "2026-09-06T21:41:14+00:00",
+        "git_dirty": false,
+        "git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+        "metrics": {
+          "boundary": {
+            "gt_contour_pixels": {
+              "car": 1122,
+              "construction": 19036,
+              "fence": 10732,
+              "mud-pumping": 54436,
+              "on-rails": 0,
+              "person": 0,
+              "pole": 74224,
+              "rail-embedded": 3430,
+              "rail-raised": 208160,
+              "rail-track": 203735,
+              "road": 23872,
+              "sidewalk": 42754,
+              "sky": 135616,
+              "standing-water": 8116,
+              "terrain": 241890,
+              "trackbed": 264168,
+              "traffic-light": 1026,
+              "traffic-sign": 2018,
+              "tram-track": 1516,
+              "truck": 0,
+              "vegetation-overgrowth": 225630
+            },
+            "macro_f1": 0.3078182160618057,
+            "macro_precision": 0.277188388255006,
+            "macro_recall": 0.4193068381893715,
+            "per_class_f1": {
+              "car": 0.16204649353175762,
+              "construction": 0.12973459663757766,
+              "fence": 0.09852142587970983,
+              "mud-pumping": 0.010299352413088408,
+              "on-rails": 0.0,
+              "person": 0.0,
+              "pole": 0.8770225587119441,
+              "rail-embedded": 0.07204916295825387,
+              "rail-raised": 0.8097192543883954,
+              "rail-track": 0.4367425124401068,
+              "road": 0.19854241780086226,
+              "sidewalk": 0.05780145833903157,
+              "sky": 0.8993996032843949,
+              "standing-water": 0.04837785327297337,
+              "terrain": 0.5087012735088935,
+              "trackbed": 0.4873100887148485,
+              "traffic-light": 0.5841266236070695,
+              "traffic-sign": 0.5956090701727045,
+              "tram-track": 0.05266851830292549,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.43551027333338244
+            },
+            "per_class_precision": {
+              "car": 0.1511111111111111,
+              "construction": 0.07030837082668964,
+              "fence": 0.07768098528086513,
+              "mud-pumping": 0.006921673853680138,
+              "on-rails": 0.0,
+              "person": 0.0,
+              "pole": 0.8262303841284222,
+              "rail-embedded": 0.07268063274903805,
+              "rail-raised": 0.7122134102379236,
+              "rail-track": 0.4461567300817828,
+              "road": 0.14164238365455073,
+              "sidewalk": 0.07402500621015153,
+              "sky": 0.8419621016927041,
+              "standing-water": 0.025333004812164668,
+              "terrain": 0.3603032158684865,
+              "trackbed": 0.3551551894521615,
+              "traffic-light": 0.529664660361135,
+              "traffic-sign": 0.6286019210245464,
+              "tram-track": 0.033734005428460646,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.467231366581253
+            },
+            "per_class_recall": {
+              "car": 0.1746880570409982,
+              "construction": 0.8382013027947047,
+              "fence": 0.13464405516213193,
+              "mud-pumping": 0.020115364832096406,
+              "on-rails": 0.0,
+              "person": 0.0,
+              "pole": 0.9344686354817848,
+              "rail-embedded": 0.07142857142857142,
+              "rail-raised": 0.9381581475787856,
+              "rail-track": 0.4277173779664761,
+              "road": 0.33185321715817695,
+              "sidewalk": 0.04741076858305655,
+              "sky": 0.9652474634261444,
+              "standing-water": 0.5356086742237556,
+              "terrain": 0.8649468766794824,
+              "trackbed": 0.7761008146331123,
+              "traffic-light": 0.6510721247563352,
+              "traffic-sign": 0.5659068384539148,
+              "tram-track": 0.12005277044854881,
+              "truck": 0.0,
+              "vegetation-overgrowth": 0.40782254132872403
+            },
+            "pred_contour_pixels": {
+              "car": 675,
+              "construction": 225151,
+              "fence": 16645,
+              "mud-pumping": 189694,
+              "on-rails": 7829,
+              "person": 80,
+              "pole": 86091,
+              "rail-embedded": 2339,
+              "rail-raised": 277400,
+              "rail-track": 229388,
+              "road": 58683,
+              "sidewalk": 24154,
+              "sky": 153305,
+              "standing-water": 198871,
+              "terrain": 633608,
+              "trackbed": 630423,
+              "traffic-light": 1163,
+              "traffic-sign": 1874,
+              "tram-track": 7737,
+              "truck": 3407,
+              "vegetation-overgrowth": 178738
+            },
+            "tolerance_frac": 0.0075
+          },
+          "confusion": [
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              112,
+              8,
+              2383837,
+              22081,
+              0,
+              16,
+              0,
+              435,
+              13851,
+              246028,
+              300,
+              1,
+              0,
+              1179769,
+              2096,
+              55869,
+              0,
+              0,
+              719377,
+              1450575,
+              248842
+            ],
+            [
+              0,
+              0,
+              64567,
+              1169070,
+              0,
+              1404,
+              0,
+              754,
+              647,
+              274173,
+              0,
+              215,
+              0,
+              318849,
+              45425,
+              1776935,
+              0,
+              0,
+              105430,
+              1569778,
+              574574
+            ],
+            [
+              0,
+              14670,
+              0,
+              0,
+              562,
+              12277,
+              0,
+              237,
+              0,
+              497,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1363,
+              0,
+              0,
+              0,
+              58,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              30,
+              4970,
+              0,
+              0,
+              493,
+              0,
+              4210,
+              656,
+              0,
+              0,
+              2746,
+              13,
+              0,
+              24,
+              143,
+              0
+            ],
+            [
+              0,
+              0,
+              17486,
+              1494,
+              0,
+              0,
+              0,
+              132522,
+              21138,
+              0,
+              1585,
+              158,
+              0,
+              0,
+              0,
+              610079,
+              0,
+              0,
+              3214,
+              247156,
+              13999
+            ],
+            [
+              0,
+              325,
+              56576,
+              14514,
+              1019,
+              2362,
+              0,
+              210754,
+              49258,
+              92326,
+              54427,
+              1167,
+              0,
+              55833,
+              4801,
+              124063,
+              0,
+              6795,
+              78647,
+              465817,
+              78683
+            ],
+            [
+              0,
+              2128,
+              0,
+              0,
+              0,
+              6454,
+              126,
+              809,
+              805,
+              229926,
+              0,
+              5168,
+              191,
+              0,
+              2428,
+              47327,
+              290,
+              0,
+              62,
+              12146,
+              3725
+            ],
+            [
+              0,
+              0,
+              42117,
+              95,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1247,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              40,
+              5179,
+              6641,
+              860
+            ],
+            [
+              33,
+              3491,
+              11,
+              0,
+              0,
+              3526,
+              3253,
+              2544,
+              38,
+              11586,
+              0,
+              507543,
+              40,
+              0,
+              76,
+              71152,
+              21615,
+              0,
+              1101,
+              1976,
+              53
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              440,
+              0,
+              0,
+              0,
+              0,
+              8589,
+              10304,
+              0,
+              0,
+              101,
+              76,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              448856,
+              1595,
+              0,
+              0,
+              0,
+              27293,
+              0,
+              0,
+              6161,
+              0,
+              0,
+              9947,
+              0,
+              28845,
+              0,
+              82,
+              18826,
+              622390,
+              62255
+            ],
+            [
+              0,
+              713,
+              136,
+              15012,
+              0,
+              7183,
+              105,
+              9808,
+              351,
+              65666,
+              0,
+              17512,
+              0,
+              0,
+              13420,
+              130772,
+              1984,
+              0,
+              1032,
+              568,
+              875
+            ],
+            [
+              0,
+              1628,
+              113525,
+              404903,
+              3560,
+              10558,
+              781,
+              162738,
+              13510,
+              1150160,
+              153,
+              29800,
+              654,
+              60147,
+              35209,
+              36159147,
+              81990,
+              30,
+              9988,
+              549608,
+              451217
+            ],
+            [
+              0,
+              504,
+              0,
+              9,
+              0,
+              24,
+              120,
+              8501,
+              792,
+              54635,
+              0,
+              53764,
+              10,
+              0,
+              1166,
+              287522,
+              18683256,
+              0,
+              0,
+              8,
+              31295
+            ],
+            [
+              10,
+              0,
+              1571,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              40,
+              34,
+              0,
+              0,
+              0,
+              0,
+              0,
+              415,
+              14482,
+              164,
+              83
+            ],
+            [
+              0,
+              564,
+              90596,
+              1559,
+              120,
+              1114,
+              0,
+              146,
+              358,
+              103300,
+              0,
+              99,
+              0,
+              13588,
+              13919,
+              8700,
+              0,
+              271,
+              2690152,
+              43607,
+              1704
+            ],
+            [
+              0,
+              39,
+              545498,
+              34019,
+              65,
+              290,
+              3,
+              1534,
+              756,
+              94660,
+              33,
+              986,
+              0,
+              361063,
+              192,
+              595133,
+              0,
+              8,
+              345363,
+              8474578,
+              188861
+            ],
+            [
+              0,
+              0,
+              20745,
+              6403,
+              0,
+              0,
+              0,
+              253,
+              455,
+              892,
+              0,
+              0,
+              0,
+              37,
+              0,
+              32254,
+              0,
+              0,
+              1536,
+              9504,
+              23723
+            ]
+          ],
+          "freqw_iou": 0.7047032474996744,
+          "macc": 0.3978100909739972,
+          "mdice": 0.3166588236410091,
+          "miou": 0.249277194122448,
+          "mprecision": 0.37364352997800715,
+          "mspecificity": 0.9879568622215414,
+          "per_class_acc": {
+            "car": 0.01894552319309601,
+            "construction": 0.7379238410064669,
+            "fence": 0.05061534225702184,
+            "mud-pumping": 0.008111722731906218,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.8081405902190631,
+            "rail-embedded": 0.024703851419727366,
+            "rail-raised": 0.9058369982864148,
+            "rail-track": 0.3769986922754423,
+            "road": 0.12635210057673735,
+            "sidewalk": 0.03796766836215196,
+            "sky": 0.9770756703176501,
+            "standing-water": 0.24762531053631448,
+            "terrain": 0.9215032243434682,
+            "trackbed": 0.7962523258067847,
+            "traffic-light": 0.5281394156842645,
+            "traffic-sign": 0.3741061347384268,
+            "tram-track": 0.02219690631730718,
+            "truck": null,
+            "vegetation-overgrowth": 0.19808631945970573
+          },
+          "per_class_dice": {
+            "car": 0.032123463846813374,
+            "construction": 0.1744555141322199,
+            "fence": 0.06991968614292897,
+            "mud-pumping": 0.006167758441138893,
+            "on-rails": 0.0,
+            "person": 0.0,
+            "pole": 0.8073641277547475,
+            "rail-embedded": 0.033960720130932896,
+            "rail-raised": 0.772564870961674,
+            "rail-track": 0.47163982613819083,
+            "road": 0.16491461019102652,
+            "sidewalk": 0.07040246518681137,
+            "sky": 0.9856421502773746,
+            "standing-water": 0.02670680436418656,
+            "terrain": 0.9134406181511652,
+            "trackbed": 0.703348745806567,
+            "traffic-light": 0.6570380997927626,
+            "traffic-sign": 0.43061993674998916,
+            "tram-track": 0.020761706555671177,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.3087641918369907
+          },
+          "per_class_iou": {
+            "car": 0.01632392238875334,
+            "construction": 0.09556355130359463,
+            "fence": 0.03622630915456648,
+            "mud-pumping": 0.0030934189509929295,
+            "on-rails": 0.0,
+            "person": 0.0,
+            "pole": 0.6769577760853415,
+            "rail-embedded": 0.017273673257023933,
+            "rail-raised": 0.6294140135674341,
+            "rail-track": 0.3085920676318509,
+            "road": 0.08986754028279502,
+            "sidewalk": 0.03648556961575269,
+            "sky": 0.9716907603632159,
+            "standing-water": 0.013534128847781985,
+            "terrain": 0.8406725241255573,
+            "trackbed": 0.5424347861708406,
+            "traffic-light": 0.4892455249038507,
+            "traffic-sign": 0.27438856070225803,
+            "tram-track": 0.01048974578980131,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.18256720342999655
+          },
+          "per_class_precision": {
+            "car": 0.10552009012392038,
+            "construction": 0.09892089890386183,
+            "fence": 0.1130276589293535,
+            "mud-pumping": 0.004975408068994459,
+            "on-rails": 0.0,
+            "person": 0.0,
+            "pole": 0.806589155910407,
+            "rail-embedded": 0.054312262792828164,
+            "rail-raised": 0.673478681348173,
+            "rail-track": 0.6297249440697859,
+            "road": 0.2373551030935221,
+            "sidewalk": 0.4831157622181465,
+            "sky": 0.9943601715536522,
+            "standing-water": 0.014114540600648878,
+            "terrain": 0.9055178742827057,
+            "trackbed": 0.629859253078307,
+            "traffic-light": 0.8691691269506537,
+            "traffic-sign": 0.5072463768115942,
+            "tram-track": 0.01950082882432052,
+            "truck": 0.0,
+            "vegetation-overgrowth": 0.6997259919772749
+          },
+          "per_class_recall": {
+            "car": 0.01894552319309601,
+            "construction": 0.7379238410064669,
+            "fence": 0.05061534225702184,
+            "mud-pumping": 0.008111722731906218,
+            "on-rails": null,
+            "person": null,
+            "pole": 0.8081405902190631,
+            "rail-embedded": 0.024703851419727366,
+            "rail-raised": 0.9058369982864148,
+            "rail-track": 0.3769986922754423,
+            "road": 0.12635210057673735,
+            "sidewalk": 0.03796766836215196,
+            "sky": 0.9770756703176501,
+            "standing-water": 0.24762531053631448,
+            "terrain": 0.9215032243434682,
+            "trackbed": 0.7962523258067847,
+            "traffic-light": 0.5281394156842645,
+            "traffic-sign": 0.3741061347384268,
+            "tram-track": 0.02219690631730718,
+            "truck": null,
+            "vegetation-overgrowth": 0.19808631945970573
+          },
+          "per_class_specificity": {
+            "car": 0.9999465785075984,
+            "construction": 0.9764396173626905,
+            "fence": 0.9988159490422749,
+            "mud-pumping": 0.9773895967658018,
+            "on-rails": 0.9994928887790573,
+            "person": 0.9999982624731587,
+            "pole": 0.9986260546872976,
+            "rail-embedded": 0.9999189823628662,
+            "rail-raised": 0.9848759340749584,
+            "rail-track": 0.983088617596402,
+            "road": 0.9951699907884016,
+            "sidewalk": 0.9994005111233903,
+            "sky": 0.9984880214207619,
+            "standing-water": 0.981405016479756,
+            "terrain": 0.9244943793870747,
+            "trackbed": 0.9366105599226436,
+            "traffic-light": 0.9999826097184091,
+            "traffic-sign": 0.9999458707802781,
+            "tram-track": 0.9992967106757074,
+            "truck": 0.9997301788963241,
+            "vegetation-overgrowth": 0.9939777758075181
+          },
+          "pixel_accuracy": 0.7907863211349795,
+          "support": {
+            "car": 29664,
+            "construction": 311585,
+            "fence": 265137,
+            "mud-pumping": 1226250,
+            "on-rails": 0,
+            "person": 0,
+            "pole": 628038,
+            "rail-embedded": 16799,
+            "rail-raised": 2969797,
+            "rail-track": 6323197,
+            "road": 1048831,
+            "sidewalk": 1297367,
+            "sky": 19121606,
+            "standing-water": 95802,
+            "terrain": 39239306,
+            "trackbed": 10643081,
+            "traffic-light": 19510,
+            "traffic-sign": 13285,
+            "tram-track": 56179,
+            "truck": 0,
+            "vegetation-overgrowth": 5901821
+          }
+        },
+        "name": "native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-1",
+        "notes": "stage rtis of curriculum native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-1; validation_weights=raw",
+        "peak_vram_bytes": {
+          "cuda:0": 7883194368
+        },
+        "seed": 1,
+        "stage": "rtis",
+        "started_at": "2026-09-06T21:20:45+00:00",
+        "wall_clock_s": 1229.5293352529407
+      },
+      "stopping": {
+        "actual_steps": 2036,
+        "maximum_steps": 4000,
+        "min_delta": 0.001,
+        "monitor": "val_iou/mud-pumping",
+        "patience": 5,
+        "reason": "validation_plateau"
       },
       "learning_curve": {
         "train/loss": [
@@ -36183,6 +38325,176 @@
           }
         ]
       },
+      "collection_phase": "diagnostics",
+      "resolved_config": {
+        "name": "native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-1",
+        "model": {
+          "arch": "native",
+          "checkpoint": null,
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": {
+            "task": "multiclass",
+            "backbone": {
+              "kind": "timm",
+              "name": "resnet18.a1_in1k",
+              "weights": "pretrained",
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "in_channels": 3
+            },
+            "neck": {
+              "kind": "fpn",
+              "out_channels": 128,
+              "num_outputs": 4,
+              "norm": "group",
+              "activation": "relu"
+            },
+            "head": {
+              "kind": "fcn",
+              "in_indices": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "channels": 128,
+              "num_convs": 2,
+              "kernel_size": 3,
+              "dilation": 1,
+              "dropout": 0.1,
+              "norm": "group",
+              "activation": "relu"
+            },
+            "auxiliary_heads": []
+          },
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 0.0001,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 1.0,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 1,
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": null
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 0.1,
+            "head_group_lr_scale": 1.0,
+            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--cityscapes--seed-0/attempt-001/train/native_resnet18_fpn_fcn--cityscapes_seed0/cityscapes/last.ckpt",
+            "reset_head": true,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -36526,6 +38838,18 @@
           {
             "step": 1849,
             "value": 0.16981634497642517
+          },
+          {
+            "step": 1899,
+            "value": 0.13559406995773315
+          },
+          {
+            "step": 1949,
+            "value": 0.27084043622016907
+          },
+          {
+            "step": 1999,
+            "value": 0.33424749970436096
           }
         ],
         "val/miou": [
@@ -39733,7 +42057,7 @@
           }
         ]
       },
-      "observed_step": 1849,
+      "observed_step": 1999,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -40077,6 +42401,18 @@
           {
             "step": 1849,
             "value": 0.1361345648765564
+          },
+          {
+            "step": 1899,
+            "value": 0.23384323716163635
+          },
+          {
+            "step": 1949,
+            "value": 0.15080195665359497
+          },
+          {
+            "step": 1999,
+            "value": 0.23716500401496887
           }
         ],
         "val/miou": [
@@ -43248,7 +45584,7 @@
           }
         ]
       },
-      "observed_step": 1849,
+      "observed_step": 1999,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -43584,6 +45920,14 @@
           {
             "step": 1749,
             "value": 0.238021582365036
+          },
+          {
+            "step": 1799,
+            "value": 0.26167917251586914
+          },
+          {
+            "step": 1849,
+            "value": 0.1798289716243744
           }
         ],
         "val/miou": [
@@ -43610,6 +45954,10 @@
           {
             "step": 1527,
             "value": 0.3669431507587433
+          },
+          {
+            "step": 1781,
+            "value": 0.3577902019023895
           }
         ],
         "val/macc": [
@@ -43636,6 +45984,10 @@
           {
             "step": 1527,
             "value": 0.5095851421356201
+          },
+          {
+            "step": 1781,
+            "value": 0.4930717945098877
           }
         ],
         "val/pixel_acc": [
@@ -43662,6 +46014,10 @@
           {
             "step": 1527,
             "value": 0.8320034742355347
+          },
+          {
+            "step": 1781,
+            "value": 0.8278656005859375
           }
         ],
         "val/boundary_f1": [
@@ -43688,6 +46044,10 @@
           {
             "step": 1527,
             "value": 0.437132328748703
+          },
+          {
+            "step": 1781,
+            "value": 0.4223496913909912
           }
         ],
         "val/gt_present_miou": [
@@ -43714,6 +46074,10 @@
           {
             "step": 1527,
             "value": 0.4281003475189209
+          },
+          {
+            "step": 1781,
+            "value": 0.4174218773841858
           }
         ],
         "val_support/person": [
@@ -43739,6 +46103,10 @@
           },
           {
             "step": 1527,
+            "value": 0.0
+          },
+          {
+            "step": 1781,
             "value": 0.0
           }
         ],
@@ -43766,6 +46134,10 @@
           {
             "step": 1527,
             "value": 0.0
+          },
+          {
+            "step": 1781,
+            "value": 0.0
           }
         ],
         "val_iou/rail-track": [
@@ -43792,6 +46164,10 @@
           {
             "step": 1527,
             "value": 0.3633500635623932
+          },
+          {
+            "step": 1781,
+            "value": 0.3340345621109009
           }
         ],
         "val_precision/rail-track": [
@@ -43818,6 +46194,10 @@
           {
             "step": 1527,
             "value": 0.6074404120445251
+          },
+          {
+            "step": 1781,
+            "value": 0.690662682056427
           }
         ],
         "val_recall/rail-track": [
@@ -43844,6 +46224,10 @@
           {
             "step": 1527,
             "value": 0.474852979183197
+          },
+          {
+            "step": 1781,
+            "value": 0.3928011357784271
           }
         ],
         "val_dice/rail-track": [
@@ -43870,6 +46254,10 @@
           {
             "step": 1527,
             "value": 0.533025324344635
+          },
+          {
+            "step": 1781,
+            "value": 0.5007884502410889
           }
         ],
         "val_support/rail-track": [
@@ -43895,6 +46283,10 @@
           },
           {
             "step": 1527,
+            "value": 6323197.0
+          },
+          {
+            "step": 1781,
             "value": 6323197.0
           }
         ],
@@ -43922,6 +46314,10 @@
           {
             "step": 1527,
             "value": 0.2564593255519867
+          },
+          {
+            "step": 1781,
+            "value": 0.1641215831041336
           }
         ],
         "val_precision/vegetation-overgrowth": [
@@ -43948,6 +46344,10 @@
           {
             "step": 1527,
             "value": 0.8566556572914124
+          },
+          {
+            "step": 1781,
+            "value": 0.8760606050491333
           }
         ],
         "val_recall/vegetation-overgrowth": [
@@ -43974,6 +46374,10 @@
           {
             "step": 1527,
             "value": 0.26795831322669983
+          },
+          {
+            "step": 1781,
+            "value": 0.16802288591861725
           }
         ],
         "val_dice/vegetation-overgrowth": [
@@ -44000,6 +46404,10 @@
           {
             "step": 1527,
             "value": 0.408225417137146
+          },
+          {
+            "step": 1781,
+            "value": 0.2819663882255554
           }
         ],
         "val_support/vegetation-overgrowth": [
@@ -44025,6 +46433,10 @@
           },
           {
             "step": 1527,
+            "value": 5901821.0
+          },
+          {
+            "step": 1781,
             "value": 5901821.0
           }
         ],
@@ -44052,6 +46464,10 @@
           {
             "step": 1527,
             "value": 0.6282715201377869
+          },
+          {
+            "step": 1781,
+            "value": 0.45241978764533997
           }
         ],
         "val_precision/car": [
@@ -44078,6 +46494,10 @@
           {
             "step": 1527,
             "value": 0.7873780727386475
+          },
+          {
+            "step": 1781,
+            "value": 0.700454592704773
           }
         ],
         "val_recall/car": [
@@ -44104,6 +46524,10 @@
           {
             "step": 1527,
             "value": 0.7566410303115845
+          },
+          {
+            "step": 1781,
+            "value": 0.5609493255615234
           }
         ],
         "val_dice/car": [
@@ -44130,6 +46554,10 @@
           {
             "step": 1527,
             "value": 0.7717036008834839
+          },
+          {
+            "step": 1781,
+            "value": 0.6229876279830933
           }
         ],
         "val_support/car": [
@@ -44156,6 +46584,10 @@
           {
             "step": 1527,
             "value": 29664.0
+          },
+          {
+            "step": 1781,
+            "value": 29664.0
           }
         ],
         "val_iou/on-rails": [
@@ -44177,6 +46609,10 @@
           },
           {
             "step": 1527,
+            "value": 0.0
+          },
+          {
+            "step": 1781,
             "value": 0.0
           }
         ],
@@ -44200,6 +46636,10 @@
           {
             "step": 1527,
             "value": 0.0
+          },
+          {
+            "step": 1781,
+            "value": 0.0
           }
         ],
         "val_dice/on-rails": [
@@ -44221,6 +46661,10 @@
           },
           {
             "step": 1527,
+            "value": 0.0
+          },
+          {
+            "step": 1781,
             "value": 0.0
           }
         ],
@@ -44248,6 +46692,10 @@
           {
             "step": 1527,
             "value": 0.0
+          },
+          {
+            "step": 1781,
+            "value": 0.0
           }
         ],
         "val_iou/traffic-sign": [
@@ -44274,6 +46722,10 @@
           {
             "step": 1527,
             "value": 0.36603105068206787
+          },
+          {
+            "step": 1781,
+            "value": 0.40442582964897156
           }
         ],
         "val_precision/traffic-sign": [
@@ -44300,6 +46752,10 @@
           {
             "step": 1527,
             "value": 0.7386934757232666
+          },
+          {
+            "step": 1781,
+            "value": 0.6631362438201904
           }
         ],
         "val_recall/traffic-sign": [
@@ -44326,6 +46782,10 @@
           {
             "step": 1527,
             "value": 0.42047423124313354
+          },
+          {
+            "step": 1781,
+            "value": 0.5089951157569885
           }
         ],
         "val_dice/traffic-sign": [
@@ -44352,6 +46812,10 @@
           {
             "step": 1527,
             "value": 0.5359044671058655
+          },
+          {
+            "step": 1781,
+            "value": 0.5759304761886597
           }
         ],
         "val_support/traffic-sign": [
@@ -44377,6 +46841,10 @@
           },
           {
             "step": 1527,
+            "value": 13285.0
+          },
+          {
+            "step": 1781,
             "value": 13285.0
           }
         ],
@@ -44404,6 +46872,10 @@
           {
             "step": 1527,
             "value": 0.145177960395813
+          },
+          {
+            "step": 1781,
+            "value": 0.1321750283241272
           }
         ],
         "val_precision/road": [
@@ -44430,6 +46902,10 @@
           {
             "step": 1527,
             "value": 0.4140437841415405
+          },
+          {
+            "step": 1781,
+            "value": 0.39318588376045227
           }
         ],
         "val_recall/road": [
@@ -44456,6 +46932,10 @@
           {
             "step": 1527,
             "value": 0.1827186644077301
+          },
+          {
+            "step": 1781,
+            "value": 0.16604676842689514
           }
         ],
         "val_dice/road": [
@@ -44482,6 +46962,10 @@
           {
             "step": 1527,
             "value": 0.2535465359687805
+          },
+          {
+            "step": 1781,
+            "value": 0.23348867893218994
           }
         ],
         "val_support/road": [
@@ -44507,6 +46991,10 @@
           },
           {
             "step": 1527,
+            "value": 1048831.0
+          },
+          {
+            "step": 1781,
             "value": 1048831.0
           }
         ],
@@ -44534,6 +47022,10 @@
           {
             "step": 1527,
             "value": 0.3495728373527527
+          },
+          {
+            "step": 1781,
+            "value": 0.3556979298591614
           }
         ],
         "val_precision/sidewalk": [
@@ -44560,6 +47052,10 @@
           {
             "step": 1527,
             "value": 0.7226094603538513
+          },
+          {
+            "step": 1781,
+            "value": 0.809184193611145
           }
         ],
         "val_recall/sidewalk": [
@@ -44586,6 +47082,10 @@
           {
             "step": 1527,
             "value": 0.4037531316280365
+          },
+          {
+            "step": 1781,
+            "value": 0.38826483488082886
           }
         ],
         "val_dice/sidewalk": [
@@ -44612,6 +47112,10 @@
           {
             "step": 1527,
             "value": 0.5180495977401733
+          },
+          {
+            "step": 1781,
+            "value": 0.5247451066970825
           }
         ],
         "val_support/sidewalk": [
@@ -44637,6 +47141,10 @@
           },
           {
             "step": 1527,
+            "value": 1297367.0
+          },
+          {
+            "step": 1781,
             "value": 1297367.0
           }
         ],
@@ -44664,6 +47172,10 @@
           {
             "step": 1527,
             "value": 0.4791606664657593
+          },
+          {
+            "step": 1781,
+            "value": 0.5514959692955017
           }
         ],
         "val_precision/construction": [
@@ -44690,6 +47202,10 @@
           {
             "step": 1527,
             "value": 0.592391848564148
+          },
+          {
+            "step": 1781,
+            "value": 0.6825294494628906
           }
         ],
         "val_recall/construction": [
@@ -44716,6 +47232,10 @@
           {
             "step": 1527,
             "value": 0.7148418426513672
+          },
+          {
+            "step": 1781,
+            "value": 0.7417783141136169
           }
         ],
         "val_dice/construction": [
@@ -44742,6 +47262,10 @@
           {
             "step": 1527,
             "value": 0.647881805896759
+          },
+          {
+            "step": 1781,
+            "value": 0.710921585559845
           }
         ],
         "val_support/construction": [
@@ -44767,6 +47291,10 @@
           },
           {
             "step": 1527,
+            "value": 311585.0
+          },
+          {
+            "step": 1781,
             "value": 311585.0
           }
         ],
@@ -44794,6 +47322,10 @@
           {
             "step": 1527,
             "value": 0.34683436155319214
+          },
+          {
+            "step": 1781,
+            "value": 0.27268165349960327
           }
         ],
         "val_precision/tram-track": [
@@ -44820,6 +47352,10 @@
           {
             "step": 1527,
             "value": 0.8265743851661682
+          },
+          {
+            "step": 1781,
+            "value": 0.9078598618507385
           }
         ],
         "val_recall/tram-track": [
@@ -44846,6 +47382,10 @@
           {
             "step": 1527,
             "value": 0.3740543723106384
+          },
+          {
+            "step": 1781,
+            "value": 0.28044286370277405
           }
         ],
         "val_dice/tram-track": [
@@ -44872,6 +47412,10 @@
           {
             "step": 1527,
             "value": 0.515036404132843
+          },
+          {
+            "step": 1781,
+            "value": 0.42851507663726807
           }
         ],
         "val_support/tram-track": [
@@ -44897,6 +47441,10 @@
           },
           {
             "step": 1527,
+            "value": 56179.0
+          },
+          {
+            "step": 1781,
             "value": 56179.0
           }
         ],
@@ -44924,6 +47472,10 @@
           {
             "step": 1527,
             "value": 0.7110361456871033
+          },
+          {
+            "step": 1781,
+            "value": 0.7160112857818604
           }
         ],
         "val_precision/pole": [
@@ -44950,6 +47502,10 @@
           {
             "step": 1527,
             "value": 0.8466311693191528
+          },
+          {
+            "step": 1781,
+            "value": 0.8404033184051514
           }
         ],
         "val_recall/pole": [
@@ -44976,6 +47532,10 @@
           {
             "step": 1527,
             "value": 0.8161624073982239
+          },
+          {
+            "step": 1781,
+            "value": 0.8286918997764587
           }
         ],
         "val_dice/pole": [
@@ -45002,6 +47562,10 @@
           {
             "step": 1527,
             "value": 0.8311176300048828
+          },
+          {
+            "step": 1781,
+            "value": 0.8345065116882324
           }
         ],
         "val_support/pole": [
@@ -45027,6 +47591,10 @@
           },
           {
             "step": 1527,
+            "value": 628038.0
+          },
+          {
+            "step": 1781,
             "value": 628038.0
           }
         ],
@@ -45054,6 +47622,10 @@
           {
             "step": 1527,
             "value": 0.5816900730133057
+          },
+          {
+            "step": 1781,
+            "value": 0.6617969274520874
           }
         ],
         "val_precision/traffic-light": [
@@ -45080,6 +47652,10 @@
           {
             "step": 1527,
             "value": 0.8825513124465942
+          },
+          {
+            "step": 1781,
+            "value": 0.8036524653434753
           }
         ],
         "val_recall/traffic-light": [
@@ -45106,6 +47682,10 @@
           {
             "step": 1527,
             "value": 0.6304971575737
+          },
+          {
+            "step": 1781,
+            "value": 0.7894412875175476
           }
         ],
         "val_dice/traffic-light": [
@@ -45132,6 +47712,10 @@
           {
             "step": 1527,
             "value": 0.7355297803878784
+          },
+          {
+            "step": 1781,
+            "value": 0.7964835166931152
           }
         ],
         "val_support/traffic-light": [
@@ -45157,6 +47741,10 @@
           },
           {
             "step": 1527,
+            "value": 19510.0
+          },
+          {
+            "step": 1781,
             "value": 19510.0
           }
         ],
@@ -45184,6 +47772,10 @@
           {
             "step": 1527,
             "value": 0.021960441023111343
+          },
+          {
+            "step": 1781,
+            "value": 0.004255433566868305
           }
         ],
         "val_precision/mud-pumping": [
@@ -45210,6 +47802,10 @@
           {
             "step": 1527,
             "value": 0.029927436262369156
+          },
+          {
+            "step": 1781,
+            "value": 0.005834659561514854
           }
         ],
         "val_recall/mud-pumping": [
@@ -45236,6 +47832,10 @@
           {
             "step": 1527,
             "value": 0.07620631903409958
+          },
+          {
+            "step": 1781,
+            "value": 0.015478898771107197
           }
         ],
         "val_dice/mud-pumping": [
@@ -45262,6 +47862,10 @@
           {
             "step": 1527,
             "value": 0.04297708719968796
+          },
+          {
+            "step": 1781,
+            "value": 0.008474803529679775
           }
         ],
         "val_support/mud-pumping": [
@@ -45287,6 +47891,10 @@
           },
           {
             "step": 1527,
+            "value": 1226250.0
+          },
+          {
+            "step": 1781,
             "value": 1226250.0
           }
         ],
@@ -45314,6 +47922,10 @@
           {
             "step": 1527,
             "value": 0.08817662298679352
+          },
+          {
+            "step": 1781,
+            "value": 0.1115918755531311
           }
         ],
         "val_precision/fence": [
@@ -45340,6 +47952,10 @@
           {
             "step": 1527,
             "value": 0.1374659240245819
+          },
+          {
+            "step": 1781,
+            "value": 0.2292615920305252
           }
         ],
         "val_recall/fence": [
@@ -45366,6 +47982,10 @@
           {
             "step": 1527,
             "value": 0.19738097488880157
+          },
+          {
+            "step": 1781,
+            "value": 0.17859068512916565
           }
         ],
         "val_dice/fence": [
@@ -45392,6 +48012,10 @@
           {
             "step": 1527,
             "value": 0.16206306219100952
+          },
+          {
+            "step": 1781,
+            "value": 0.20077849924564362
           }
         ],
         "val_support/fence": [
@@ -45417,6 +48041,10 @@
           },
           {
             "step": 1527,
+            "value": 265137.0
+          },
+          {
+            "step": 1781,
             "value": 265137.0
           }
         ],
@@ -45444,6 +48072,10 @@
           {
             "step": 1527,
             "value": 0.8765016198158264
+          },
+          {
+            "step": 1781,
+            "value": 0.8778792023658752
           }
         ],
         "val_precision/terrain": [
@@ -45470,6 +48102,10 @@
           {
             "step": 1527,
             "value": 0.8891505002975464
+          },
+          {
+            "step": 1781,
+            "value": 0.8904800415039062
           }
         ],
         "val_recall/terrain": [
@@ -45496,6 +48132,10 @@
           {
             "step": 1527,
             "value": 0.9840289950370789
+          },
+          {
+            "step": 1781,
+            "value": 0.9841366410255432
           }
         ],
         "val_dice/terrain": [
@@ -45522,6 +48162,10 @@
           {
             "step": 1527,
             "value": 0.9341868758201599
+          },
+          {
+            "step": 1781,
+            "value": 0.9349687695503235
           }
         ],
         "val_support/terrain": [
@@ -45547,6 +48191,10 @@
           },
           {
             "step": 1527,
+            "value": 39239304.0
+          },
+          {
+            "step": 1781,
             "value": 39239304.0
           }
         ],
@@ -45574,6 +48222,10 @@
           {
             "step": 1527,
             "value": 0.9820489883422852
+          },
+          {
+            "step": 1781,
+            "value": 0.9821309447288513
           }
         ],
         "val_precision/sky": [
@@ -45600,6 +48252,10 @@
           {
             "step": 1527,
             "value": 0.9915179014205933
+          },
+          {
+            "step": 1781,
+            "value": 0.9944351315498352
           }
         ],
         "val_recall/sky": [
@@ -45626,6 +48282,10 @@
           {
             "step": 1527,
             "value": 0.9903691411018372
+          },
+          {
+            "step": 1781,
+            "value": 0.9875586032867432
           }
         ],
         "val_dice/sky": [
@@ -45652,6 +48312,10 @@
           {
             "step": 1527,
             "value": 0.990943193435669
+          },
+          {
+            "step": 1781,
+            "value": 0.9909849166870117
           }
         ],
         "val_support/sky": [
@@ -45677,6 +48341,10 @@
           },
           {
             "step": 1527,
+            "value": 19121606.0
+          },
+          {
+            "step": 1781,
             "value": 19121606.0
           }
         ],
@@ -45704,6 +48372,10 @@
           {
             "step": 1527,
             "value": 0.21213167905807495
+          },
+          {
+            "step": 1781,
+            "value": 0.1657298505306244
           }
         ],
         "val_precision/rail-embedded": [
@@ -45730,6 +48402,10 @@
           {
             "step": 1527,
             "value": 0.8646492958068848
+          },
+          {
+            "step": 1781,
+            "value": 0.8619650602340698
           }
         ],
         "val_recall/rail-embedded": [
@@ -45756,6 +48432,10 @@
           {
             "step": 1527,
             "value": 0.21941782534122467
+          },
+          {
+            "step": 1781,
+            "value": 0.17024822533130646
           }
         ],
         "val_dice/rail-embedded": [
@@ -45782,6 +48462,10 @@
           {
             "step": 1527,
             "value": 0.35001423954963684
+          },
+          {
+            "step": 1781,
+            "value": 0.2843366265296936
           }
         ],
         "val_support/rail-embedded": [
@@ -45807,6 +48491,10 @@
           },
           {
             "step": 1527,
+            "value": 16799.0
+          },
+          {
+            "step": 1781,
             "value": 16799.0
           }
         ],
@@ -45834,6 +48522,10 @@
           {
             "step": 1527,
             "value": 0.6912113428115845
+          },
+          {
+            "step": 1781,
+            "value": 0.7509517073631287
           }
         ],
         "val_precision/rail-raised": [
@@ -45860,6 +48552,10 @@
           {
             "step": 1527,
             "value": 0.7600272297859192
+          },
+          {
+            "step": 1781,
+            "value": 0.8305378556251526
           }
         ],
         "val_recall/rail-raised": [
@@ -45886,6 +48582,10 @@
           {
             "step": 1527,
             "value": 0.884178638458252
+          },
+          {
+            "step": 1781,
+            "value": 0.8868356943130493
           }
         ],
         "val_dice/rail-raised": [
@@ -45912,6 +48612,10 @@
           {
             "step": 1527,
             "value": 0.817415714263916
+          },
+          {
+            "step": 1781,
+            "value": 0.8577640056610107
           }
         ],
         "val_support/rail-raised": [
@@ -45937,6 +48641,10 @@
           },
           {
             "step": 1527,
+            "value": 2969797.0
+          },
+          {
+            "step": 1781,
             "value": 2969797.0
           }
         ],
@@ -45964,6 +48672,10 @@
           {
             "step": 1527,
             "value": 0.5796706676483154
+          },
+          {
+            "step": 1781,
+            "value": 0.5677262544631958
           }
         ],
         "val_precision/trackbed": [
@@ -45990,6 +48702,10 @@
           {
             "step": 1527,
             "value": 0.735453724861145
+          },
+          {
+            "step": 1781,
+            "value": 0.6508973836898804
           }
         ],
         "val_recall/trackbed": [
@@ -46016,6 +48732,10 @@
           {
             "step": 1527,
             "value": 0.7323792576789856
+          },
+          {
+            "step": 1781,
+            "value": 0.8162786960601807
           }
         ],
         "val_dice/trackbed": [
@@ -46042,6 +48762,10 @@
           {
             "step": 1527,
             "value": 0.7339133024215698
+          },
+          {
+            "step": 1781,
+            "value": 0.7242670655250549
           }
         ],
         "val_support/trackbed": [
@@ -46067,6 +48791,10 @@
           },
           {
             "step": 1527,
+            "value": 10643081.0
+          },
+          {
+            "step": 1781,
             "value": 10643081.0
           }
         ],
@@ -46094,6 +48822,10 @@
           {
             "step": 1527,
             "value": 0.026520976796746254
+          },
+          {
+            "step": 1781,
+            "value": 0.008468223735690117
           }
         ],
         "val_precision/standing-water": [
@@ -46120,6 +48852,10 @@
           {
             "step": 1527,
             "value": 0.05795559287071228
+          },
+          {
+            "step": 1781,
+            "value": 0.0386161282658577
           }
         ],
         "val_recall/standing-water": [
@@ -46146,6 +48882,10 @@
           {
             "step": 1527,
             "value": 0.04661698266863823
+          },
+          {
+            "step": 1781,
+            "value": 0.010730464942753315
           }
         ],
         "val_dice/standing-water": [
@@ -46172,6 +48912,10 @@
           {
             "step": 1527,
             "value": 0.051671575754880905
+          },
+          {
+            "step": 1781,
+            "value": 0.016794228926301003
           }
         ],
         "val_support/standing-water": [
@@ -46197,6 +48941,10 @@
           },
           {
             "step": 1527,
+            "value": 95802.0
+          },
+          {
+            "step": 1781,
             "value": 95802.0
           }
         ],
@@ -46224,6 +48972,10 @@
           {
             "step": 1527,
             "value": 0.5124200582504272
+          },
+          {
+            "step": 1781,
+            "value": 0.5397831201553345
           }
         ],
         "val_iou/person": [
@@ -46245,6 +48997,10 @@
           },
           {
             "step": 1527,
+            "value": 0.0
+          },
+          {
+            "step": 1781,
             "value": 0.0
           }
         ],
@@ -46268,6 +49024,10 @@
           {
             "step": 1527,
             "value": 0.0
+          },
+          {
+            "step": 1781,
+            "value": 0.0
           }
         ],
         "val_dice/person": [
@@ -46289,6 +49049,10 @@
           },
           {
             "step": 1527,
+            "value": 0.0
+          },
+          {
+            "step": 1781,
             "value": 0.0
           }
         ],
@@ -46312,6 +49076,10 @@
           {
             "step": 1527,
             "value": 0.0
+          },
+          {
+            "step": 1781,
+            "value": 0.0
           }
         ],
         "val_precision/truck": [
@@ -46333,6 +49101,10 @@
           },
           {
             "step": 1527,
+            "value": 0.0
+          },
+          {
+            "step": 1781,
             "value": 0.0
           }
         ],
@@ -46356,10 +49128,14 @@
           {
             "step": 1527,
             "value": 0.0
+          },
+          {
+            "step": 1781,
+            "value": 0.0
           }
         ]
       },
-      "observed_step": 1749,
+      "observed_step": 1849,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -46647,6 +49423,14 @@
           {
             "step": 1149,
             "value": 0.10766294598579407
+          },
+          {
+            "step": 1199,
+            "value": 0.1316809058189392
+          },
+          {
+            "step": 1249,
+            "value": 0.15139460563659668
           }
         ],
         "val/miou": [
@@ -46665,6 +49449,10 @@
           {
             "step": 1017,
             "value": 0.3580705225467682
+          },
+          {
+            "step": 1272,
+            "value": 0.3544609248638153
           }
         ],
         "val/macc": [
@@ -46683,6 +49471,10 @@
           {
             "step": 1017,
             "value": 0.49731507897377014
+          },
+          {
+            "step": 1272,
+            "value": 0.5413780808448792
           }
         ],
         "val/pixel_acc": [
@@ -46701,6 +49493,10 @@
           {
             "step": 1017,
             "value": 0.8282502293586731
+          },
+          {
+            "step": 1272,
+            "value": 0.8261532783508301
           }
         ],
         "val/boundary_f1": [
@@ -46719,6 +49515,10 @@
           {
             "step": 1017,
             "value": 0.41007000207901
+          },
+          {
+            "step": 1272,
+            "value": 0.3821720778942108
           }
         ],
         "val/gt_present_miou": [
@@ -46737,6 +49537,10 @@
           {
             "step": 1017,
             "value": 0.41774892807006836
+          },
+          {
+            "step": 1272,
+            "value": 0.41353774070739746
           }
         ],
         "val_support/person": [
@@ -46754,6 +49558,10 @@
           },
           {
             "step": 1017,
+            "value": 0.0
+          },
+          {
+            "step": 1272,
             "value": 0.0
           }
         ],
@@ -46773,6 +49581,10 @@
           {
             "step": 1017,
             "value": 0.0
+          },
+          {
+            "step": 1272,
+            "value": 0.0
           }
         ],
         "val_iou/rail-track": [
@@ -46791,6 +49603,10 @@
           {
             "step": 1017,
             "value": 0.34448304772377014
+          },
+          {
+            "step": 1272,
+            "value": 0.336073637008667
           }
         ],
         "val_precision/rail-track": [
@@ -46809,6 +49625,10 @@
           {
             "step": 1017,
             "value": 0.6481021046638489
+          },
+          {
+            "step": 1272,
+            "value": 0.665045440196991
           }
         ],
         "val_recall/rail-track": [
@@ -46827,6 +49647,10 @@
           {
             "step": 1017,
             "value": 0.4237407147884369
+          },
+          {
+            "step": 1272,
+            "value": 0.40455010533332825
           }
         ],
         "val_dice/rail-track": [
@@ -46845,6 +49669,10 @@
           {
             "step": 1017,
             "value": 0.5124394297599792
+          },
+          {
+            "step": 1272,
+            "value": 0.5030764937400818
           }
         ],
         "val_support/rail-track": [
@@ -46862,6 +49690,10 @@
           },
           {
             "step": 1017,
+            "value": 6323197.0
+          },
+          {
+            "step": 1272,
             "value": 6323197.0
           }
         ],
@@ -46881,6 +49713,10 @@
           {
             "step": 1017,
             "value": 0.31259334087371826
+          },
+          {
+            "step": 1272,
+            "value": 0.2936670780181885
           }
         ],
         "val_precision/vegetation-overgrowth": [
@@ -46899,6 +49735,10 @@
           {
             "step": 1017,
             "value": 0.7746828198432922
+          },
+          {
+            "step": 1272,
+            "value": 0.7900757789611816
           }
         ],
         "val_recall/vegetation-overgrowth": [
@@ -46917,6 +49757,10 @@
           {
             "step": 1017,
             "value": 0.3438560664653778
+          },
+          {
+            "step": 1272,
+            "value": 0.31852051615715027
           }
         ],
         "val_dice/vegetation-overgrowth": [
@@ -46935,6 +49779,10 @@
           {
             "step": 1017,
             "value": 0.47629883885383606
+          },
+          {
+            "step": 1272,
+            "value": 0.45400717854499817
           }
         ],
         "val_support/vegetation-overgrowth": [
@@ -46952,6 +49800,10 @@
           },
           {
             "step": 1017,
+            "value": 5901821.0
+          },
+          {
+            "step": 1272,
             "value": 5901821.0
           }
         ],
@@ -46971,6 +49823,10 @@
           {
             "step": 1017,
             "value": 0.1993037611246109
+          },
+          {
+            "step": 1272,
+            "value": 0.3650054335594177
           }
         ],
         "val_precision/car": [
@@ -46989,6 +49845,10 @@
           {
             "step": 1017,
             "value": 0.48490333557128906
+          },
+          {
+            "step": 1272,
+            "value": 0.5257638096809387
           }
         ],
         "val_recall/car": [
@@ -47007,6 +49867,10 @@
           {
             "step": 1017,
             "value": 0.25283172726631165
+          },
+          {
+            "step": 1272,
+            "value": 0.5441612601280212
           }
         ],
         "val_dice/car": [
@@ -47025,6 +49889,10 @@
           {
             "step": 1017,
             "value": 0.3323657810688019
+          },
+          {
+            "step": 1272,
+            "value": 0.5348043441772461
           }
         ],
         "val_support/car": [
@@ -47043,6 +49911,10 @@
           {
             "step": 1017,
             "value": 29664.0
+          },
+          {
+            "step": 1272,
+            "value": 29664.0
           }
         ],
         "val_iou/on-rails": [
@@ -47056,6 +49928,10 @@
           },
           {
             "step": 1017,
+            "value": 0.0
+          },
+          {
+            "step": 1272,
             "value": 0.0
           }
         ],
@@ -47071,6 +49947,10 @@
           {
             "step": 1017,
             "value": 0.0
+          },
+          {
+            "step": 1272,
+            "value": 0.0
           }
         ],
         "val_dice/on-rails": [
@@ -47084,6 +49964,10 @@
           },
           {
             "step": 1017,
+            "value": 0.0
+          },
+          {
+            "step": 1272,
             "value": 0.0
           }
         ],
@@ -47103,6 +49987,10 @@
           {
             "step": 1017,
             "value": 0.0
+          },
+          {
+            "step": 1272,
+            "value": 0.0
           }
         ],
         "val_iou/traffic-sign": [
@@ -47121,6 +50009,10 @@
           {
             "step": 1017,
             "value": 0.4186443090438843
+          },
+          {
+            "step": 1272,
+            "value": 0.3954086899757385
           }
         ],
         "val_precision/traffic-sign": [
@@ -47139,6 +50031,10 @@
           {
             "step": 1017,
             "value": 0.881903886795044
+          },
+          {
+            "step": 1272,
+            "value": 0.566877543926239
           }
         ],
         "val_recall/traffic-sign": [
@@ -47157,6 +50053,10 @@
           {
             "step": 1017,
             "value": 0.44350770115852356
+          },
+          {
+            "step": 1272,
+            "value": 0.5665788650512695
           }
         ],
         "val_dice/traffic-sign": [
@@ -47175,6 +50075,10 @@
           {
             "step": 1017,
             "value": 0.5902033448219299
+          },
+          {
+            "step": 1272,
+            "value": 0.5667281746864319
           }
         ],
         "val_support/traffic-sign": [
@@ -47192,6 +50096,10 @@
           },
           {
             "step": 1017,
+            "value": 13285.0
+          },
+          {
+            "step": 1272,
             "value": 13285.0
           }
         ],
@@ -47211,6 +50119,10 @@
           {
             "step": 1017,
             "value": 0.28684452176094055
+          },
+          {
+            "step": 1272,
+            "value": 0.2550930678844452
           }
         ],
         "val_precision/road": [
@@ -47229,6 +50141,10 @@
           {
             "step": 1017,
             "value": 0.5362090468406677
+          },
+          {
+            "step": 1272,
+            "value": 0.5629018545150757
           }
         ],
         "val_recall/road": [
@@ -47247,6 +50163,10 @@
           {
             "step": 1017,
             "value": 0.3814952075481415
+          },
+          {
+            "step": 1272,
+            "value": 0.3181036710739136
           }
         ],
         "val_dice/road": [
@@ -47265,6 +50185,10 @@
           {
             "step": 1017,
             "value": 0.4458106756210327
+          },
+          {
+            "step": 1272,
+            "value": 0.406492680311203
           }
         ],
         "val_support/road": [
@@ -47282,6 +50206,10 @@
           },
           {
             "step": 1017,
+            "value": 1048831.0
+          },
+          {
+            "step": 1272,
             "value": 1048831.0
           }
         ],
@@ -47301,6 +50229,10 @@
           {
             "step": 1017,
             "value": 0.4088086485862732
+          },
+          {
+            "step": 1272,
+            "value": 0.45300570130348206
           }
         ],
         "val_precision/sidewalk": [
@@ -47319,6 +50251,10 @@
           {
             "step": 1017,
             "value": 0.9548715949058533
+          },
+          {
+            "step": 1272,
+            "value": 0.8683610558509827
           }
         ],
         "val_recall/sidewalk": [
@@ -47337,6 +50273,10 @@
           {
             "step": 1017,
             "value": 0.41686275601387024
+          },
+          {
+            "step": 1272,
+            "value": 0.4864090085029602
           }
         ],
         "val_dice/sidewalk": [
@@ -47355,6 +50295,10 @@
           {
             "step": 1017,
             "value": 0.5803607702255249
+          },
+          {
+            "step": 1272,
+            "value": 0.6235429048538208
           }
         ],
         "val_support/sidewalk": [
@@ -47372,6 +50316,10 @@
           },
           {
             "step": 1017,
+            "value": 1297367.0
+          },
+          {
+            "step": 1272,
             "value": 1297367.0
           }
         ],
@@ -47391,6 +50339,10 @@
           {
             "step": 1017,
             "value": 0.5457475781440735
+          },
+          {
+            "step": 1272,
+            "value": 0.393317312002182
           }
         ],
         "val_precision/construction": [
@@ -47409,6 +50361,10 @@
           {
             "step": 1017,
             "value": 0.6535842418670654
+          },
+          {
+            "step": 1272,
+            "value": 0.43763864040374756
           }
         ],
         "val_recall/construction": [
@@ -47427,6 +50383,10 @@
           {
             "step": 1017,
             "value": 0.7678579092025757
+          },
+          {
+            "step": 1272,
+            "value": 0.7952372431755066
           }
         ],
         "val_dice/construction": [
@@ -47445,6 +50405,10 @@
           {
             "step": 1017,
             "value": 0.7061276435852051
+          },
+          {
+            "step": 1272,
+            "value": 0.5645768046379089
           }
         ],
         "val_support/construction": [
@@ -47462,6 +50426,10 @@
           },
           {
             "step": 1017,
+            "value": 311585.0
+          },
+          {
+            "step": 1272,
             "value": 311585.0
           }
         ],
@@ -47481,6 +50449,10 @@
           {
             "step": 1017,
             "value": 0.4593788683414459
+          },
+          {
+            "step": 1272,
+            "value": 0.3229190707206726
           }
         ],
         "val_precision/tram-track": [
@@ -47499,6 +50471,10 @@
           {
             "step": 1017,
             "value": 0.7153536081314087
+          },
+          {
+            "step": 1272,
+            "value": 0.4242914021015167
           }
         ],
         "val_recall/tram-track": [
@@ -47517,6 +50493,10 @@
           {
             "step": 1017,
             "value": 0.5621317625045776
+          },
+          {
+            "step": 1272,
+            "value": 0.574752151966095
           }
         ],
         "val_dice/tram-track": [
@@ -47535,6 +50515,10 @@
           {
             "step": 1017,
             "value": 0.6295539736747742
+          },
+          {
+            "step": 1272,
+            "value": 0.48819172382354736
           }
         ],
         "val_support/tram-track": [
@@ -47552,6 +50536,10 @@
           },
           {
             "step": 1017,
+            "value": 56179.0
+          },
+          {
+            "step": 1272,
             "value": 56179.0
           }
         ],
@@ -47571,6 +50559,10 @@
           {
             "step": 1017,
             "value": 0.7020606398582458
+          },
+          {
+            "step": 1272,
+            "value": 0.7083312273025513
           }
         ],
         "val_precision/pole": [
@@ -47589,6 +50581,10 @@
           {
             "step": 1017,
             "value": 0.8085898160934448
+          },
+          {
+            "step": 1272,
+            "value": 0.8254273533821106
           }
         ],
         "val_recall/pole": [
@@ -47607,6 +50603,10 @@
           {
             "step": 1017,
             "value": 0.8419936299324036
+          },
+          {
+            "step": 1272,
+            "value": 0.8331422805786133
           }
         ],
         "val_dice/pole": [
@@ -47625,6 +50625,10 @@
           {
             "step": 1017,
             "value": 0.8249537348747253
+          },
+          {
+            "step": 1272,
+            "value": 0.8292668461799622
           }
         ],
         "val_support/pole": [
@@ -47642,6 +50646,10 @@
           },
           {
             "step": 1017,
+            "value": 628038.0
+          },
+          {
+            "step": 1272,
             "value": 628038.0
           }
         ],
@@ -47661,6 +50669,10 @@
           {
             "step": 1017,
             "value": 0.3960953950881958
+          },
+          {
+            "step": 1272,
+            "value": 0.5710272192955017
           }
         ],
         "val_precision/traffic-light": [
@@ -47679,6 +50691,10 @@
           {
             "step": 1017,
             "value": 0.7669809460639954
+          },
+          {
+            "step": 1272,
+            "value": 0.6962459087371826
           }
         ],
         "val_recall/traffic-light": [
@@ -47697,6 +50713,10 @@
           {
             "step": 1017,
             "value": 0.45028191804885864
+          },
+          {
+            "step": 1272,
+            "value": 0.7604817748069763
           }
         ],
         "val_dice/traffic-light": [
@@ -47715,6 +50735,10 @@
           {
             "step": 1017,
             "value": 0.5674331188201904
+          },
+          {
+            "step": 1272,
+            "value": 0.726947546005249
           }
         ],
         "val_support/traffic-light": [
@@ -47732,6 +50756,10 @@
           },
           {
             "step": 1017,
+            "value": 19510.0
+          },
+          {
+            "step": 1272,
             "value": 19510.0
           }
         ],
@@ -47751,6 +50779,10 @@
           {
             "step": 1017,
             "value": 0.016333235427737236
+          },
+          {
+            "step": 1272,
+            "value": 0.0022645732387900352
           }
         ],
         "val_precision/mud-pumping": [
@@ -47769,6 +50801,10 @@
           {
             "step": 1017,
             "value": 0.019570713862776756
+          },
+          {
+            "step": 1272,
+            "value": 0.002880485262721777
           }
         ],
         "val_recall/mud-pumping": [
@@ -47787,6 +50823,10 @@
           {
             "step": 1017,
             "value": 0.08986259251832962
+          },
+          {
+            "step": 1272,
+            "value": 0.01047991868108511
           }
         ],
         "val_dice/mud-pumping": [
@@ -47805,6 +50845,10 @@
           {
             "step": 1017,
             "value": 0.03214149549603462
+          },
+          {
+            "step": 1272,
+            "value": 0.004518913105130196
           }
         ],
         "val_support/mud-pumping": [
@@ -47822,6 +50866,10 @@
           },
           {
             "step": 1017,
+            "value": 1226250.0
+          },
+          {
+            "step": 1272,
             "value": 1226250.0
           }
         ],
@@ -47841,6 +50889,10 @@
           {
             "step": 1017,
             "value": 0.11877759546041489
+          },
+          {
+            "step": 1272,
+            "value": 0.1016191840171814
           }
         ],
         "val_precision/fence": [
@@ -47859,6 +50911,10 @@
           {
             "step": 1017,
             "value": 0.1724146008491516
+          },
+          {
+            "step": 1272,
+            "value": 0.11903051286935806
           }
         ],
         "val_recall/fence": [
@@ -47877,6 +50933,10 @@
           {
             "step": 1017,
             "value": 0.276309996843338
+          },
+          {
+            "step": 1272,
+            "value": 0.40992769598960876
           }
         ],
         "val_dice/fence": [
@@ -47895,6 +50955,10 @@
           {
             "step": 1017,
             "value": 0.21233458817005157
+          },
+          {
+            "step": 1272,
+            "value": 0.18449057638645172
           }
         ],
         "val_support/fence": [
@@ -47912,6 +50976,10 @@
           },
           {
             "step": 1017,
+            "value": 265137.0
+          },
+          {
+            "step": 1272,
             "value": 265137.0
           }
         ],
@@ -47931,6 +50999,10 @@
           {
             "step": 1017,
             "value": 0.8850827217102051
+          },
+          {
+            "step": 1272,
+            "value": 0.8900758028030396
           }
         ],
         "val_precision/terrain": [
@@ -47949,6 +51021,10 @@
           {
             "step": 1017,
             "value": 0.9137095212936401
+          },
+          {
+            "step": 1272,
+            "value": 0.9205470681190491
           }
         ],
         "val_recall/terrain": [
@@ -47967,6 +51043,10 @@
           {
             "step": 1017,
             "value": 0.9658119678497314
+          },
+          {
+            "step": 1272,
+            "value": 0.9641441702842712
           }
         ],
         "val_dice/terrain": [
@@ -47985,6 +51065,10 @@
           {
             "step": 1017,
             "value": 0.9390385746955872
+          },
+          {
+            "step": 1272,
+            "value": 0.9418413639068604
           }
         ],
         "val_support/terrain": [
@@ -48002,6 +51086,10 @@
           },
           {
             "step": 1017,
+            "value": 39239304.0
+          },
+          {
+            "step": 1272,
             "value": 39239304.0
           }
         ],
@@ -48021,6 +51109,10 @@
           {
             "step": 1017,
             "value": 0.9845512509346008
+          },
+          {
+            "step": 1272,
+            "value": 0.9738085865974426
           }
         ],
         "val_precision/sky": [
@@ -48039,6 +51131,10 @@
           {
             "step": 1017,
             "value": 0.993743360042572
+          },
+          {
+            "step": 1272,
+            "value": 0.9947550892829895
           }
         ],
         "val_recall/sky": [
@@ -48057,6 +51153,10 @@
           {
             "step": 1017,
             "value": 0.9906923770904541
+          },
+          {
+            "step": 1272,
+            "value": 0.9788343906402588
           }
         ],
         "val_dice/sky": [
@@ -48075,6 +51175,10 @@
           {
             "step": 1017,
             "value": 0.9922155141830444
+          },
+          {
+            "step": 1272,
+            "value": 0.9867305159568787
           }
         ],
         "val_support/sky": [
@@ -48092,6 +51196,10 @@
           },
           {
             "step": 1017,
+            "value": 19121606.0
+          },
+          {
+            "step": 1272,
             "value": 19121606.0
           }
         ],
@@ -48111,6 +51219,10 @@
           {
             "step": 1017,
             "value": 0.11585187166929245
+          },
+          {
+            "step": 1272,
+            "value": 0.04982951655983925
           }
         ],
         "val_precision/rail-embedded": [
@@ -48129,6 +51241,10 @@
           {
             "step": 1017,
             "value": 0.8915989398956299
+          },
+          {
+            "step": 1272,
+            "value": 0.09103327989578247
           }
         ],
         "val_recall/rail-embedded": [
@@ -48147,6 +51263,10 @@
           {
             "step": 1017,
             "value": 0.11750699579715729
+          },
+          {
+            "step": 1272,
+            "value": 0.09917256981134415
           }
         ],
         "val_dice/rail-embedded": [
@@ -48165,6 +51285,10 @@
           {
             "step": 1017,
             "value": 0.2076473981142044
+          },
+          {
+            "step": 1272,
+            "value": 0.09492877125740051
           }
         ],
         "val_support/rail-embedded": [
@@ -48182,6 +51306,10 @@
           },
           {
             "step": 1017,
+            "value": 16799.0
+          },
+          {
+            "step": 1272,
             "value": 16799.0
           }
         ],
@@ -48201,6 +51329,10 @@
           {
             "step": 1017,
             "value": 0.7268335819244385
+          },
+          {
+            "step": 1272,
+            "value": 0.730674684047699
           }
         ],
         "val_precision/rail-raised": [
@@ -48219,6 +51351,10 @@
           {
             "step": 1017,
             "value": 0.7912430763244629
+          },
+          {
+            "step": 1272,
+            "value": 0.8151852488517761
           }
         ],
         "val_recall/rail-raised": [
@@ -48237,6 +51373,10 @@
           {
             "step": 1017,
             "value": 0.8992833495140076
+          },
+          {
+            "step": 1272,
+            "value": 0.8757463693618774
           }
         ],
         "val_dice/rail-raised": [
@@ -48255,6 +51395,10 @@
           {
             "step": 1017,
             "value": 0.8418108224868774
+          },
+          {
+            "step": 1272,
+            "value": 0.8443813323974609
           }
         ],
         "val_support/rail-raised": [
@@ -48272,6 +51416,10 @@
           },
           {
             "step": 1017,
+            "value": 2969797.0
+          },
+          {
+            "step": 1272,
             "value": 2969797.0
           }
         ],
@@ -48291,6 +51439,10 @@
           {
             "step": 1017,
             "value": 0.5958557724952698
+          },
+          {
+            "step": 1272,
+            "value": 0.5751187801361084
           }
         ],
         "val_precision/trackbed": [
@@ -48309,6 +51461,10 @@
           {
             "step": 1017,
             "value": 0.769814133644104
+          },
+          {
+            "step": 1272,
+            "value": 0.6957465410232544
           }
         ],
         "val_recall/trackbed": [
@@ -48327,6 +51483,10 @@
           {
             "step": 1017,
             "value": 0.7250350713729858
+          },
+          {
+            "step": 1272,
+            "value": 0.7683641314506531
           }
         ],
         "val_dice/trackbed": [
@@ -48345,6 +51505,10 @@
           {
             "step": 1017,
             "value": 0.7467539310455322
+          },
+          {
+            "step": 1272,
+            "value": 0.7302545309066772
           }
         ],
         "val_support/trackbed": [
@@ -48362,6 +51526,10 @@
           },
           {
             "step": 1017,
+            "value": 10643081.0
+          },
+          {
+            "step": 1272,
             "value": 10643081.0
           }
         ],
@@ -48381,6 +51549,10 @@
           {
             "step": 1017,
             "value": 0.002234816551208496
+          },
+          {
+            "step": 1272,
+            "value": 0.02643977850675583
           }
         ],
         "val_precision/standing-water": [
@@ -48399,6 +51571,10 @@
           {
             "step": 1017,
             "value": 0.015324261039495468
+          },
+          {
+            "step": 1272,
+            "value": 0.08930778503417969
           }
         ],
         "val_recall/standing-water": [
@@ -48417,6 +51593,10 @@
           {
             "step": 1017,
             "value": 0.002609548857435584
+          },
+          {
+            "step": 1272,
+            "value": 0.0361996628344059
           }
         ],
         "val_dice/standing-water": [
@@ -48435,6 +51615,10 @@
           {
             "step": 1017,
             "value": 0.004459666553884745
+          },
+          {
+            "step": 1272,
+            "value": 0.05151744559407234
           }
         ],
         "val_support/standing-water": [
@@ -48452,6 +51636,10 @@
           },
           {
             "step": 1017,
+            "value": 95802.0
+          },
+          {
+            "step": 1272,
             "value": 95802.0
           }
         ],
@@ -48471,6 +51659,10 @@
           {
             "step": 1017,
             "value": 0.471897155046463
+          },
+          {
+            "step": 1272,
+            "value": 0.4910542666912079
           }
         ],
         "val_iou/person": [
@@ -48484,6 +51676,10 @@
           },
           {
             "step": 1017,
+            "value": 0.0
+          },
+          {
+            "step": 1272,
             "value": 0.0
           }
         ],
@@ -48499,6 +51695,10 @@
           {
             "step": 1017,
             "value": 0.0
+          },
+          {
+            "step": 1272,
+            "value": 0.0
           }
         ],
         "val_dice/person": [
@@ -48512,6 +51712,10 @@
           },
           {
             "step": 1017,
+            "value": 0.0
+          },
+          {
+            "step": 1272,
             "value": 0.0
           }
         ],
@@ -48527,6 +51731,10 @@
           {
             "step": 1017,
             "value": 0.0
+          },
+          {
+            "step": 1272,
+            "value": 0.0
           }
         ],
         "val_precision/truck": [
@@ -48540,6 +51748,10 @@
           },
           {
             "step": 1017,
+            "value": 0.0
+          },
+          {
+            "step": 1272,
             "value": 0.0
           }
         ],
@@ -48555,10 +51767,14 @@
           {
             "step": 1017,
             "value": 0.0
+          },
+          {
+            "step": 1272,
+            "value": 0.0
           }
         ]
       },
-      "observed_step": 1149,
+      "observed_step": 1272,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -48774,6 +51990,14 @@
           {
             "step": 249,
             "value": 1.073594331741333
+          },
+          {
+            "step": 299,
+            "value": 0.17895060777664185
+          },
+          {
+            "step": 349,
+            "value": 0.2183162420988083
           }
         ],
         "val/miou": [
@@ -49389,7 +52613,7 @@
           }
         ]
       },
-      "observed_step": 254,
+      "observed_step": 349,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -49601,10 +52825,634 @@
           {
             "step": 199,
             "value": 0.8245338797569275
+          },
+          {
+            "step": 249,
+            "value": 0.564009428024292
+          },
+          {
+            "step": 299,
+            "value": 0.5521408915519714
+          },
+          {
+            "step": 349,
+            "value": 0.5199111104011536
+          }
+        ],
+        "val/miou": [
+          {
+            "step": 254,
+            "value": 0.26434752345085144
+          }
+        ],
+        "val/macc": [
+          {
+            "step": 254,
+            "value": 0.3444678485393524
+          }
+        ],
+        "val/pixel_acc": [
+          {
+            "step": 254,
+            "value": 0.8138822317123413
+          }
+        ],
+        "val/boundary_f1": [
+          {
+            "step": 254,
+            "value": 0.28801923990249634
+          }
+        ],
+        "val/gt_present_miou": [
+          {
+            "step": 254,
+            "value": 0.27903348207473755
+          }
+        ],
+        "val_support/person": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/truck": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_iou/rail-track": [
+          {
+            "step": 254,
+            "value": 0.32732445001602173
+          }
+        ],
+        "val_precision/rail-track": [
+          {
+            "step": 254,
+            "value": 0.6525683999061584
+          }
+        ],
+        "val_recall/rail-track": [
+          {
+            "step": 254,
+            "value": 0.396405965089798
+          }
+        ],
+        "val_dice/rail-track": [
+          {
+            "step": 254,
+            "value": 0.4932093918323517
+          }
+        ],
+        "val_support/rail-track": [
+          {
+            "step": 254,
+            "value": 6323197.0
+          }
+        ],
+        "val_iou/vegetation-overgrowth": [
+          {
+            "step": 254,
+            "value": 1.3385699276113883e-05
+          }
+        ],
+        "val_precision/vegetation-overgrowth": [
+          {
+            "step": 254,
+            "value": 1.0
+          }
+        ],
+        "val_recall/vegetation-overgrowth": [
+          {
+            "step": 254,
+            "value": 1.3385699276113883e-05
+          }
+        ],
+        "val_dice/vegetation-overgrowth": [
+          {
+            "step": 254,
+            "value": 2.6771040211315267e-05
+          }
+        ],
+        "val_support/vegetation-overgrowth": [
+          {
+            "step": 254,
+            "value": 5901821.0
+          }
+        ],
+        "val_iou/car": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/car": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/car": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/car": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/car": [
+          {
+            "step": 254,
+            "value": 29664.0
+          }
+        ],
+        "val_iou/on-rails": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/on-rails": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/on-rails": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/on-rails": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_iou/traffic-sign": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/traffic-sign": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/traffic-sign": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/traffic-sign": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/traffic-sign": [
+          {
+            "step": 254,
+            "value": 13285.0
+          }
+        ],
+        "val_iou/road": [
+          {
+            "step": 254,
+            "value": 0.09486650675535202
+          }
+        ],
+        "val_precision/road": [
+          {
+            "step": 254,
+            "value": 0.5173730850219727
+          }
+        ],
+        "val_recall/road": [
+          {
+            "step": 254,
+            "value": 0.1040768250823021
+          }
+        ],
+        "val_dice/road": [
+          {
+            "step": 254,
+            "value": 0.17329329252243042
+          }
+        ],
+        "val_support/road": [
+          {
+            "step": 254,
+            "value": 1048831.0
+          }
+        ],
+        "val_iou/sidewalk": [
+          {
+            "step": 254,
+            "value": 0.2508830726146698
+          }
+        ],
+        "val_precision/sidewalk": [
+          {
+            "step": 254,
+            "value": 0.9379369616508484
+          }
+        ],
+        "val_recall/sidewalk": [
+          {
+            "step": 254,
+            "value": 0.2551182508468628
+          }
+        ],
+        "val_dice/sidewalk": [
+          {
+            "step": 254,
+            "value": 0.40112951397895813
+          }
+        ],
+        "val_support/sidewalk": [
+          {
+            "step": 254,
+            "value": 1297367.0
+          }
+        ],
+        "val_iou/construction": [
+          {
+            "step": 254,
+            "value": 0.5370275974273682
+          }
+        ],
+        "val_precision/construction": [
+          {
+            "step": 254,
+            "value": 0.6402694582939148
+          }
+        ],
+        "val_recall/construction": [
+          {
+            "step": 254,
+            "value": 0.769077479839325
+          }
+        ],
+        "val_dice/construction": [
+          {
+            "step": 254,
+            "value": 0.6987872123718262
+          }
+        ],
+        "val_support/construction": [
+          {
+            "step": 254,
+            "value": 311585.0
+          }
+        ],
+        "val_iou/tram-track": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/tram-track": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/tram-track": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/tram-track": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/tram-track": [
+          {
+            "step": 254,
+            "value": 56179.0
+          }
+        ],
+        "val_iou/pole": [
+          {
+            "step": 254,
+            "value": 0.651847243309021
+          }
+        ],
+        "val_precision/pole": [
+          {
+            "step": 254,
+            "value": 0.7557425498962402
+          }
+        ],
+        "val_recall/pole": [
+          {
+            "step": 254,
+            "value": 0.825832188129425
+          }
+        ],
+        "val_dice/pole": [
+          {
+            "step": 254,
+            "value": 0.7892342805862427
+          }
+        ],
+        "val_support/pole": [
+          {
+            "step": 254,
+            "value": 628038.0
+          }
+        ],
+        "val_iou/traffic-light": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/traffic-light": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/traffic-light": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/traffic-light": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/traffic-light": [
+          {
+            "step": 254,
+            "value": 19510.0
+          }
+        ],
+        "val_iou/mud-pumping": [
+          {
+            "step": 254,
+            "value": 0.000790829595644027
+          }
+        ],
+        "val_precision/mud-pumping": [
+          {
+            "step": 254,
+            "value": 0.0011814641766250134
+          }
+        ],
+        "val_recall/mud-pumping": [
+          {
+            "step": 254,
+            "value": 0.0023861366789788008
+          }
+        ],
+        "val_dice/mud-pumping": [
+          {
+            "step": 254,
+            "value": 0.00158040935639292
+          }
+        ],
+        "val_support/mud-pumping": [
+          {
+            "step": 254,
+            "value": 1226250.0
+          }
+        ],
+        "val_iou/fence": [
+          {
+            "step": 254,
+            "value": 0.08979946374893188
+          }
+        ],
+        "val_precision/fence": [
+          {
+            "step": 254,
+            "value": 0.17729948461055756
+          }
+        ],
+        "val_recall/fence": [
+          {
+            "step": 254,
+            "value": 0.15394683182239532
+          }
+        ],
+        "val_dice/fence": [
+          {
+            "step": 254,
+            "value": 0.16479997336864471
+          }
+        ],
+        "val_support/fence": [
+          {
+            "step": 254,
+            "value": 265137.0
+          }
+        ],
+        "val_iou/terrain": [
+          {
+            "step": 254,
+            "value": 0.8361966609954834
+          }
+        ],
+        "val_precision/terrain": [
+          {
+            "step": 254,
+            "value": 0.8506502509117126
+          }
+        ],
+        "val_recall/terrain": [
+          {
+            "step": 254,
+            "value": 0.9800850749015808
+          }
+        ],
+        "val_dice/terrain": [
+          {
+            "step": 254,
+            "value": 0.9107920527458191
+          }
+        ],
+        "val_support/terrain": [
+          {
+            "step": 254,
+            "value": 39239304.0
+          }
+        ],
+        "val_iou/sky": [
+          {
+            "step": 254,
+            "value": 0.9819876551628113
+          }
+        ],
+        "val_precision/sky": [
+          {
+            "step": 254,
+            "value": 0.9942461848258972
+          }
+        ],
+        "val_recall/sky": [
+          {
+            "step": 254,
+            "value": 0.9876000881195068
+          }
+        ],
+        "val_dice/sky": [
+          {
+            "step": 254,
+            "value": 0.9909120202064514
+          }
+        ],
+        "val_support/sky": [
+          {
+            "step": 254,
+            "value": 19121606.0
+          }
+        ],
+        "val_iou/rail-embedded": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/rail-embedded": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/rail-embedded": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/rail-embedded": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/rail-embedded": [
+          {
+            "step": 254,
+            "value": 16799.0
+          }
+        ],
+        "val_iou/rail-raised": [
+          {
+            "step": 254,
+            "value": 0.6520816087722778
+          }
+        ],
+        "val_precision/rail-raised": [
+          {
+            "step": 254,
+            "value": 0.7070723176002502
+          }
+        ],
+        "val_recall/rail-raised": [
+          {
+            "step": 254,
+            "value": 0.8934412002563477
+          }
+        ],
+        "val_dice/rail-raised": [
+          {
+            "step": 254,
+            "value": 0.7894060611724854
+          }
+        ],
+        "val_support/rail-raised": [
+          {
+            "step": 254,
+            "value": 2969797.0
+          }
+        ],
+        "val_iou/trackbed": [
+          {
+            "step": 254,
+            "value": 0.599784255027771
+          }
+        ],
+        "val_precision/trackbed": [
+          {
+            "step": 254,
+            "value": 0.6821398138999939
+          }
+        ],
+        "val_recall/trackbed": [
+          {
+            "step": 254,
+            "value": 0.8324376940727234
+          }
+        ],
+        "val_dice/trackbed": [
+          {
+            "step": 254,
+            "value": 0.7498314380645752
+          }
+        ],
+        "val_support/trackbed": [
+          {
+            "step": 254,
+            "value": 10643081.0
+          }
+        ],
+        "val_iou/standing-water": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/standing-water": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/standing-water": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/standing-water": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/standing-water": [
+          {
+            "step": 254,
+            "value": 95802.0
+          }
+        ],
+        "val/thin_miou": [
+          {
+            "step": 254,
+            "value": 0.2607857882976532
           }
         ]
       },
-      "observed_step": 199,
+      "observed_step": 349,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -49799,6 +53647,23 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.392378568649292
+          },
+          {
+            "step": 99,
+            "value": 1.4741086959838867
+          },
+          {
+            "step": 149,
+            "value": 0.2923542559146881
+          }
+        ]
+      },
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
