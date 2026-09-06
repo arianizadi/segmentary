@@ -17,7 +17,7 @@ Validation every 250 steps; stop after three checks without a 0.2-point mIoU imp
 | Model | Initialization path | Status | Steps | Best step | Val mIoU (%) |
 | --- | --- | --- | ---: | ---: | ---: |
 | eomt_dinov3_large | rtis_only | training | — | — | — |
-| eomt_dinov3_large | cityscapes_to_rtis | training | — | — | — |
+| eomt_dinov3_large | cityscapes_to_rtis | evaluating | 1272 | — | — |
 | eomt_dinov3_large | railsem19_to_rtis | training | — | — | — |
 | eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | training | — | — | — |
 | eomt_large | rtis_only | training | — | — | — |

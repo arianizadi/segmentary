@@ -693,10 +693,11 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
+      "status": "evaluating",
       "gpu": 1,
       "started_at": "2026-09-06T02:31:23.465501+00:00",
-      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+      "final_step": 1272
     },
     {
       "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
