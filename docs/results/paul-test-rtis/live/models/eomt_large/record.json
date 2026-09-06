@@ -463,7 +463,10 @@
       "config_sha256": "35ad6a372cf2f7b6fc0baf52682d262fe3761d568aa610f6505c7d059b57ee21",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 3,
+      "started_at": "2026-09-06T06:01:49.063967+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "eomt_large--rtis_only--seed-0",
         "model": {

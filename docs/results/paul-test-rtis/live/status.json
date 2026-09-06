@@ -462,7 +462,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2699,
+      "observed_step": 2749,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -472,7 +472,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2849,
+      "observed_step": 2899,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -480,7 +480,7 @@
       "model": "eomt_dinov3_large",
       "protocol": "rtis_only",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2800,
       "observed_step": null,
       "record": "models/eomt_dinov3_large/record.json"
@@ -492,7 +492,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2699,
+      "observed_step": 2749,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -502,7 +502,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2799,
+      "observed_step": 2849,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -522,7 +522,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2545,
+      "observed_step": 2549,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -532,7 +532,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2599,
+      "observed_step": 2649,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -552,7 +552,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1899,
+      "observed_step": 1949,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -562,7 +562,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 254,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -572,7 +572,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 49,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -580,7 +580,7 @@
       "model": "eomt_large",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/eomt_large/record.json"
