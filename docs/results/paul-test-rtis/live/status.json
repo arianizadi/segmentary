@@ -1332,7 +1332,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1899,
+      "observed_step": 1999,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1342,7 +1342,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1849,
+      "observed_step": 1949,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1350,7 +1350,7 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 1781,
       "observed_step": null,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
@@ -1360,9 +1360,9 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1699,
+      "status": "collecting",
+      "final_step": 1781,
+      "observed_step": null,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1370,9 +1370,9 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "railsem19_to_rtis",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1449,
+      "status": "evaluating",
+      "final_step": 1527,
+      "observed_step": null,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1382,7 +1382,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 949,
+      "observed_step": 1017,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1392,7 +1392,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 649,
+      "observed_step": 749,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1402,7 +1402,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 599,
+      "observed_step": 699,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1412,7 +1412,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 449,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1422,7 +1422,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 249,
+      "observed_step": 299,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -1430,7 +1430,7 @@
       "model": "hrnet_w48_ocr",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/hrnet_w48_ocr/record.json"
