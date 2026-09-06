@@ -665,6 +665,14 @@
           {
             "step": 349,
             "value": 1.1346451044082642
+          },
+          {
+            "step": 399,
+            "value": 1.6995470523834229
+          },
+          {
+            "step": 449,
+            "value": 1.3472299575805664
           }
         ],
         "val/miou": [
@@ -1262,7 +1270,7 @@
           }
         ]
       },
-      "observed_step": 349,
+      "observed_step": 449,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1478,6 +1486,10 @@
           {
             "step": 349,
             "value": 1.4728739261627197
+          },
+          {
+            "step": 399,
+            "value": 0.5148725509643555
           }
         ],
         "val/miou": [
@@ -2075,7 +2087,7 @@
           }
         ]
       },
-      "observed_step": 349,
+      "observed_step": 399,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2271,10 +2283,14 @@
           {
             "step": 99,
             "value": 2.3438549041748047
+          },
+          {
+            "step": 149,
+            "value": 1.8691706657409668
           }
         ]
       },
-      "observed_step": 99,
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2469,6 +2485,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.9470267295837402
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2490,7 +2515,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-06T23:36:36.610197+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_resnet50_fpn_ocr--cityscapes_to_rtis--seed-1",
         "model": {
