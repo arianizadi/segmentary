@@ -662,7 +662,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 3199,
+      "observed_step": 3308,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -690,7 +690,7 @@
       "model": "eomt_large",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2800,
       "observed_step": null,
       "record": "models/eomt_large/record.json"
@@ -710,7 +710,7 @@
       "model": "hf_auto_beit_base_ade",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "evaluating",
+      "status": "collecting",
       "final_step": 1527,
       "observed_step": null,
       "record": "models/hf_auto_beit_base_ade/record.json"
@@ -722,7 +722,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1249,
+      "observed_step": 1299,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -732,7 +732,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 549,
+      "observed_step": 599,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -742,7 +742,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 499,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -752,7 +752,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 349,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -762,7 +762,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 349,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -770,7 +770,7 @@
       "model": "hf_auto_beit_base_ade",
       "protocol": "railsem19_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/hf_auto_beit_base_ade/record.json"
