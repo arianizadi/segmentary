@@ -659,6 +659,10 @@
           {
             "step": 599,
             "value": 1.5042840242385864
+          },
+          {
+            "step": 649,
+            "value": 1.0904171466827393
           }
         ],
         "val/miou": [
@@ -1688,7 +1692,7 @@
           }
         ]
       },
-      "observed_step": 599,
+      "observed_step": 649,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1854,10 +1858,18 @@
           {
             "step": 49,
             "value": 5.927399635314941
+          },
+          {
+            "step": 99,
+            "value": 3.603346347808838
+          },
+          {
+            "step": 149,
+            "value": 3.4643664360046387
           }
         ]
       },
-      "observed_step": 49,
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1871,7 +1883,10 @@
       "config_sha256": "efca4b0beeef156473935aaa2f0ca3037e7df1c30ec0161f09818e2535f09110",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 8,
+      "started_at": "2026-09-06T06:19:00.369804+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "eomt_large--rtis_only--seed-2",
         "model": {
@@ -2036,7 +2051,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 5,
+      "started_at": "2026-09-06T06:19:37.068129+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "eomt_large--cityscapes_to_rtis--seed-0",
         "model": {

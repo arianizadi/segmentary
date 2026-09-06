@@ -6,10 +6,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| eomt_large | rtis_only | 0 | training | 599 | — | — | — | — | — | — | — |
-| eomt_large | rtis_only | 1 | training | 49 | — | — | — | — | — | — | — |
-| eomt_large | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| eomt_large | rtis_only | 0 | training | 649 | — | — | — | — | — | — | — |
+| eomt_large | rtis_only | 1 | training | 149 | — | — | — | — | — | — | — |
+| eomt_large | rtis_only | 2 | training | — | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | eomt_large | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | eomt_large | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | eomt_large | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -515,7 +515,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## rtis_only — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T06:19:00.369804+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
@@ -759,7 +759,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T06:19:37.068129+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
