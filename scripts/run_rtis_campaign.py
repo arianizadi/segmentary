@@ -262,7 +262,7 @@ def run_job(root, repo, job, gpu, campaign):
         "PYTHONPATH": str(repo / "src"),
     }
     command = [sys.executable, "-m", "segmentary.train", job["config"], "--devices", "1"]
-    candidates = list(run.glob("step-*.ckpt"))
+    candidates = list(run.glob("step-*.ckpt")) + list(run.glob("best*.ckpt"))
     if (run / "last.ckpt").exists():
         candidates.append(run / "last.ckpt")
     valid = []

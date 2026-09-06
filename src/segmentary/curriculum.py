@@ -208,7 +208,9 @@ def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[Callbac
         filename="best",
         monitor="val/miou",
         mode="max",
-        save_last=True,
+        # Periodic and best snapshots already provide recovery for guarded runs.
+        # Write last.ckpt explicitly once at the end instead of duplicating every best.
+        save_last=train_cfg.early_stopping_patience is None,
         save_top_k=1,
     )
     periodic = ModelCheckpoint(

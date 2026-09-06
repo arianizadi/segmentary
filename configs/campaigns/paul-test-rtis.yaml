@@ -10,6 +10,7 @@ target_steps: 4000
 batch_size: 2
 accumulation: 8
 validation_interval: 250
+checkpoint_interval: 500
 early_stopping_patience: 3
 early_stopping_min_delta: 0.002
 num_workers: 2

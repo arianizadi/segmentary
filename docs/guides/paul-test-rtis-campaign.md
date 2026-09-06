@@ -37,7 +37,7 @@ runtime check: only FPN-ResNet50 and SegFormer-B2 have been checked so far.
 ## Pilot settings
 
 The manifest uses 4,000 RTIS optimizer steps per arm, effective batch 16
-(batch 2 × accumulation 8), validation/checkpoint cadence 250, and the existing
+(batch 2 × accumulation 8), validation every 250 steps and periodic checkpoints every 500, and the existing
 model-specific crop/objective settings. These are a reviewable starting budget,
 not the original Cityscapes/RailSem19 study's 40k/20k protocol. Source pretraining
 compute must be reported separately from new RTIS compute. Transfer arms use
@@ -129,7 +129,7 @@ results are written durably. Only then are that run's `step-*.ckpt` snapshots
 removed, with byte counts, hashes and deletion outcomes under `cleanup/`.
 Best and final full-state checkpoints remain. Failed/interrupted runs retain
 all recovery snapshots. Historical source checkpoints are never cleaned by this
-runner. During training, at most sixteen periodic snapshots accumulate per job.
+runner. During training, at most eight periodic snapshots accumulate per job.
 
 `state/` has job outcomes, `logs/` has model output, `service-logs/` has worker
 and publisher output, `services.json` lists tmux sessions, and
@@ -164,3 +164,5 @@ The guard was added after launch at the user's request. Running jobs are paused
 at their first saved validation checkpoint and resumed with full training state.
 The campaign amendment records old/new code and configuration hashes and resume
 steps; initial training is not discarded or presented as a fresh run.
+
+Guarded runs save best checkpoints and periodic recovery snapshots during training, and write the final `last.ckpt` once at termination. This avoids writing a duplicate multi-gigabyte last checkpoint at every validation improvement.
