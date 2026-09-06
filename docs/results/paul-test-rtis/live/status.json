@@ -672,9 +672,10 @@
       "config_sha256": "da023433ac56a2e17fafa6a6a8f58bcb5e3396cfd472a3d752bfa7c3f3eb0b06",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 0,
+      "started_at": "2026-09-06T02:31:19.812862+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_dinov3_large--cityscapes_to_rtis--seed-0",
@@ -692,9 +693,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 1,
+      "started_at": "2026-09-06T02:31:23.465501+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
@@ -712,9 +714,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-06T02:31:23.391383+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -732,9 +735,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 3,
+      "started_at": "2026-09-06T02:31:23.443412+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_large--rtis_only--seed-0",
@@ -744,9 +748,10 @@
       "config_sha256": "2e20f5ad695886b4b49d5086f63a6a08fdaa55c28d4e2797c1e5ba76047427b7",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-06T02:31:19.830270+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_large--cityscapes_to_rtis--seed-0",
@@ -764,9 +769,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 5,
+      "started_at": "2026-09-06T02:31:23.353790+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_large--railsem19_to_rtis--seed-0",
@@ -784,9 +790,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 6,
+      "started_at": "2026-09-06T02:31:23.373690+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "eomt_large--cityscapes_to_railsem19_to_rtis--seed-0",
@@ -804,9 +811,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-06T02:31:23.159810+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_beit_base_ade--rtis_only--seed-0",
@@ -816,9 +824,10 @@
       "config_sha256": "27e0e818feb87c50dd65499347f0e95a8b78e3d85e2e11b005af65c31f5d02ee",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 8,
+      "started_at": "2026-09-06T02:31:19.847177+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0",
@@ -836,9 +845,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
-      "resume_step": 509,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 9,
+      "started_at": "2026-09-06T02:31:21.647489+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_beit_base_ade--railsem19_to_rtis--seed-0",
