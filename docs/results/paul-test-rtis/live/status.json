@@ -1890,9 +1890,9 @@
       "model": "native_efficientnet_b0_deeplabv3plus",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2799,
+      "status": "collecting",
+      "final_step": 3054,
+      "observed_step": null,
       "record": "models/native_efficientnet_b0_deeplabv3plus/record.json"
     },
     {
@@ -1932,7 +1932,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2099,
+      "observed_step": 2449,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -1940,9 +1940,9 @@
       "model": "native_mobilenetv3_large_deeplabv3plus",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1499,
+      "status": "collecting",
+      "final_step": 1781,
+      "observed_step": null,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -1952,7 +1952,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1449,
+      "observed_step": 1799,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -1962,7 +1962,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1249,
+      "observed_step": 1549,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -1972,7 +1972,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 1399,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -1982,7 +1982,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 549,
+      "observed_step": 849,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -1992,7 +1992,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 149,
+      "observed_step": 449,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -2002,7 +2002,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 49,
+      "observed_step": 399,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
@@ -2012,7 +2012,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 299,
       "record": "models/native_mobilenetv3_large_deeplabv3plus/record.json"
     },
     {
