@@ -631,6 +631,31 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.3724093437194824
+          },
+          {
+            "step": 99,
+            "value": 0.9424094557762146
+          },
+          {
+            "step": 149,
+            "value": 0.6831638813018799
+          },
+          {
+            "step": 199,
+            "value": 0.7411158680915833
+          },
+          {
+            "step": 249,
+            "value": 0.4633137583732605
+          }
+        ]
+      },
+      "observed_step": 249,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -812,6 +837,27 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.9027345180511475
+          },
+          {
+            "step": 99,
+            "value": 1.9977753162384033
+          },
+          {
+            "step": 149,
+            "value": 0.9737826585769653
+          },
+          {
+            "step": 199,
+            "value": 0.9146522283554077
+          }
+        ]
+      },
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
