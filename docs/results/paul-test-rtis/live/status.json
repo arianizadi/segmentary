@@ -522,7 +522,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 49,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -540,7 +540,7 @@
       "model": "eomt_dinov3_large",
       "protocol": "railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/eomt_dinov3_large/record.json"
