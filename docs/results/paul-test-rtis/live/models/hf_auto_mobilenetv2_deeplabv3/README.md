@@ -6,10 +6,10 @@ Mud-pumping detection is the primary application. Current pilot checkpoints were
 
 | Model | Initialization path | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_mobilenetv2_deeplabv3 | rtis_only | training | 2149 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | rtis_only | training | 2899 | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | completed | 1781 | 1018 | 1.38 | 2.59 | 2.86 | 1.67 | 21.79 | 23.00 |
 | hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | completed | 1272 | 509 | 2.29 | 2.68 | 13.43 | 2.34 | 25.51 | 26.93 |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | training | 1599 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | training | 2299 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 images, held out. One seed; visually grouped split with unconfirmed recording identities. Percentages are descriptive, not statistically established rankings.
 
@@ -95,6 +95,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1527 | 21.05 | 0.05 |
 | 1781 | 20.26 | 0.10 |
 | 2036 | 19.73 | 0.44 |
+| 2290 | 22.18 | 0.42 |
+| 2545 | 19.96 | 0.16 |
+| 2799 | 20.41 | 0.99 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1064,6 +1067,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1017 | 23.85 | 2.30 |
 | 1272 | 24.64 | 2.33 |
 | 1527 | 26.43 | 4.02 |
+| 1781 | 26.39 | 2.47 |
+| 2036 | 27.17 | 3.43 |
+| 2290 | 29.29 | 3.50 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
