@@ -7,17 +7,17 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | native_mobilenetv3_large_deeplabv3plus | rtis_only | 0 | completed | 1527 | 254 | 2.27 | 2.53 | 18.02 | 0.16 | 20.78 | 21.93 |
-| native_mobilenetv3_large_deeplabv3plus | rtis_only | 1 | collecting | 2036 | 2036 | 0.47 | 0.92 | 0.97 | 0.48 | 28.45 | 33.19 |
+| native_mobilenetv3_large_deeplabv3plus | rtis_only | 1 | completed | 2036 | 2036 | 0.47 | 0.92 | 0.97 | 0.48 | 28.45 | 33.19 |
 | native_mobilenetv3_large_deeplabv3plus | rtis_only | 2 | completed | 1781 | 509 | 1.99 | 2.44 | 9.66 | 0.88 | 22.70 | 25.22 |
-| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_rtis | 0 | training | 1949 | — | — | — | — | — | — | — |
-| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_rtis | 1 | training | 1349 | — | — | — | — | — | — | — |
-| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_rtis | 2 | training | 1349 | — | — | — | — | — | — | — |
-| native_mobilenetv3_large_deeplabv3plus | railsem19_to_rtis | 0 | training | 1099 | — | — | — | — | — | — | — |
-| native_mobilenetv3_large_deeplabv3plus | railsem19_to_rtis | 1 | training | 949 | — | — | — | — | — | — | — |
-| native_mobilenetv3_large_deeplabv3plus | railsem19_to_rtis | 2 | training | 399 | — | — | — | — | — | — | — |
-| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 0 | training | 49 | — | — | — | — | — | — | — |
-| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
-| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_rtis | 0 | training | 2099 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_rtis | 1 | training | 1499 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_rtis | 2 | training | 1449 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | railsem19_to_rtis | 0 | training | 1249 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | railsem19_to_rtis | 1 | training | 1099 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | railsem19_to_rtis | 2 | training | 549 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 0 | training | 149 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 1 | training | 49 | — | — | — | — | — | — | — |
+| native_mobilenetv3_large_deeplabv3plus | cityscapes_to_railsem19_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -695,7 +695,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## rtis_only — seed 1
 
-Status: **collecting**. Started: 2026-09-06T19:26:35.267028+00:00. Finished: —.
+Status: **completed**. Started: 2026-09-06T19:26:35.267028+00:00. Finished: 2026-09-06T19:49:30.229086+00:00.
 
 Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": null, "encoder_weights": null, "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": {"auxiliary_heads": [], "backbone": {"in_channels": 3, "kind": "timm", "name": "mobilenetv3_large_100.ra_in1k", "out_indices": [1, 2, 3, 4], "weights": "pretrained"}, "head": {"activation": "relu", "channels": 160, "dilation_rates": [6, 12, 18], "dropout": 0.1, "high_index": 3, "kind": "deeplabv3plus", "low_channels": 32, "low_index": 0, "norm": "group"}, "neck": {"kind": "identity"}, "task": "multiclass"}, "revision": null, "smp_arch": null, "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -737,7 +737,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.50 |
 | Best full-state checkpoint (MiB) | 123.69 |
 | Final full-state checkpoint (MiB) | 123.68 |
-| Audited periodic checkpoints removed (GiB) | — |
+| Audited periodic checkpoints removed (GiB) | 0.48 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -987,6 +987,45 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | tram-track | 56179 | 2.47 | 6.22 | 3.93 | 4.82 | 0.00 |
 | truck | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
 | vegetation-overgrowth | 5901821 | 20.16 | 82.26 | 21.08 | 33.56 | 54.55 |
+
+### Full-run accounting
+
+| Measurement | Value |
+| --- | --- |
+| Full GPU-reserved wall seconds, all recorded worker attempts | 1374.97 |
+| Full reserved GPU-hours | 0.38 |
+| Whole-run timing complete | True |
+
+| Phase | Wall seconds including failed attempts |
+| --- | --- |
+| training | 1262.81 |
+| diagnostics | 70.58 |
+| performance | 23.39 |
+
+GPU-reserved time includes model loading, training, validation, collection, profiling, checkpoint I/O and orchestration while the worker owns one GPU. It is not GPU kernel-active time. Phase timings and sampled device memory/power/utilization are retained separately; sampled device memory is not the allocator high-water mark.
+
+### Train/validation and raw/EMA diagnostics
+
+| Checkpoint / weights / split | Images | Mud IoU (%) | Mud precision (%) | Mud recall (%) |
+| --- | --- | --- | --- | --- |
+| best-auto-train / raw | 220 | 92.56 | 97.21 | 95.08 |
+| best-auto-val / raw | 37 | 0.47 | 0.92 | 0.97 |
+| best-alternate-val / ema | 37 | 0.58 | 1.18 | 1.12 |
+| final-auto-val / raw | 37 | 0.47 | 0.92 | 0.97 |
+
+Train uses the evaluation transform without augmentation. Compare mud train/validation metrics for the same selected weights. Alternate EMA on running-stat BatchNorm is explicitly uncalibrated and is diagnostic only. Score-threshold curves use uncalibrated normalized scores and are pixel-level diagnostics, not event detection rates or a selected deployment operating point.
+
+### Downloadable evidence
+
+- best-auto-train: [per-image.csv](rtis_only--seed-1/best-auto-train/per-image.csv) · [per-image-confusion.json.gz](rtis_only--seed-1/best-auto-train/per-image-confusion.json.gz) · [groups.json](rtis_only--seed-1/best-auto-train/groups.json) · [mud-score-curves.json](rtis_only--seed-1/best-auto-train/mud-score-curves.json)
+- best-auto-val: [per-image.csv](rtis_only--seed-1/best-auto-val/per-image.csv) · [per-image-confusion.json.gz](rtis_only--seed-1/best-auto-val/per-image-confusion.json.gz) · [groups.json](rtis_only--seed-1/best-auto-val/groups.json) · [mud-score-curves.json](rtis_only--seed-1/best-auto-val/mud-score-curves.json) · [examples.jpg](rtis_only--seed-1/best-auto-val/examples.jpg)
+- best-alternate-val: [per-image.csv](rtis_only--seed-1/best-alternate-val/per-image.csv) · [per-image-confusion.json.gz](rtis_only--seed-1/best-alternate-val/per-image-confusion.json.gz) · [groups.json](rtis_only--seed-1/best-alternate-val/groups.json) · [mud-score-curves.json](rtis_only--seed-1/best-alternate-val/mud-score-curves.json)
+- final-auto-val: [per-image.csv](rtis_only--seed-1/final-auto-val/per-image.csv) · [per-image-confusion.json.gz](rtis_only--seed-1/final-auto-val/per-image-confusion.json.gz) · [groups.json](rtis_only--seed-1/final-auto-val/groups.json) · [mud-score-curves.json](rtis_only--seed-1/final-auto-val/mud-score-curves.json)
+- resources: [telemetry.csv](rtis_only--seed-1/resources/telemetry.csv)
+
+![Selected-checkpoint validation examples](rtis_only--seed-1/best-auto-val/examples.jpg)
+
+Examples are two lowest and two highest mud-IoU positive images, plus up to two negative images with the most false-positive mud pixels. They are targeted diagnostic examples, not random samples. Green: true positive; red: false positive; yellow: false negative. Full predictions remain on HDRFS.
 
 ### Validation tracking
 
@@ -2076,6 +2115,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1272 | 25.49 | 0.05 |
 | 1527 | 26.65 | 0.67 |
 | 1781 | 27.27 | 0.40 |
+| 2036 | 26.94 | 0.24 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3153,6 +3193,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 27.22 | 0.09 |
 | 508 | 26.45 | 0.27 |
 | 763 | 34.17 | 0.74 |
+| 1017 | 34.66 | 1.22 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3419,6 +3460,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 27.35 | 0.02 |
+| 508 | 28.84 | 0.19 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -4144,7 +4186,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T19:49:30.350882+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": null, "encoder_weights": null, "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": {"auxiliary_heads": [], "backbone": {"in_channels": 3, "kind": "timm", "name": "mobilenetv3_large_100.ra_in1k", "out_indices": [1, 2, 3, 4], "weights": "pretrained"}, "head": {"activation": "relu", "channels": 160, "dilation_rates": [6, 12, 18], "dropout": 0.1, "high_index": 3, "kind": "deeplabv3plus", "low_channels": 32, "low_index": 0, "norm": "group"}, "neck": {"kind": "identity"}, "task": "multiclass"}, "revision": null, "smp_arch": null, "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
