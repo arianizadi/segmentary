@@ -6,7 +6,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| native_resnet101_uper | rtis_only | 0 | training | — | — | — | — | — | — | — | — |
+| native_resnet101_uper | rtis_only | 0 | training | 254 | — | — | — | — | — | — | — |
 | native_resnet101_uper | rtis_only | 1 | queued | — | — | — | — | — | — | — | — |
 | native_resnet101_uper | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
 | native_resnet101_uper | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -95,6 +95,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 17.83 | 0.37 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
