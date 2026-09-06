@@ -3,8 +3,8 @@
     "schema_version": 1,
     "dataset": "paul-test-rtis",
     "created_at": "2026-09-06T01:42:24.078964+00:00",
-    "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750",
-    "plan_sha256": "fe6fc49630a2aa33843aceea23d4ef770bf6428c7c01c0c3f9d2e39f697b28ad",
+    "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+    "plan_sha256": "e2d790847e8837179a988a14e9e2ee49dd441e9dbe1412280b1f079e349e9e4e",
     "split_sha256": "71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d",
     "grouping_status": "provisional_until_recording_provenance_confirmed",
     "source_checkpoints": {
@@ -446,9 +446,37 @@
     "target_steps": 4000,
     "selection": "best validation checkpoint; auto raw/EMA-safe weights; no TTA",
     "test": "held out; not evaluated",
-    "retention": "Keep best and final; delete periodic snapshots only after successful validation. Keep failed-run checkpoints for recovery.",
+    "retention": "Best and periodic snapshots during training; final last.ckpt at termination. Remove periodic snapshots only after successful best-checkpoint evaluation. Preserve historical source checkpoints.",
     "preflight_code_sha": "2cf41f9f731751cbde5c8f73e915ca02f273d249",
-    "revision_note": "Added initial live report before launch; training, runner, configs and taxonomy identical to smoke-tested preflight revision."
+    "revision_note": "Added initial live report before launch; training, runner, configs and taxonomy identical to smoke-tested preflight revision.",
+    "early_stopping": {
+      "monitor": "val/miou",
+      "mode": "max",
+      "patience": 3,
+      "min_delta": 0.002,
+      "validation_interval": 250
+    },
+    "amendments": [
+      {
+        "at": "2026-09-06T02:14:57.063274+00:00",
+        "reason": "User requested protection against overfitting on the small dataset",
+        "previous_code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750",
+        "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
+        "resumed_jobs": 10,
+        "resume_steps": [
+          509,
+          509,
+          509,
+          509,
+          509,
+          509,
+          509,
+          509,
+          509,
+          509
+        ]
+      }
+    ]
   },
   "jobs": [
     {
@@ -456,20 +484,19 @@
       "model": "eomt_dinov3_large",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "2655929d7656cdc43aff97ffe139e7bdfca66c56a04d851fedf7a77fea439d79",
+      "config_sha256": "da023433ac56a2e17fafa6a6a8f58bcb5e3396cfd472a3d752bfa7c3f3eb0b06",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "training",
-      "gpu": 0,
-      "started_at": "2026-09-06T01:49:55.121396+00:00",
-      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
+      "status": "queued",
+      "resume_step": 509,
+      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
     },
     {
       "name": "eomt_dinov3_large--cityscapes_to_rtis--seed-0",
       "model": "eomt_dinov3_large",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "cd34e7aae69c90ca785b7101b2d09223c63524fa3b1365e0488afb2ca7512218",
+      "config_sha256": "ba3bd36c0a4827a9f03b3613b05c07970285256eb2b2cefd08f033c8e1db627c",
       "source_checkpoint": {
         "name": "eomt_dinov3_large--cityscapes--seed-0",
         "model": "eomt_dinov3_large",
@@ -480,17 +507,16 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
-      "gpu": 1,
-      "started_at": "2026-09-06T01:49:58.682529+00:00",
-      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
+      "status": "queued",
+      "resume_step": 509,
+      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
     },
     {
       "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
       "model": "eomt_dinov3_large",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "840cc6b821ebe82c1747b7fcf4ff208d03ebe36590286c0dad0a4d4634a8c73e",
+      "config_sha256": "7a8ea288f5a05e928b4aff1557e48e7c367d423bd2ff3f7586e7c3b730d23e3d",
       "source_checkpoint": {
         "name": "eomt_dinov3_large--railsem19--seed-0",
         "model": "eomt_dinov3_large",
@@ -501,17 +527,16 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
-      "gpu": 2,
-      "started_at": "2026-09-06T01:49:58.599441+00:00",
-      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
+      "status": "queued",
+      "resume_step": 509,
+      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
     },
     {
       "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
       "model": "eomt_dinov3_large",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "53d394ba48ef628f9344e66603aed9aa1bc75e7ecdc97adb78b29be5c72228fa",
+      "config_sha256": "4e4abee4f98717a639cf4d17a28cf4c344c63adf945759ab4ae51a657032d31e",
       "source_checkpoint": {
         "name": "eomt_dinov3_large--cityscapes_to_railsem19--seed-0",
         "model": "eomt_dinov3_large",
@@ -522,30 +547,28 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
-      "gpu": 3,
-      "started_at": "2026-09-06T01:49:58.469551+00:00",
-      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
+      "status": "queued",
+      "resume_step": 509,
+      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
     },
     {
       "name": "eomt_large--rtis_only--seed-0",
       "model": "eomt_large",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "a8021352f45e8d9149f24855f9edecfbe0f4bc2399bc7ad2d5fde67bdb8c0db6",
+      "config_sha256": "2e20f5ad695886b4b49d5086f63a6a08fdaa55c28d4e2797c1e5ba76047427b7",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "training",
-      "gpu": 4,
-      "started_at": "2026-09-06T01:49:55.135903+00:00",
-      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
+      "status": "queued",
+      "resume_step": 509,
+      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
     },
     {
       "name": "eomt_large--cityscapes_to_rtis--seed-0",
       "model": "eomt_large",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "643daca12677ca9529d30988530ebd20e52d0724b6f493b0fd5eaaa6b72d8a87",
+      "config_sha256": "3e8a785bfe066ef4ea5cf68b242a72bc562a9c5abae4fee55f9661ad303b462f",
       "source_checkpoint": {
         "name": "eomt_large--cityscapes--seed-0",
         "model": "eomt_large",
@@ -556,17 +579,16 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
-      "gpu": 5,
-      "started_at": "2026-09-06T01:49:58.446025+00:00",
-      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
+      "status": "queued",
+      "resume_step": 509,
+      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
     },
     {
       "name": "eomt_large--railsem19_to_rtis--seed-0",
       "model": "eomt_large",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "a749c1b523c84e96fc8145dd37a00c6dbb3af41362c00c16d935cd1f2694a2db",
+      "config_sha256": "1afdec1df289094d39c190e596074b927d79812530983b79e96df7d2f3432636",
       "source_checkpoint": {
         "name": "eomt_large--railsem19--seed-0",
         "model": "eomt_large",
@@ -577,17 +599,16 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
-      "gpu": 6,
-      "started_at": "2026-09-06T01:49:58.498781+00:00",
-      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
+      "status": "queued",
+      "resume_step": 509,
+      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
     },
     {
       "name": "eomt_large--cityscapes_to_railsem19_to_rtis--seed-0",
       "model": "eomt_large",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "462f93d57f7cdf16682249d12394502d804e76c55bc714604f0c8cecd82728eb",
+      "config_sha256": "26880e9a20baa48996ba4d50d1581ba839fa81e3da49bdb3d10ad78fc919848c",
       "source_checkpoint": {
         "name": "eomt_large--cityscapes_to_railsem19--seed-0",
         "model": "eomt_large",
@@ -598,30 +619,28 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
-      "gpu": 7,
-      "started_at": "2026-09-06T01:49:58.734415+00:00",
-      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
+      "status": "queued",
+      "resume_step": 509,
+      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
     },
     {
       "name": "hf_auto_beit_base_ade--rtis_only--seed-0",
       "model": "hf_auto_beit_base_ade",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "5e9a3493f374924fc4f28471b3130fdabe31b6116c82641deb2b555bdd76a481",
+      "config_sha256": "27e0e818feb87c50dd65499347f0e95a8b78e3d85e2e11b005af65c31f5d02ee",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "training",
-      "gpu": 8,
-      "started_at": "2026-09-06T01:49:55.157423+00:00",
-      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
+      "status": "queued",
+      "resume_step": 509,
+      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
     },
     {
       "name": "hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0",
       "model": "hf_auto_beit_base_ade",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "cbf9256bfff220a2c95c549dfb96a45924be3d74ed24c5edee636b56d9cf0001",
+      "config_sha256": "feb204009ce150f95a1a3580ae2b03319fcf15c34ea4d0db0a3330c45fed1f1e",
       "source_checkpoint": {
         "name": "hf_auto_beit_base_ade--cityscapes--seed-0",
         "model": "hf_auto_beit_base_ade",
@@ -632,17 +651,16 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "training",
-      "gpu": 9,
-      "started_at": "2026-09-06T01:49:56.797573+00:00",
-      "code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750"
+      "status": "queued",
+      "resume_step": 509,
+      "note": "Resuming after user-requested early-stopping upgrade; intentional pause, not model failure"
     },
     {
       "name": "hf_auto_beit_base_ade--railsem19_to_rtis--seed-0",
       "model": "hf_auto_beit_base_ade",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "f581d815f48233c74fba8f906af661e8541b445c8e8bf5c17c190179c4015581",
+      "config_sha256": "f10ba7358a169a228e929b84cb6acd953e7b09729f30ddde9ab9f8d0f8134a55",
       "source_checkpoint": {
         "name": "hf_auto_beit_base_ade--railsem19--seed-0",
         "model": "hf_auto_beit_base_ade",
@@ -660,7 +678,7 @@
       "model": "hf_auto_beit_base_ade",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "ed3b8576b13b81e57b4b3d02d5540bbcab266ab90fb951a05a8f003279e918db",
+      "config_sha256": "61c4a1cd49c273dc85d4df774285f242cd73143099e3ff1b0979d81a5867d415",
       "source_checkpoint": {
         "name": "hf_auto_beit_base_ade--cityscapes_to_railsem19--seed-0",
         "model": "hf_auto_beit_base_ade",
@@ -678,7 +696,7 @@
       "model": "hf_auto_mobilenetv2_deeplabv3",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "83675e88b9dbeb4f3982418bb1ee71d8a0522e58c8200c606522625c59613d03",
+      "config_sha256": "2bb0ec7a862af1c70e004aa4f5d101238b9e092b28c399e0fe831476958c107e",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -688,7 +706,7 @@
       "model": "hf_auto_mobilenetv2_deeplabv3",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "3c8427b79f4fa0a39e419ca663e257cc2f60d49e5d49fbb1ce0444ceab529e0b",
+      "config_sha256": "3ff92a0581f9f52700a8f7b1a925711291e937c5cf750257b2c863c5aaa0b662",
       "source_checkpoint": {
         "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes--seed-0",
         "model": "hf_auto_mobilenetv2_deeplabv3",
@@ -706,7 +724,7 @@
       "model": "hf_auto_mobilenetv2_deeplabv3",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "397b2fb518b860ce6629beefa17f2a4c263333b5012f9d71bf104f95476ffbf5",
+      "config_sha256": "74934ad8bd98c64d899e54c2091fc9b838ca5c7e3a4a0d2518e52cc320dcf442",
       "source_checkpoint": {
         "name": "hf_auto_mobilenetv2_deeplabv3--railsem19--seed-0",
         "model": "hf_auto_mobilenetv2_deeplabv3",
@@ -724,7 +742,7 @@
       "model": "hf_auto_mobilenetv2_deeplabv3",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "345ad17fde66f1d3d67c21844b00106aa6d710426c19b1f613d22dd96f743e51",
+      "config_sha256": "5f304df0d5d959b99830e543a1a1d1039fb65fada91345aac742bda61d3db47c",
       "source_checkpoint": {
         "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19--seed-0",
         "model": "hf_auto_mobilenetv2_deeplabv3",
@@ -742,7 +760,7 @@
       "model": "hf_auto_mobilevit_xxs_deeplabv3",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "6f22a2cd0479d33c56a3feadb0a824892f95759c2e0b22d21656659f51b840fe",
+      "config_sha256": "3bc0b61648ff9b8ff901950ec2eee1b2e4ea4a78bd61ca087e988738776cb647",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -752,7 +770,7 @@
       "model": "hf_auto_mobilevit_xxs_deeplabv3",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "56e8d57e4c1a96d5689ab93639c62422c54518b6ba278e0a64d36ec28242bc88",
+      "config_sha256": "2c047c4dc000ffc54ab10c9bcae1b190b72acc3acc9a4dad377181f6c9fe0c2c",
       "source_checkpoint": {
         "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes--seed-0",
         "model": "hf_auto_mobilevit_xxs_deeplabv3",
@@ -770,7 +788,7 @@
       "model": "hf_auto_mobilevit_xxs_deeplabv3",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "8bb45017562a987d4058f2859e3f1c518e20d290d7cee98c724d2911d996270b",
+      "config_sha256": "f77bcd38765f7d525936ceaf9324a88edd6de4d6cb58b6a1c2b59e120b053606",
       "source_checkpoint": {
         "name": "hf_auto_mobilevit_xxs_deeplabv3--railsem19--seed-0",
         "model": "hf_auto_mobilevit_xxs_deeplabv3",
@@ -788,7 +806,7 @@
       "model": "hf_auto_mobilevit_xxs_deeplabv3",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "a6b00887c769dd6b9b0af5387e30f31ce8617162a4224995a257e2ce942e0910",
+      "config_sha256": "61ac445b0dd7f0cfefc6df293e4ab22358d8abc1825214552e623fb05ab2d6e8",
       "source_checkpoint": {
         "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19--seed-0",
         "model": "hf_auto_mobilevit_xxs_deeplabv3",
@@ -806,7 +824,7 @@
       "model": "hf_auto_mobilevitv2_deeplabv3",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "fe60e0ae75a391302b14e6d3a6192214679ff1a7bd205d1e62e8e3a89c93d436",
+      "config_sha256": "9fd81999c461bdc1506e7b1a78de71cd5772e54bf3fe9bc4038b871dc6ff7751",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -816,7 +834,7 @@
       "model": "hf_auto_mobilevitv2_deeplabv3",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "b4c904bc592055ed14827417e81893e2ac483568174e99d9433450309924eb2d",
+      "config_sha256": "e6fd7e978bee4d69070b50119f609e75981a9348d66d604e3122bf5e88e462f0",
       "source_checkpoint": {
         "name": "hf_auto_mobilevitv2_deeplabv3--cityscapes--seed-0",
         "model": "hf_auto_mobilevitv2_deeplabv3",
@@ -834,7 +852,7 @@
       "model": "hf_auto_mobilevitv2_deeplabv3",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "8bdbdf241616dee7ab17831f46baeb6488a872279b45461d3203dc3d490300c9",
+      "config_sha256": "81ba7e1eb009196c03ad87f9a9ab32c2af00f8ec2f339a612a24fccac774bca7",
       "source_checkpoint": {
         "name": "hf_auto_mobilevitv2_deeplabv3--railsem19--seed-0",
         "model": "hf_auto_mobilevitv2_deeplabv3",
@@ -852,7 +870,7 @@
       "model": "hf_auto_mobilevitv2_deeplabv3",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "bff76512367a86367f3990ac16ae7f7e05223c3c4637a8a87b0c9ee0ac332c68",
+      "config_sha256": "027eec410b61d644b8070d4e37cc0e95249f7f6afc083673ab723408d648dd83",
       "source_checkpoint": {
         "name": "hf_auto_mobilevitv2_deeplabv3--cityscapes_to_railsem19--seed-0",
         "model": "hf_auto_mobilevitv2_deeplabv3",
@@ -870,7 +888,7 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "a47783b03f99e6f8cf9610c20f56ff6684a8696a04520c1ef098eb466b21a8ee",
+      "config_sha256": "617e5aedab1eeecf9c0adef8b88900799f0846f3b99cc5a419cb9c21f7d1c356",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -880,7 +898,7 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "bc1ed47ac81ac80a0a97b0a7311e52d6c4a346bd9a268fe1a8652ab1342451aa",
+      "config_sha256": "2a535e591134c2d9fc382eb322a4cf2298b2056d847c02612f9f575e7e52d239",
       "source_checkpoint": {
         "name": "hf_auto_segformer_b0--cityscapes--seed-0",
         "model": "hf_auto_segformer_b0",
@@ -898,7 +916,7 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "0daa920fa8d6365dab9526e52d9b7c951272e7cd6cbe586a524982d7636398f0",
+      "config_sha256": "0ba943b7e2c631f24d25d1b89547b60071090fa446ea240fd941a3b9410f70e9",
       "source_checkpoint": {
         "name": "hf_auto_segformer_b0--railsem19--seed-0",
         "model": "hf_auto_segformer_b0",
@@ -916,7 +934,7 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "2ee2c4b921012abaf46751d46d41f5917433f723cf8738b82e3d24b03465d562",
+      "config_sha256": "e569da18246b2ef873779fcb69c67a978695d9171ca50125b20da6f66dfe6048",
       "source_checkpoint": {
         "name": "hf_auto_segformer_b0--cityscapes_to_railsem19--seed-0",
         "model": "hf_auto_segformer_b0",
@@ -934,7 +952,7 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "10a04e63e0d18bc8a9cf9231e4a48ef7470966810d8b8661e38b4bf9a689a68c",
+      "config_sha256": "e4b51825cbc44489a177cef57983fb7667d6ba6d773e3862002618a849314dba",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -944,7 +962,7 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "3d0b788d71508b33cbd61479797b855bff8ab9a957dffdec4fe89ae1f7688907",
+      "config_sha256": "c287a6e4616687e95ff4f991811ff1a9f4b405e07071456dc38e4adf9a0f5bf3",
       "source_checkpoint": {
         "name": "hf_auto_upernet_swin_tiny--cityscapes--seed-0",
         "model": "hf_auto_upernet_swin_tiny",
@@ -962,7 +980,7 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "60a031b6574136137b2802a737b1c71b8e0f239eef9ca053678ba72951def4d5",
+      "config_sha256": "d7883c082515e0e4562ff6196d3eea5b3a2110b967f010b4d6afdbcd7aaa9910",
       "source_checkpoint": {
         "name": "hf_auto_upernet_swin_tiny--railsem19--seed-0",
         "model": "hf_auto_upernet_swin_tiny",
@@ -980,7 +998,7 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "b47367b478dc2c5d1af556bc76db40369da483b25aea4d7d61d11890ab041f0e",
+      "config_sha256": "4849429df03b5930dfa336fef7ac6cf1286af2bf6f04dd5f313266ee99b5029f",
       "source_checkpoint": {
         "name": "hf_auto_upernet_swin_tiny--cityscapes_to_railsem19--seed-0",
         "model": "hf_auto_upernet_swin_tiny",
@@ -998,7 +1016,7 @@
       "model": "hrnet_w48_ocr",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "1e1e0a0f64e0689254177aeefa39c3d9395aecf7ffb863d59d88f2f0e74bcedf",
+      "config_sha256": "7fba08962127de2d1057f9ae2728361665d96ce2e2b2d2f2ad5f394c1d5dab3c",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1008,7 +1026,7 @@
       "model": "hrnet_w48_ocr",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "add97e7fff56d47a7778496b13f76833b451ebf08f07d346322f31032ae30071",
+      "config_sha256": "5049f4c4e532a3f3799a7d8823a20778f3c877fc5b7964f5accda86011ff765c",
       "source_checkpoint": {
         "name": "hrnet_w48_ocr--cityscapes--seed-0",
         "model": "hrnet_w48_ocr",
@@ -1026,7 +1044,7 @@
       "model": "hrnet_w48_ocr",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "67cf871a50f5a4738682a2d691f5c5fb0aba0444778b0e7ee3ddd8ee6729eca2",
+      "config_sha256": "907c28f360e80f35704301a5a6965e601221761cc42b82830aa0e678c54e162c",
       "source_checkpoint": {
         "name": "hrnet_w48_ocr--railsem19--seed-0",
         "model": "hrnet_w48_ocr",
@@ -1044,7 +1062,7 @@
       "model": "hrnet_w48_ocr",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "010b73acdfd48ee1d5c4b5937fcea010528371e8c7d10bec05b5f84c18fe45d7",
+      "config_sha256": "b423e71a324bd50c82afebda720e539e88c745e0064b0c691cf80ce48e08a6c8",
       "source_checkpoint": {
         "name": "hrnet_w48_ocr--cityscapes_to_railsem19--seed-0",
         "model": "hrnet_w48_ocr",
@@ -1062,7 +1080,7 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "08af8e27eec2a0b5d939009e04f1770ec988a8b61a6f211d99939cb89a317a03",
+      "config_sha256": "40724c76d89776c8c8a54c52079ea4083d348b2e1f48bc05d6548538f807af4a",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1072,7 +1090,7 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "3ea2737dcab537860bea90b90922af3c903cf3eb95f35b5113221b93ee26fefa",
+      "config_sha256": "f61d3d9dd4f4fac457b322d0ceadac353c4aa7b8b6b4744e4f611246990ee396",
       "source_checkpoint": {
         "name": "native_convnext_tiny_channelmapper_dpt--cityscapes--seed-0",
         "model": "native_convnext_tiny_channelmapper_dpt",
@@ -1090,7 +1108,7 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "7c119473b813b775ca817ee2e43d82baf707887cda33e2423831fee58f167506",
+      "config_sha256": "b1df385c638c2b9e97d12f259f5fff36265cf1b915b8a5f1f94b724a9e64618f",
       "source_checkpoint": {
         "name": "native_convnext_tiny_channelmapper_dpt--railsem19--seed-0",
         "model": "native_convnext_tiny_channelmapper_dpt",
@@ -1108,7 +1126,7 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "95ae7cc4e11a34bd624f30bff0d90e96199dcac27bb2282556e389038c437a76",
+      "config_sha256": "0fcd97cfba829085a48f26aafba34cd5492f3ccae1c74d6c2232105630952a71",
       "source_checkpoint": {
         "name": "native_convnext_tiny_channelmapper_dpt--cityscapes_to_railsem19--seed-0",
         "model": "native_convnext_tiny_channelmapper_dpt",
@@ -1126,7 +1144,7 @@
       "model": "native_convnext_tiny_uper",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "bd85149c0f6d69ad6330fe972827d956567778b4080860cd20b2e6574fc3bb49",
+      "config_sha256": "efb1aca1ec6d8d460507b2739f4e2894b9b243ac57bfbd07117c5832a1bb7c61",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1136,7 +1154,7 @@
       "model": "native_convnext_tiny_uper",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "813321e40ccb8e2198ceed11c4cda3b2d4eff63160293208fb64896c6b13b919",
+      "config_sha256": "e6df002a0ccc12f925c4ab2859712ac0588bbd8220e433f40c2e13eda7a1aa81",
       "source_checkpoint": {
         "name": "native_convnext_tiny_uper--cityscapes--seed-0",
         "model": "native_convnext_tiny_uper",
@@ -1154,7 +1172,7 @@
       "model": "native_convnext_tiny_uper",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "5d3ec5bc6b4cce4c71f9729f47ac87d00fd1ef5d83b7d68fad80a149c952b943",
+      "config_sha256": "e7fe584c663ce542ecdc2c0f74bf7bd18e57b02d006a5facc4f3781dae184bfd",
       "source_checkpoint": {
         "name": "native_convnext_tiny_uper--railsem19--seed-0",
         "model": "native_convnext_tiny_uper",
@@ -1172,7 +1190,7 @@
       "model": "native_convnext_tiny_uper",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "b431bae4a8c7cf9fa80c22c0f2c848f3ba2b870e2a2f2ca578c063046b8922d4",
+      "config_sha256": "2d9b25ac688a00cf86eb7b3ca6075c4c8f097fe370f65c93fa3f0aac7f1ab43c",
       "source_checkpoint": {
         "name": "native_convnext_tiny_uper--cityscapes_to_railsem19--seed-0",
         "model": "native_convnext_tiny_uper",
@@ -1190,7 +1208,7 @@
       "model": "native_efficientnet_b0_deeplabv3plus",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "884d09bca683488275028df7ae3abb3d53fa6d01ec5a6504d5e33313c664f3e4",
+      "config_sha256": "2f83bae65560cd795b3e40ae40e69fa6d10838ece169745792e0522cd98431d7",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1200,7 +1218,7 @@
       "model": "native_efficientnet_b0_deeplabv3plus",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "8cf76c13571d7c90380a9640548b50542ff5c4e380c549e30fcb65280deee951",
+      "config_sha256": "77d7bdcaf553e2265d97172f5429c84318b81f736abf0b5557075a78fe1c3892",
       "source_checkpoint": {
         "name": "native_efficientnet_b0_deeplabv3plus--cityscapes--seed-0",
         "model": "native_efficientnet_b0_deeplabv3plus",
@@ -1218,7 +1236,7 @@
       "model": "native_efficientnet_b0_deeplabv3plus",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "471ba51185950837e96ff0dd91e140806b3a5c3e43fa769120d0728b95d73335",
+      "config_sha256": "1d62c814433328e43b7d94fc2cb19f4225162cb16c47dac494611066916cf150",
       "source_checkpoint": {
         "name": "native_efficientnet_b0_deeplabv3plus--railsem19--seed-0",
         "model": "native_efficientnet_b0_deeplabv3plus",
@@ -1236,7 +1254,7 @@
       "model": "native_efficientnet_b0_deeplabv3plus",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "c0268e3d4a514813d365cbe484a62fc6f69eefa20dbf893e19c050c126f150c1",
+      "config_sha256": "7994f9bca99d836769f73044d999b6c57619d1cb63bf0f026a61a41e4ebb9266",
       "source_checkpoint": {
         "name": "native_efficientnet_b0_deeplabv3plus--cityscapes_to_railsem19--seed-0",
         "model": "native_efficientnet_b0_deeplabv3plus",
@@ -1254,7 +1272,7 @@
       "model": "native_mobilenetv3_large_deeplabv3plus",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "28c9d3b7c19824a5731c2572677732b55d824ad8711ad7b51c9c1015cda6c16c",
+      "config_sha256": "07f93ee44eb3816a493711bdcdee9a1c71036902480e362cad0da7af089660cb",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1264,7 +1282,7 @@
       "model": "native_mobilenetv3_large_deeplabv3plus",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "cd23494da63c380f109b4b1951efd93f2cb358405f2e434444428bc18722cab9",
+      "config_sha256": "9c37c9fab8ed61bf1af5ce29781d04748a0fa76635d2055c4b8c06008744952f",
       "source_checkpoint": {
         "name": "native_mobilenetv3_large_deeplabv3plus--cityscapes--seed-0",
         "model": "native_mobilenetv3_large_deeplabv3plus",
@@ -1282,7 +1300,7 @@
       "model": "native_mobilenetv3_large_deeplabv3plus",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "82dc0e43801086c539543230ca81e4c339d7512c39f454c22064fcf86598e51a",
+      "config_sha256": "590503555719b2e453177bdc7aa1a48819f103c9af12be307e820178f1d638d9",
       "source_checkpoint": {
         "name": "native_mobilenetv3_large_deeplabv3plus--railsem19--seed-0",
         "model": "native_mobilenetv3_large_deeplabv3plus",
@@ -1300,7 +1318,7 @@
       "model": "native_mobilenetv3_large_deeplabv3plus",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "448614c69dd34542510ab6c69d49540da5aff440995d2b3e2f6157feb4cfdb39",
+      "config_sha256": "0369398d0c5bba5ed383b37b2cdae52a33ce4c66277213e0e194457fad53f2a6",
       "source_checkpoint": {
         "name": "native_mobilenetv3_large_deeplabv3plus--cityscapes_to_railsem19--seed-0",
         "model": "native_mobilenetv3_large_deeplabv3plus",
@@ -1318,7 +1336,7 @@
       "model": "native_mobilenetv3_large_lraspp",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "3d7b93cd8a6d8c83bc5bfd98fe9a5ad5e2f5b854cb25ce4f1a3265de2fbe28b6",
+      "config_sha256": "9e6370250f3c67ada71bb9dd9b81b67da0e125045f6989cd4bc6c75447d4a9a4",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1328,7 +1346,7 @@
       "model": "native_mobilenetv3_large_lraspp",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "392280051e93839be41f5008b465b7b28094ea56eb7cd285c0583fa9afe6aefa",
+      "config_sha256": "f7d46d18518e70972b42e85b2b7c337592de51534f1833e742c9c8b2c63514ab",
       "source_checkpoint": {
         "name": "native_mobilenetv3_large_lraspp--cityscapes--seed-0",
         "model": "native_mobilenetv3_large_lraspp",
@@ -1346,7 +1364,7 @@
       "model": "native_mobilenetv3_large_lraspp",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "63b624d6ed90469d22350cc941db9541f596a31077ac315bb8acfbddfc27ca2d",
+      "config_sha256": "339a9b45b22293a2312ad50a6f907ac947a1807f836a4fd2e2a0fd84b55a1dff",
       "source_checkpoint": {
         "name": "native_mobilenetv3_large_lraspp--railsem19--seed-0",
         "model": "native_mobilenetv3_large_lraspp",
@@ -1364,7 +1382,7 @@
       "model": "native_mobilenetv3_large_lraspp",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "0a7639924ad2ff37d854b2039423b74dc960083778cd11d1ad64103fe410c213",
+      "config_sha256": "e20f7215aa1c8f06c28d83bd15b90bc380efdaa5d6fc0f6d0aa6f49d06a52674",
       "source_checkpoint": {
         "name": "native_mobilenetv3_large_lraspp--cityscapes_to_railsem19--seed-0",
         "model": "native_mobilenetv3_large_lraspp",
@@ -1382,7 +1400,7 @@
       "model": "native_resnet101_uper",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "54696f5df287ec6d742109d0167da06dbce2b99d3ee54d1e43c9f14b958cca85",
+      "config_sha256": "0ea0452920cf0ed2dadfc1c07d8c47017527ddda34083df8b7379907df31e0f7",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1392,7 +1410,7 @@
       "model": "native_resnet101_uper",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "bd96a71a9211d97c680241e21d18a38c67cbbd602b3f12d0d5bef11604c6b9c9",
+      "config_sha256": "a22c14eda95bd40e7a1597f6c5135bbde3010c5193ec7fa4ea85b38342e5bcf0",
       "source_checkpoint": {
         "name": "native_resnet101_uper--cityscapes--seed-0",
         "model": "native_resnet101_uper",
@@ -1410,7 +1428,7 @@
       "model": "native_resnet101_uper",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "fc0f473eee86cb6e09bb1d868f05fa0fd6c0175e23d4731ba24795b51d364d70",
+      "config_sha256": "021f64cec1f8c2c12f0463679869af31d661d981639eb82caa39683d565d3aac",
       "source_checkpoint": {
         "name": "native_resnet101_uper--railsem19--seed-0",
         "model": "native_resnet101_uper",
@@ -1428,7 +1446,7 @@
       "model": "native_resnet101_uper",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "170aa481e8a805da51e4801e40945d8da1fd37005ac37d0e9e4b56086265b1dc",
+      "config_sha256": "bd66eb01f1b44b624822dd4d2eea068c09d182565c61d33e4fc2c26ec00873de",
       "source_checkpoint": {
         "name": "native_resnet101_uper--cityscapes_to_railsem19--seed-0",
         "model": "native_resnet101_uper",
@@ -1446,7 +1464,7 @@
       "model": "native_resnet18_fpn_fcn",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "51739a540cedd6ac16de30ed14ff4f9bc3940805ed2cf0b85646d0baab0d4121",
+      "config_sha256": "5b765bb5fa4a27a680e7b5a720a27d1f3f5c379d4918fd6fcb9a2e48820e6ff9",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1456,7 +1474,7 @@
       "model": "native_resnet18_fpn_fcn",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "c217fb444b93e39b18ea591f596e27d530702a0fc03859355e1df1a06a61dba6",
+      "config_sha256": "8d20e5f8704c69b7673da4d58364968660aa43232f45f2fc927a0874ab38b2f9",
       "source_checkpoint": {
         "name": "native_resnet18_fpn_fcn--cityscapes--seed-0",
         "model": "native_resnet18_fpn_fcn",
@@ -1474,7 +1492,7 @@
       "model": "native_resnet18_fpn_fcn",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "8f74c036243c5aa82ce36ca2969962323ca11b87c02c7a5845da00b3e62de470",
+      "config_sha256": "a13a0d5f9d260ea5c74ae6c91b56d25b331066a04b33079675e9d8cd422708e2",
       "source_checkpoint": {
         "name": "native_resnet18_fpn_fcn--railsem19--seed-0",
         "model": "native_resnet18_fpn_fcn",
@@ -1492,7 +1510,7 @@
       "model": "native_resnet18_fpn_fcn",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "9786e5c53a0ea1568aa7856b5086b2822a2050e43b3dc2d044e92657ddd413c6",
+      "config_sha256": "04d0e34fb8d696e429a8a726f73e3777f3a1c8f5ea86b63ec0d645ba893036ab",
       "source_checkpoint": {
         "name": "native_resnet18_fpn_fcn--cityscapes_to_railsem19--seed-0",
         "model": "native_resnet18_fpn_fcn",
@@ -1510,7 +1528,7 @@
       "model": "native_resnet18_fpn_segformer_aux",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "1123d2e675335e1c5ce79d5a76446e6aa13dcda7bcfb5fbbb044d4312fdaead9",
+      "config_sha256": "521d6c4b9474e22de130dae94e0e05414f6f361de4ee8a35f921fabf4b0ee133",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1520,7 +1538,7 @@
       "model": "native_resnet18_fpn_segformer_aux",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "d8e4fa42daa5b8fe85322e8190612f21c0b99d3785871b38641e398a94174a4c",
+      "config_sha256": "5c393c3b11b173925206cefd2f29d0e6e2c2c20408deb0fbbf4562128e2647c3",
       "source_checkpoint": {
         "name": "native_resnet18_fpn_segformer_aux--cityscapes--seed-0",
         "model": "native_resnet18_fpn_segformer_aux",
@@ -1538,7 +1556,7 @@
       "model": "native_resnet18_fpn_segformer_aux",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "97834e73c934f225652cd7f49020bc61fc6854fe74235756a9017adbe6131118",
+      "config_sha256": "9bbe271d8e98861d3c164ed1cd7f32e165ad99402f3c62bcfb369946cee413c3",
       "source_checkpoint": {
         "name": "native_resnet18_fpn_segformer_aux--railsem19--seed-0",
         "model": "native_resnet18_fpn_segformer_aux",
@@ -1556,7 +1574,7 @@
       "model": "native_resnet18_fpn_segformer_aux",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "6b05d3c399d096d7a721aa26a682125327a1a0a13d2242338de386e734242ece",
+      "config_sha256": "8eaaa31d004b8cd769172df23d76280c176adfb94b2bd396adfff74a6c7aa98e",
       "source_checkpoint": {
         "name": "native_resnet18_fpn_segformer_aux--cityscapes_to_railsem19--seed-0",
         "model": "native_resnet18_fpn_segformer_aux",
@@ -1574,7 +1592,7 @@
       "model": "native_resnet50_aspp",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "33f8402d801482fc40a539ecc9802c1461173ca3a4fe523f0509296a7f312424",
+      "config_sha256": "54288e7000026c9cffc1cbd5af21efbf93cf00352d322603d393ac6feeb58f49",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1584,7 +1602,7 @@
       "model": "native_resnet50_aspp",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "6a2b27177c5c5e225b169841de7ec435325fd7d47ec62d6d9d6c1fdc8f2144da",
+      "config_sha256": "f5e7bd05cdac240b0d6c3a11164421d7c776d6869cd4e981dcd7ec78e6e90882",
       "source_checkpoint": {
         "name": "native_resnet50_aspp--cityscapes--seed-0",
         "model": "native_resnet50_aspp",
@@ -1602,7 +1620,7 @@
       "model": "native_resnet50_aspp",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "40f0497c8514e25ddf2a48407b6873bc07456d3137eba28d1f057b160ee2ecba",
+      "config_sha256": "e96bda54c1a24fdab5bb7493b25712bad19b3ae839c167db77f232baeea5e889",
       "source_checkpoint": {
         "name": "native_resnet50_aspp--railsem19--seed-0",
         "model": "native_resnet50_aspp",
@@ -1620,7 +1638,7 @@
       "model": "native_resnet50_aspp",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "8dc40d00d47f0921268d575c00dfd7b6037d88d4cffaaa57b5f0e59952dbb2e2",
+      "config_sha256": "62d7a3c1acab5e1db5af482cea49c76bde40b360e355902d4d9ec507b477a064",
       "source_checkpoint": {
         "name": "native_resnet50_aspp--cityscapes_to_railsem19--seed-0",
         "model": "native_resnet50_aspp",
@@ -1638,7 +1656,7 @@
       "model": "native_resnet50_deeplabv3plus",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "bd1e557860972b483992d88edcb59859c20e5a30a7294b6d80d30a08a93a896f",
+      "config_sha256": "02610956bd94ee5b8b3554812b04edbcaf625f7a8c88d652bb9685bb8842b1ee",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1648,7 +1666,7 @@
       "model": "native_resnet50_deeplabv3plus",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "39cc339ad83f684665b5848c659a63c56c7efeeb039706acbc177f07cef1130d",
+      "config_sha256": "d8fcc71a0c2724ae5960608da7f1a1b0efb79ce9579dcd04c023fbce9aa3f450",
       "source_checkpoint": {
         "name": "native_resnet50_deeplabv3plus--cityscapes--seed-0",
         "model": "native_resnet50_deeplabv3plus",
@@ -1666,7 +1684,7 @@
       "model": "native_resnet50_deeplabv3plus",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "01f459d1f7d7252e55dd155fe78046df93d825f72af5dd454d40ff74df2fa38b",
+      "config_sha256": "ad3040002cf4612d3693d8ea524ca68fbae3d6628b55c29a73d2e6eefa9af1d9",
       "source_checkpoint": {
         "name": "native_resnet50_deeplabv3plus--railsem19--seed-0",
         "model": "native_resnet50_deeplabv3plus",
@@ -1684,7 +1702,7 @@
       "model": "native_resnet50_deeplabv3plus",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "a526eaaa5288a78b1d6029d27a4a68581b3beb83e9e6570925a3d8ea8de0601c",
+      "config_sha256": "d181380c8ef15769f22138cbdc754f75d4f4529e56594ff1cde64d8330953ac0",
       "source_checkpoint": {
         "name": "native_resnet50_deeplabv3plus--cityscapes_to_railsem19--seed-0",
         "model": "native_resnet50_deeplabv3plus",
@@ -1702,7 +1720,7 @@
       "model": "native_resnet50_fpn_ocr",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "5147f46d037ac6c78143a6b1c9ecde1e22fcd798b119447e39951c16f8d93243",
+      "config_sha256": "0eb1826dd2ddc2a38a283f26d2c089c9e42f731edc8d7821e8d825b32d72a9e8",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1712,7 +1730,7 @@
       "model": "native_resnet50_fpn_ocr",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "b6e29ff3d8c70896aa4bdabbf6d704619703356db268b01e4f6ef49bde19008d",
+      "config_sha256": "e1b809c89816a55caf0d55b9c529d0175373ac9d0508f8050f69416e6f4b6797",
       "source_checkpoint": {
         "name": "native_resnet50_fpn_ocr--cityscapes--seed-0",
         "model": "native_resnet50_fpn_ocr",
@@ -1730,7 +1748,7 @@
       "model": "native_resnet50_fpn_ocr",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "e104c9decf9e003652016307bed88c50cad756e3b7b39126d46e1fb1861cc56c",
+      "config_sha256": "c0fbce97e1b25a0b8e62efb3eb0a515781ef6677e75384558563b729283ed12b",
       "source_checkpoint": {
         "name": "native_resnet50_fpn_ocr--railsem19--seed-0",
         "model": "native_resnet50_fpn_ocr",
@@ -1748,7 +1766,7 @@
       "model": "native_resnet50_fpn_ocr",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "8459dd7dd5a6e42d4e290fac61e6312322db44296bf1c1fe519d061d3a4bb9b3",
+      "config_sha256": "e4001a9adc09271b5460d105ba891754dfc4cd393eb369b79d2394b5566a2871",
       "source_checkpoint": {
         "name": "native_resnet50_fpn_ocr--cityscapes_to_railsem19--seed-0",
         "model": "native_resnet50_fpn_ocr",
@@ -1766,7 +1784,7 @@
       "model": "native_resnet50_psp",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "d16f6b6013572e6aead491005095113828f9abe1760c09ae688876aa2b170e2f",
+      "config_sha256": "e0276ae5e80346cfa58ac873aebf44aeb9dc65797608f82d73b16a4cd0437052",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1776,7 +1794,7 @@
       "model": "native_resnet50_psp",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "d1af319c7be18916d891b97ac8cf4e860b6e5c0c03cb3acb0766257963c156bf",
+      "config_sha256": "7fbcae33f4856ecac2c4057156ac8a6718ac8177592f639da05732e7b10f260e",
       "source_checkpoint": {
         "name": "native_resnet50_psp--cityscapes--seed-0",
         "model": "native_resnet50_psp",
@@ -1794,7 +1812,7 @@
       "model": "native_resnet50_psp",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "9362d14c65ba6b820a737dfe5cdc883aec2f65338e217e825ab91ae7bc8328a9",
+      "config_sha256": "447fb91f8d5a5752b08a6eda8aea86b3eb139a09bd70648d6109ed4d6361b137",
       "source_checkpoint": {
         "name": "native_resnet50_psp--railsem19--seed-0",
         "model": "native_resnet50_psp",
@@ -1812,7 +1830,7 @@
       "model": "native_resnet50_psp",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "818b1e566d2e8a6711fe54f99da79a504da062ea7f6470b99903e03fa24a68bb",
+      "config_sha256": "6aa7a50ccffd3a5e8a643769123153c8f33ccf171e5a784416bd0a89bd7fb470",
       "source_checkpoint": {
         "name": "native_resnet50_psp--cityscapes_to_railsem19--seed-0",
         "model": "native_resnet50_psp",
@@ -1830,7 +1848,7 @@
       "model": "segformer_b0",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "0c8b59e73c03ed4ea3f0d2240513d0e0dab5b93b637ffa42ac41f9845e747380",
+      "config_sha256": "840582839bd2ab5a3f0923e2c335d059b2a3301f0669cdf0eeb1896519cbefc8",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1840,7 +1858,7 @@
       "model": "segformer_b0",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "c639c6feed756d1f49b5e0c4bd517403c68cfdd588cf951a102e043533d8eb2d",
+      "config_sha256": "00c66a021b57c71cf967c0d63e3e94991101ffa4c4a64f86d68f9c4f55c4e89d",
       "source_checkpoint": {
         "name": "segformer_b0--cityscapes--seed-0",
         "model": "segformer_b0",
@@ -1858,7 +1876,7 @@
       "model": "segformer_b0",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "bf56206102885a97d7ba9a074d649baffee912512fb0fdfee3a9b3c63307e3e2",
+      "config_sha256": "a87a425c49b195ac0a0240d5f85b3b8edb4eaaef2ba281c5e905956be9d1a4c8",
       "source_checkpoint": {
         "name": "segformer_b0--railsem19--seed-0",
         "model": "segformer_b0",
@@ -1876,7 +1894,7 @@
       "model": "segformer_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "47678c19d2e3c6b66a7d4d1ca9e4d121909452b160cd4616bf346dc04ada9c19",
+      "config_sha256": "4a58929cfaaedd3b0d43ed6a5a506ec8507178f6491e3640e336a84e64b8ea3c",
       "source_checkpoint": {
         "name": "segformer_b0--cityscapes_to_railsem19--seed-0",
         "model": "segformer_b0",
@@ -1894,7 +1912,7 @@
       "model": "segformer_b2",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "7fb229daebdb4398054d4c8e8eb17ee279a70194b9a1163dc271bd6dcb2ef407",
+      "config_sha256": "1f8ba6d5d12341708cae7fc9123dda894d8b88e8f1e62d99022ebc6c5b62727d",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1904,7 +1922,7 @@
       "model": "segformer_b2",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "509c24288c050c7cfcfe70ba660e66996c832dec1c2a1db7211b9d4fb97b38b8",
+      "config_sha256": "a4e09208d29dbaa4c7eb285c3acb5ebaccdcd7e293d7fc5c5d296e2549c531ee",
       "source_checkpoint": {
         "name": "segformer_b2--cityscapes--seed-0",
         "model": "segformer_b2",
@@ -1922,7 +1940,7 @@
       "model": "segformer_b2",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "c1ed18a254e9bbf6386f295339d4a746931198401f0f3e203aabcb6ae9c7d7b1",
+      "config_sha256": "6695ced823f6ca5cb40cb6864407d685c5c68fd94e452350aab3bd991b88dc53",
       "source_checkpoint": {
         "name": "segformer_b2--railsem19--seed-0",
         "model": "segformer_b2",
@@ -1940,7 +1958,7 @@
       "model": "segformer_b2",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "50ad0df510d9dcba3ace747ad77930c8ea07882079af241b297b2002097af166",
+      "config_sha256": "b4adf2b1d496221d82d3a59282e649c52473d18efafc486aa91d14285a06e937",
       "source_checkpoint": {
         "name": "segformer_b2--cityscapes_to_railsem19--seed-0",
         "model": "segformer_b2",
@@ -1958,7 +1976,7 @@
       "model": "segformer_b5",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "ddb74b51885d027f41983ed826405f9a3881b05ad7ef8dd41fb0179557a048b8",
+      "config_sha256": "f8268c211654ecf5493bd5a8c9bcf4273708b6cfa6a18d064201e64c300f62f9",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -1968,7 +1986,7 @@
       "model": "segformer_b5",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "17a96187829c269a1516769feb9d629e0aa8a83e9598530f59f0d02bda819146",
+      "config_sha256": "cd2d295b1a51f4eaa7c330f2eec7c12adcebc2cb42d39e8243cddbc3766f4da3",
       "source_checkpoint": {
         "name": "segformer_b5--cityscapes--seed-0",
         "model": "segformer_b5",
@@ -1986,7 +2004,7 @@
       "model": "segformer_b5",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "2c12adeeeac2e00651b4a403a8e54f103f0f05e1db832b060593cd61717e77c0",
+      "config_sha256": "faf8af20cda5492d2ce65bbe825279a66626d86957669b886a4591f6eab462b3",
       "source_checkpoint": {
         "name": "segformer_b5--railsem19--seed-0",
         "model": "segformer_b5",
@@ -2004,7 +2022,7 @@
       "model": "segformer_b5",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "f7d254362c8c072f86a1a4abc478887d10dae214eb590d457fea213f6f1f297a",
+      "config_sha256": "3c93d2ec06b199ee11c2b94c97842d432ec01b23adc825b280daf087f0fb6431",
       "source_checkpoint": {
         "name": "segformer_b5--cityscapes_to_railsem19--seed-0",
         "model": "segformer_b5",
@@ -2022,7 +2040,7 @@
       "model": "smp_deeplabv3_resnet50",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "8781e979d4a748df513703b9292712333fcad4ba82668aa8ff878d8426c4f0d5",
+      "config_sha256": "ba696c4dbdb013c86448be63df279d378d23121c9c40d0ce702ba57f7844fdd7",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2032,7 +2050,7 @@
       "model": "smp_deeplabv3_resnet50",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "c7b7b91866b43f04e0f4c10a190b8f909e67cd9f58e510ae28dd8b21bf9987e9",
+      "config_sha256": "8e9b993675764f481affd4660491635c7371b40dd3b87d1dbb2020f709503c65",
       "source_checkpoint": {
         "name": "smp_deeplabv3_resnet50--cityscapes--seed-0",
         "model": "smp_deeplabv3_resnet50",
@@ -2050,7 +2068,7 @@
       "model": "smp_deeplabv3_resnet50",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "900bb5b621c9dbe6ed8a0ebb60e5cbe448c9944b4539eae8393925ec514c951f",
+      "config_sha256": "c817ae3763057b9ff653aac3fcc272e868ba85cd80254469ac54c534b6375cd9",
       "source_checkpoint": {
         "name": "smp_deeplabv3_resnet50--railsem19--seed-0",
         "model": "smp_deeplabv3_resnet50",
@@ -2068,7 +2086,7 @@
       "model": "smp_deeplabv3_resnet50",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "92d6cbfd11ff0cff0ded4dcedc66025235b8136ce9bde4b46022894397da7522",
+      "config_sha256": "41ae6f4b63030ccffde3aefa82830ca9def2402f9152ad5eeccae26f3259c449",
       "source_checkpoint": {
         "name": "smp_deeplabv3_resnet50--cityscapes_to_railsem19--seed-0",
         "model": "smp_deeplabv3_resnet50",
@@ -2086,7 +2104,7 @@
       "model": "smp_deeplabv3plus_resnet101",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "ea21623190b96abcc48af4c0794231dbd5eda04ea78debe69215e41c9dc8c5a7",
+      "config_sha256": "9fed5e6b4593d9320030e352b1b040e2dd0290c6fa82e1cf0d32050087fdb4a9",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2096,7 +2114,7 @@
       "model": "smp_deeplabv3plus_resnet101",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "f82bc3735cfe18b1c56eeb7ca1c11dc7d2fdaf9682a2e78468f4c7afd77f9d3d",
+      "config_sha256": "7ce33500803890c82b9c8327bc4e724efc5e9fc1e0178c18e2c9b43a40efcf5a",
       "source_checkpoint": {
         "name": "smp_deeplabv3plus_resnet101--cityscapes--seed-0",
         "model": "smp_deeplabv3plus_resnet101",
@@ -2114,7 +2132,7 @@
       "model": "smp_deeplabv3plus_resnet101",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "1942c263220d23e147ec6559e18d1435c4234f03cb93475d4ff5e595e030dceb",
+      "config_sha256": "d47b9ef9176fe2f6bcddff2755032f41920782617b82ff1db6493e34e771fa0c",
       "source_checkpoint": {
         "name": "smp_deeplabv3plus_resnet101--railsem19--seed-0",
         "model": "smp_deeplabv3plus_resnet101",
@@ -2132,7 +2150,7 @@
       "model": "smp_deeplabv3plus_resnet101",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "1001cbf7079f0b5854badaeb41c0c6be443a1b477d7b20754c7bc1cdb64f9e0b",
+      "config_sha256": "a0c0d75eb4c3d2aeb80f2b61c4d7d13af1aeffbf85f062109449da866cd5dfab",
       "source_checkpoint": {
         "name": "smp_deeplabv3plus_resnet101--cityscapes_to_railsem19--seed-0",
         "model": "smp_deeplabv3plus_resnet101",
@@ -2150,7 +2168,7 @@
       "model": "smp_fpn_resnet50",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "12a4306038e20571b7b4abc2dc7894616147bcd504309158920d0e55704b2c7c",
+      "config_sha256": "31d662a73915bf5056648fb9b0d3585b6bbadf01afba874207ba550e6aad3c25",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2160,7 +2178,7 @@
       "model": "smp_fpn_resnet50",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "349d0be34cc0c81675dc831b39ed6f50fca683da51b8b3a7a7db48d9a68db758",
+      "config_sha256": "b627cb90d4f2b0a222fb4d3e991f2ac3708b4814098723078260c81caf335df3",
       "source_checkpoint": {
         "name": "smp_fpn_resnet50--cityscapes--seed-0",
         "model": "smp_fpn_resnet50",
@@ -2178,7 +2196,7 @@
       "model": "smp_fpn_resnet50",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "2736b82c492926b55d746181d322e9e60f6481f9d6951fc03fef0a539c9b369c",
+      "config_sha256": "45f0f290b3a80713593ac20dffcec61829d9611d7e6948a272193eee405bca9b",
       "source_checkpoint": {
         "name": "smp_fpn_resnet50--railsem19--seed-0",
         "model": "smp_fpn_resnet50",
@@ -2196,7 +2214,7 @@
       "model": "smp_fpn_resnet50",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "51b76223b106d3556eb4ec5aad418bfa8598fd3140a5709892439b6e103be82f",
+      "config_sha256": "28415f590d04b327bc3e2abaf70c80d059c6d91c10dd25417889417f8e9ffdf3",
       "source_checkpoint": {
         "name": "smp_fpn_resnet50--cityscapes_to_railsem19--seed-0",
         "model": "smp_fpn_resnet50",
@@ -2214,7 +2232,7 @@
       "model": "smp_linknet_mobilenet_v2",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "9dfa7c01b73d91c836dcec977a287ac5ec6b27f13e857bbb14966fc0e7ccb3f6",
+      "config_sha256": "df457d10ddb37a2b6e6677a892409cb5f16426b727fb221f27d4a80e3f0e1a41",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2224,7 +2242,7 @@
       "model": "smp_linknet_mobilenet_v2",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "d4f416c2a3475d8ddabdb899802cc845da1aeab7ce8da71ce8d8ea36ee897162",
+      "config_sha256": "36b3d5a9b7569b78f94efe3710fac8e4fd5c0ff55010f237ef3fc92216f26d74",
       "source_checkpoint": {
         "name": "smp_linknet_mobilenet_v2--cityscapes--seed-0",
         "model": "smp_linknet_mobilenet_v2",
@@ -2242,7 +2260,7 @@
       "model": "smp_linknet_mobilenet_v2",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "ca59415d9c0405ef0c35b36d58b035efa313051af82f1b717ef14e0c97846dce",
+      "config_sha256": "738a03a03b40c6391c4e550e1b1ddf585fb3119cd101c43375b67de7acc8be88",
       "source_checkpoint": {
         "name": "smp_linknet_mobilenet_v2--railsem19--seed-0",
         "model": "smp_linknet_mobilenet_v2",
@@ -2260,7 +2278,7 @@
       "model": "smp_linknet_mobilenet_v2",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "4f7372cc3a05aefb4125c8a8b89d2226a1d6f5126b3faee023dc56bfbcdf7a68",
+      "config_sha256": "5136edea92e1d7aede9598e613268b1053f09e3250376b2eee1609397f41cc9e",
       "source_checkpoint": {
         "name": "smp_linknet_mobilenet_v2--cityscapes_to_railsem19--seed-0",
         "model": "smp_linknet_mobilenet_v2",
@@ -2278,7 +2296,7 @@
       "model": "smp_manet_efficientnet_b0",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "8329f51cda675603c108ce8ee1c6fa5b2d80dcfd8d218343a9fcb3ee4448b16e",
+      "config_sha256": "84064a59532b7a4dbd2f899697eaa2218f640ed801f742747729b1b07187ed72",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2288,7 +2306,7 @@
       "model": "smp_manet_efficientnet_b0",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "2a604a0e6ae37e6beabda2e5c363eada9e22514753ff5766c7fa77ef6ac5dd4d",
+      "config_sha256": "9f71616034aeb9e563568f0b328008a594489206cb371f7dd4f6c1c1e54f395f",
       "source_checkpoint": {
         "name": "smp_manet_efficientnet_b0--cityscapes--seed-0",
         "model": "smp_manet_efficientnet_b0",
@@ -2306,7 +2324,7 @@
       "model": "smp_manet_efficientnet_b0",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "0b27207aeec9a1b0a1ea18fe8a1c0c89d37c697aba952e61d1fb643744957803",
+      "config_sha256": "52a22200ef9b83e4128f3d761e4568660766d6018ad923783da6eb656be6b676",
       "source_checkpoint": {
         "name": "smp_manet_efficientnet_b0--railsem19--seed-0",
         "model": "smp_manet_efficientnet_b0",
@@ -2324,7 +2342,7 @@
       "model": "smp_manet_efficientnet_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "ec60f54ce127c23a377216cdd99614c09c0de9f561e4b1852fccf213befe0657",
+      "config_sha256": "9f624b02ef05c91ddf3aa4ff3e6a3ebda9ef00cba53be5d0b7ec4f594cb5a1c6",
       "source_checkpoint": {
         "name": "smp_manet_efficientnet_b0--cityscapes_to_railsem19--seed-0",
         "model": "smp_manet_efficientnet_b0",
@@ -2342,7 +2360,7 @@
       "model": "smp_pan_resnext50",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "f3e64b0cf4edd7c68c4da51c47cb629e52a2dc951ab0732116d735ff8c4e44dc",
+      "config_sha256": "829d0d1dd435bb9d233f5c63487e237760de61b6a2b41a1e5d3014277b86dd21",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2352,7 +2370,7 @@
       "model": "smp_pan_resnext50",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "e3363c1d4d5f475a07b5b7a79ebff0310947615ec28d5ea3252329383619100a",
+      "config_sha256": "bedc182e9d51a126b8d4d5204d833f4bb3a014d32cf50adea08b59efb264623f",
       "source_checkpoint": {
         "name": "smp_pan_resnext50--cityscapes--seed-0",
         "model": "smp_pan_resnext50",
@@ -2370,7 +2388,7 @@
       "model": "smp_pan_resnext50",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "15df10307522a58f737e1e4f31f073994f4fc1a1d4f5885ea8534b10a613263b",
+      "config_sha256": "978b5eb31287f351985480663b2c295b86fd429f4e0b84c974082b6cbdd1a93b",
       "source_checkpoint": {
         "name": "smp_pan_resnext50--railsem19--seed-0",
         "model": "smp_pan_resnext50",
@@ -2388,7 +2406,7 @@
       "model": "smp_pan_resnext50",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "d350b49b23597ebef0a5bd5a41ab807ca11f4692c13f1fe92dbaeffe5a95b2e5",
+      "config_sha256": "0b56591da6c64b0a8df7725b85818dde4bd3dae5b531b75bb6648e1767190448",
       "source_checkpoint": {
         "name": "smp_pan_resnext50--cityscapes_to_railsem19--seed-0",
         "model": "smp_pan_resnext50",
@@ -2406,7 +2424,7 @@
       "model": "smp_pspnet_mobilenet_v2",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "5ea4c152af5104ea86e02d4b45ff9f4d685e84d28d89acfa64e642f1ec3ff1b8",
+      "config_sha256": "8ab60469a0ec2812e21cdeeed3c10a4bfd05d92a274ce0d02edc7f87cdd865eb",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2416,7 +2434,7 @@
       "model": "smp_pspnet_mobilenet_v2",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "c500214a60d79dd29ddd0d6f6c8c5229238f2c82d64dded362cdadc20122e5ae",
+      "config_sha256": "a7d43c906bb81a957be86500132b635e27642ceb361bc879c705143da7c27468",
       "source_checkpoint": {
         "name": "smp_pspnet_mobilenet_v2--cityscapes--seed-0",
         "model": "smp_pspnet_mobilenet_v2",
@@ -2434,7 +2452,7 @@
       "model": "smp_pspnet_mobilenet_v2",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "2a350b3e1b2f0b08ebbd4ff1c96a0e3362691dd4aef4165d9d6ccd92329c97a7",
+      "config_sha256": "de3bef35b0a09e84c1460bf84ca9b1e6ef6e346c16625150adf845f4112f7197",
       "source_checkpoint": {
         "name": "smp_pspnet_mobilenet_v2--railsem19--seed-0",
         "model": "smp_pspnet_mobilenet_v2",
@@ -2452,7 +2470,7 @@
       "model": "smp_pspnet_mobilenet_v2",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "211f8294573209270f4bc66a7b6265c1eadb7e53dd7aa17e526d6442da33e308",
+      "config_sha256": "dbf8ddbdcb60753bfd5378b8a29cf89aab44c30839e938a69ab7f976bf0e21e2",
       "source_checkpoint": {
         "name": "smp_pspnet_mobilenet_v2--cityscapes_to_railsem19--seed-0",
         "model": "smp_pspnet_mobilenet_v2",
@@ -2470,7 +2488,7 @@
       "model": "smp_unet_resnet34",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "8a5a5e2a80517b22c5d2f09d3575ec70aac581048e773e4dd031450312f8b881",
+      "config_sha256": "f997dabcf11133bd18eb735bf23163ca7640c6e2f417a8e436b29254c2df9999",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2480,7 +2498,7 @@
       "model": "smp_unet_resnet34",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "185bf4372142d9111cfb09a1446fe629991a8ab454f2eda9fbb9d48e90aed97a",
+      "config_sha256": "0690c7555a85f4189d0fbc135d3a2338eab61614ee317736f46a6f89f6e85475",
       "source_checkpoint": {
         "name": "smp_unet_resnet34--cityscapes--seed-0",
         "model": "smp_unet_resnet34",
@@ -2498,7 +2516,7 @@
       "model": "smp_unet_resnet34",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "be981aa17e3c15bbca548e47cd34004e1b540df2dac93a49a4b6b7f624e6db7a",
+      "config_sha256": "a21227bd9dbb30155bed14578eed0b98ea10bf5c83713273c5076de6062b1ed1",
       "source_checkpoint": {
         "name": "smp_unet_resnet34--railsem19--seed-0",
         "model": "smp_unet_resnet34",
@@ -2516,7 +2534,7 @@
       "model": "smp_unet_resnet34",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "42577f59d0cfdb5ee987a88264028a360f031be857b1e5ad5d55f0f88d3c20b1",
+      "config_sha256": "98cef6bfa7dd0790dc4bfe149a67536e6af0161b72fe4d814a901338f1a7367a",
       "source_checkpoint": {
         "name": "smp_unet_resnet34--cityscapes_to_railsem19--seed-0",
         "model": "smp_unet_resnet34",
@@ -2534,7 +2552,7 @@
       "model": "smp_unetplusplus_efficientnet_b0",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "125ac85b0a0b2e2e7f7bc39ef49ff179c2bf66d264026614bc8ed44251138eb1",
+      "config_sha256": "106bdfd35e3d262b63d86c52626192be808efef1fef47a492b10d5c1392be8c5",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2544,7 +2562,7 @@
       "model": "smp_unetplusplus_efficientnet_b0",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "52253e0ca25d479a9cb96f6272ea93a2e412f7f20f7fae5c442a2ad36d02d462",
+      "config_sha256": "5a460e4abd07fc5fccb57b4c8759699f3ced2ac62d5496e6b9927586491de385",
       "source_checkpoint": {
         "name": "smp_unetplusplus_efficientnet_b0--cityscapes--seed-0",
         "model": "smp_unetplusplus_efficientnet_b0",
@@ -2562,7 +2580,7 @@
       "model": "smp_unetplusplus_efficientnet_b0",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "7a07af0040e9a67263126ae0b447aabde27a9887b70ec953bb7c9176d11753c1",
+      "config_sha256": "199c0ef73164af87f4b65f7e7d0187da49b5907eba2579b2588def0a8dd7808a",
       "source_checkpoint": {
         "name": "smp_unetplusplus_efficientnet_b0--railsem19--seed-0",
         "model": "smp_unetplusplus_efficientnet_b0",
@@ -2580,7 +2598,7 @@
       "model": "smp_unetplusplus_efficientnet_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "e8e382fd2f124201edc6c3af54b085f75955eddc5eaf269a2b647c77677599ed",
+      "config_sha256": "d97ffd868fc3b73a0d23d2fba6a46da101cfb0fbe8c7a12da91dc54258c7a0c1",
       "source_checkpoint": {
         "name": "smp_unetplusplus_efficientnet_b0--cityscapes_to_railsem19--seed-0",
         "model": "smp_unetplusplus_efficientnet_b0",
@@ -2598,7 +2616,7 @@
       "model": "smp_upernet_mit_b0",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "d5457127c3488ee4531b5733c594ea89c960087553e759c4f8223d6246686923",
+      "config_sha256": "d7243dc4058f8dc6776414ae3bb6989195448bab0430f86e1b54d1abf09ed8b4",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2608,7 +2626,7 @@
       "model": "smp_upernet_mit_b0",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "266d4210964084b10c4d61f60d8c5739e950afb3c1c628e7fe6709aee678ee56",
+      "config_sha256": "4a282224fb7387514f59f54cd97907e2bf0a6fec07c7f23c6f9a07c385819966",
       "source_checkpoint": {
         "name": "smp_upernet_mit_b0--cityscapes--seed-0",
         "model": "smp_upernet_mit_b0",
@@ -2626,7 +2644,7 @@
       "model": "smp_upernet_mit_b0",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "942df3340a5f9872ae7594bb013290bfcbd15027cde9d2dcb2a1695e4ab3a475",
+      "config_sha256": "dbf73959ea693cbdb3059b1dc9654b8dbbe5f98d9d3b15dd6d60afe8068fa86a",
       "source_checkpoint": {
         "name": "smp_upernet_mit_b0--railsem19--seed-0",
         "model": "smp_upernet_mit_b0",
@@ -2644,7 +2662,7 @@
       "model": "smp_upernet_mit_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "92ec34cb9193a4d380e5842e5fd5d2ccbe5601a7f1e5c52cb09266b728f0202a",
+      "config_sha256": "2931b9219e2d6b3ce66f95dc75111af10d007cdd1e5937e31302bddfc5484880",
       "source_checkpoint": {
         "name": "smp_upernet_mit_b0--cityscapes_to_railsem19--seed-0",
         "model": "smp_upernet_mit_b0",
@@ -2662,7 +2680,7 @@
       "model": "smp_upernet_resnet101",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "fa502adfa2ae874bda451ba547184c40d8a92c7cb8a1e413610113002c1c4092",
+      "config_sha256": "307d4dba935b18ef3e0c084f1f84e4d8e40f1185a932091d6fd033af00a4f565",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2672,7 +2690,7 @@
       "model": "smp_upernet_resnet101",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "a63eb58c08c7c705cbaa2b903887140bf51222c166c32c23e9c172d20a261a82",
+      "config_sha256": "f964246d8e30a7fa1871855c27a990899885305da1954b3c4e7def5613dc5e63",
       "source_checkpoint": {
         "name": "smp_upernet_resnet101--cityscapes--seed-0",
         "model": "smp_upernet_resnet101",
@@ -2690,7 +2708,7 @@
       "model": "smp_upernet_resnet101",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "1e5f87c73445bb9f740c98a3f6f5c283f028119511bc7852383419a91a93e68f",
+      "config_sha256": "030349efa075ac106afdc73971c7b712f8319939927a40b45a9f38887c799be1",
       "source_checkpoint": {
         "name": "smp_upernet_resnet101--railsem19--seed-0",
         "model": "smp_upernet_resnet101",
@@ -2708,7 +2726,7 @@
       "model": "smp_upernet_resnet101",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "b8c1501685749aaf76cf6ae0048000befdb28e6ca8dc17fe31b09ccb09dfd5ab",
+      "config_sha256": "9edd993d515a828ac34be9b29878158383ccbd703e78790a70c48d65dde34ed0",
       "source_checkpoint": {
         "name": "smp_upernet_resnet101--cityscapes_to_railsem19--seed-0",
         "model": "smp_upernet_resnet101",
@@ -2726,7 +2744,7 @@
       "model": "upernet_convnext",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "e62853c9e40b8753c51416bab62d8f1058c383886aef2e78b795a08b0b2ef9f1",
+      "config_sha256": "81ff765e5c8c36215e0962fea8d95c8e02482d9c3c659cc4884400d6aff220c8",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued"
@@ -2736,7 +2754,7 @@
       "model": "upernet_convnext",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "5c3481892cc500208e5974170b03dd1eab27bb76c582fa50f88ae9dc1a3734f1",
+      "config_sha256": "df251c5d3b5253759ee771600e58ff5f515a6994055035ec541a65159cc649f5",
       "source_checkpoint": {
         "name": "upernet_convnext--cityscapes--seed-0",
         "model": "upernet_convnext",
@@ -2754,7 +2772,7 @@
       "model": "upernet_convnext",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "f04dd1037c0f8ae535eba708e4b280db8931735d5f37735289491859ecebbc95",
+      "config_sha256": "6af21c2bbe0f3e1657b68c312b4e56f0d7a902eefc279799828ad73a17644c6f",
       "source_checkpoint": {
         "name": "upernet_convnext--railsem19--seed-0",
         "model": "upernet_convnext",
@@ -2772,7 +2790,7 @@
       "model": "upernet_convnext",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "4c0ae7be41ceed55e0645008f8f4fcad67aeb2b5dad61bb5eb4771d83c87f2cb",
+      "config_sha256": "092578a97edbc4c0f658a13f004757bc4f9c7e1c4342b0025523b639e5ee1a73",
       "source_checkpoint": {
         "name": "upernet_convnext--cityscapes_to_railsem19--seed-0",
         "model": "upernet_convnext",
