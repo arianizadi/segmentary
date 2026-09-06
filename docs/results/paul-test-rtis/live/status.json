@@ -1330,9 +1330,9 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1999,
+      "status": "evaluating",
+      "final_step": 2036,
+      "observed_step": null,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1342,7 +1342,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1949,
+      "observed_step": 1999,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1370,7 +1370,7 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "railsem19_to_rtis",
       "seed": 1,
-      "status": "evaluating",
+      "status": "collecting",
       "final_step": 1527,
       "observed_step": null,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
@@ -1382,7 +1382,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1017,
+      "observed_step": 1049,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1392,7 +1392,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 749,
+      "observed_step": 799,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1402,7 +1402,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 699,
+      "observed_step": 763,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1412,7 +1412,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 508,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1422,7 +1422,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 349,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
