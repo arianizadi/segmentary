@@ -8,13 +8,13 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | hf_auto_beit_base_ade | rtis_only | 0 | completed | 1527 | 254 | 23.83 | 29.99 | 53.71 | 1.05 | 20.08 | 22.31 |
 | hf_auto_beit_base_ade | rtis_only | 1 | collecting | 1527 | 254 | 5.32 | 32.20 | 5.99 | 0.45 | 18.24 | 20.27 |
-| hf_auto_beit_base_ade | rtis_only | 2 | training | 1499 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | cityscapes_to_rtis | 0 | training | 849 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | rtis_only | 2 | evaluating | 1527 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_rtis | 0 | training | 899 | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_rtis | 1 | training | 749 | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_rtis | 2 | training | 549 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | railsem19_to_rtis | 0 | training | 549 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | railsem19_to_rtis | 0 | training | 599 | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | railsem19_to_rtis | 1 | training | 249 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | railsem19_to_rtis | 2 | training | 199 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | railsem19_to_rtis | 2 | training | 249 | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 0 | training | 49 | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -1328,7 +1328,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## rtis_only — seed 2
 
-Status: **training**. Started: 2026-09-06T07:42:39.711401+00:00. Finished: —.
+Status: **evaluating**. Started: 2026-09-06T07:42:39.711401+00:00. Finished: —.
 
 Recipe pretrained initializer: `microsoft/beit-base-finetuned-ade-640-640`.
 
@@ -1403,6 +1403,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 23.55 | 0.00 |
 | 1017 | 26.47 | 0.02 |
 | 1272 | 22.00 | 0.33 |
+| 1527 | 25.79 | 0.04 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
