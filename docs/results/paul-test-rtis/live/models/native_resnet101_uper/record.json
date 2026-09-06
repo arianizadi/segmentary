@@ -668,6 +668,14 @@
           {
             "step": 399,
             "value": 0.4205470085144043
+          },
+          {
+            "step": 449,
+            "value": 0.42300134897232056
+          },
+          {
+            "step": 499,
+            "value": 0.9789469838142395
           }
         ],
         "val/miou": [
@@ -1265,7 +1273,7 @@
           }
         ]
       },
-      "observed_step": 399,
+      "observed_step": 499,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1451,6 +1459,19 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.1290700435638428
+          },
+          {
+            "step": 99,
+            "value": 2.5685222148895264
+          }
+        ]
+      },
+      "observed_step": 99,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1464,7 +1485,10 @@
       "config_sha256": "65c7419082fea1e200729a07fe64a812a1497c0dbc8e15dedad9e9bc999de926",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-06T20:26:12.463415+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_resnet101_uper--rtis_only--seed-2",
         "model": {
