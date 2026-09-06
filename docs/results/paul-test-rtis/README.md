@@ -75,7 +75,7 @@ support and per-class scores without placing dataset images in Git.
 The [live RTIS results](live/README.md) update automatically as runs complete.
 The campaign launched on HDRFS on 2026-09-06 UTC (September 5 Pacific):
 36 model recipes x four initialization paths x seed 0 = 144 runs, each with
-4,000 RTIS optimizer steps. All 108 source checkpoint hashes and all 307 dataset
+up to 4,000 RTIS optimizer steps, with validation-based early stopping. All 108 source checkpoint hashes and all 307 dataset
 image/mask pairs passed preflight verification. Ten GPU workers share the queue.
 
 These adaptation results use native RTIS validation metrics and remain separate
@@ -84,3 +84,5 @@ groups remain provisional. The best and final checkpoints are retained after
 successful evaluation; redundant periodic snapshots are removed with an audit.
 Training uses a fixed checkout and publishing uses a separate worktree, so live
 report updates cannot alter running experiments or the Cityscapes/RailSem19 study.
+
+Validation is checked every 250 steps; three checks without a 0.2-point mIoU improvement stop a run. The live report records actual/best steps and learning curves. This guard cannot remove the uncertainty from provisional scene grouping or repeated model selection on a small validation set.

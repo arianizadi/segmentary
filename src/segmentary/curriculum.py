@@ -28,7 +28,7 @@ from typing import Any, cast
 
 import lightning as L
 import torch
-from lightning.pytorch.callbacks import Callback, ModelCheckpoint
+from lightning.pytorch.callbacks import Callback, EarlyStopping, ModelCheckpoint
 from lightning.pytorch.loggers import TensorBoardLogger
 
 from .checkpoints import (
@@ -220,7 +220,20 @@ def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[Callbac
         save_last=False,
         save_top_k=-1,
     )
-    return [best, periodic]
+    callbacks: list[Callback] = [best, periodic]
+    if train_cfg.early_stopping_patience is not None:
+        callbacks.append(
+            EarlyStopping(
+                monitor="val/miou",
+                mode="max",
+                patience=train_cfg.early_stopping_patience,
+                min_delta=train_cfg.early_stopping_min_delta,
+                check_on_train_epoch_end=False,
+                check_finite=True,
+                strict=True,
+            )
+        )
+    return callbacks
 
 
 def ensure_final_validation(trainer: L.Trainer, lit: SegLitModule, val_loader) -> int:
@@ -606,6 +619,21 @@ def run_stage(
     record_env = collect_env()
     record_env["input_normalization"] = input_normalization(model)
     record_env["validation_weights"] = lit.validation_weights
+    stop_callbacks = [cb for cb in checkpoint_callbacks if isinstance(cb, EarlyStopping)]
+    plateau = any(cb.wait_count >= cb.patience for cb in stop_callbacks)
+    record_env["training_stop"] = {
+        "reason": (
+            "budget_complete"
+            if trainer.global_step == train_cfg.iters
+            else "validation_plateau"
+            if plateau
+            else "unexpected_stop"
+        ),
+        "actual_steps": int(trainer.global_step),
+        "maximum_steps": train_cfg.iters,
+        "patience": train_cfg.early_stopping_patience,
+        "min_delta": train_cfg.early_stopping_min_delta,
+    }
     record = RunRecord(
         name=cfg.name,
         stage=stage.name,

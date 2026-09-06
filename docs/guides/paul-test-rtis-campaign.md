@@ -37,7 +37,7 @@ runtime check: only FPN-ResNet50 and SegFormer-B2 have been checked so far.
 ## Pilot settings
 
 The manifest uses 4,000 RTIS optimizer steps per arm, effective batch 16
-(batch 2 × accumulation 8), validation/checkpoint cadence 500, and the existing
+(batch 2 × accumulation 8), validation/checkpoint cadence 250, and the existing
 model-specific crop/objective settings. These are a reviewable starting budget,
 not the original Cityscapes/RailSem19 study's 40k/20k protocol. Source pretraining
 compute must be reported separately from new RTIS compute. Transfer arms use
@@ -103,8 +103,11 @@ python scripts/run_rtis_campaign.py launch --campaign /path/to/new/rtis-plan \
 ```
 
 The launcher starts independent tmux workers and a publisher. Each GPU claims
-one job at a time. The queue covers 36 recipes and all four arms, with 4,000
-optimizer steps per job. Incompatible or failed runs are reported as failed;
+one job at a time. The queue covers 36 recipes and all four arms, with a maximum of 4,000
+optimizer steps per job. Validation runs every 250 steps. After three validation
+checks without at least 0.002 mIoU improvement (0.2 percentage points), training
+stops and the best validation checkpoint is evaluated. The final step and
+stopping reason are reported; early stopping is a successful outcome. Incompatible or failed runs are reported as failed;
 settings are not silently changed to obtain a score. Existing model weights
 must be cached: workers use offline Hugging Face loading.
 
@@ -126,7 +129,7 @@ results are written durably. Only then are that run's `step-*.ckpt` snapshots
 removed, with byte counts, hashes and deletion outcomes under `cleanup/`.
 Best and final full-state checkpoints remain. Failed/interrupted runs retain
 all recovery snapshots. Historical source checkpoints are never cleaned by this
-runner. During training, at most eight periodic snapshots accumulate per job.
+runner. During training, at most sixteen periodic snapshots accumulate per job.
 
 `state/` has job outcomes, `logs/` has model output, `service-logs/` has worker
 and publisher output, `services.json` lists tmux sessions, and
@@ -137,3 +140,27 @@ An interrupted worker can be restarted with `worker --campaign ... --gpu N`;
 job/GPU locks prevent duplicate work and full optimizer/scheduler/EMA state is
 resumed from the newest readable recovery snapshot. Failed jobs require review
 before their state is explicitly requeued.
+
+
+## Overfitting controls
+
+The 4,000-step budget is a ceiling, not a requirement to keep fitting a small
+training set. Validation-based early stopping uses the same rule for every
+model and initialization path. Reports include the actual step count, best
+checkpoint step, stopping reason, training-loss curve and validation-mIoU curve.
+The best checkpoint is retained even when later training degrades validation.
+Existing random crops, scale changes, flips, color augmentation and weight decay
+remain enabled according to each model recipe.
+
+Early stopping reduces wasted training and selection of overfit final weights;
+it cannot prove generalization. The 37 validation images represent only three
+provisional scene groups. Repeated comparison of 144 runs can itself overfit
+model selection to validation. Keep the 50 test images sealed until selecting a
+small number of finalists, and confirm original recording identities before
+claiming independent-video performance. Validation also lacks three classes,
+so its overall score cannot establish performance on those classes.
+
+The guard was added after launch at the user's request. Running jobs are paused
+at their first saved validation checkpoint and resumed with full training state.
+The campaign amendment records old/new code and configuration hashes and resume
+steps; initial training is not discarded or presented as a fresh run.

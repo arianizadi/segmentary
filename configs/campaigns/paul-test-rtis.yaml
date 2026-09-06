@@ -9,7 +9,9 @@ seeds: [0]
 target_steps: 4000
 batch_size: 2
 accumulation: 8
-validation_interval: 500
+validation_interval: 250
+early_stopping_patience: 3
+early_stopping_min_delta: 0.002
 num_workers: 2
 protocols:
   rtis_only:

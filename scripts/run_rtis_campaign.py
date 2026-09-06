@@ -195,6 +195,38 @@ def checkpoint_info(path):
     return {"path": str(path), "sha256": digest(path), "global_step": step}
 
 
+def validate_stop(training, actual, maximum):
+    stop = training.get("env", {}).get("training_stop", {})
+    if actual == maximum:
+        return stop or {
+            "reason": "budget_complete",
+            "actual_steps": actual,
+            "maximum_steps": maximum,
+        }
+    if (
+        not 0 < actual < maximum
+        or stop.get("reason") != "validation_plateau"
+        or stop.get("actual_steps") != actual
+        or stop.get("maximum_steps") != maximum
+        or not stop.get("patience")
+        or training.get("metrics", {}).get("miou") is None
+    ):
+        raise RuntimeError("Training exited early without valid validation-based stopping evidence")
+    return stop
+
+
+def learning_curve(run):
+    from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+
+    events = EventAccumulator(str(run / "tensorboard"), size_guidance={"scalars": 0})
+    events.Reload()
+    return {
+        tag: [{"step": e.step, "value": e.value} for e in events.Scalars(tag)]
+        for tag in ("train/loss", "val/miou")
+        if tag in events.Tags()["scalars"]
+    }
+
+
 def run_job(root, repo, job, gpu, campaign):
     from segmentary.config import load_experiment
 
@@ -245,8 +277,9 @@ def run_job(root, repo, job, gpu, campaign):
     with (log_dir / f"{job['name']}.log").open("a") as log:
         subprocess.run(command, cwd=repo, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
         last = checkpoint_info(run / "last.ckpt")
-        if last["global_step"] != campaign["target_steps"]:
-            raise RuntimeError("Training exited before the planned optimizer budget")
+        training = read(run / "results.json")
+        stop = validate_stop(training, last["global_step"], campaign["target_steps"])
+
         best_paths = list(run.glob("best*.ckpt"))
         if len(best_paths) != 1:
             raise RuntimeError(f"Expected exactly one best checkpoint: {best_paths}")
@@ -284,7 +317,9 @@ def run_job(root, repo, job, gpu, campaign):
         finished_at=now(),
         checkpoints={"best": best, "final": last},
         evaluation=evaluation,
-        training=read(run / "results.json"),
+        training=training,
+        stopping=stop,
+        learning_curve=learning_curve(run),
     )
     write(state_path, state)
     try:
@@ -360,7 +395,7 @@ def render(data):
         "",
         f"**{completed}/{len(jobs)} completed · {failed} failed**",
         "",
-        "36 model recipes x four initialization paths x seed 0. Each run trains for 4,000 optimizer steps on the same 220 training images.",
+        "36 model recipes x four initialization paths x seed 0. Each run trains for at most 4,000 optimizer steps on the same 220 training images, with validation-based early stopping.",
         "",
         "Validation: 37 images; best validation checkpoint, native RTIS classes, no TTA. Test: 50 held-out images, not evaluated. Recording groups are provisional; validation lacks person, truck and on-rails. These single-seed pilot results do not establish independent-recording generalization.",
         "",
@@ -370,13 +405,17 @@ def render(data):
         "",
         "[Complete results, per-class metrics, checkpoint hashes and provenance](status.json). Source diagnostics remain [separate](../README.md). Values below are **validation mIoU (%)**, not the coarse source-only diagnostic scores.",
         "",
-        "| Model | Initialization path | Status | Val mIoU (%) |",
-        "| --- | --- | --- | ---: |",
+        "Validation every 250 steps; stop after three checks without a 0.2-point mIoU improvement. Keep the best validation checkpoint. An early stop is a completed run, not a failed run. Training and validation curves are in the linked JSON.",
+        "",
+        "| Model | Initialization path | Status | Steps | Best step | Val mIoU (%) |",
+        "| --- | --- | --- | ---: | ---: | ---: |",
     ]
     for row in jobs:
         score = row.get("evaluation", {}).get("metrics", {}).get("miou")
         shown = f"{100 * score:.2f}" if score is not None else "—"
-        lines.append(f"| {row['model']} | {row['protocol']} | {row['status']} | {shown} |")
+        lines.append(
+            f"| {row['model']} | {row['protocol']} | {row['status']} | {row.get('final_step', '—')} | {row.get('checkpoints', {}).get('best', {}).get('global_step', '—')} | {shown} |"
+        )
     lines += [
         "",
         "After successful evaluation, periodic checkpoints are removed with a deletion audit. Best and final checkpoints, full metrics, configs and logs remain on HDRFS. Failed-run checkpoints remain available for recovery. Historical source checkpoints are preserved.",

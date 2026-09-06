@@ -167,3 +167,72 @@ def test_dataset_audit_uses_decoded_mask_hash(tmp_path):
     Image.new("L", (3, 2), 3).save(mask)
     with pytest.raises(RuntimeError, match="content changed"):
         rtis.verify_samples(tmp_path, [sample])
+
+
+def test_early_stop_requires_explicit_finite_validation_evidence():
+    with pytest.raises(RuntimeError, match="without valid"):
+        rtis.validate_stop({"env": {}, "metrics": {"miou": 0.5}}, 1000, 4000)
+    record = {
+        "env": {
+            "training_stop": {
+                "reason": "validation_plateau",
+                "actual_steps": 1000,
+                "maximum_steps": 4000,
+                "patience": 3,
+            }
+        },
+        "metrics": {"miou": 0.5},
+    }
+    assert rtis.validate_stop(record, 1000, 4000)["reason"] == "validation_plateau"
+    record["metrics"]["miou"] = None
+    with pytest.raises(RuntimeError, match="without valid"):
+        rtis.validate_stop(record, 1000, 4000)
+
+
+@pytest.mark.parametrize("improves,expected", [(False, 6), (True, 12)])
+def test_real_lightning_early_stopping_uses_validation_checks(tmp_path, improves, expected):
+    import lightning as L
+    import torch
+    from torch.utils.data import DataLoader, TensorDataset
+
+    from segmentary.config import TrainConfig
+    from segmentary.curriculum import _checkpoint_callbacks
+
+    class Toy(L.LightningModule):
+        def __init__(self):
+            super().__init__()
+            self.weight = torch.nn.Parameter(torch.tensor(1.0))
+
+        def training_step(self, batch, batch_idx):
+            return self.weight.square()
+
+        def validation_step(self, batch, batch_idx):
+            score = 0.4 + (0.01 * self.global_step if improves else 0.0)
+            self.log("val/miou", torch.tensor(score))
+
+        def configure_optimizers(self):
+            return torch.optim.SGD(self.parameters(), lr=0.01)
+
+    loader = DataLoader(TensorDataset(torch.zeros(24, 1)), batch_size=1)
+    cfg = TrainConfig(
+        iters=12,
+        val_every=2,
+        ckpt_every=2,
+        early_stopping_patience=2,
+        early_stopping_min_delta=0.002,
+    )
+    trainer = L.Trainer(
+        max_steps=12,
+        accelerator="cpu",
+        devices=1,
+        logger=False,
+        callbacks=_checkpoint_callbacks(tmp_path, cfg),
+        val_check_interval=2,
+        check_val_every_n_epoch=None,
+        num_sanity_val_steps=0,
+        enable_progress_bar=False,
+        enable_model_summary=False,
+    )
+    trainer.fit(Toy(), loader, loader)
+    assert trainer.global_step == expected
+    assert len(list(tmp_path.glob("best*.ckpt"))) == 1

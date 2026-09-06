@@ -55,6 +55,8 @@ def main() -> None:
                 cfg.train.accum = spec["accumulation"]
                 cfg.train.val_every = spec["validation_interval"]
                 cfg.train.ckpt_every = spec["validation_interval"]
+                cfg.train.early_stopping_patience = spec.get("early_stopping_patience")
+                cfg.train.early_stopping_min_delta = spec.get("early_stopping_min_delta", 0.0)
                 cfg.train.devices = 1
                 cfg.train.num_workers = spec.get("num_workers", 2)
                 cfg.eval.num_workers = spec.get("num_workers", 2)

@@ -1253,6 +1253,8 @@ class TrainConfig:
     ema_decay: float | None = 0.9998
     val_every: int = 4000
     ckpt_every: int = 4000
+    early_stopping_patience: int | None = None
+    early_stopping_min_delta: float = 0.0
     seed: int = 0
     devices: int | str = "auto"
 
@@ -1271,6 +1273,10 @@ class TrainConfig:
                 f"train.val_every and train.ckpt_every must be positive, got "
                 f"{self.val_every}, {self.ckpt_every}"
             )
+        if self.early_stopping_patience is not None:
+            _positive_int("train.early_stopping_patience", self.early_stopping_patience)
+        if not math.isfinite(self.early_stopping_min_delta) or self.early_stopping_min_delta < 0:
+            raise ConfigError("train.early_stopping_min_delta must be finite and nonnegative")
         if not isinstance(self.precision, str) or not self.precision.strip():
             raise ConfigError("train.precision must be a non-empty Lightning precision string")
         if self.ema_decay is not None and not 0.0 < self.ema_decay < 1.0:
