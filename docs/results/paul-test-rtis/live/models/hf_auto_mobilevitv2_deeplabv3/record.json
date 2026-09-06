@@ -623,36 +623,72 @@
           {
             "step": 299,
             "value": 0.8231024742126465
+          },
+          {
+            "step": 349,
+            "value": 0.2785659432411194
+          },
+          {
+            "step": 399,
+            "value": 0.6505048274993896
+          },
+          {
+            "step": 449,
+            "value": 0.5083029270172119
+          },
+          {
+            "step": 499,
+            "value": 0.37389546632766724
           }
         ],
         "val/miou": [
           {
             "step": 254,
             "value": 0.18033678829669952
+          },
+          {
+            "step": 508,
+            "value": 0.2412458062171936
           }
         ],
         "val/macc": [
           {
             "step": 254,
             "value": 0.26805323362350464
+          },
+          {
+            "step": 508,
+            "value": 0.3566489517688751
           }
         ],
         "val/pixel_acc": [
           {
             "step": 254,
             "value": 0.7682512402534485
+          },
+          {
+            "step": 508,
+            "value": 0.7714143395423889
           }
         ],
         "val/boundary_f1": [
           {
             "step": 254,
             "value": 0.18935814499855042
+          },
+          {
+            "step": 508,
+            "value": 0.2735651433467865
           }
         ],
         "val/gt_present_miou": [
           {
             "step": 254,
             "value": 0.21039292216300964
+          },
+          {
+            "step": 508,
+            "value": 0.2680509090423584
           }
         ],
         "val_iou/person": [
@@ -677,11 +713,19 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.0
           }
         ],
         "val_iou/truck": [
           {
             "step": 254,
+            "value": 0.0
+          },
+          {
+            "step": 508,
             "value": 0.0
           }
         ],
@@ -689,11 +733,19 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.0
           }
         ],
         "val_dice/truck": [
           {
             "step": 254,
+            "value": 0.0
+          },
+          {
+            "step": 508,
             "value": 0.0
           }
         ],
@@ -701,35 +753,59 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.0
           }
         ],
         "val_iou/rail-track": [
           {
             "step": 254,
             "value": 0.21896839141845703
+          },
+          {
+            "step": 508,
+            "value": 0.27702605724334717
           }
         ],
         "val_precision/rail-track": [
           {
             "step": 254,
             "value": 0.5609065890312195
+          },
+          {
+            "step": 508,
+            "value": 0.5999627709388733
           }
         ],
         "val_recall/rail-track": [
           {
             "step": 254,
             "value": 0.2642677426338196
+          },
+          {
+            "step": 508,
+            "value": 0.3397895097732544
           }
         ],
         "val_dice/rail-track": [
           {
             "step": 254,
             "value": 0.3592683672904968
+          },
+          {
+            "step": 508,
+            "value": 0.43386125564575195
           }
         ],
         "val_support/rail-track": [
           {
             "step": 254,
+            "value": 6323197.0
+          },
+          {
+            "step": 508,
             "value": 6323197.0
           }
         ],
@@ -737,29 +813,49 @@
           {
             "step": 254,
             "value": 0.003350755898281932
+          },
+          {
+            "step": 508,
+            "value": 0.02940147928893566
           }
         ],
         "val_precision/vegetation-overgrowth": [
           {
             "step": 254,
             "value": 0.22685673832893372
+          },
+          {
+            "step": 508,
+            "value": 0.4157123863697052
           }
         ],
         "val_recall/vegetation-overgrowth": [
           {
             "step": 254,
             "value": 0.003389462362974882
+          },
+          {
+            "step": 508,
+            "value": 0.030668839812278748
           }
         ],
         "val_dice/vegetation-overgrowth": [
           {
             "step": 254,
             "value": 0.006679132115095854
+          },
+          {
+            "step": 508,
+            "value": 0.057123444974422455
           }
         ],
         "val_support/vegetation-overgrowth": [
           {
             "step": 254,
+            "value": 5901821.0
+          },
+          {
+            "step": 508,
             "value": 5901821.0
           }
         ],
@@ -767,29 +863,49 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.11353833973407745
           }
         ],
         "val_precision/car": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.5880745649337769
           }
         ],
         "val_recall/car": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.123348169028759
           }
         ],
         "val_dice/car": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.2039235383272171
           }
         ],
         "val_support/car": [
           {
             "step": 254,
+            "value": 29664.0
+          },
+          {
+            "step": 508,
             "value": 29664.0
           }
         ],
@@ -797,11 +913,19 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.0
           }
         ],
         "val_precision/on-rails": [
           {
             "step": 254,
+            "value": 0.0
+          },
+          {
+            "step": 508,
             "value": 0.0
           }
         ],
@@ -809,11 +933,19 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.0
           }
         ],
         "val_support/on-rails": [
           {
             "step": 254,
+            "value": 0.0
+          },
+          {
+            "step": 508,
             "value": 0.0
           }
         ],
@@ -821,29 +953,49 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.08509844541549683
           }
         ],
         "val_precision/traffic-sign": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.9026898741722107
           }
         ],
         "val_recall/traffic-sign": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.08588633686304092
           }
         ],
         "val_dice/traffic-sign": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.15684926509857178
           }
         ],
         "val_support/traffic-sign": [
           {
             "step": 254,
+            "value": 13285.0
+          },
+          {
+            "step": 508,
             "value": 13285.0
           }
         ],
@@ -851,29 +1003,49 @@
           {
             "step": 254,
             "value": 0.008760320022702217
+          },
+          {
+            "step": 508,
+            "value": 0.07008291035890579
           }
         ],
         "val_precision/road": [
           {
             "step": 254,
             "value": 0.033428143709897995
+          },
+          {
+            "step": 508,
+            "value": 0.2121863067150116
           }
         ],
         "val_recall/road": [
           {
             "step": 254,
             "value": 0.011732109822332859
+          },
+          {
+            "step": 508,
+            "value": 0.0947330892086029
           }
         ],
         "val_dice/road": [
           {
             "step": 254,
             "value": 0.017368488013744354
+          },
+          {
+            "step": 508,
+            "value": 0.13098594546318054
           }
         ],
         "val_support/road": [
           {
             "step": 254,
+            "value": 1048831.0
+          },
+          {
+            "step": 508,
             "value": 1048831.0
           }
         ],
@@ -881,29 +1053,49 @@
           {
             "step": 254,
             "value": 0.08131495863199234
+          },
+          {
+            "step": 508,
+            "value": 0.3417920172214508
           }
         ],
         "val_precision/sidewalk": [
           {
             "step": 254,
             "value": 0.6612008213996887
+          },
+          {
+            "step": 508,
+            "value": 0.8865390419960022
           }
         ],
         "val_recall/sidewalk": [
           {
             "step": 254,
             "value": 0.08485031872987747
+          },
+          {
+            "step": 508,
+            "value": 0.3574270009994507
           }
         ],
         "val_dice/sidewalk": [
           {
             "step": 254,
             "value": 0.15040014684200287
+          },
+          {
+            "step": 508,
+            "value": 0.5094560384750366
           }
         ],
         "val_support/sidewalk": [
           {
             "step": 254,
+            "value": 1297367.0
+          },
+          {
+            "step": 508,
             "value": 1297367.0
           }
         ],
@@ -911,29 +1103,49 @@
           {
             "step": 254,
             "value": 0.2136675864458084
+          },
+          {
+            "step": 508,
+            "value": 0.2171880006790161
           }
         ],
         "val_precision/construction": [
           {
             "step": 254,
             "value": 0.38123202323913574
+          },
+          {
+            "step": 508,
+            "value": 0.2305900603532791
           }
         ],
         "val_recall/construction": [
           {
             "step": 254,
             "value": 0.3271081745624542
+          },
+          {
+            "step": 508,
+            "value": 0.7888890504837036
           }
         ],
         "val_dice/construction": [
           {
             "step": 254,
             "value": 0.3521023094654083
+          },
+          {
+            "step": 508,
+            "value": 0.3568684756755829
           }
         ],
         "val_support/construction": [
           {
             "step": 254,
+            "value": 311585.0
+          },
+          {
+            "step": 508,
             "value": 311585.0
           }
         ],
@@ -941,29 +1153,49 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.005581357982009649
           }
         ],
         "val_precision/tram-track": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.010114612989127636
           }
         ],
         "val_recall/tram-track": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.012299969792366028
           }
         ],
         "val_dice/tram-track": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.011100757867097855
           }
         ],
         "val_support/tram-track": [
           {
             "step": 254,
+            "value": 56179.0
+          },
+          {
+            "step": 508,
             "value": 56179.0
           }
         ],
@@ -971,29 +1203,49 @@
           {
             "step": 254,
             "value": 0.5202353596687317
+          },
+          {
+            "step": 508,
+            "value": 0.5826936364173889
           }
         ],
         "val_precision/pole": [
           {
             "step": 254,
             "value": 0.7532075047492981
+          },
+          {
+            "step": 508,
+            "value": 0.7316053509712219
           }
         ],
         "val_recall/pole": [
           {
             "step": 254,
             "value": 0.6271356344223022
+          },
+          {
+            "step": 508,
+            "value": 0.7411191463470459
           }
         ],
         "val_dice/pole": [
           {
             "step": 254,
             "value": 0.684414267539978
+          },
+          {
+            "step": 508,
+            "value": 0.7363315224647522
           }
         ],
         "val_support/pole": [
           {
             "step": 254,
+            "value": 628038.0
+          },
+          {
+            "step": 508,
             "value": 628038.0
           }
         ],
@@ -1001,29 +1253,49 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.15964862704277039
           }
         ],
         "val_precision/traffic-light": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.6313177943229675
           }
         ],
         "val_recall/traffic-light": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.17606355249881744
           }
         ],
         "val_dice/traffic-light": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.27533966302871704
           }
         ],
         "val_support/traffic-light": [
           {
             "step": 254,
+            "value": 19510.0
+          },
+          {
+            "step": 508,
             "value": 19510.0
           }
         ],
@@ -1031,29 +1303,49 @@
           {
             "step": 254,
             "value": 0.016894832253456116
+          },
+          {
+            "step": 508,
+            "value": 0.026779742911458015
           }
         ],
         "val_precision/mud-pumping": [
           {
             "step": 254,
             "value": 0.025610342621803284
+          },
+          {
+            "step": 508,
+            "value": 0.03251928091049194
           }
         ],
         "val_recall/mud-pumping": [
           {
             "step": 254,
             "value": 0.04729704558849335
+          },
+          {
+            "step": 508,
+            "value": 0.13174067437648773
           }
         ],
         "val_dice/mud-pumping": [
           {
             "step": 254,
             "value": 0.033228278160095215
+          },
+          {
+            "step": 508,
+            "value": 0.05216258391737938
           }
         ],
         "val_support/mud-pumping": [
           {
             "step": 254,
+            "value": 1226250.0
+          },
+          {
+            "step": 508,
             "value": 1226250.0
           }
         ],
@@ -1061,29 +1353,49 @@
           {
             "step": 254,
             "value": 0.010938979685306549
+          },
+          {
+            "step": 508,
+            "value": 0.054455533623695374
           }
         ],
         "val_precision/fence": [
           {
             "step": 254,
             "value": 0.18323317170143127
+          },
+          {
+            "step": 508,
+            "value": 0.10211468487977982
           }
         ],
         "val_recall/fence": [
           {
             "step": 254,
             "value": 0.01149971503764391
+          },
+          {
+            "step": 508,
+            "value": 0.10448560863733292
           }
         ],
         "val_dice/fence": [
           {
             "step": 254,
             "value": 0.02164122648537159
+          },
+          {
+            "step": 508,
+            "value": 0.10328654199838638
           }
         ],
         "val_support/fence": [
           {
             "step": 254,
+            "value": 265137.0
+          },
+          {
+            "step": 508,
             "value": 265137.0
           }
         ],
@@ -1091,29 +1403,49 @@
           {
             "step": 254,
             "value": 0.7796823978424072
+          },
+          {
+            "step": 508,
+            "value": 0.8003599643707275
           }
         ],
         "val_precision/terrain": [
           {
             "step": 254,
             "value": 0.7957116365432739
+          },
+          {
+            "step": 508,
+            "value": 0.842346727848053
           }
         ],
         "val_recall/terrain": [
           {
             "step": 254,
             "value": 0.9748139381408691
+          },
+          {
+            "step": 508,
+            "value": 0.9413729906082153
           }
         ],
         "val_dice/terrain": [
           {
             "step": 254,
             "value": 0.8762040138244629
+          },
+          {
+            "step": 508,
+            "value": 0.8891110420227051
           }
         ],
         "val_support/terrain": [
           {
             "step": 254,
+            "value": 39239304.0
+          },
+          {
+            "step": 508,
             "value": 39239304.0
           }
         ],
@@ -1121,29 +1453,49 @@
           {
             "step": 254,
             "value": 0.9595195651054382
+          },
+          {
+            "step": 508,
+            "value": 0.9650107026100159
           }
         ],
         "val_precision/sky": [
           {
             "step": 254,
             "value": 0.9821069240570068
+          },
+          {
+            "step": 508,
+            "value": 0.9810115098953247
           }
         ],
         "val_recall/sky": [
           {
             "step": 254,
             "value": 0.976591944694519
+          },
+          {
+            "step": 508,
+            "value": 0.983379065990448
           }
         ],
         "val_dice/sky": [
           {
             "step": 254,
             "value": 0.9793416857719421
+          },
+          {
+            "step": 508,
+            "value": 0.9821938276290894
           }
         ],
         "val_support/sky": [
           {
             "step": 254,
+            "value": 19121606.0
+          },
+          {
+            "step": 508,
             "value": 19121606.0
           }
         ],
@@ -1151,29 +1503,49 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.015037954784929752
           }
         ],
         "val_precision/rail-embedded": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.07231977581977844
           }
         ],
         "val_recall/rail-embedded": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.018632061779499054
           }
         ],
         "val_dice/rail-embedded": [
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.029630331322550774
           }
         ],
         "val_support/rail-embedded": [
           {
             "step": 254,
+            "value": 16799.0
+          },
+          {
+            "step": 508,
             "value": 16799.0
           }
         ],
@@ -1181,29 +1553,49 @@
           {
             "step": 254,
             "value": 0.5075042247772217
+          },
+          {
+            "step": 508,
+            "value": 0.5663891434669495
           }
         ],
         "val_precision/rail-raised": [
           {
             "step": 254,
             "value": 0.548585057258606
+          },
+          {
+            "step": 508,
+            "value": 0.62482750415802
           }
         ],
         "val_recall/rail-raised": [
           {
             "step": 254,
             "value": 0.8714174628257751
+          },
+          {
+            "step": 508,
+            "value": 0.8582741618156433
           }
         ],
         "val_dice/rail-raised": [
           {
             "step": 254,
             "value": 0.6733039021492004
+          },
+          {
+            "step": 508,
+            "value": 0.7231780290603638
           }
         ],
         "val_support/rail-raised": [
           {
             "step": 254,
+            "value": 2969797.0
+          },
+          {
+            "step": 508,
             "value": 2969797.0
           }
         ],
@@ -1211,29 +1603,49 @@
           {
             "step": 254,
             "value": 0.4662351608276367
+          },
+          {
+            "step": 508,
+            "value": 0.5148322582244873
           }
         ],
         "val_precision/trackbed": [
           {
             "step": 254,
             "value": 0.6474720239639282
+          },
+          {
+            "step": 508,
+            "value": 0.735819399356842
           }
         ],
         "val_recall/trackbed": [
           {
             "step": 254,
             "value": 0.6248546838760376
+          },
+          {
+            "step": 508,
+            "value": 0.6315718293190002
           }
         ],
         "val_dice/trackbed": [
           {
             "step": 254,
             "value": 0.6359623670578003
+          },
+          {
+            "step": 508,
+            "value": 0.6797217726707458
           }
         ],
         "val_support/trackbed": [
           {
             "step": 254,
+            "value": 10643081.0
+          },
+          {
+            "step": 508,
             "value": 10643081.0
           }
         ],
@@ -1241,11 +1653,19 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.0
           }
         ],
         "val_precision/standing-water": [
           {
             "step": 254,
+            "value": 0.0
+          },
+          {
+            "step": 508,
             "value": 0.0
           }
         ],
@@ -1253,11 +1673,19 @@
           {
             "step": 254,
             "value": 0.0
+          },
+          {
+            "step": 508,
+            "value": 0.0
           }
         ],
         "val_dice/standing-water": [
           {
             "step": 254,
+            "value": 0.0
+          },
+          {
+            "step": 508,
             "value": 0.0
           }
         ],
@@ -1265,16 +1693,24 @@
           {
             "step": 254,
             "value": 95802.0
+          },
+          {
+            "step": 508,
+            "value": 95802.0
           }
         ],
         "val/thin_miou": [
           {
             "step": 254,
             "value": 0.20554791390895844
+          },
+          {
+            "step": 508,
+            "value": 0.28177356719970703
           }
         ]
       },
-      "observed_step": 299,
+      "observed_step": 508,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1440,10 +1876,670 @@
           {
             "step": 199,
             "value": 1.339552879333496
+          },
+          {
+            "step": 249,
+            "value": 1.0724226236343384
+          },
+          {
+            "step": 299,
+            "value": 0.44229546189308167
+          },
+          {
+            "step": 349,
+            "value": 0.3365147113800049
+          }
+        ],
+        "val/miou": [
+          {
+            "step": 254,
+            "value": 0.18912550806999207
+          }
+        ],
+        "val/macc": [
+          {
+            "step": 254,
+            "value": 0.27845728397369385
+          }
+        ],
+        "val/pixel_acc": [
+          {
+            "step": 254,
+            "value": 0.7635046243667603
+          }
+        ],
+        "val/boundary_f1": [
+          {
+            "step": 254,
+            "value": 0.2001977264881134
+          }
+        ],
+        "val/gt_present_miou": [
+          {
+            "step": 254,
+            "value": 0.2206464409828186
+          }
+        ],
+        "val_iou/person": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/person": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/person": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/person": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_iou/truck": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/truck": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/truck": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/truck": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_iou/rail-track": [
+          {
+            "step": 254,
+            "value": 0.27103960514068604
+          }
+        ],
+        "val_precision/rail-track": [
+          {
+            "step": 254,
+            "value": 0.4981764554977417
+          }
+        ],
+        "val_recall/rail-track": [
+          {
+            "step": 254,
+            "value": 0.3728314936161041
+          }
+        ],
+        "val_dice/rail-track": [
+          {
+            "step": 254,
+            "value": 0.4264849126338959
+          }
+        ],
+        "val_support/rail-track": [
+          {
+            "step": 254,
+            "value": 6323197.0
+          }
+        ],
+        "val_iou/vegetation-overgrowth": [
+          {
+            "step": 254,
+            "value": 0.005627424921840429
+          }
+        ],
+        "val_precision/vegetation-overgrowth": [
+          {
+            "step": 254,
+            "value": 0.1440531611442566
+          }
+        ],
+        "val_recall/vegetation-overgrowth": [
+          {
+            "step": 254,
+            "value": 0.005822101142257452
+          }
+        ],
+        "val_dice/vegetation-overgrowth": [
+          {
+            "step": 254,
+            "value": 0.011191868223249912
+          }
+        ],
+        "val_support/vegetation-overgrowth": [
+          {
+            "step": 254,
+            "value": 5901821.0
+          }
+        ],
+        "val_iou/car": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/car": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/car": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/car": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/car": [
+          {
+            "step": 254,
+            "value": 29664.0
+          }
+        ],
+        "val_iou/on-rails": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/on-rails": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/on-rails": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/on-rails": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_iou/traffic-sign": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/traffic-sign": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/traffic-sign": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/traffic-sign": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/traffic-sign": [
+          {
+            "step": 254,
+            "value": 13285.0
+          }
+        ],
+        "val_iou/road": [
+          {
+            "step": 254,
+            "value": 0.007856001146137714
+          }
+        ],
+        "val_precision/road": [
+          {
+            "step": 254,
+            "value": 0.04821397736668587
+          }
+        ],
+        "val_recall/road": [
+          {
+            "step": 254,
+            "value": 0.009297970682382584
+          }
+        ],
+        "val_dice/road": [
+          {
+            "step": 254,
+            "value": 0.015589531511068344
+          }
+        ],
+        "val_support/road": [
+          {
+            "step": 254,
+            "value": 1048831.0
+          }
+        ],
+        "val_iou/sidewalk": [
+          {
+            "step": 254,
+            "value": 0.20104601979255676
+          }
+        ],
+        "val_precision/sidewalk": [
+          {
+            "step": 254,
+            "value": 0.6208717823028564
+          }
+        ],
+        "val_recall/sidewalk": [
+          {
+            "step": 254,
+            "value": 0.22918187081813812
+          }
+        ],
+        "val_dice/sidewalk": [
+          {
+            "step": 254,
+            "value": 0.3347848951816559
+          }
+        ],
+        "val_support/sidewalk": [
+          {
+            "step": 254,
+            "value": 1297367.0
+          }
+        ],
+        "val_iou/construction": [
+          {
+            "step": 254,
+            "value": 0.32879167795181274
+          }
+        ],
+        "val_precision/construction": [
+          {
+            "step": 254,
+            "value": 0.5169565081596375
+          }
+        ],
+        "val_recall/construction": [
+          {
+            "step": 254,
+            "value": 0.4745992124080658
+          }
+        ],
+        "val_dice/construction": [
+          {
+            "step": 254,
+            "value": 0.49487316608428955
+          }
+        ],
+        "val_support/construction": [
+          {
+            "step": 254,
+            "value": 311585.0
+          }
+        ],
+        "val_iou/tram-track": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/tram-track": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/tram-track": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/tram-track": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/tram-track": [
+          {
+            "step": 254,
+            "value": 56179.0
+          }
+        ],
+        "val_iou/pole": [
+          {
+            "step": 254,
+            "value": 0.48033156991004944
+          }
+        ],
+        "val_precision/pole": [
+          {
+            "step": 254,
+            "value": 0.7005743384361267
+          }
+        ],
+        "val_recall/pole": [
+          {
+            "step": 254,
+            "value": 0.6044140458106995
+          }
+        ],
+        "val_dice/pole": [
+          {
+            "step": 254,
+            "value": 0.6489513516426086
+          }
+        ],
+        "val_support/pole": [
+          {
+            "step": 254,
+            "value": 628038.0
+          }
+        ],
+        "val_iou/traffic-light": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/traffic-light": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/traffic-light": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/traffic-light": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/traffic-light": [
+          {
+            "step": 254,
+            "value": 19510.0
+          }
+        ],
+        "val_iou/mud-pumping": [
+          {
+            "step": 254,
+            "value": 0.005375123582780361
+          }
+        ],
+        "val_precision/mud-pumping": [
+          {
+            "step": 254,
+            "value": 0.007156121078878641
+          }
+        ],
+        "val_recall/mud-pumping": [
+          {
+            "step": 254,
+            "value": 0.021140877157449722
+          }
+        ],
+        "val_dice/mud-pumping": [
+          {
+            "step": 254,
+            "value": 0.010692771524190903
+          }
+        ],
+        "val_support/mud-pumping": [
+          {
+            "step": 254,
+            "value": 1226250.0
+          }
+        ],
+        "val_iou/fence": [
+          {
+            "step": 254,
+            "value": 0.017227400094270706
+          }
+        ],
+        "val_precision/fence": [
+          {
+            "step": 254,
+            "value": 0.13361744582653046
+          }
+        ],
+        "val_recall/fence": [
+          {
+            "step": 254,
+            "value": 0.01939374767243862
+          }
+        ],
+        "val_dice/fence": [
+          {
+            "step": 254,
+            "value": 0.03387128561735153
+          }
+        ],
+        "val_support/fence": [
+          {
+            "step": 254,
+            "value": 265137.0
+          }
+        ],
+        "val_iou/terrain": [
+          {
+            "step": 254,
+            "value": 0.7910805344581604
+          }
+        ],
+        "val_precision/terrain": [
+          {
+            "step": 254,
+            "value": 0.8070312142372131
+          }
+        ],
+        "val_recall/terrain": [
+          {
+            "step": 254,
+            "value": 0.9756246209144592
+          }
+        ],
+        "val_dice/terrain": [
+          {
+            "step": 254,
+            "value": 0.8833556175231934
+          }
+        ],
+        "val_support/terrain": [
+          {
+            "step": 254,
+            "value": 39239304.0
+          }
+        ],
+        "val_iou/sky": [
+          {
+            "step": 254,
+            "value": 0.9616581201553345
+          }
+        ],
+        "val_precision/sky": [
+          {
+            "step": 254,
+            "value": 0.9747188687324524
+          }
+        ],
+        "val_recall/sky": [
+          {
+            "step": 254,
+            "value": 0.9862577319145203
+          }
+        ],
+        "val_dice/sky": [
+          {
+            "step": 254,
+            "value": 0.9804543256759644
+          }
+        ],
+        "val_support/sky": [
+          {
+            "step": 254,
+            "value": 19121606.0
+          }
+        ],
+        "val_iou/rail-embedded": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/rail-embedded": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/rail-embedded": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/rail-embedded": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/rail-embedded": [
+          {
+            "step": 254,
+            "value": 16799.0
+          }
+        ],
+        "val_iou/rail-raised": [
+          {
+            "step": 254,
+            "value": 0.48870015144348145
+          }
+        ],
+        "val_precision/rail-raised": [
+          {
+            "step": 254,
+            "value": 0.5486897230148315
+          }
+        ],
+        "val_recall/rail-raised": [
+          {
+            "step": 254,
+            "value": 0.8171797394752502
+          }
+        ],
+        "val_dice/rail-raised": [
+          {
+            "step": 254,
+            "value": 0.6565461158752441
+          }
+        ],
+        "val_support/rail-raised": [
+          {
+            "step": 254,
+            "value": 2969797.0
+          }
+        ],
+        "val_iou/trackbed": [
+          {
+            "step": 254,
+            "value": 0.41290220618247986
+          }
+        ],
+        "val_precision/trackbed": [
+          {
+            "step": 254,
+            "value": 0.710362434387207
+          }
+        ],
+        "val_recall/trackbed": [
+          {
+            "step": 254,
+            "value": 0.4964876174926758
+          }
+        ],
+        "val_dice/trackbed": [
+          {
+            "step": 254,
+            "value": 0.5844738483428955
+          }
+        ],
+        "val_support/trackbed": [
+          {
+            "step": 254,
+            "value": 10643081.0
+          }
+        ],
+        "val_iou/standing-water": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_precision/standing-water": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_recall/standing-water": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_dice/standing-water": [
+          {
+            "step": 254,
+            "value": 0.0
+          }
+        ],
+        "val_support/standing-water": [
+          {
+            "step": 254,
+            "value": 95802.0
+          }
+        ],
+        "val/thin_miou": [
+          {
+            "step": 254,
+            "value": 0.19380635023117065
           }
         ]
       },
-      "observed_step": 199,
+      "observed_step": 349,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
