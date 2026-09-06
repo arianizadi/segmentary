@@ -6,9 +6,9 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_beit_base_ade | rtis_only | 0 | training | 1272 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | rtis_only | 1 | training | 949 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | rtis_only | 2 | training | 649 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | rtis_only | 0 | training | 1299 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | rtis_only | 1 | training | 999 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | rtis_only | 2 | training | 699 | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |

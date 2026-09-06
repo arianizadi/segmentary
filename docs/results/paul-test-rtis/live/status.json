@@ -642,7 +642,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 3054,
+      "observed_step": 3099,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -652,7 +652,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2599,
+      "observed_step": 2649,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -662,7 +662,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2290,
+      "observed_step": 2299,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -672,7 +672,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2449,
+      "observed_step": 2499,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -680,9 +680,9 @@
       "model": "eomt_large",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2290,
+      "status": "collecting",
+      "final_step": 2290,
+      "observed_step": null,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -692,7 +692,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1949,
+      "observed_step": 1999,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -702,7 +702,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1272,
+      "observed_step": 1299,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -712,7 +712,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 949,
+      "observed_step": 999,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -722,7 +722,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 649,
+      "observed_step": 699,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {

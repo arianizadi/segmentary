@@ -12,12 +12,12 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | eomt_large | cityscapes_to_rtis | 0 | completed | 2545 | 2036 | 9.20 | 13.98 | 21.21 | 9.08 | 52.85 | 55.79 |
 | eomt_large | cityscapes_to_rtis | 1 | completed | 3054 | 1781 | 11.56 | 17.05 | 26.43 | 9.88 | 53.29 | 56.25 |
 | eomt_large | cityscapes_to_rtis | 2 | completed | 3054 | 1781 | 5.74 | 7.07 | 23.39 | 5.46 | 51.42 | 54.27 |
-| eomt_large | railsem19_to_rtis | 0 | training | 3054 | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 1 | training | 2599 | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 2 | training | 2290 | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | training | 2449 | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_railsem19_to_rtis | 1 | training | 2290 | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_railsem19_to_rtis | 2 | training | 1949 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 0 | training | 3099 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 1 | training | 2649 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 2 | training | 2299 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | training | 2499 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 1 | collecting | 2290 | 1018 | 10.29 | 15.41 | 23.66 | 8.36 | 49.80 | 55.33 |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 2 | training | 1999 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -5763,7 +5763,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 1
 
-Status: **training**. Started: 2026-09-06T07:07:55.594112+00:00. Finished: —.
+Status: **collecting**. Started: 2026-09-06T07:07:55.594112+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
@@ -5771,25 +5771,25 @@ Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-bas
 
 Source checkpoint: `{'name': 'eomt_large--cityscapes_to_railsem19--seed-0', 'model': 'eomt_large', 'protocol': 'cityscapes_to_railsem19', 'config': '/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_large--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml', 'checkpoint': '/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt', 'recorded_sha256': 'a856595b513f6081fbfc534aa777b1cbad824f19e565f3f3b9861bebf79f6e1e', 'exists': True}`.
 
-Config SHA-256: `d98b6bc132b09ece44d1134b35fe2cb6e520d260245dac0eacbaeaa3966b9c0b`. Weights used for validation: `—`.
+Config SHA-256: `d98b6bc132b09ece44d1134b35fe2cb6e520d260245dac0eacbaeaa3966b9c0b`. Weights used for validation: `ema`.
 
 ### Mud-pumping and aggregate quality
 
 | Metric | Selected checkpoint | Final training validation |
 | --- | --- | --- |
-| Mud IoU | — | — |
-| Mud precision | — | — |
-| Mud recall | — | — |
-| Mud Dice/F1 | — | — |
-| mIoU | — | — |
-| Mean accuracy | — | — |
-| Mean precision | — | — |
-| Mean Dice | — | — |
-| Mean specificity | — | — |
-| Pixel accuracy | — | — |
-| Frequency-weighted IoU | — | — |
-| Fixed GT-present class mIoU | — | — |
-| Boundary F1 | — | — |
+| Mud IoU | 10.29 | 8.36 |
+| Mud precision | 15.41 | 11.57 |
+| Mud recall | 23.66 | 23.19 |
+| Mud Dice/F1 | 18.66 | 15.44 |
+| mIoU | 49.80 | 52.07 |
+| Mean accuracy | 68.20 | 69.22 |
+| Mean precision | 63.09 | 66.89 |
+| Mean Dice | 59.94 | 63.38 |
+| Mean specificity | 99.30 | 99.30 |
+| Pixel accuracy | 88.94 | 88.68 |
+| Frequency-weighted IoU | 81.79 | 81.88 |
+| Fixed GT-present class mIoU | 55.33 | 54.96 |
+| Boundary F1 | 59.92 | 63.21 |
 
 The selected checkpoint has independent evaluation evidence. Final values are the trainer's final validation record, not a new independent evaluation. mIoU averages classes with nonzero union, so false positives on absent classes can change its denominator. The fixed GT-class mean is supplementary and excludes absent classes; their false positives remain in the confusion matrix.
 
@@ -5797,14 +5797,14 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 
 | Measurement | Value |
 | --- | --- |
-| Peak training VRAM, retained training invocation (GiB) | — |
-| Peak evaluation VRAM (GiB) | — |
-| Retained training invocation wall time (seconds) | — |
-| Retained training invocation GPU-hours (one GPU) | — |
-| Evaluation wall time (seconds) | — |
-| Full evaluation pipeline images/second | — |
-| Best full-state checkpoint (MiB) | — |
-| Final full-state checkpoint (MiB) | — |
+| Peak training VRAM, retained training invocation (GiB) | 17.70 |
+| Peak evaluation VRAM (GiB) | 10.80 |
+| Retained training invocation wall time (seconds) | 3624.54 |
+| Retained training invocation GPU-hours (one GPU) | 1.01 |
+| Evaluation wall time (seconds) | 21.93 |
+| Full evaluation pipeline images/second | 1.69 |
+| Best full-state checkpoint (MiB) | 4831.36 |
+| Final full-state checkpoint (MiB) | 4831.34 |
 | Audited periodic checkpoints removed (GiB) | — |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
@@ -5828,6 +5828,27 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Class | GT pixels | IoU (%) | Precision (%) | Recall (%) | Dice (%) | Boundary F1 (%) |
 | --- | --- | --- | --- | --- | --- | --- |
+| car | 29664 | 75.35 | 79.51 | 93.52 | 85.94 | 70.18 |
+| construction | 311585 | 51.08 | 59.95 | 77.54 | 67.62 | 58.40 |
+| fence | 265137 | 57.04 | 79.17 | 67.11 | 72.64 | 72.01 |
+| mud-pumping | 1226250 | 10.29 | 15.41 | 23.66 | 18.66 | 14.77 |
+| on-rails | 0 | — | — | — | — | — |
+| person | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
+| pole | 628038 | 78.35 | 87.57 | 88.16 | 87.86 | 94.42 |
+| rail-embedded | 16799 | 26.85 | 38.68 | 46.75 | 42.34 | 75.93 |
+| rail-raised | 2969797 | 79.53 | 85.26 | 92.22 | 88.60 | 94.99 |
+| rail-track | 6323197 | 64.58 | 80.06 | 76.95 | 78.48 | 75.77 |
+| road | 1048831 | 6.87 | 57.86 | 7.23 | 12.86 | 33.28 |
+| sidewalk | 1297367 | 68.81 | 88.20 | 75.79 | 81.53 | 70.33 |
+| sky | 19121606 | 98.89 | 99.53 | 99.35 | 99.44 | 98.70 |
+| standing-water | 95802 | 6.62 | 8.55 | 22.67 | 12.41 | 26.31 |
+| terrain | 39239306 | 90.50 | 91.70 | 98.56 | 95.01 | 77.20 |
+| trackbed | 10643081 | 74.11 | 83.71 | 86.61 | 85.13 | 71.95 |
+| traffic-light | 19510 | 65.83 | 94.62 | 68.39 | 79.39 | 84.33 |
+| traffic-sign | 13285 | 56.95 | 79.41 | 66.82 | 72.57 | 87.09 |
+| tram-track | 56179 | 46.35 | 47.34 | 95.68 | 63.34 | 27.03 |
+| truck | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
+| vegetation-overgrowth | 5901821 | 37.91 | 85.32 | 40.56 | 54.98 | 65.66 |
 
 ### Validation tracking
 
@@ -5849,8 +5870,28 @@ All retained scalar curves, including training loss and per-class IoU, are in re
 
 ```json
 {
-  "stopping": null,
-  "checkpoints": null,
+  "stopping": {
+    "actual_steps": 2290,
+    "maximum_steps": 4000,
+    "min_delta": 0.001,
+    "monitor": "val_iou/mud-pumping",
+    "patience": 5,
+    "reason": "validation_plateau"
+  },
+  "checkpoints": {
+    "best": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/eomt_large--cityscapes_to_railsem19_to_rtis--seed-1_seed1/rtis/best.ckpt",
+      "sha256": "5cfcbbe18309884cfdf438dd4730165bf888ce9d31523ddf43ce2de81e0ee809",
+      "global_step": 1018,
+      "bytes": 5066052345
+    },
+    "final": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/eomt_large--cityscapes_to_railsem19_to_rtis--seed-1_seed1/rtis/last.ckpt",
+      "sha256": "9df07b341e954ec7870b5635d121e4151a6fa329a4fff82737ed0dece7227c0c",
+      "global_step": 2290,
+      "bytes": 5066030457
+    }
+  },
   "cleanup_error": null
 }
 ```
@@ -6009,8 +6050,255 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ```json
 {
-  "training": null,
-  "evaluation": null
+  "training": {
+    "cuda_available": true,
+    "cuda_visible_devices": "1",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "source": "imagenet",
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "model_origins": [
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.embeddings",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.0.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.1.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.2.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.3.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.4.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.5.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.6.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.7.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.8.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.9.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.10.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.11.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.12.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.13.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.14.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.15.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.16.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.17.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.18.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.19.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.20.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.21.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.22.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "dcd130bed9b1ebda7041fd660fddb16f905b9c3b",
+        "hf_name_or_path": "tue-mps/coco_panoptic_eomt_large_640",
+        "module": "model.layers.23.attention",
+        "timm_pretrained": {}
+      }
+    ],
+    "model_parameter_count": 316580886,
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8",
+    "trainable_parameter_count": 316580886,
+    "training_stop": {
+      "actual_steps": 2290,
+      "maximum_steps": 4000,
+      "min_delta": 0.001,
+      "monitor": "val_iou/mud-pumping",
+      "patience": 5,
+      "reason": "validation_plateau"
+    },
+    "validation_weights": "ema"
+  },
+  "evaluation": {
+    "cuda_available": true,
+    "cuda_visible_devices": "1",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "source": "imagenet",
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8"
+  }
 }
 ```
 
