@@ -663,6 +663,10 @@
           {
             "step": 649,
             "value": 1.0904171466827393
+          },
+          {
+            "step": 699,
+            "value": 1.5960804224014282
           }
         ],
         "val/miou": [
@@ -1692,7 +1696,7 @@
           }
         ]
       },
-      "observed_step": 649,
+      "observed_step": 699,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1866,10 +1870,14 @@
           {
             "step": 149,
             "value": 3.4643664360046387
+          },
+          {
+            "step": 199,
+            "value": 4.350552558898926
           }
         ]
       },
-      "observed_step": 149,
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2030,6 +2038,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 8.538803100585938
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2219,7 +2236,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-06T06:19:51.258576+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "eomt_large--cityscapes_to_rtis--seed-1",
         "model": {

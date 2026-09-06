@@ -11620,7 +11620,7 @@
       "config_sha256": "c2e8aaf5fba5b8640e5047721ad3bc77672b964aa27a33f4616740755bcbe8b0",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "collecting",
+      "status": "completed",
       "gpu": 2,
       "started_at": "2026-09-06T04:43:44.151406+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
@@ -19880,7 +19880,7 @@
           }
         ]
       },
-      "collection_phase": "cleanup",
+      "collection_phase": "complete",
       "performance": {
         "schema_version": 1,
         "model_id": "eomt_dinov3_large",
@@ -23058,11 +23058,25 @@
               "telemetry_samples": 5,
               "sampled_peak_device_used_mib": 3725.0
             }
-          ]
+          ],
+          "worker_attempts": [
+            {
+              "started_at": "2026-09-06T04:43:44.119966+00:00",
+              "status": "completed",
+              "gpu": 2,
+              "finished_at": "2026-09-06T06:19:47.898260+00:00",
+              "wall_clock_s": 5763.77832390368
+            }
+          ],
+          "total_reserved_gpu_wall_seconds": 5763.77832390368,
+          "total_reserved_gpu_hours": 1.601049534417689,
+          "whole_run_accounting_complete": true
         },
         "verified": true,
         "smoke": false
       },
+      "checkpoint_bytes_removed": 30236368086,
+      "finished_at": "2026-09-06T06:19:47.900151+00:00",
       "resolved_config": {
         "name": "eomt_dinov3_large--rtis_only--seed-1",
         "model": {
@@ -34344,6 +34358,10 @@
           {
             "step": 3349,
             "value": 0.8092446327209473
+          },
+          {
+            "step": 3399,
+            "value": 0.9511895179748535
           }
         ],
         "val/miou": [
@@ -39981,7 +39999,7 @@
           }
         ]
       },
-      "observed_step": 3349,
+      "observed_step": 3399,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -62267,6 +62285,10 @@
           {
             "step": 3099,
             "value": 0.9359192848205566
+          },
+          {
+            "step": 3149,
+            "value": 0.7535881996154785
           }
         ],
         "val/miou": [
@@ -67538,7 +67560,7 @@
           }
         ]
       },
-      "observed_step": 3099,
+      "observed_step": 3149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -89014,6 +89036,10 @@
           {
             "step": 2549,
             "value": 1.1935169696807861
+          },
+          {
+            "step": 2599,
+            "value": 0.1742362082004547
           }
         ],
         "val/miou": [
@@ -93355,7 +93381,7 @@
           }
         ]
       },
-      "observed_step": 2549,
+      "observed_step": 2599,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -93589,6 +93615,10 @@
           {
             "step": 799,
             "value": 1.1364717483520508
+          },
+          {
+            "step": 849,
+            "value": 1.265698790550232
           }
         ],
         "val/miou": [
@@ -95008,7 +95038,7 @@
           }
         ]
       },
-      "observed_step": 799,
+      "observed_step": 849,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -95230,6 +95260,10 @@
           {
             "step": 649,
             "value": 0.47343480587005615
+          },
+          {
+            "step": 699,
+            "value": 1.0818760395050049
           }
         ],
         "val/miou": [
@@ -96259,7 +96293,7 @@
           }
         ]
       },
-      "observed_step": 649,
+      "observed_step": 699,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
