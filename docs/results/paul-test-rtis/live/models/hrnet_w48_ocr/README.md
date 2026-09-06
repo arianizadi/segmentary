@@ -6,14 +6,14 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hrnet_w48_ocr | rtis_only | 0 | training | 1099 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | rtis_only | 1 | training | 763 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 0 | training | 1149 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 1 | training | 799 | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | rtis_only | 2 | training | 699 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | cityscapes_to_rtis | 0 | training | 649 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | cityscapes_to_rtis | 1 | training | 599 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | cityscapes_to_rtis | 2 | training | 599 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | railsem19_to_rtis | 0 | training | 49 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | railsem19_to_rtis | 1 | training | 49 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | cityscapes_to_rtis | 0 | training | 699 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | cityscapes_to_rtis | 1 | training | 649 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | cityscapes_to_rtis | 2 | training | 649 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | railsem19_to_rtis | 0 | training | 99 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | railsem19_to_rtis | 1 | training | 99 | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
