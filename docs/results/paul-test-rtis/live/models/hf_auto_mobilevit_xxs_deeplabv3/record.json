@@ -607,10 +607,18 @@
           {
             "step": 99,
             "value": 7.866825580596924
+          },
+          {
+            "step": 149,
+            "value": 3.374674081802368
+          },
+          {
+            "step": 199,
+            "value": 2.634902000427246
           }
         ]
       },
-      "observed_step": 99,
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -624,7 +632,10 @@
       "config_sha256": "762802bc71a6a3a15f97f26963419de5056c57c3c2037b687e4ddeec3c834462",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-06T10:40:54.250880+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hf_auto_mobilevit_xxs_deeplabv3--rtis_only--seed-1",
         "model": {
