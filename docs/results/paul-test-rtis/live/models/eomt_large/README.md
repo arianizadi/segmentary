@@ -11,11 +11,11 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | eomt_large | rtis_only | 2 | completed | 2036 | 763 | 9.29 | 10.45 | 45.40 | 4.17 | 41.29 | 45.88 |
 | eomt_large | cityscapes_to_rtis | 0 | completed | 2545 | 2036 | 9.20 | 13.98 | 21.21 | 9.08 | 52.85 | 55.79 |
 | eomt_large | cityscapes_to_rtis | 1 | completed | 3054 | 1781 | 11.56 | 17.05 | 26.43 | 9.88 | 53.29 | 56.25 |
-| eomt_large | cityscapes_to_rtis | 2 | collecting | 3054 | 1781 | 5.74 | 7.07 | 23.39 | 5.46 | 51.42 | 54.27 |
-| eomt_large | railsem19_to_rtis | 0 | training | 2999 | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 1 | training | 2545 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_rtis | 2 | completed | 3054 | 1781 | 5.74 | 7.07 | 23.39 | 5.46 | 51.42 | 54.27 |
+| eomt_large | railsem19_to_rtis | 0 | training | 3054 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 1 | training | 2599 | — | — | — | — | — | — | — |
 | eomt_large | railsem19_to_rtis | 2 | training | 2290 | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | training | 2399 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | training | 2449 | — | — | — | — | — | — | — |
 | eomt_large | cityscapes_to_railsem19_to_rtis | 1 | training | 2290 | — | — | — | — | — | — | — |
 | eomt_large | cityscapes_to_railsem19_to_rtis | 2 | training | 1949 | — | — | — | — | — | — | — |
 
@@ -3958,7 +3958,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 2
 
-Status: **collecting**. Started: 2026-09-06T06:43:22.019051+00:00. Finished: —.
+Status: **completed**. Started: 2026-09-06T06:43:22.019051+00:00. Finished: 2026-09-06T08:07:40.534732+00:00.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
@@ -4000,7 +4000,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 1.74 |
 | Best full-state checkpoint (MiB) | 4831.36 |
 | Final full-state checkpoint (MiB) | 4831.34 |
-| Audited periodic checkpoints removed (GiB) | — |
+| Audited periodic checkpoints removed (GiB) | 28.31 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -4255,9 +4255,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Measurement | Value |
 | --- | --- |
-| Full GPU-reserved wall seconds, all recorded worker attempts | — |
-| Full reserved GPU-hours | — |
-| Whole-run timing complete | False |
+| Full GPU-reserved wall seconds, all recorded worker attempts | 5062.09 |
+| Full reserved GPU-hours | 1.41 |
+| Whole-run timing complete | True |
 
 | Phase | Wall seconds including failed attempts |
 | --- | --- |
@@ -4828,6 +4828,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2290 | 49.34 | 3.24 |
 | 2545 | 49.31 | 3.23 |
 | 2799 | 49.26 | 3.22 |
+| 3054 | 49.19 | 3.22 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
