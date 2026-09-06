@@ -662,7 +662,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 3308,
+      "observed_step": 3349,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -670,7 +670,7 @@
       "model": "eomt_large",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 3309,
       "observed_step": null,
       "record": "models/eomt_large/record.json"
@@ -732,7 +732,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 599,
+      "observed_step": 649,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -742,7 +742,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 499,
+      "observed_step": 508,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -752,7 +752,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 399,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -762,7 +762,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 399,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -780,7 +780,7 @@
       "model": "hf_auto_beit_base_ade",
       "protocol": "railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/hf_auto_beit_base_ade/record.json"
