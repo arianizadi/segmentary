@@ -1282,7 +1282,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3399,
+      "observed_step": 3749,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -1300,9 +1300,9 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1399,
+      "status": "collecting",
+      "final_step": 1527,
+      "observed_step": null,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1312,7 +1312,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1349,
+      "observed_step": 1499,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1322,7 +1322,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 1272,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1332,7 +1332,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 949,
+      "observed_step": 1099,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1342,7 +1342,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 949,
+      "observed_step": 1049,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1352,7 +1352,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 899,
+      "observed_step": 1049,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1362,7 +1362,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 763,
+      "observed_step": 899,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1372,7 +1372,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 508,
+      "observed_step": 649,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -1382,7 +1382,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 149,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {

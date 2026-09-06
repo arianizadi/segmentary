@@ -16,7 +16,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | hf_auto_segformer_b0 | railsem19_to_rtis | 1 | completed | 3563 | 2290 | 10.63 | 45.28 | 12.20 | 8.56 | 35.67 | 41.61 |
 | hf_auto_segformer_b0 | railsem19_to_rtis | 2 | completed | 2290 | 1018 | 9.23 | 17.75 | 16.12 | 5.18 | 32.50 | 36.11 |
 | hf_auto_segformer_b0 | cityscapes_to_railsem19_to_rtis | 0 | completed | 3818 | 2545 | 4.52 | 22.01 | 5.39 | 2.00 | 35.56 | 39.51 |
-| hf_auto_segformer_b0 | cityscapes_to_railsem19_to_rtis | 1 | training | 3399 | — | — | — | — | — | — | — |
+| hf_auto_segformer_b0 | cityscapes_to_railsem19_to_rtis | 1 | training | 3749 | — | — | — | — | — | — | — |
 | hf_auto_segformer_b0 | cityscapes_to_railsem19_to_rtis | 2 | completed | 1781 | 509 | 6.27 | 21.17 | 8.19 | 1.07 | 25.74 | 28.61 |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
@@ -7006,6 +7006,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2799 | 33.30 | 4.94 |
 | 3054 | 34.61 | 5.85 |
 | 3308 | 34.53 | 5.81 |
+| 3563 | 35.50 | 5.80 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
