@@ -10463,6 +10463,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 13.48116397857666
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -10476,7 +10485,10 @@
       "config_sha256": "4d933cd1bea6c9b7d6012d661519cb26a0eee1eb4feaab04f8e77b6faf477c80",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-06T09:36:00.527468+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hf_auto_mobilenetv2_deeplabv3--rtis_only--seed-2",
         "model": {

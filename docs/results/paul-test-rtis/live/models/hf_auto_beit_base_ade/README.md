@@ -9,14 +9,14 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | hf_auto_beit_base_ade | rtis_only | 0 | completed | 1527 | 254 | 23.83 | 29.99 | 53.71 | 1.05 | 20.08 | 22.31 |
 | hf_auto_beit_base_ade | rtis_only | 1 | completed | 1527 | 254 | 5.32 | 32.20 | 5.99 | 0.45 | 18.24 | 20.27 |
 | hf_auto_beit_base_ade | rtis_only | 2 | completed | 1527 | 254 | 2.91 | 19.85 | 3.30 | 0.04 | 18.98 | 20.03 |
-| hf_auto_beit_base_ade | cityscapes_to_rtis | 0 | collecting | 1781 | 509 | 11.38 | 14.59 | 34.12 | 2.94 | 21.51 | 23.90 |
-| hf_auto_beit_base_ade | cityscapes_to_rtis | 1 | training | 2199 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | cityscapes_to_rtis | 2 | training | 1999 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | railsem19_to_rtis | 0 | training | 2036 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_rtis | 0 | completed | 1781 | 509 | 11.38 | 14.59 | 34.12 | 2.94 | 21.51 | 23.90 |
+| hf_auto_beit_base_ade | cityscapes_to_rtis | 1 | training | 2249 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_rtis | 2 | training | 2036 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | railsem19_to_rtis | 0 | training | 2049 | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | railsem19_to_rtis | 1 | collecting | 1527 | 254 | 4.33 | 4.70 | 35.21 | 0.04 | 21.37 | 22.55 |
-| hf_auto_beit_base_ade | railsem19_to_rtis | 2 | training | 1649 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | railsem19_to_rtis | 2 | training | 1699 | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 0 | training | 1499 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 1 | training | 1349 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 1 | training | 1399 | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 2 | training | 1199 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
@@ -2347,7 +2347,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **collecting**. Started: 2026-09-06T08:07:42.444787+00:00. Finished: —.
+Status: **completed**. Started: 2026-09-06T08:07:42.444787+00:00. Finished: 2026-09-06T09:36:00.499218+00:00.
 
 Recipe pretrained initializer: `microsoft/beit-base-finetuned-ade-640-640`.
 
@@ -2389,7 +2389,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 0.31 |
 | Best full-state checkpoint (MiB) | 2355.56 |
 | Final full-state checkpoint (MiB) | 2355.55 |
-| Audited periodic checkpoints removed (GiB) | — |
+| Audited periodic checkpoints removed (GiB) | 6.90 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -2644,9 +2644,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Measurement | Value |
 | --- | --- |
-| Full GPU-reserved wall seconds, all recorded worker attempts | — |
-| Full reserved GPU-hours | — |
-| Whole-run timing complete | False |
+| Full GPU-reserved wall seconds, all recorded worker attempts | 5299.95 |
+| Full reserved GPU-hours | 1.47 |
+| Whole-run timing complete | True |
 
 | Phase | Wall seconds including failed attempts |
 | --- | --- |
@@ -3442,6 +3442,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1272 | 25.36 | 2.71 |
 | 1527 | 28.95 | 0.15 |
 | 1781 | 28.40 | 2.67 |
+| 2036 | 28.84 | 0.72 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 

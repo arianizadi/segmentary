@@ -7,8 +7,8 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | hf_auto_mobilenetv2_deeplabv3 | rtis_only | 0 | completed | 2290 | 1018 | 1.80 | 2.45 | 6.38 | 1.47 | 19.76 | 21.96 |
-| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 1 | training | — | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 1 | training | 49 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | rtis_only | 2 | training | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -1227,7 +1227,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## rtis_only — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T09:36:00.527468+00:00. Finished: —.
 
 Recipe pretrained initializer: `google/deeplabv3_mobilenet_v2_1.0_513`.
 
