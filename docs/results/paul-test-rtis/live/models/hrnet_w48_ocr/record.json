@@ -1436,10 +1436,14 @@
           {
             "step": 49,
             "value": 1.9478075504302979
+          },
+          {
+            "step": 99,
+            "value": 4.216386318206787
           }
         ]
       },
-      "observed_step": 49,
+      "observed_step": 99,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1453,7 +1457,10 @@
       "config_sha256": "9405aa095dea5293f80b8e994e55ddce3c95f8665eb085a03218f35bf1de4a9a",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-06T14:53:41.962872+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hrnet_w48_ocr--rtis_only--seed-2",
         "model": {
@@ -1606,7 +1613,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 8,
+      "started_at": "2026-09-06T14:53:53.138593+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hrnet_w48_ocr--cityscapes_to_rtis--seed-0",
         "model": {

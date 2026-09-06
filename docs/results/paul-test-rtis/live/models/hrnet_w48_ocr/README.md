@@ -7,9 +7,9 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | hrnet_w48_ocr | rtis_only | 0 | training | 399 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | rtis_only | 1 | training | 49 | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
-| hrnet_w48_ocr | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 1 | training | 99 | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | rtis_only | 2 | training | — | — | — | — | — | — | — | — |
+| hrnet_w48_ocr | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | hrnet_w48_ocr | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -490,7 +490,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## rtis_only — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T14:53:41.962872+00:00. Finished: —.
 
 Recipe pretrained initializer: `timm hrnet_w48 pretrained ImageNet backbone; fresh OCR head`.
 
@@ -722,7 +722,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T14:53:53.138593+00:00. Finished: —.
 
 Recipe pretrained initializer: `timm hrnet_w48 pretrained ImageNet backbone; fresh OCR head`.
 
