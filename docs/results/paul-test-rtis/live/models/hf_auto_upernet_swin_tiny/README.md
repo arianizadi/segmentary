@@ -6,13 +6,13 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_upernet_swin_tiny | rtis_only | 0 | training | 549 | — | — | — | — | — | — | — |
-| hf_auto_upernet_swin_tiny | rtis_only | 1 | training | 508 | — | — | — | — | — | — | — |
-| hf_auto_upernet_swin_tiny | rtis_only | 2 | training | 254 | — | — | — | — | — | — | — |
-| hf_auto_upernet_swin_tiny | cityscapes_to_rtis | 0 | training | 99 | — | — | — | — | — | — | — |
-| hf_auto_upernet_swin_tiny | cityscapes_to_rtis | 1 | training | 99 | — | — | — | — | — | — | — |
-| hf_auto_upernet_swin_tiny | cityscapes_to_rtis | 2 | training | 49 | — | — | — | — | — | — | — |
-| hf_auto_upernet_swin_tiny | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| hf_auto_upernet_swin_tiny | rtis_only | 0 | training | 599 | — | — | — | — | — | — | — |
+| hf_auto_upernet_swin_tiny | rtis_only | 1 | training | 549 | — | — | — | — | — | — | — |
+| hf_auto_upernet_swin_tiny | rtis_only | 2 | training | 299 | — | — | — | — | — | — | — |
+| hf_auto_upernet_swin_tiny | cityscapes_to_rtis | 0 | training | 199 | — | — | — | — | — | — | — |
+| hf_auto_upernet_swin_tiny | cityscapes_to_rtis | 1 | training | 149 | — | — | — | — | — | — | — |
+| hf_auto_upernet_swin_tiny | cityscapes_to_rtis | 2 | training | 99 | — | — | — | — | — | — | — |
+| hf_auto_upernet_swin_tiny | railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | hf_auto_upernet_swin_tiny | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_upernet_swin_tiny | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_upernet_swin_tiny | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -1446,7 +1446,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T14:10:29.150332+00:00. Finished: —.
 
 Recipe pretrained initializer: `openmmlab/upernet-swin-tiny`.
 
