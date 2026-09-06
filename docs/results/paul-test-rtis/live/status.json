@@ -1,0 +1,2757 @@
+{
+  "campaign": {
+    "schema_version": 1,
+    "dataset": "paul-test-rtis",
+    "created_at": "2026-09-06T01:42:24.078964+00:00",
+    "code_sha": "2cf41f9f731751cbde5c8f73e915ca02f273d249",
+    "plan_sha256": "fe6fc49630a2aa33843aceea23d4ef770bf6428c7c01c0c3f9d2e39f697b28ad",
+    "split_sha256": "71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d",
+    "grouping_status": "provisional_until_recording_provenance_confirmed",
+    "source_checkpoints": {
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_dinov3_large--cityscapes--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "070ecbb50465dee5614b17a02ca2afc5fda4bd15063608708d2eb06bdd4bf5f9",
+        "size": 5039340794
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_dinov3_large--railsem19--seed-0/attempt-001/train/eomt_dinov3_large--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "8ea5ae97baade3b62637a42dfc27240dc0a49ca21cad3cc317ea4b05d1919220",
+        "size": 5039373562
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "08d1d4d82d6f8c0e5f0e5ffe53944d13d5a492bafe5dfec76f5ea064b6fa2a46",
+        "size": 5039373690
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_large--cityscapes--seed-0/attempt-001/train/eomt_large--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "2651e4743a617a9b4939dd5fbaaf4a643d7988f028adc18ac9d6027a084b7bdd",
+        "size": 5065997178
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_large--railsem19--seed-0/attempt-001/train/eomt_large--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "bb69373c9ee71051db4f35323b5f398f57e3ef71a71a88f23286df71fe0a0dbd",
+        "size": 5066029946
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "a856595b513f6081fbfc534aa777b1cbad824f19e565f3f3b9861bebf79f6e1e",
+        "size": 5066030074
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hf_auto_beit_base_ade--cityscapes--seed-0/attempt-001/train/hf_auto_beit_base_ade--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "0a7ecfaf15bb3636cd8873013bef29fa31037c57fb25731b6757caf0e9a42008",
+        "size": 2469944582
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hf_auto_beit_base_ade--railsem19--seed-0/attempt-001/train/hf_auto_beit_base_ade--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "0e15a6c4ff02f245b1381862a98f63a79d470468f9a16ee8be7c1535568fd224",
+        "size": 2469969094
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_beit_base_ade--cityscapes_to_railsem19--seed-0/attempt-001/train/hf_auto_beit_base_ade--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "5bed2a6c77050ecedb0cba428814edf73f0130c7d50bfae68584830b74e102b0",
+        "size": 2469969286
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--cityscapes--seed-0/attempt-001/train/hf_auto_mobilenetv2_deeplabv3--cityscapes_seed0/cityscapes/last.bn-recalibrated.ckpt": {
+        "sha256": "4f3711930ae1df9eaa26a222ba7652799b210f3a244770289a5e58a1c8bf3aa5",
+        "size": 37731757
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--railsem19--seed-0/attempt-001/train/hf_auto_mobilenetv2_deeplabv3--railsem19_seed0/railsem19/last.bn-recalibrated.ckpt": {
+        "sha256": "79a6185e64264a8fa64a4bca840b7536c498c9e989fae15c821957420f97e768",
+        "size": 37739949
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19--seed-0/attempt-001/train/hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19_seed0/railsem19/last.bn-recalibrated.ckpt": {
+        "sha256": "2671491cfd7ee6602687c37110da7b0e85183c7fe0bb5aa429ca8541f2a7ce35",
+        "size": 37740077
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevit_xxs_deeplabv3--cityscapes--seed-0/attempt-001/train/hf_auto_mobilevit_xxs_deeplabv3--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "01d26e2baac106b0f31d7180ff889bc67cb7eaaed954174221aca62b4f1c726f",
+        "size": 30261893
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevit_xxs_deeplabv3--railsem19--seed-0/attempt-001/train/hf_auto_mobilevit_xxs_deeplabv3--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "9a4a000c2398260d53a1e1fb0e073bbc3fde8d64049cb54dc0895da390ce5131",
+        "size": 30270085
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19--seed-0/attempt-001/train/hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "ede10f1547709ba617ffe445c5867e6c314514fd952532bb083fecb7bb0876b7",
+        "size": 30270213
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevitv2_deeplabv3--cityscapes--seed-0/attempt-001/train/hf_auto_mobilevitv2_deeplabv3--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "532109af0466d02b0e9e648dede15173d1aa42a4c857b4c68304552862f0535d",
+        "size": 213700919
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevitv2_deeplabv3--railsem19--seed-0/attempt-001/train/hf_auto_mobilevitv2_deeplabv3--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "3447670839539d1c864c79dacd4bf77b868d02f49be1ee2a1fc64bccf13935ed",
+        "size": 213717303
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevitv2_deeplabv3--cityscapes_to_railsem19--seed-0/attempt-001/train/hf_auto_mobilevitv2_deeplabv3--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "fb8317597d0c6864238817b24fb6fc81daa495641ec537d7c1da8f225b72c809",
+        "size": 213717431
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_segformer_b0--cityscapes--seed-0/attempt-001/train/hf_auto_segformer_b0--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "68c80fba89b35c10ef9974fcd7163c2bf6b0afaf0ad6c00ff14cbc2b97e30dc9",
+        "size": 59851790
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_segformer_b0--railsem19--seed-0/attempt-001/train/hf_auto_segformer_b0--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "32dc1a1782498981e96d56a57c665fef9cc51ba9285097ecb9ca1feed9368946",
+        "size": 59859982
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_segformer_b0--cityscapes_to_railsem19--seed-0/attempt-001/train/hf_auto_segformer_b0--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "0b1eb3721dd80aa34dd87a6293a2844e0e51d418f59acc5f39c2f81f5395df7f",
+        "size": 59860110
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hf_auto_upernet_swin_tiny--cityscapes--seed-0/attempt-001/train/hf_auto_upernet_swin_tiny--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "e7102f15e3adae759eeed4520ad72904fa929dc0c2a74fdc8120e2c147d53cc3",
+        "size": 944029786
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hf_auto_upernet_swin_tiny--railsem19--seed-0/attempt-001/train/hf_auto_upernet_swin_tiny--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "1a00f7ff228b31ec3367dca876e5bfa14a671d1f320cf84fcb4f8cbae11b7431",
+        "size": 944046170
+      },
+      "/data/izadia1/projects/segmentary-runs/city-rail-transfer-rail20/hf_auto_upernet_swin_tiny/railsem19/last.ckpt": {
+        "sha256": "ebdfc5ac3d69bb58c8c396908b2b1d3f1c1e6d195f24b3b634a5ea4844173915",
+        "size": 944059418
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/hrnet_w48_ocr--cityscapes--seed-0/train/hrnet_w48_ocr--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "38fb6ca68c932ae2a8224708568d0825f3d188f076da708d6eca79932cde4e84",
+        "size": 1173508223
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hrnet_w48_ocr--railsem19--seed-0/attempt-001/train/hrnet_w48_ocr--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "0331c7ee6a029ad5e05837084fbb02cfe48f29dcf82ae3d4edef249af3990510",
+        "size": 1173541055
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hrnet_w48_ocr--cityscapes_to_railsem19--seed-0/attempt-001/train/hrnet_w48_ocr--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "35f0c4ae7228f09da7b511df61a84d5a379d8f28830f8f91149fde0a44b6f3d3",
+        "size": 1173541247
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/native_convnext_tiny_channelmapper_dpt--cityscapes--seed-0/train/native_convnext_tiny_channelmapper_dpt--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "f7a8f68311a3e12924b3c25bb86ca30549789182ea5f1d4a3ae8424af523ee6d",
+        "size": 612074646
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_convnext_tiny_channelmapper_dpt--railsem19--seed-0/attempt-001/train/native_convnext_tiny_channelmapper_dpt--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "55a44b2d5007d4d837a0cab332ae783de7d0d5625ec3c8077c4f910bc81c2da3",
+        "size": 612082966
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_convnext_tiny_channelmapper_dpt--cityscapes_to_railsem19--seed-0/attempt-001/train/native_convnext_tiny_channelmapper_dpt--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "47944f30c1e3aeefd5254246af3b98470eac27c5874b311e3241000c2efa2276",
+        "size": 612083094
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_convnext_tiny_uper--cityscapes--seed-0/attempt-001/train/native_convnext_tiny_uper--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "5b371ccbb1c2f1ad354d205d07f867135039dd82de6fffac6c27c76b1cbc88ea",
+        "size": 589942734
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_convnext_tiny_uper--railsem19--seed-0/attempt-001/train/native_convnext_tiny_uper--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "c9d8b86e7010fbe8b3f53c0683701f659ed08d6326c16e1de022bfdb51de7a79",
+        "size": 589950990
+      },
+      "/data/izadia1/projects/segmentary-runs/city-rail-transfer-rail20/native_convnext_tiny_uper/railsem19/last.ckpt": {
+        "sha256": "4c64ebd37d92449a029c1a9161c4a35cdd0453c05d49baea6d23458e21ff4c30",
+        "size": 589961358
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_efficientnet_b0_deeplabv3plus--cityscapes--seed-0/attempt-001/train/native_efficientnet_b0_deeplabv3plus--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "f287c443ed0dff9b4ba6966e8cfd4e0e4e74e6694b2a74a49948df30ba979f8f",
+        "size": 92332249
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_efficientnet_b0_deeplabv3plus--railsem19--seed-0/attempt-001/train/native_efficientnet_b0_deeplabv3plus--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "f9bd05eae50f95fcfa125c631ddaa796c1b5806c5e2eb0bbe7aec493beaffc87",
+        "size": 92337369
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_efficientnet_b0_deeplabv3plus--cityscapes_to_railsem19--seed-0/attempt-001/train/native_efficientnet_b0_deeplabv3plus--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "def1cb26954a96bb0bdacdee18807e1ff201dcc97cdfc01a03521c401e0c1392",
+        "size": 92337497
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_deeplabv3plus--cityscapes--seed-0/attempt-001/train/native_mobilenetv3_large_deeplabv3plus--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "3f4ba18645bef15308a37d53615f8c1e284e4869f790f489059857c04872a11f",
+        "size": 129679267
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_deeplabv3plus--railsem19--seed-0/attempt-001/train/native_mobilenetv3_large_deeplabv3plus--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "62dbec28bb0b351894ccd9cc55f7a227ae749df3518702e51876d4ff54490854",
+        "size": 129684387
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_deeplabv3plus--cityscapes_to_railsem19--seed-0/attempt-001/train/native_mobilenetv3_large_deeplabv3plus--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "84a6f062b8a824a862de9df2710794905aa04d9824b9011d86a814421ca5258a",
+        "size": 129684515
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_lraspp--cityscapes--seed-0/attempt-001/train/native_mobilenetv3_large_lraspp--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "a944c542712e2c055dd03a1f5a27e2b4cc3ed8fa6a407d464a93891a790e7eae",
+        "size": 52105730
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_lraspp--railsem19--seed-0/attempt-001/train/native_mobilenetv3_large_lraspp--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "be9b84bff577ee280a91b6f8bd828630210517609183f6721503ff08ca459ff1",
+        "size": 52110594
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_lraspp--cityscapes_to_railsem19--seed-0/attempt-001/train/native_mobilenetv3_large_lraspp--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "ed42edf6c6eb7af834c9a784514d57e6de894c766a20be5c160b6c67734ad822",
+        "size": 52110722
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_resnet101_uper--cityscapes--seed-0/attempt-001/train/native_resnet101_uper--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "afa826b49282e2029b80737cc2f65d93f1cb70275d61bef4c399b264d96a4617",
+        "size": 982763136
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_resnet101_uper--railsem19--seed-0/attempt-001/train/native_resnet101_uper--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "cc281f26902e994dc44ecc9be89ae89bc49c62fbca7504b77767379156685e4b",
+        "size": 982771328
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet101_uper--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet101_uper--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "2534fb4a2c21e6d162e9a0134a78eab309142db45037ce392476c1bef155d91b",
+        "size": 982771456
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--cityscapes--seed-0/attempt-001/train/native_resnet18_fpn_fcn--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "b3474fcb1341e0ce32beb83d56dedf1c206220837067b54bb10aa16999baf1eb",
+        "size": 202354203
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--railsem19--seed-0/attempt-001/train/native_resnet18_fpn_fcn--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "f5f018e5a96a9facdec15939fb08195f8b528b7507a345c269dfb119d136b343",
+        "size": 202358235
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet18_fpn_fcn--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "5c2f1f6c550820e3baaaa681cfa6819571231f326c8dd9e50abed95b0380e548",
+        "size": 202358363
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_segformer_aux--cityscapes--seed-0/attempt-001/train/native_resnet18_fpn_segformer_aux--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "805a02915710313f53e77271b3b98d37b7ff1e6edab8d2f12a4c5410b2bb953c",
+        "size": 193875767
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_segformer_aux--railsem19--seed-0/attempt-001/train/native_resnet18_fpn_segformer_aux--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "84d0c9c26e004608afa024992b6f89b2ba97d24ea78d57a2c7a5f74719805c41",
+        "size": 193881911
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_segformer_aux--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet18_fpn_segformer_aux--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "651ffe6eee1346f78b375a2c79674c38a2e21120b7eb2f12796cc7bc73d0487a",
+        "size": 193882039
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_resnet50_aspp--cityscapes--seed-0/attempt-001/train/native_resnet50_aspp--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "2bb9db7fa588bb8889c2ba8894d5320005d9e94afe00406d7d133de08e0a16ac",
+        "size": 625575197
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_aspp--railsem19--seed-0/attempt-001/train/native_resnet50_aspp--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "f58bec4c4d854bf973143d5f23a040180b39ab511ac2e716e6c8d35527dfe485",
+        "size": 625583453
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_aspp--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet50_aspp--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "f4bd749d8d31300a4ef73df6dfab392bcda23cf4b677facd54965c950f078c7a",
+        "size": 625583581
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/native_resnet50_deeplabv3plus--cityscapes--seed-0/train/native_resnet50_deeplabv3plus--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "fe67b933a9c445f846ca354ebb8e702c4982922b3c8e161233418537297fa36f",
+        "size": 646447408
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_resnet50_deeplabv3plus--railsem19--seed-0/attempt-001/train/native_resnet50_deeplabv3plus--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "e5cba336d47eefa437c7b0dfd6391c82bccdb83e927d1f70b9032d8e6cd608f3",
+        "size": 646455664
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_deeplabv3plus--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet50_deeplabv3plus--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "3d0ecc36e2b4172fbfe64f818bb4efeda834e3b1c3629c5f1f3ca923ace5efc9",
+        "size": 646455856
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_resnet50_fpn_ocr--cityscapes--seed-0/attempt-001/train/native_resnet50_fpn_ocr--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "b83bf800493df55699f2f3c17f3d1c8c0acfeab2e1929da870d845b8805a0244",
+        "size": 523162026
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_fpn_ocr--railsem19--seed-0/attempt-001/train/native_resnet50_fpn_ocr--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "6f3149650f92b0be1c47a6088e97523b3f420290f33aa5abaebce39e1f153ffd",
+        "size": 523194730
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_fpn_ocr--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet50_fpn_ocr--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "8a22d35bfda749fb510151c03beab601d87777946583408ad718a5212cfcbaa2",
+        "size": 523194922
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/native_resnet50_psp--cityscapes--seed-0/train/native_resnet50_psp--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "6665b49eff29d8d237a96290622adf375a75c2b114302bead67307bfd988fef5",
+        "size": 595191911
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_psp--railsem19--seed-0/attempt-001/train/native_resnet50_psp--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "8d3082cdb12ed9ba54481157deeab5c01981b2cb82b78435cf3b46a8099cf01e",
+        "size": 595200231
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_psp--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet50_psp--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "6e4773eeec522b2508c0a276d113f2e5886dd2d0ebff8ff039859a6aa0e0760c",
+        "size": 595200423
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/segformer_b0--cityscapes--seed-0/train/segformer_b0--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "47048ef71b774dfe61882fdac1cf32d638d8d41a094b3f91a14900021015ac59",
+        "size": 59851534
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b0--railsem19--seed-0/attempt-001/train/segformer_b0--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "99a63225aae891655a2f0545ee95481dfd1a1a62cca8bc01d3edaf6f13bf4dbe",
+        "size": 59859854
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b0--cityscapes_to_railsem19--seed-0/attempt-001/train/segformer_b0--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "340e4b0d1d2955eb059be0c3e48ad99cf0fb9ae3729a014bf16a0f1d2f3c110f",
+        "size": 59860046
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b2--cityscapes--seed-0/attempt-001/train/segformer_b2--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "d0f4f619c4d1200c143ff218ddb7e8693decd082345af09049cc50b8f8c42977",
+        "size": 438420722
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b2--railsem19--seed-0/attempt-001/train/segformer_b2--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "a017480f6fc66e45651f83f3103f582591fa2f5f82b7dc048429508393ccfc20",
+        "size": 438445298
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b2--cityscapes_to_railsem19--seed-0/attempt-001/train/segformer_b2--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "2917e287b856d7b272db0d1edd93bd31e4d79e045ff37648653c6cdcf0929bd7",
+        "size": 438445426
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b5--cityscapes--seed-0/attempt-001/train/segformer_b5--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "303e1dd639de11fd66defadcba0eea5a2179ca0b1a8d768c1dde8f8e1f135b85",
+        "size": 1355686906
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b5--railsem19--seed-0/attempt-001/train/segformer_b5--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "7ecee01e5337241e3e2d864a36e5ad717ac57365a8fa50747fd19ff25d7debe1",
+        "size": 1355711482
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b5--cityscapes_to_railsem19--seed-0/attempt-001/train/segformer_b5--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "1a5f4c144fb89fea0250bbd390739f7e210be0bbb899acc2b64b6c0b2885051b",
+        "size": 1355711610
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3_resnet50--cityscapes--seed-0/attempt-001/train/smp_deeplabv3_resnet50--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "f8d278fd853bb1003957b26e29428cc8c6c4a6596aad963f2db4b2f152f86384",
+        "size": 635068831
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/smp_deeplabv3_resnet50--railsem19--seed-0/attempt-001/train/smp_deeplabv3_resnet50--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "cefa227df6e071d44dd577150d70444288975834c436c3298cf1db587e8a968f",
+        "size": 635077023
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3_resnet50--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_deeplabv3_resnet50--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "4d5dea8ee48ecd010f2905a02d589c010a164530cc3ac079fa47649a2678888e",
+        "size": 635077151
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/smp_deeplabv3plus_resnet101--cityscapes--seed-0/train/smp_deeplabv3plus_resnet101--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "01074c9ac3f2b84d122c8a23d07d26a31d2ff58d5d23740b077bdc998d70363b",
+        "size": 732423213
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3plus_resnet101--railsem19--seed-0/attempt-001/train/smp_deeplabv3plus_resnet101--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "0984e2ea375e4355ac7def36d6d5d344a28807e3c0f9bd46a724214d69db0c31",
+        "size": 732431533
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3plus_resnet101--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_deeplabv3plus_resnet101--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "d7620fd163c6aecb70b2243b119a888adc02a33dc123dc454a41395f235e9654",
+        "size": 732431661
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/smp_fpn_resnet50--cityscapes--seed-0/train/smp_fpn_resnet50--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "556c5d27ea6d8d034aa1d6c86a7defd74bcdd36b3e3962cc39034d22d32628d6",
+        "size": 418721249
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_fpn_resnet50--railsem19--seed-0/attempt-001/train/smp_fpn_resnet50--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "3937cfdc1cbd07489ea1eaf7771f305d8a2c6ccc6a141373c1d8f2142f0a9248",
+        "size": 418725537
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_fpn_resnet50--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_fpn_resnet50--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "985c7a6172c91f8abb1b11d51bfe5522f1ab8168e096f824699e7bcb49c5aa4f",
+        "size": 418725665
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_linknet_mobilenet_v2--cityscapes--seed-0/attempt-001/train/smp_linknet_mobilenet_v2--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "e2ada95ae11d248b4c71f1670b6ce01e63a2e8d93ede09db6b859f72121d3db3",
+        "size": 69875763
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_linknet_mobilenet_v2--railsem19--seed-0/attempt-001/train/smp_linknet_mobilenet_v2--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "fccf4aa72f1f3a7bafb70eff9caef9a6554d82613783fa2a2b339ff804e30a6f",
+        "size": 69876787
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_linknet_mobilenet_v2--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_linknet_mobilenet_v2--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "8d558b4137b08b1e1f658a6645cdedce5f970a43078e60a9c55f0832b3ee2d5a",
+        "size": 69876915
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_manet_efficientnet_b0--cityscapes--seed-0/attempt-001/train/smp_manet_efficientnet_b0--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "5678b197769804af694fe91c6646d8de6e5f94f320f7b4c55120998d0a784aba",
+        "size": 143203533
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_manet_efficientnet_b0--railsem19--seed-0/attempt-001/train/smp_manet_efficientnet_b0--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "fffec5c804295bfc66040c05f345ddb807fec17962c99753624a16e1a8aecf33",
+        "size": 143208141
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_manet_efficientnet_b0--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_manet_efficientnet_b0--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "287ffa33437f1bb7e439a2fc5836920bbf70a7cf9f9352291805531e32c0c2fa",
+        "size": 143208269
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/smp_pan_resnext50--cityscapes--seed-0/train/smp_pan_resnext50--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "a546b41da5f9cd1dcc82f834e0bd55dd9663f6e41762c35a0632d69d5aa7a87c",
+        "size": 380808710
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pan_resnext50--railsem19--seed-0/attempt-001/train/smp_pan_resnext50--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "732fdf661a77f82d40a07fc1f5e8b010c444f9c6694027808d208f0f65cf9a4f",
+        "size": 380818054
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pan_resnext50--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_pan_resnext50--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "3d68f61d410fe133880ab41c495950283c8a8bdef37b764941ffef37f579b973",
+        "size": 380818182
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pspnet_mobilenet_v2--cityscapes--seed-0/attempt-001/train/smp_pspnet_mobilenet_v2--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "1497ae6fe6fd454da2f7d48947743bef33fa7ab9411a8a0675ecff4b3b893ec4",
+        "size": 20772743
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pspnet_mobilenet_v2--railsem19--seed-0/attempt-001/train/smp_pspnet_mobilenet_v2--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "27ec41d525085b0153320bd0e51c0fa96610481aff74eab46b327f3d7909f50d",
+        "size": 20920135
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pspnet_mobilenet_v2--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_pspnet_mobilenet_v2--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "adb9fed3b2cc36c21cfa1f2b5b702dd0add7562df47961bd52ef2d410bc14e3f",
+        "size": 20920327
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unet_resnet34--cityscapes--seed-0/attempt-001/train/smp_unet_resnet34--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "6fbbb9a3d23a04947b1d03d8c39643874311c2531a3455f67df7a8f09307fe72",
+        "size": 391488283
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unet_resnet34--railsem19--seed-0/attempt-001/train/smp_unet_resnet34--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "95eeb357b2b7b1736aa1350b2671afd0e443ba0ecab6a27294b8677f006b4530",
+        "size": 391492891
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unet_resnet34--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_unet_resnet34--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "f60003929ba2e106456d6bd308795a21052207aabe946b9aef02bfb9934dd507",
+        "size": 391493019
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unetplusplus_efficientnet_b0--cityscapes--seed-0/attempt-001/train/smp_unetplusplus_efficientnet_b0--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "af0359a15da63814d52e95356a33220584bc6751bb14cfdf82601e0b7b7e6ae1",
+        "size": 102796609
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unetplusplus_efficientnet_b0--railsem19--seed-0/attempt-001/train/smp_unetplusplus_efficientnet_b0--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "8aa2e84d06719ddd14bb4a690df63ae7aedadb97f826f862324ddab99972ccca",
+        "size": 102801281
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unetplusplus_efficientnet_b0--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_unetplusplus_efficientnet_b0--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "eb8133d4cbcd8beb23774ebfd167f0d7cd77335a8498dbcd015677989eff19cc",
+        "size": 102801345
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/smp_upernet_mit_b0--cityscapes--seed-0/train/smp_upernet_mit_b0--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "ce7fde4b4b7c8e1c9c8d1c1e441ffbc2eb42489afb71e09b0bc4128153a4a5df",
+        "size": 172216951
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/smp_upernet_mit_b0--railsem19--seed-0/attempt-001/train/smp_upernet_mit_b0--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "014d1285f36704422cc145d728c43946d5418e9af260e276a081ef26b2cf6c8f",
+        "size": 172225271
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_upernet_mit_b0--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_upernet_mit_b0--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "baf9743ae0f7006c77cc5df750d02edfd91640969b4c86e15699419e3f03b246",
+        "size": 172225463
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/smp_upernet_resnet101--cityscapes--seed-0/attempt-001/train/smp_upernet_resnet101--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "18a79d5ff0e4b11842213d5546a334f1e7e30b81c87679fab1659eecb12bcb7a",
+        "size": 902178591
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/smp_upernet_resnet101--railsem19--seed-0/attempt-001/train/smp_upernet_resnet101--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "786e3d81df9181457bb198b058bfd34662540be50b92ea3c4a9c4a3f361f8087",
+        "size": 902186783
+      },
+      "/data/izadia1/projects/segmentary-runs/city-rail-transfer-rail20/smp_upernet_resnet101/railsem19/last.ckpt": {
+        "sha256": "bf38a8644b50069166169dc4cbbf1f86c68fa67b2ee40952131b104c44c9c103",
+        "size": 902209823
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--cityscapes--seed-0/attempt-001/train/upernet_convnext--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "fb45ace4437433d1713d6afef5ee260284b053b7301e6be003f89249012dc698",
+        "size": 1294946243
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--railsem19--seed-0/attempt-001/train/upernet_convnext--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "6e246e8e61f02c4359f944d776168359392cec5c1c750d4ba29c6637f80b9f3a",
+        "size": 1294962563
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/upernet_convnext--cityscapes_to_railsem19--seed-0/attempt-001/train/upernet_convnext--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "34bf26bec67bfd5835de6d65f89d12653539ddf276166dc985cfdf5103bb27eb",
+        "size": 1294962691
+      }
+    },
+    "dataset_samples_verified": 307,
+    "dataset_audit_sha256": "ce0c0cedb05b07296b1a3ff64f909d218f58e3db53237fd21940b1ada7396fa8",
+    "target_steps": 4000,
+    "selection": "best validation checkpoint; auto raw/EMA-safe weights; no TTA",
+    "test": "held out; not evaluated",
+    "retention": "Keep best and final; delete periodic snapshots only after successful validation. Keep failed-run checkpoints for recovery."
+  },
+  "jobs": [
+    {
+      "name": "eomt_dinov3_large--rtis_only--seed-0",
+      "model": "eomt_dinov3_large",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "2655929d7656cdc43aff97ffe139e7bdfca66c56a04d851fedf7a77fea439d79",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "eomt_dinov3_large--cityscapes_to_rtis--seed-0",
+      "model": "eomt_dinov3_large",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "cd34e7aae69c90ca785b7101b2d09223c63524fa3b1365e0488afb2ca7512218",
+      "source_checkpoint": {
+        "name": "eomt_dinov3_large--cityscapes--seed-0",
+        "model": "eomt_dinov3_large",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/eomt_dinov3_large--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_dinov3_large--cityscapes--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "070ecbb50465dee5614b17a02ca2afc5fda4bd15063608708d2eb06bdd4bf5f9",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
+      "model": "eomt_dinov3_large",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "840cc6b821ebe82c1747b7fcf4ff208d03ebe36590286c0dad0a4d4634a8c73e",
+      "source_checkpoint": {
+        "name": "eomt_dinov3_large--railsem19--seed-0",
+        "model": "eomt_dinov3_large",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/eomt_dinov3_large--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_dinov3_large--railsem19--seed-0/attempt-001/train/eomt_dinov3_large--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "8ea5ae97baade3b62637a42dfc27240dc0a49ca21cad3cc317ea4b05d1919220",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "eomt_dinov3_large",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "53d394ba48ef628f9344e66603aed9aa1bc75e7ecdc97adb78b29be5c72228fa",
+      "source_checkpoint": {
+        "name": "eomt_dinov3_large--cityscapes_to_railsem19--seed-0",
+        "model": "eomt_dinov3_large",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "08d1d4d82d6f8c0e5f0e5ffe53944d13d5a492bafe5dfec76f5ea064b6fa2a46",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "eomt_large--rtis_only--seed-0",
+      "model": "eomt_large",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "a8021352f45e8d9149f24855f9edecfbe0f4bc2399bc7ad2d5fde67bdb8c0db6",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "eomt_large--cityscapes_to_rtis--seed-0",
+      "model": "eomt_large",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "643daca12677ca9529d30988530ebd20e52d0724b6f493b0fd5eaaa6b72d8a87",
+      "source_checkpoint": {
+        "name": "eomt_large--cityscapes--seed-0",
+        "model": "eomt_large",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/eomt_large--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_large--cityscapes--seed-0/attempt-001/train/eomt_large--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "2651e4743a617a9b4939dd5fbaaf4a643d7988f028adc18ac9d6027a084b7bdd",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "eomt_large--railsem19_to_rtis--seed-0",
+      "model": "eomt_large",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "a749c1b523c84e96fc8145dd37a00c6dbb3af41362c00c16d935cd1f2694a2db",
+      "source_checkpoint": {
+        "name": "eomt_large--railsem19--seed-0",
+        "model": "eomt_large",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/eomt_large--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_large--railsem19--seed-0/attempt-001/train/eomt_large--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "bb69373c9ee71051db4f35323b5f398f57e3ef71a71a88f23286df71fe0a0dbd",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "eomt_large--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "eomt_large",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "462f93d57f7cdf16682249d12394502d804e76c55bc714604f0c8cecd82728eb",
+      "source_checkpoint": {
+        "name": "eomt_large--cityscapes_to_railsem19--seed-0",
+        "model": "eomt_large",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_large--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "a856595b513f6081fbfc534aa777b1cbad824f19e565f3f3b9861bebf79f6e1e",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_beit_base_ade--rtis_only--seed-0",
+      "model": "hf_auto_beit_base_ade",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "5e9a3493f374924fc4f28471b3130fdabe31b6116c82641deb2b555bdd76a481",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0",
+      "model": "hf_auto_beit_base_ade",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "cbf9256bfff220a2c95c549dfb96a45924be3d74ed24c5edee636b56d9cf0001",
+      "source_checkpoint": {
+        "name": "hf_auto_beit_base_ade--cityscapes--seed-0",
+        "model": "hf_auto_beit_base_ade",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/hf_auto_beit_base_ade--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hf_auto_beit_base_ade--cityscapes--seed-0/attempt-001/train/hf_auto_beit_base_ade--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "0a7ecfaf15bb3636cd8873013bef29fa31037c57fb25731b6757caf0e9a42008",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_beit_base_ade--railsem19_to_rtis--seed-0",
+      "model": "hf_auto_beit_base_ade",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "f581d815f48233c74fba8f906af661e8541b445c8e8bf5c17c190179c4015581",
+      "source_checkpoint": {
+        "name": "hf_auto_beit_base_ade--railsem19--seed-0",
+        "model": "hf_auto_beit_base_ade",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/hf_auto_beit_base_ade--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hf_auto_beit_base_ade--railsem19--seed-0/attempt-001/train/hf_auto_beit_base_ade--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "0e15a6c4ff02f245b1381862a98f63a79d470468f9a16ee8be7c1535568fd224",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_beit_base_ade--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "hf_auto_beit_base_ade",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "ed3b8576b13b81e57b4b3d02d5540bbcab266ab90fb951a05a8f003279e918db",
+      "source_checkpoint": {
+        "name": "hf_auto_beit_base_ade--cityscapes_to_railsem19--seed-0",
+        "model": "hf_auto_beit_base_ade",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_beit_base_ade--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_beit_base_ade--cityscapes_to_railsem19--seed-0/attempt-001/train/hf_auto_beit_base_ade--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "5bed2a6c77050ecedb0cba428814edf73f0130c7d50bfae68584830b74e102b0",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilenetv2_deeplabv3--rtis_only--seed-0",
+      "model": "hf_auto_mobilenetv2_deeplabv3",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "83675e88b9dbeb4f3982418bb1ee71d8a0522e58c8200c606522625c59613d03",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_rtis--seed-0",
+      "model": "hf_auto_mobilenetv2_deeplabv3",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "3c8427b79f4fa0a39e419ca663e257cc2f60d49e5d49fbb1ce0444ceab529e0b",
+      "source_checkpoint": {
+        "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes--seed-0",
+        "model": "hf_auto_mobilenetv2_deeplabv3",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--cityscapes--seed-0/attempt-001/train/hf_auto_mobilenetv2_deeplabv3--cityscapes_seed0/cityscapes/last.bn-recalibrated.ckpt",
+        "recorded_sha256": "4f3711930ae1df9eaa26a222ba7652799b210f3a244770289a5e58a1c8bf3aa5",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilenetv2_deeplabv3--railsem19_to_rtis--seed-0",
+      "model": "hf_auto_mobilenetv2_deeplabv3",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "397b2fb518b860ce6629beefa17f2a4c263333b5012f9d71bf104f95476ffbf5",
+      "source_checkpoint": {
+        "name": "hf_auto_mobilenetv2_deeplabv3--railsem19--seed-0",
+        "model": "hf_auto_mobilenetv2_deeplabv3",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--railsem19--seed-0/attempt-001/train/hf_auto_mobilenetv2_deeplabv3--railsem19_seed0/railsem19/last.bn-recalibrated.ckpt",
+        "recorded_sha256": "79a6185e64264a8fa64a4bca840b7536c498c9e989fae15c821957420f97e768",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "hf_auto_mobilenetv2_deeplabv3",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "345ad17fde66f1d3d67c21844b00106aa6d710426c19b1f613d22dd96f743e51",
+      "source_checkpoint": {
+        "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19--seed-0",
+        "model": "hf_auto_mobilenetv2_deeplabv3",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19--seed-0/attempt-001/train/hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19_seed0/railsem19/last.bn-recalibrated.ckpt",
+        "recorded_sha256": "2671491cfd7ee6602687c37110da7b0e85183c7fe0bb5aa429ca8541f2a7ce35",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilevit_xxs_deeplabv3--rtis_only--seed-0",
+      "model": "hf_auto_mobilevit_xxs_deeplabv3",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "6f22a2cd0479d33c56a3feadb0a824892f95759c2e0b22d21656659f51b840fe",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_rtis--seed-0",
+      "model": "hf_auto_mobilevit_xxs_deeplabv3",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "56e8d57e4c1a96d5689ab93639c62422c54518b6ba278e0a64d36ec28242bc88",
+      "source_checkpoint": {
+        "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes--seed-0",
+        "model": "hf_auto_mobilevit_xxs_deeplabv3",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevit_xxs_deeplabv3--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevit_xxs_deeplabv3--cityscapes--seed-0/attempt-001/train/hf_auto_mobilevit_xxs_deeplabv3--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "01d26e2baac106b0f31d7180ff889bc67cb7eaaed954174221aca62b4f1c726f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilevit_xxs_deeplabv3--railsem19_to_rtis--seed-0",
+      "model": "hf_auto_mobilevit_xxs_deeplabv3",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "8bb45017562a987d4058f2859e3f1c518e20d290d7cee98c724d2911d996270b",
+      "source_checkpoint": {
+        "name": "hf_auto_mobilevit_xxs_deeplabv3--railsem19--seed-0",
+        "model": "hf_auto_mobilevit_xxs_deeplabv3",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevit_xxs_deeplabv3--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevit_xxs_deeplabv3--railsem19--seed-0/attempt-001/train/hf_auto_mobilevit_xxs_deeplabv3--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "9a4a000c2398260d53a1e1fb0e073bbc3fde8d64049cb54dc0895da390ce5131",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "hf_auto_mobilevit_xxs_deeplabv3",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "a6b00887c769dd6b9b0af5387e30f31ce8617162a4224995a257e2ce942e0910",
+      "source_checkpoint": {
+        "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19--seed-0",
+        "model": "hf_auto_mobilevit_xxs_deeplabv3",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19--seed-0/attempt-001/train/hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "ede10f1547709ba617ffe445c5867e6c314514fd952532bb083fecb7bb0876b7",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilevitv2_deeplabv3--rtis_only--seed-0",
+      "model": "hf_auto_mobilevitv2_deeplabv3",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "fe60e0ae75a391302b14e6d3a6192214679ff1a7bd205d1e62e8e3a89c93d436",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilevitv2_deeplabv3--cityscapes_to_rtis--seed-0",
+      "model": "hf_auto_mobilevitv2_deeplabv3",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "b4c904bc592055ed14827417e81893e2ac483568174e99d9433450309924eb2d",
+      "source_checkpoint": {
+        "name": "hf_auto_mobilevitv2_deeplabv3--cityscapes--seed-0",
+        "model": "hf_auto_mobilevitv2_deeplabv3",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevitv2_deeplabv3--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevitv2_deeplabv3--cityscapes--seed-0/attempt-001/train/hf_auto_mobilevitv2_deeplabv3--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "532109af0466d02b0e9e648dede15173d1aa42a4c857b4c68304552862f0535d",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilevitv2_deeplabv3--railsem19_to_rtis--seed-0",
+      "model": "hf_auto_mobilevitv2_deeplabv3",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "8bdbdf241616dee7ab17831f46baeb6488a872279b45461d3203dc3d490300c9",
+      "source_checkpoint": {
+        "name": "hf_auto_mobilevitv2_deeplabv3--railsem19--seed-0",
+        "model": "hf_auto_mobilevitv2_deeplabv3",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevitv2_deeplabv3--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevitv2_deeplabv3--railsem19--seed-0/attempt-001/train/hf_auto_mobilevitv2_deeplabv3--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "3447670839539d1c864c79dacd4bf77b868d02f49be1ee2a1fc64bccf13935ed",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_mobilevitv2_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "hf_auto_mobilevitv2_deeplabv3",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "bff76512367a86367f3990ac16ae7f7e05223c3c4637a8a87b0c9ee0ac332c68",
+      "source_checkpoint": {
+        "name": "hf_auto_mobilevitv2_deeplabv3--cityscapes_to_railsem19--seed-0",
+        "model": "hf_auto_mobilevitv2_deeplabv3",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevitv2_deeplabv3--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_mobilevitv2_deeplabv3--cityscapes_to_railsem19--seed-0/attempt-001/train/hf_auto_mobilevitv2_deeplabv3--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "fb8317597d0c6864238817b24fb6fc81daa495641ec537d7c1da8f225b72c809",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_segformer_b0--rtis_only--seed-0",
+      "model": "hf_auto_segformer_b0",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "a47783b03f99e6f8cf9610c20f56ff6684a8696a04520c1ef098eb466b21a8ee",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_segformer_b0--cityscapes_to_rtis--seed-0",
+      "model": "hf_auto_segformer_b0",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "bc1ed47ac81ac80a0a97b0a7311e52d6c4a346bd9a268fe1a8652ab1342451aa",
+      "source_checkpoint": {
+        "name": "hf_auto_segformer_b0--cityscapes--seed-0",
+        "model": "hf_auto_segformer_b0",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_segformer_b0--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_segformer_b0--cityscapes--seed-0/attempt-001/train/hf_auto_segformer_b0--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "68c80fba89b35c10ef9974fcd7163c2bf6b0afaf0ad6c00ff14cbc2b97e30dc9",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_segformer_b0--railsem19_to_rtis--seed-0",
+      "model": "hf_auto_segformer_b0",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "0daa920fa8d6365dab9526e52d9b7c951272e7cd6cbe586a524982d7636398f0",
+      "source_checkpoint": {
+        "name": "hf_auto_segformer_b0--railsem19--seed-0",
+        "model": "hf_auto_segformer_b0",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_segformer_b0--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_segformer_b0--railsem19--seed-0/attempt-001/train/hf_auto_segformer_b0--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "32dc1a1782498981e96d56a57c665fef9cc51ba9285097ecb9ca1feed9368946",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_segformer_b0--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "hf_auto_segformer_b0",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "2ee2c4b921012abaf46751d46d41f5917433f723cf8738b82e3d24b03465d562",
+      "source_checkpoint": {
+        "name": "hf_auto_segformer_b0--cityscapes_to_railsem19--seed-0",
+        "model": "hf_auto_segformer_b0",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_segformer_b0--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hf_auto_segformer_b0--cityscapes_to_railsem19--seed-0/attempt-001/train/hf_auto_segformer_b0--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "0b1eb3721dd80aa34dd87a6293a2844e0e51d418f59acc5f39c2f81f5395df7f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_upernet_swin_tiny--rtis_only--seed-0",
+      "model": "hf_auto_upernet_swin_tiny",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "10a04e63e0d18bc8a9cf9231e4a48ef7470966810d8b8661e38b4bf9a689a68c",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_upernet_swin_tiny--cityscapes_to_rtis--seed-0",
+      "model": "hf_auto_upernet_swin_tiny",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "3d0b788d71508b33cbd61479797b855bff8ab9a957dffdec4fe89ae1f7688907",
+      "source_checkpoint": {
+        "name": "hf_auto_upernet_swin_tiny--cityscapes--seed-0",
+        "model": "hf_auto_upernet_swin_tiny",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/hf_auto_upernet_swin_tiny--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hf_auto_upernet_swin_tiny--cityscapes--seed-0/attempt-001/train/hf_auto_upernet_swin_tiny--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "e7102f15e3adae759eeed4520ad72904fa929dc0c2a74fdc8120e2c147d53cc3",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_upernet_swin_tiny--railsem19_to_rtis--seed-0",
+      "model": "hf_auto_upernet_swin_tiny",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "60a031b6574136137b2802a737b1c71b8e0f239eef9ca053678ba72951def4d5",
+      "source_checkpoint": {
+        "name": "hf_auto_upernet_swin_tiny--railsem19--seed-0",
+        "model": "hf_auto_upernet_swin_tiny",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/hf_auto_upernet_swin_tiny--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hf_auto_upernet_swin_tiny--railsem19--seed-0/attempt-001/train/hf_auto_upernet_swin_tiny--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "1a00f7ff228b31ec3367dca876e5bfa14a671d1f320cf84fcb4f8cbae11b7431",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hf_auto_upernet_swin_tiny--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "hf_auto_upernet_swin_tiny",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "b47367b478dc2c5d1af556bc76db40369da483b25aea4d7d61d11890ab041f0e",
+      "source_checkpoint": {
+        "name": "hf_auto_upernet_swin_tiny--cityscapes_to_railsem19--seed-0",
+        "model": "hf_auto_upernet_swin_tiny",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/hf_auto_upernet_swin_tiny--cityscapes_to_railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/city-rail-transfer-rail20/hf_auto_upernet_swin_tiny/railsem19/last.ckpt",
+        "recorded_sha256": "ebdfc5ac3d69bb58c8c396908b2b1d3f1c1e6d195f24b3b634a5ea4844173915",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hrnet_w48_ocr--rtis_only--seed-0",
+      "model": "hrnet_w48_ocr",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "1e1e0a0f64e0689254177aeefa39c3d9395aecf7ffb863d59d88f2f0e74bcedf",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "hrnet_w48_ocr--cityscapes_to_rtis--seed-0",
+      "model": "hrnet_w48_ocr",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "add97e7fff56d47a7778496b13f76833b451ebf08f07d346322f31032ae30071",
+      "source_checkpoint": {
+        "name": "hrnet_w48_ocr--cityscapes--seed-0",
+        "model": "hrnet_w48_ocr",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/hrnet_w48_ocr--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/hrnet_w48_ocr--cityscapes--seed-0/train/hrnet_w48_ocr--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "38fb6ca68c932ae2a8224708568d0825f3d188f076da708d6eca79932cde4e84",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hrnet_w48_ocr--railsem19_to_rtis--seed-0",
+      "model": "hrnet_w48_ocr",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "67cf871a50f5a4738682a2d691f5c5fb0aba0444778b0e7ee3ddd8ee6729eca2",
+      "source_checkpoint": {
+        "name": "hrnet_w48_ocr--railsem19--seed-0",
+        "model": "hrnet_w48_ocr",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/hrnet_w48_ocr--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hrnet_w48_ocr--railsem19--seed-0/attempt-001/train/hrnet_w48_ocr--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "0331c7ee6a029ad5e05837084fbb02cfe48f29dcf82ae3d4edef249af3990510",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "hrnet_w48_ocr--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "hrnet_w48_ocr",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "010b73acdfd48ee1d5c4b5937fcea010528371e8c7d10bec05b5f84c18fe45d7",
+      "source_checkpoint": {
+        "name": "hrnet_w48_ocr--cityscapes_to_railsem19--seed-0",
+        "model": "hrnet_w48_ocr",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hrnet_w48_ocr--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hrnet_w48_ocr--cityscapes_to_railsem19--seed-0/attempt-001/train/hrnet_w48_ocr--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "35f0c4ae7228f09da7b511df61a84d5a379d8f28830f8f91149fde0a44b6f3d3",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_convnext_tiny_channelmapper_dpt--rtis_only--seed-0",
+      "model": "native_convnext_tiny_channelmapper_dpt",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "08af8e27eec2a0b5d939009e04f1770ec988a8b61a6f211d99939cb89a317a03",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_convnext_tiny_channelmapper_dpt--cityscapes_to_rtis--seed-0",
+      "model": "native_convnext_tiny_channelmapper_dpt",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "3ea2737dcab537860bea90b90922af3c903cf3eb95f35b5113221b93ee26fefa",
+      "source_checkpoint": {
+        "name": "native_convnext_tiny_channelmapper_dpt--cityscapes--seed-0",
+        "model": "native_convnext_tiny_channelmapper_dpt",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_convnext_tiny_channelmapper_dpt--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/native_convnext_tiny_channelmapper_dpt--cityscapes--seed-0/train/native_convnext_tiny_channelmapper_dpt--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "f7a8f68311a3e12924b3c25bb86ca30549789182ea5f1d4a3ae8424af523ee6d",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_convnext_tiny_channelmapper_dpt--railsem19_to_rtis--seed-0",
+      "model": "native_convnext_tiny_channelmapper_dpt",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "7c119473b813b775ca817ee2e43d82baf707887cda33e2423831fee58f167506",
+      "source_checkpoint": {
+        "name": "native_convnext_tiny_channelmapper_dpt--railsem19--seed-0",
+        "model": "native_convnext_tiny_channelmapper_dpt",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_convnext_tiny_channelmapper_dpt--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_convnext_tiny_channelmapper_dpt--railsem19--seed-0/attempt-001/train/native_convnext_tiny_channelmapper_dpt--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "55a44b2d5007d4d837a0cab332ae783de7d0d5625ec3c8077c4f910bc81c2da3",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_convnext_tiny_channelmapper_dpt--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_convnext_tiny_channelmapper_dpt",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "95ae7cc4e11a34bd624f30bff0d90e96199dcac27bb2282556e389038c437a76",
+      "source_checkpoint": {
+        "name": "native_convnext_tiny_channelmapper_dpt--cityscapes_to_railsem19--seed-0",
+        "model": "native_convnext_tiny_channelmapper_dpt",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_convnext_tiny_channelmapper_dpt--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_convnext_tiny_channelmapper_dpt--cityscapes_to_railsem19--seed-0/attempt-001/train/native_convnext_tiny_channelmapper_dpt--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "47944f30c1e3aeefd5254246af3b98470eac27c5874b311e3241000c2efa2276",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_convnext_tiny_uper--rtis_only--seed-0",
+      "model": "native_convnext_tiny_uper",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "bd85149c0f6d69ad6330fe972827d956567778b4080860cd20b2e6574fc3bb49",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_convnext_tiny_uper--cityscapes_to_rtis--seed-0",
+      "model": "native_convnext_tiny_uper",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "813321e40ccb8e2198ceed11c4cda3b2d4eff63160293208fb64896c6b13b919",
+      "source_checkpoint": {
+        "name": "native_convnext_tiny_uper--cityscapes--seed-0",
+        "model": "native_convnext_tiny_uper",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_convnext_tiny_uper--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_convnext_tiny_uper--cityscapes--seed-0/attempt-001/train/native_convnext_tiny_uper--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "5b371ccbb1c2f1ad354d205d07f867135039dd82de6fffac6c27c76b1cbc88ea",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_convnext_tiny_uper--railsem19_to_rtis--seed-0",
+      "model": "native_convnext_tiny_uper",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "5d3ec5bc6b4cce4c71f9729f47ac87d00fd1ef5d83b7d68fad80a149c952b943",
+      "source_checkpoint": {
+        "name": "native_convnext_tiny_uper--railsem19--seed-0",
+        "model": "native_convnext_tiny_uper",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_convnext_tiny_uper--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_convnext_tiny_uper--railsem19--seed-0/attempt-001/train/native_convnext_tiny_uper--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "c9d8b86e7010fbe8b3f53c0683701f659ed08d6326c16e1de022bfdb51de7a79",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_convnext_tiny_uper--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_convnext_tiny_uper",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "b431bae4a8c7cf9fa80c22c0f2c848f3ba2b870e2a2f2ca578c063046b8922d4",
+      "source_checkpoint": {
+        "name": "native_convnext_tiny_uper--cityscapes_to_railsem19--seed-0",
+        "model": "native_convnext_tiny_uper",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_convnext_tiny_uper--cityscapes_to_railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/city-rail-transfer-rail20/native_convnext_tiny_uper/railsem19/last.ckpt",
+        "recorded_sha256": "4c64ebd37d92449a029c1a9161c4a35cdd0453c05d49baea6d23458e21ff4c30",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_efficientnet_b0_deeplabv3plus--rtis_only--seed-0",
+      "model": "native_efficientnet_b0_deeplabv3plus",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "884d09bca683488275028df7ae3abb3d53fa6d01ec5a6504d5e33313c664f3e4",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_efficientnet_b0_deeplabv3plus--cityscapes_to_rtis--seed-0",
+      "model": "native_efficientnet_b0_deeplabv3plus",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "8cf76c13571d7c90380a9640548b50542ff5c4e380c549e30fcb65280deee951",
+      "source_checkpoint": {
+        "name": "native_efficientnet_b0_deeplabv3plus--cityscapes--seed-0",
+        "model": "native_efficientnet_b0_deeplabv3plus",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_efficientnet_b0_deeplabv3plus--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_efficientnet_b0_deeplabv3plus--cityscapes--seed-0/attempt-001/train/native_efficientnet_b0_deeplabv3plus--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "f287c443ed0dff9b4ba6966e8cfd4e0e4e74e6694b2a74a49948df30ba979f8f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_efficientnet_b0_deeplabv3plus--railsem19_to_rtis--seed-0",
+      "model": "native_efficientnet_b0_deeplabv3plus",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "471ba51185950837e96ff0dd91e140806b3a5c3e43fa769120d0728b95d73335",
+      "source_checkpoint": {
+        "name": "native_efficientnet_b0_deeplabv3plus--railsem19--seed-0",
+        "model": "native_efficientnet_b0_deeplabv3plus",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_efficientnet_b0_deeplabv3plus--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_efficientnet_b0_deeplabv3plus--railsem19--seed-0/attempt-001/train/native_efficientnet_b0_deeplabv3plus--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "f9bd05eae50f95fcfa125c631ddaa796c1b5806c5e2eb0bbe7aec493beaffc87",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_efficientnet_b0_deeplabv3plus--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_efficientnet_b0_deeplabv3plus",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "c0268e3d4a514813d365cbe484a62fc6f69eefa20dbf893e19c050c126f150c1",
+      "source_checkpoint": {
+        "name": "native_efficientnet_b0_deeplabv3plus--cityscapes_to_railsem19--seed-0",
+        "model": "native_efficientnet_b0_deeplabv3plus",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_efficientnet_b0_deeplabv3plus--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_efficientnet_b0_deeplabv3plus--cityscapes_to_railsem19--seed-0/attempt-001/train/native_efficientnet_b0_deeplabv3plus--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "def1cb26954a96bb0bdacdee18807e1ff201dcc97cdfc01a03521c401e0c1392",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_mobilenetv3_large_deeplabv3plus--rtis_only--seed-0",
+      "model": "native_mobilenetv3_large_deeplabv3plus",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "28c9d3b7c19824a5731c2572677732b55d824ad8711ad7b51c9c1015cda6c16c",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_mobilenetv3_large_deeplabv3plus--cityscapes_to_rtis--seed-0",
+      "model": "native_mobilenetv3_large_deeplabv3plus",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "cd23494da63c380f109b4b1951efd93f2cb358405f2e434444428bc18722cab9",
+      "source_checkpoint": {
+        "name": "native_mobilenetv3_large_deeplabv3plus--cityscapes--seed-0",
+        "model": "native_mobilenetv3_large_deeplabv3plus",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_deeplabv3plus--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_deeplabv3plus--cityscapes--seed-0/attempt-001/train/native_mobilenetv3_large_deeplabv3plus--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "3f4ba18645bef15308a37d53615f8c1e284e4869f790f489059857c04872a11f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_mobilenetv3_large_deeplabv3plus--railsem19_to_rtis--seed-0",
+      "model": "native_mobilenetv3_large_deeplabv3plus",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "82dc0e43801086c539543230ca81e4c339d7512c39f454c22064fcf86598e51a",
+      "source_checkpoint": {
+        "name": "native_mobilenetv3_large_deeplabv3plus--railsem19--seed-0",
+        "model": "native_mobilenetv3_large_deeplabv3plus",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_deeplabv3plus--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_deeplabv3plus--railsem19--seed-0/attempt-001/train/native_mobilenetv3_large_deeplabv3plus--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "62dbec28bb0b351894ccd9cc55f7a227ae749df3518702e51876d4ff54490854",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_mobilenetv3_large_deeplabv3plus--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_mobilenetv3_large_deeplabv3plus",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "448614c69dd34542510ab6c69d49540da5aff440995d2b3e2f6157feb4cfdb39",
+      "source_checkpoint": {
+        "name": "native_mobilenetv3_large_deeplabv3plus--cityscapes_to_railsem19--seed-0",
+        "model": "native_mobilenetv3_large_deeplabv3plus",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_deeplabv3plus--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_deeplabv3plus--cityscapes_to_railsem19--seed-0/attempt-001/train/native_mobilenetv3_large_deeplabv3plus--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "84a6f062b8a824a862de9df2710794905aa04d9824b9011d86a814421ca5258a",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_mobilenetv3_large_lraspp--rtis_only--seed-0",
+      "model": "native_mobilenetv3_large_lraspp",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "3d7b93cd8a6d8c83bc5bfd98fe9a5ad5e2f5b854cb25ce4f1a3265de2fbe28b6",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_mobilenetv3_large_lraspp--cityscapes_to_rtis--seed-0",
+      "model": "native_mobilenetv3_large_lraspp",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "392280051e93839be41f5008b465b7b28094ea56eb7cd285c0583fa9afe6aefa",
+      "source_checkpoint": {
+        "name": "native_mobilenetv3_large_lraspp--cityscapes--seed-0",
+        "model": "native_mobilenetv3_large_lraspp",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_lraspp--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_lraspp--cityscapes--seed-0/attempt-001/train/native_mobilenetv3_large_lraspp--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "a944c542712e2c055dd03a1f5a27e2b4cc3ed8fa6a407d464a93891a790e7eae",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_mobilenetv3_large_lraspp--railsem19_to_rtis--seed-0",
+      "model": "native_mobilenetv3_large_lraspp",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "63b624d6ed90469d22350cc941db9541f596a31077ac315bb8acfbddfc27ca2d",
+      "source_checkpoint": {
+        "name": "native_mobilenetv3_large_lraspp--railsem19--seed-0",
+        "model": "native_mobilenetv3_large_lraspp",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_lraspp--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_lraspp--railsem19--seed-0/attempt-001/train/native_mobilenetv3_large_lraspp--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "be9b84bff577ee280a91b6f8bd828630210517609183f6721503ff08ca459ff1",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_mobilenetv3_large_lraspp--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_mobilenetv3_large_lraspp",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "0a7639924ad2ff37d854b2039423b74dc960083778cd11d1ad64103fe410c213",
+      "source_checkpoint": {
+        "name": "native_mobilenetv3_large_lraspp--cityscapes_to_railsem19--seed-0",
+        "model": "native_mobilenetv3_large_lraspp",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_lraspp--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_mobilenetv3_large_lraspp--cityscapes_to_railsem19--seed-0/attempt-001/train/native_mobilenetv3_large_lraspp--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "ed42edf6c6eb7af834c9a784514d57e6de894c766a20be5c160b6c67734ad822",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet101_uper--rtis_only--seed-0",
+      "model": "native_resnet101_uper",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "54696f5df287ec6d742109d0167da06dbce2b99d3ee54d1e43c9f14b958cca85",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet101_uper--cityscapes_to_rtis--seed-0",
+      "model": "native_resnet101_uper",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "bd96a71a9211d97c680241e21d18a38c67cbbd602b3f12d0d5bef11604c6b9c9",
+      "source_checkpoint": {
+        "name": "native_resnet101_uper--cityscapes--seed-0",
+        "model": "native_resnet101_uper",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_resnet101_uper--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_resnet101_uper--cityscapes--seed-0/attempt-001/train/native_resnet101_uper--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "afa826b49282e2029b80737cc2f65d93f1cb70275d61bef4c399b264d96a4617",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet101_uper--railsem19_to_rtis--seed-0",
+      "model": "native_resnet101_uper",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "fc0f473eee86cb6e09bb1d868f05fa0fd6c0175e23d4731ba24795b51d364d70",
+      "source_checkpoint": {
+        "name": "native_resnet101_uper--railsem19--seed-0",
+        "model": "native_resnet101_uper",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_resnet101_uper--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_resnet101_uper--railsem19--seed-0/attempt-001/train/native_resnet101_uper--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "cc281f26902e994dc44ecc9be89ae89bc49c62fbca7504b77767379156685e4b",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet101_uper--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_resnet101_uper",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "170aa481e8a805da51e4801e40945d8da1fd37005ac37d0e9e4b56086265b1dc",
+      "source_checkpoint": {
+        "name": "native_resnet101_uper--cityscapes_to_railsem19--seed-0",
+        "model": "native_resnet101_uper",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet101_uper--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet101_uper--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet101_uper--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "2534fb4a2c21e6d162e9a0134a78eab309142db45037ce392476c1bef155d91b",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet18_fpn_fcn--rtis_only--seed-0",
+      "model": "native_resnet18_fpn_fcn",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "51739a540cedd6ac16de30ed14ff4f9bc3940805ed2cf0b85646d0baab0d4121",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet18_fpn_fcn--cityscapes_to_rtis--seed-0",
+      "model": "native_resnet18_fpn_fcn",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "c217fb444b93e39b18ea591f596e27d530702a0fc03859355e1df1a06a61dba6",
+      "source_checkpoint": {
+        "name": "native_resnet18_fpn_fcn--cityscapes--seed-0",
+        "model": "native_resnet18_fpn_fcn",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--cityscapes--seed-0/attempt-001/train/native_resnet18_fpn_fcn--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "b3474fcb1341e0ce32beb83d56dedf1c206220837067b54bb10aa16999baf1eb",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet18_fpn_fcn--railsem19_to_rtis--seed-0",
+      "model": "native_resnet18_fpn_fcn",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "8f74c036243c5aa82ce36ca2969962323ca11b87c02c7a5845da00b3e62de470",
+      "source_checkpoint": {
+        "name": "native_resnet18_fpn_fcn--railsem19--seed-0",
+        "model": "native_resnet18_fpn_fcn",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--railsem19--seed-0/attempt-001/train/native_resnet18_fpn_fcn--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "f5f018e5a96a9facdec15939fb08195f8b528b7507a345c269dfb119d136b343",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet18_fpn_fcn--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_resnet18_fpn_fcn",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "9786e5c53a0ea1568aa7856b5086b2822a2050e43b3dc2d044e92657ddd413c6",
+      "source_checkpoint": {
+        "name": "native_resnet18_fpn_fcn--cityscapes_to_railsem19--seed-0",
+        "model": "native_resnet18_fpn_fcn",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_fcn--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet18_fpn_fcn--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "5c2f1f6c550820e3baaaa681cfa6819571231f326c8dd9e50abed95b0380e548",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet18_fpn_segformer_aux--rtis_only--seed-0",
+      "model": "native_resnet18_fpn_segformer_aux",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "1123d2e675335e1c5ce79d5a76446e6aa13dcda7bcfb5fbbb044d4312fdaead9",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet18_fpn_segformer_aux--cityscapes_to_rtis--seed-0",
+      "model": "native_resnet18_fpn_segformer_aux",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "d8e4fa42daa5b8fe85322e8190612f21c0b99d3785871b38641e398a94174a4c",
+      "source_checkpoint": {
+        "name": "native_resnet18_fpn_segformer_aux--cityscapes--seed-0",
+        "model": "native_resnet18_fpn_segformer_aux",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_segformer_aux--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_segformer_aux--cityscapes--seed-0/attempt-001/train/native_resnet18_fpn_segformer_aux--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "805a02915710313f53e77271b3b98d37b7ff1e6edab8d2f12a4c5410b2bb953c",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet18_fpn_segformer_aux--railsem19_to_rtis--seed-0",
+      "model": "native_resnet18_fpn_segformer_aux",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "97834e73c934f225652cd7f49020bc61fc6854fe74235756a9017adbe6131118",
+      "source_checkpoint": {
+        "name": "native_resnet18_fpn_segformer_aux--railsem19--seed-0",
+        "model": "native_resnet18_fpn_segformer_aux",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_segformer_aux--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_segformer_aux--railsem19--seed-0/attempt-001/train/native_resnet18_fpn_segformer_aux--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "84d0c9c26e004608afa024992b6f89b2ba97d24ea78d57a2c7a5f74719805c41",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet18_fpn_segformer_aux--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_resnet18_fpn_segformer_aux",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "6b05d3c399d096d7a721aa26a682125327a1a0a13d2242338de386e734242ece",
+      "source_checkpoint": {
+        "name": "native_resnet18_fpn_segformer_aux--cityscapes_to_railsem19--seed-0",
+        "model": "native_resnet18_fpn_segformer_aux",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_segformer_aux--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet18_fpn_segformer_aux--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet18_fpn_segformer_aux--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "651ffe6eee1346f78b375a2c79674c38a2e21120b7eb2f12796cc7bc73d0487a",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_aspp--rtis_only--seed-0",
+      "model": "native_resnet50_aspp",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "33f8402d801482fc40a539ecc9802c1461173ca3a4fe523f0509296a7f312424",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_aspp--cityscapes_to_rtis--seed-0",
+      "model": "native_resnet50_aspp",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "6a2b27177c5c5e225b169841de7ec435325fd7d47ec62d6d9d6c1fdc8f2144da",
+      "source_checkpoint": {
+        "name": "native_resnet50_aspp--cityscapes--seed-0",
+        "model": "native_resnet50_aspp",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_resnet50_aspp--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_resnet50_aspp--cityscapes--seed-0/attempt-001/train/native_resnet50_aspp--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "2bb9db7fa588bb8889c2ba8894d5320005d9e94afe00406d7d133de08e0a16ac",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_aspp--railsem19_to_rtis--seed-0",
+      "model": "native_resnet50_aspp",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "40f0497c8514e25ddf2a48407b6873bc07456d3137eba28d1f057b160ee2ecba",
+      "source_checkpoint": {
+        "name": "native_resnet50_aspp--railsem19--seed-0",
+        "model": "native_resnet50_aspp",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_aspp--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_aspp--railsem19--seed-0/attempt-001/train/native_resnet50_aspp--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "f58bec4c4d854bf973143d5f23a040180b39ab511ac2e716e6c8d35527dfe485",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_aspp--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_resnet50_aspp",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "8dc40d00d47f0921268d575c00dfd7b6037d88d4cffaaa57b5f0e59952dbb2e2",
+      "source_checkpoint": {
+        "name": "native_resnet50_aspp--cityscapes_to_railsem19--seed-0",
+        "model": "native_resnet50_aspp",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_aspp--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_aspp--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet50_aspp--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "f4bd749d8d31300a4ef73df6dfab392bcda23cf4b677facd54965c950f078c7a",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_deeplabv3plus--rtis_only--seed-0",
+      "model": "native_resnet50_deeplabv3plus",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "bd1e557860972b483992d88edcb59859c20e5a30a7294b6d80d30a08a93a896f",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_deeplabv3plus--cityscapes_to_rtis--seed-0",
+      "model": "native_resnet50_deeplabv3plus",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "39cc339ad83f684665b5848c659a63c56c7efeeb039706acbc177f07cef1130d",
+      "source_checkpoint": {
+        "name": "native_resnet50_deeplabv3plus--cityscapes--seed-0",
+        "model": "native_resnet50_deeplabv3plus",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_resnet50_deeplabv3plus--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/native_resnet50_deeplabv3plus--cityscapes--seed-0/train/native_resnet50_deeplabv3plus--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "fe67b933a9c445f846ca354ebb8e702c4982922b3c8e161233418537297fa36f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_deeplabv3plus--railsem19_to_rtis--seed-0",
+      "model": "native_resnet50_deeplabv3plus",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "01f459d1f7d7252e55dd155fe78046df93d825f72af5dd454d40ff74df2fa38b",
+      "source_checkpoint": {
+        "name": "native_resnet50_deeplabv3plus--railsem19--seed-0",
+        "model": "native_resnet50_deeplabv3plus",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_resnet50_deeplabv3plus--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_resnet50_deeplabv3plus--railsem19--seed-0/attempt-001/train/native_resnet50_deeplabv3plus--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "e5cba336d47eefa437c7b0dfd6391c82bccdb83e927d1f70b9032d8e6cd608f3",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_deeplabv3plus--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_resnet50_deeplabv3plus",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "a526eaaa5288a78b1d6029d27a4a68581b3beb83e9e6570925a3d8ea8de0601c",
+      "source_checkpoint": {
+        "name": "native_resnet50_deeplabv3plus--cityscapes_to_railsem19--seed-0",
+        "model": "native_resnet50_deeplabv3plus",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_deeplabv3plus--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_deeplabv3plus--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet50_deeplabv3plus--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "3d0ecc36e2b4172fbfe64f818bb4efeda834e3b1c3629c5f1f3ca923ace5efc9",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_fpn_ocr--rtis_only--seed-0",
+      "model": "native_resnet50_fpn_ocr",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "5147f46d037ac6c78143a6b1c9ecde1e22fcd798b119447e39951c16f8d93243",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_fpn_ocr--cityscapes_to_rtis--seed-0",
+      "model": "native_resnet50_fpn_ocr",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "b6e29ff3d8c70896aa4bdabbf6d704619703356db268b01e4f6ef49bde19008d",
+      "source_checkpoint": {
+        "name": "native_resnet50_fpn_ocr--cityscapes--seed-0",
+        "model": "native_resnet50_fpn_ocr",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_resnet50_fpn_ocr--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_resnet50_fpn_ocr--cityscapes--seed-0/attempt-001/train/native_resnet50_fpn_ocr--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "b83bf800493df55699f2f3c17f3d1c8c0acfeab2e1929da870d845b8805a0244",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_fpn_ocr--railsem19_to_rtis--seed-0",
+      "model": "native_resnet50_fpn_ocr",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "e104c9decf9e003652016307bed88c50cad756e3b7b39126d46e1fb1861cc56c",
+      "source_checkpoint": {
+        "name": "native_resnet50_fpn_ocr--railsem19--seed-0",
+        "model": "native_resnet50_fpn_ocr",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_fpn_ocr--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_fpn_ocr--railsem19--seed-0/attempt-001/train/native_resnet50_fpn_ocr--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "6f3149650f92b0be1c47a6088e97523b3f420290f33aa5abaebce39e1f153ffd",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_fpn_ocr--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_resnet50_fpn_ocr",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "8459dd7dd5a6e42d4e290fac61e6312322db44296bf1c1fe519d061d3a4bb9b3",
+      "source_checkpoint": {
+        "name": "native_resnet50_fpn_ocr--cityscapes_to_railsem19--seed-0",
+        "model": "native_resnet50_fpn_ocr",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_fpn_ocr--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_fpn_ocr--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet50_fpn_ocr--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "8a22d35bfda749fb510151c03beab601d87777946583408ad718a5212cfcbaa2",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_psp--rtis_only--seed-0",
+      "model": "native_resnet50_psp",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "d16f6b6013572e6aead491005095113828f9abe1760c09ae688876aa2b170e2f",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_psp--cityscapes_to_rtis--seed-0",
+      "model": "native_resnet50_psp",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "d1af319c7be18916d891b97ac8cf4e860b6e5c0c03cb3acb0766257963c156bf",
+      "source_checkpoint": {
+        "name": "native_resnet50_psp--cityscapes--seed-0",
+        "model": "native_resnet50_psp",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/native_resnet50_psp--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/native_resnet50_psp--cityscapes--seed-0/train/native_resnet50_psp--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "6665b49eff29d8d237a96290622adf375a75c2b114302bead67307bfd988fef5",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_psp--railsem19_to_rtis--seed-0",
+      "model": "native_resnet50_psp",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "9362d14c65ba6b820a737dfe5cdc883aec2f65338e217e825ab91ae7bc8328a9",
+      "source_checkpoint": {
+        "name": "native_resnet50_psp--railsem19--seed-0",
+        "model": "native_resnet50_psp",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_psp--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_psp--railsem19--seed-0/attempt-001/train/native_resnet50_psp--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "8d3082cdb12ed9ba54481157deeab5c01981b2cb82b78435cf3b46a8099cf01e",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "native_resnet50_psp--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_resnet50_psp",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "818b1e566d2e8a6711fe54f99da79a504da062ea7f6470b99903e03fa24a68bb",
+      "source_checkpoint": {
+        "name": "native_resnet50_psp--cityscapes_to_railsem19--seed-0",
+        "model": "native_resnet50_psp",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_psp--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_resnet50_psp--cityscapes_to_railsem19--seed-0/attempt-001/train/native_resnet50_psp--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "6e4773eeec522b2508c0a276d113f2e5886dd2d0ebff8ff039859a6aa0e0760c",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b0--rtis_only--seed-0",
+      "model": "segformer_b0",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "0c8b59e73c03ed4ea3f0d2240513d0e0dab5b93b637ffa42ac41f9845e747380",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b0--cityscapes_to_rtis--seed-0",
+      "model": "segformer_b0",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "c639c6feed756d1f49b5e0c4bd517403c68cfdd588cf951a102e043533d8eb2d",
+      "source_checkpoint": {
+        "name": "segformer_b0--cityscapes--seed-0",
+        "model": "segformer_b0",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/segformer_b0--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/segformer_b0--cityscapes--seed-0/train/segformer_b0--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "47048ef71b774dfe61882fdac1cf32d638d8d41a094b3f91a14900021015ac59",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b0--railsem19_to_rtis--seed-0",
+      "model": "segformer_b0",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "bf56206102885a97d7ba9a074d649baffee912512fb0fdfee3a9b3c63307e3e2",
+      "source_checkpoint": {
+        "name": "segformer_b0--railsem19--seed-0",
+        "model": "segformer_b0",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b0--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b0--railsem19--seed-0/attempt-001/train/segformer_b0--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "99a63225aae891655a2f0545ee95481dfd1a1a62cca8bc01d3edaf6f13bf4dbe",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b0--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "segformer_b0",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "47678c19d2e3c6b66a7d4d1ca9e4d121909452b160cd4616bf346dc04ada9c19",
+      "source_checkpoint": {
+        "name": "segformer_b0--cityscapes_to_railsem19--seed-0",
+        "model": "segformer_b0",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b0--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b0--cityscapes_to_railsem19--seed-0/attempt-001/train/segformer_b0--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "340e4b0d1d2955eb059be0c3e48ad99cf0fb9ae3729a014bf16a0f1d2f3c110f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b2--rtis_only--seed-0",
+      "model": "segformer_b2",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "7fb229daebdb4398054d4c8e8eb17ee279a70194b9a1163dc271bd6dcb2ef407",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b2--cityscapes_to_rtis--seed-0",
+      "model": "segformer_b2",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "509c24288c050c7cfcfe70ba660e66996c832dec1c2a1db7211b9d4fb97b38b8",
+      "source_checkpoint": {
+        "name": "segformer_b2--cityscapes--seed-0",
+        "model": "segformer_b2",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/segformer_b2--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b2--cityscapes--seed-0/attempt-001/train/segformer_b2--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "d0f4f619c4d1200c143ff218ddb7e8693decd082345af09049cc50b8f8c42977",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b2--railsem19_to_rtis--seed-0",
+      "model": "segformer_b2",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "c1ed18a254e9bbf6386f295339d4a746931198401f0f3e203aabcb6ae9c7d7b1",
+      "source_checkpoint": {
+        "name": "segformer_b2--railsem19--seed-0",
+        "model": "segformer_b2",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/segformer_b2--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b2--railsem19--seed-0/attempt-001/train/segformer_b2--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "a017480f6fc66e45651f83f3103f582591fa2f5f82b7dc048429508393ccfc20",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b2--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "segformer_b2",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "50ad0df510d9dcba3ace747ad77930c8ea07882079af241b297b2002097af166",
+      "source_checkpoint": {
+        "name": "segformer_b2--cityscapes_to_railsem19--seed-0",
+        "model": "segformer_b2",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b2--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b2--cityscapes_to_railsem19--seed-0/attempt-001/train/segformer_b2--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "2917e287b856d7b272db0d1edd93bd31e4d79e045ff37648653c6cdcf0929bd7",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b5--rtis_only--seed-0",
+      "model": "segformer_b5",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "ddb74b51885d027f41983ed826405f9a3881b05ad7ef8dd41fb0179557a048b8",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b5--cityscapes_to_rtis--seed-0",
+      "model": "segformer_b5",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "17a96187829c269a1516769feb9d629e0aa8a83e9598530f59f0d02bda819146",
+      "source_checkpoint": {
+        "name": "segformer_b5--cityscapes--seed-0",
+        "model": "segformer_b5",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/segformer_b5--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b5--cityscapes--seed-0/attempt-001/train/segformer_b5--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "303e1dd639de11fd66defadcba0eea5a2179ca0b1a8d768c1dde8f8e1f135b85",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b5--railsem19_to_rtis--seed-0",
+      "model": "segformer_b5",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "2c12adeeeac2e00651b4a403a8e54f103f0f05e1db832b060593cd61717e77c0",
+      "source_checkpoint": {
+        "name": "segformer_b5--railsem19--seed-0",
+        "model": "segformer_b5",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/segformer_b5--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b5--railsem19--seed-0/attempt-001/train/segformer_b5--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "7ecee01e5337241e3e2d864a36e5ad717ac57365a8fa50747fd19ff25d7debe1",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "segformer_b5--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "segformer_b5",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "f7d254362c8c072f86a1a4abc478887d10dae214eb590d457fea213f6f1f297a",
+      "source_checkpoint": {
+        "name": "segformer_b5--cityscapes_to_railsem19--seed-0",
+        "model": "segformer_b5",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b5--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b5--cityscapes_to_railsem19--seed-0/attempt-001/train/segformer_b5--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "1a5f4c144fb89fea0250bbd390739f7e210be0bbb899acc2b64b6c0b2885051b",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_deeplabv3_resnet50--rtis_only--seed-0",
+      "model": "smp_deeplabv3_resnet50",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "8781e979d4a748df513703b9292712333fcad4ba82668aa8ff878d8426c4f0d5",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_deeplabv3_resnet50--cityscapes_to_rtis--seed-0",
+      "model": "smp_deeplabv3_resnet50",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "c7b7b91866b43f04e0f4c10a190b8f909e67cd9f58e510ae28dd8b21bf9987e9",
+      "source_checkpoint": {
+        "name": "smp_deeplabv3_resnet50--cityscapes--seed-0",
+        "model": "smp_deeplabv3_resnet50",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3_resnet50--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3_resnet50--cityscapes--seed-0/attempt-001/train/smp_deeplabv3_resnet50--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "f8d278fd853bb1003957b26e29428cc8c6c4a6596aad963f2db4b2f152f86384",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_deeplabv3_resnet50--railsem19_to_rtis--seed-0",
+      "model": "smp_deeplabv3_resnet50",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "900bb5b621c9dbe6ed8a0ebb60e5cbe448c9944b4539eae8393925ec514c951f",
+      "source_checkpoint": {
+        "name": "smp_deeplabv3_resnet50--railsem19--seed-0",
+        "model": "smp_deeplabv3_resnet50",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/smp_deeplabv3_resnet50--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/smp_deeplabv3_resnet50--railsem19--seed-0/attempt-001/train/smp_deeplabv3_resnet50--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "cefa227df6e071d44dd577150d70444288975834c436c3298cf1db587e8a968f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_deeplabv3_resnet50--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_deeplabv3_resnet50",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "92d6cbfd11ff0cff0ded4dcedc66025235b8136ce9bde4b46022894397da7522",
+      "source_checkpoint": {
+        "name": "smp_deeplabv3_resnet50--cityscapes_to_railsem19--seed-0",
+        "model": "smp_deeplabv3_resnet50",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3_resnet50--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3_resnet50--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_deeplabv3_resnet50--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "4d5dea8ee48ecd010f2905a02d589c010a164530cc3ac079fa47649a2678888e",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_deeplabv3plus_resnet101--rtis_only--seed-0",
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "ea21623190b96abcc48af4c0794231dbd5eda04ea78debe69215e41c9dc8c5a7",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_deeplabv3plus_resnet101--cityscapes_to_rtis--seed-0",
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "f82bc3735cfe18b1c56eeb7ca1c11dc7d2fdaf9682a2e78468f4c7afd77f9d3d",
+      "source_checkpoint": {
+        "name": "smp_deeplabv3plus_resnet101--cityscapes--seed-0",
+        "model": "smp_deeplabv3plus_resnet101",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/smp_deeplabv3plus_resnet101--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/smp_deeplabv3plus_resnet101--cityscapes--seed-0/train/smp_deeplabv3plus_resnet101--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "01074c9ac3f2b84d122c8a23d07d26a31d2ff58d5d23740b077bdc998d70363b",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_deeplabv3plus_resnet101--railsem19_to_rtis--seed-0",
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "1942c263220d23e147ec6559e18d1435c4234f03cb93475d4ff5e595e030dceb",
+      "source_checkpoint": {
+        "name": "smp_deeplabv3plus_resnet101--railsem19--seed-0",
+        "model": "smp_deeplabv3plus_resnet101",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3plus_resnet101--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3plus_resnet101--railsem19--seed-0/attempt-001/train/smp_deeplabv3plus_resnet101--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "0984e2ea375e4355ac7def36d6d5d344a28807e3c0f9bd46a724214d69db0c31",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_deeplabv3plus_resnet101--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "1001cbf7079f0b5854badaeb41c0c6be443a1b477d7b20754c7bc1cdb64f9e0b",
+      "source_checkpoint": {
+        "name": "smp_deeplabv3plus_resnet101--cityscapes_to_railsem19--seed-0",
+        "model": "smp_deeplabv3plus_resnet101",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3plus_resnet101--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3plus_resnet101--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_deeplabv3plus_resnet101--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "d7620fd163c6aecb70b2243b119a888adc02a33dc123dc454a41395f235e9654",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_fpn_resnet50--rtis_only--seed-0",
+      "model": "smp_fpn_resnet50",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "12a4306038e20571b7b4abc2dc7894616147bcd504309158920d0e55704b2c7c",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_fpn_resnet50--cityscapes_to_rtis--seed-0",
+      "model": "smp_fpn_resnet50",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "349d0be34cc0c81675dc831b39ed6f50fca683da51b8b3a7a7db48d9a68db758",
+      "source_checkpoint": {
+        "name": "smp_fpn_resnet50--cityscapes--seed-0",
+        "model": "smp_fpn_resnet50",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/smp_fpn_resnet50--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/smp_fpn_resnet50--cityscapes--seed-0/train/smp_fpn_resnet50--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "556c5d27ea6d8d034aa1d6c86a7defd74bcdd36b3e3962cc39034d22d32628d6",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_fpn_resnet50--railsem19_to_rtis--seed-0",
+      "model": "smp_fpn_resnet50",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "2736b82c492926b55d746181d322e9e60f6481f9d6951fc03fef0a539c9b369c",
+      "source_checkpoint": {
+        "name": "smp_fpn_resnet50--railsem19--seed-0",
+        "model": "smp_fpn_resnet50",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_fpn_resnet50--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_fpn_resnet50--railsem19--seed-0/attempt-001/train/smp_fpn_resnet50--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "3937cfdc1cbd07489ea1eaf7771f305d8a2c6ccc6a141373c1d8f2142f0a9248",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_fpn_resnet50--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_fpn_resnet50",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "51b76223b106d3556eb4ec5aad418bfa8598fd3140a5709892439b6e103be82f",
+      "source_checkpoint": {
+        "name": "smp_fpn_resnet50--cityscapes_to_railsem19--seed-0",
+        "model": "smp_fpn_resnet50",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_fpn_resnet50--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_fpn_resnet50--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_fpn_resnet50--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "985c7a6172c91f8abb1b11d51bfe5522f1ab8168e096f824699e7bcb49c5aa4f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_linknet_mobilenet_v2--rtis_only--seed-0",
+      "model": "smp_linknet_mobilenet_v2",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "9dfa7c01b73d91c836dcec977a287ac5ec6b27f13e857bbb14966fc0e7ccb3f6",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_linknet_mobilenet_v2--cityscapes_to_rtis--seed-0",
+      "model": "smp_linknet_mobilenet_v2",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "d4f416c2a3475d8ddabdb899802cc845da1aeab7ce8da71ce8d8ea36ee897162",
+      "source_checkpoint": {
+        "name": "smp_linknet_mobilenet_v2--cityscapes--seed-0",
+        "model": "smp_linknet_mobilenet_v2",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_linknet_mobilenet_v2--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_linknet_mobilenet_v2--cityscapes--seed-0/attempt-001/train/smp_linknet_mobilenet_v2--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "e2ada95ae11d248b4c71f1670b6ce01e63a2e8d93ede09db6b859f72121d3db3",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_linknet_mobilenet_v2--railsem19_to_rtis--seed-0",
+      "model": "smp_linknet_mobilenet_v2",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "ca59415d9c0405ef0c35b36d58b035efa313051af82f1b717ef14e0c97846dce",
+      "source_checkpoint": {
+        "name": "smp_linknet_mobilenet_v2--railsem19--seed-0",
+        "model": "smp_linknet_mobilenet_v2",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_linknet_mobilenet_v2--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_linknet_mobilenet_v2--railsem19--seed-0/attempt-001/train/smp_linknet_mobilenet_v2--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "fccf4aa72f1f3a7bafb70eff9caef9a6554d82613783fa2a2b339ff804e30a6f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_linknet_mobilenet_v2--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_linknet_mobilenet_v2",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "4f7372cc3a05aefb4125c8a8b89d2226a1d6f5126b3faee023dc56bfbcdf7a68",
+      "source_checkpoint": {
+        "name": "smp_linknet_mobilenet_v2--cityscapes_to_railsem19--seed-0",
+        "model": "smp_linknet_mobilenet_v2",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_linknet_mobilenet_v2--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_linknet_mobilenet_v2--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_linknet_mobilenet_v2--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "8d558b4137b08b1e1f658a6645cdedce5f970a43078e60a9c55f0832b3ee2d5a",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_manet_efficientnet_b0--rtis_only--seed-0",
+      "model": "smp_manet_efficientnet_b0",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "8329f51cda675603c108ce8ee1c6fa5b2d80dcfd8d218343a9fcb3ee4448b16e",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_manet_efficientnet_b0--cityscapes_to_rtis--seed-0",
+      "model": "smp_manet_efficientnet_b0",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "2a604a0e6ae37e6beabda2e5c363eada9e22514753ff5766c7fa77ef6ac5dd4d",
+      "source_checkpoint": {
+        "name": "smp_manet_efficientnet_b0--cityscapes--seed-0",
+        "model": "smp_manet_efficientnet_b0",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_manet_efficientnet_b0--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_manet_efficientnet_b0--cityscapes--seed-0/attempt-001/train/smp_manet_efficientnet_b0--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "5678b197769804af694fe91c6646d8de6e5f94f320f7b4c55120998d0a784aba",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_manet_efficientnet_b0--railsem19_to_rtis--seed-0",
+      "model": "smp_manet_efficientnet_b0",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "0b27207aeec9a1b0a1ea18fe8a1c0c89d37c697aba952e61d1fb643744957803",
+      "source_checkpoint": {
+        "name": "smp_manet_efficientnet_b0--railsem19--seed-0",
+        "model": "smp_manet_efficientnet_b0",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_manet_efficientnet_b0--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_manet_efficientnet_b0--railsem19--seed-0/attempt-001/train/smp_manet_efficientnet_b0--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "fffec5c804295bfc66040c05f345ddb807fec17962c99753624a16e1a8aecf33",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_manet_efficientnet_b0--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_manet_efficientnet_b0",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "ec60f54ce127c23a377216cdd99614c09c0de9f561e4b1852fccf213befe0657",
+      "source_checkpoint": {
+        "name": "smp_manet_efficientnet_b0--cityscapes_to_railsem19--seed-0",
+        "model": "smp_manet_efficientnet_b0",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_manet_efficientnet_b0--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_manet_efficientnet_b0--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_manet_efficientnet_b0--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "287ffa33437f1bb7e439a2fc5836920bbf70a7cf9f9352291805531e32c0c2fa",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_pan_resnext50--rtis_only--seed-0",
+      "model": "smp_pan_resnext50",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "f3e64b0cf4edd7c68c4da51c47cb629e52a2dc951ab0732116d735ff8c4e44dc",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_pan_resnext50--cityscapes_to_rtis--seed-0",
+      "model": "smp_pan_resnext50",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "e3363c1d4d5f475a07b5b7a79ebff0310947615ec28d5ea3252329383619100a",
+      "source_checkpoint": {
+        "name": "smp_pan_resnext50--cityscapes--seed-0",
+        "model": "smp_pan_resnext50",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/smp_pan_resnext50--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/smp_pan_resnext50--cityscapes--seed-0/train/smp_pan_resnext50--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "a546b41da5f9cd1dcc82f834e0bd55dd9663f6e41762c35a0632d69d5aa7a87c",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_pan_resnext50--railsem19_to_rtis--seed-0",
+      "model": "smp_pan_resnext50",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "15df10307522a58f737e1e4f31f073994f4fc1a1d4f5885ea8534b10a613263b",
+      "source_checkpoint": {
+        "name": "smp_pan_resnext50--railsem19--seed-0",
+        "model": "smp_pan_resnext50",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pan_resnext50--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pan_resnext50--railsem19--seed-0/attempt-001/train/smp_pan_resnext50--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "732fdf661a77f82d40a07fc1f5e8b010c444f9c6694027808d208f0f65cf9a4f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_pan_resnext50--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_pan_resnext50",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "d350b49b23597ebef0a5bd5a41ab807ca11f4692c13f1fe92dbaeffe5a95b2e5",
+      "source_checkpoint": {
+        "name": "smp_pan_resnext50--cityscapes_to_railsem19--seed-0",
+        "model": "smp_pan_resnext50",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pan_resnext50--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pan_resnext50--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_pan_resnext50--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "3d68f61d410fe133880ab41c495950283c8a8bdef37b764941ffef37f579b973",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_pspnet_mobilenet_v2--rtis_only--seed-0",
+      "model": "smp_pspnet_mobilenet_v2",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "5ea4c152af5104ea86e02d4b45ff9f4d685e84d28d89acfa64e642f1ec3ff1b8",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_pspnet_mobilenet_v2--cityscapes_to_rtis--seed-0",
+      "model": "smp_pspnet_mobilenet_v2",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "c500214a60d79dd29ddd0d6f6c8c5229238f2c82d64dded362cdadc20122e5ae",
+      "source_checkpoint": {
+        "name": "smp_pspnet_mobilenet_v2--cityscapes--seed-0",
+        "model": "smp_pspnet_mobilenet_v2",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pspnet_mobilenet_v2--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pspnet_mobilenet_v2--cityscapes--seed-0/attempt-001/train/smp_pspnet_mobilenet_v2--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "1497ae6fe6fd454da2f7d48947743bef33fa7ab9411a8a0675ecff4b3b893ec4",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_pspnet_mobilenet_v2--railsem19_to_rtis--seed-0",
+      "model": "smp_pspnet_mobilenet_v2",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "2a350b3e1b2f0b08ebbd4ff1c96a0e3362691dd4aef4165d9d6ccd92329c97a7",
+      "source_checkpoint": {
+        "name": "smp_pspnet_mobilenet_v2--railsem19--seed-0",
+        "model": "smp_pspnet_mobilenet_v2",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pspnet_mobilenet_v2--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pspnet_mobilenet_v2--railsem19--seed-0/attempt-001/train/smp_pspnet_mobilenet_v2--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "27ec41d525085b0153320bd0e51c0fa96610481aff74eab46b327f3d7909f50d",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_pspnet_mobilenet_v2--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_pspnet_mobilenet_v2",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "211f8294573209270f4bc66a7b6265c1eadb7e53dd7aa17e526d6442da33e308",
+      "source_checkpoint": {
+        "name": "smp_pspnet_mobilenet_v2--cityscapes_to_railsem19--seed-0",
+        "model": "smp_pspnet_mobilenet_v2",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pspnet_mobilenet_v2--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_pspnet_mobilenet_v2--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_pspnet_mobilenet_v2--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "adb9fed3b2cc36c21cfa1f2b5b702dd0add7562df47961bd52ef2d410bc14e3f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_unet_resnet34--rtis_only--seed-0",
+      "model": "smp_unet_resnet34",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "8a5a5e2a80517b22c5d2f09d3575ec70aac581048e773e4dd031450312f8b881",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_unet_resnet34--cityscapes_to_rtis--seed-0",
+      "model": "smp_unet_resnet34",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "185bf4372142d9111cfb09a1446fe629991a8ab454f2eda9fbb9d48e90aed97a",
+      "source_checkpoint": {
+        "name": "smp_unet_resnet34--cityscapes--seed-0",
+        "model": "smp_unet_resnet34",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unet_resnet34--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unet_resnet34--cityscapes--seed-0/attempt-001/train/smp_unet_resnet34--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "6fbbb9a3d23a04947b1d03d8c39643874311c2531a3455f67df7a8f09307fe72",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_unet_resnet34--railsem19_to_rtis--seed-0",
+      "model": "smp_unet_resnet34",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "be981aa17e3c15bbca548e47cd34004e1b540df2dac93a49a4b6b7f624e6db7a",
+      "source_checkpoint": {
+        "name": "smp_unet_resnet34--railsem19--seed-0",
+        "model": "smp_unet_resnet34",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unet_resnet34--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unet_resnet34--railsem19--seed-0/attempt-001/train/smp_unet_resnet34--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "95eeb357b2b7b1736aa1350b2671afd0e443ba0ecab6a27294b8677f006b4530",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_unet_resnet34--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_unet_resnet34",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "42577f59d0cfdb5ee987a88264028a360f031be857b1e5ad5d55f0f88d3c20b1",
+      "source_checkpoint": {
+        "name": "smp_unet_resnet34--cityscapes_to_railsem19--seed-0",
+        "model": "smp_unet_resnet34",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unet_resnet34--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unet_resnet34--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_unet_resnet34--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "f60003929ba2e106456d6bd308795a21052207aabe946b9aef02bfb9934dd507",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_unetplusplus_efficientnet_b0--rtis_only--seed-0",
+      "model": "smp_unetplusplus_efficientnet_b0",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "125ac85b0a0b2e2e7f7bc39ef49ff179c2bf66d264026614bc8ed44251138eb1",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_unetplusplus_efficientnet_b0--cityscapes_to_rtis--seed-0",
+      "model": "smp_unetplusplus_efficientnet_b0",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "52253e0ca25d479a9cb96f6272ea93a2e412f7f20f7fae5c442a2ad36d02d462",
+      "source_checkpoint": {
+        "name": "smp_unetplusplus_efficientnet_b0--cityscapes--seed-0",
+        "model": "smp_unetplusplus_efficientnet_b0",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unetplusplus_efficientnet_b0--cityscapes--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unetplusplus_efficientnet_b0--cityscapes--seed-0/attempt-001/train/smp_unetplusplus_efficientnet_b0--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "af0359a15da63814d52e95356a33220584bc6751bb14cfdf82601e0b7b7e6ae1",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_unetplusplus_efficientnet_b0--railsem19_to_rtis--seed-0",
+      "model": "smp_unetplusplus_efficientnet_b0",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "7a07af0040e9a67263126ae0b447aabde27a9887b70ec953bb7c9176d11753c1",
+      "source_checkpoint": {
+        "name": "smp_unetplusplus_efficientnet_b0--railsem19--seed-0",
+        "model": "smp_unetplusplus_efficientnet_b0",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unetplusplus_efficientnet_b0--railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unetplusplus_efficientnet_b0--railsem19--seed-0/attempt-001/train/smp_unetplusplus_efficientnet_b0--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "8aa2e84d06719ddd14bb4a690df63ae7aedadb97f826f862324ddab99972ccca",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_unetplusplus_efficientnet_b0--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_unetplusplus_efficientnet_b0",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "e8e382fd2f124201edc6c3af54b085f75955eddc5eaf269a2b647c77677599ed",
+      "source_checkpoint": {
+        "name": "smp_unetplusplus_efficientnet_b0--cityscapes_to_railsem19--seed-0",
+        "model": "smp_unetplusplus_efficientnet_b0",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unetplusplus_efficientnet_b0--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_unetplusplus_efficientnet_b0--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_unetplusplus_efficientnet_b0--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "eb8133d4cbcd8beb23774ebfd167f0d7cd77335a8498dbcd015677989eff19cc",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_upernet_mit_b0--rtis_only--seed-0",
+      "model": "smp_upernet_mit_b0",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "d5457127c3488ee4531b5733c594ea89c960087553e759c4f8223d6246686923",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_upernet_mit_b0--cityscapes_to_rtis--seed-0",
+      "model": "smp_upernet_mit_b0",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "266d4210964084b10c4d61f60d8c5739e950afb3c1c628e7fe6709aee678ee56",
+      "source_checkpoint": {
+        "name": "smp_upernet_mit_b0--cityscapes--seed-0",
+        "model": "smp_upernet_mit_b0",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/smp_upernet_mit_b0--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/smp_upernet_mit_b0--cityscapes--seed-0/train/smp_upernet_mit_b0--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "ce7fde4b4b7c8e1c9c8d1c1e441ffbc2eb42489afb71e09b0bc4128153a4a5df",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_upernet_mit_b0--railsem19_to_rtis--seed-0",
+      "model": "smp_upernet_mit_b0",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "942df3340a5f9872ae7594bb013290bfcbd15027cde9d2dcb2a1695e4ab3a475",
+      "source_checkpoint": {
+        "name": "smp_upernet_mit_b0--railsem19--seed-0",
+        "model": "smp_upernet_mit_b0",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/smp_upernet_mit_b0--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/smp_upernet_mit_b0--railsem19--seed-0/attempt-001/train/smp_upernet_mit_b0--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "014d1285f36704422cc145d728c43946d5418e9af260e276a081ef26b2cf6c8f",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_upernet_mit_b0--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_upernet_mit_b0",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "92ec34cb9193a4d380e5842e5fd5d2ccbe5601a7f1e5c52cb09266b728f0202a",
+      "source_checkpoint": {
+        "name": "smp_upernet_mit_b0--cityscapes_to_railsem19--seed-0",
+        "model": "smp_upernet_mit_b0",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_upernet_mit_b0--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_upernet_mit_b0--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_upernet_mit_b0--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "baf9743ae0f7006c77cc5df750d02edfd91640969b4c86e15699419e3f03b246",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_upernet_resnet101--rtis_only--seed-0",
+      "model": "smp_upernet_resnet101",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "fa502adfa2ae874bda451ba547184c40d8a92c7cb8a1e413610113002c1c4092",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "smp_upernet_resnet101--cityscapes_to_rtis--seed-0",
+      "model": "smp_upernet_resnet101",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "a63eb58c08c7c705cbaa2b903887140bf51222c166c32c23e9c172d20a261a82",
+      "source_checkpoint": {
+        "name": "smp_upernet_resnet101--cityscapes--seed-0",
+        "model": "smp_upernet_resnet101",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/smp_upernet_resnet101--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/smp_upernet_resnet101--cityscapes--seed-0/attempt-001/train/smp_upernet_resnet101--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "18a79d5ff0e4b11842213d5546a334f1e7e30b81c87679fab1659eecb12bcb7a",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_upernet_resnet101--railsem19_to_rtis--seed-0",
+      "model": "smp_upernet_resnet101",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "1e5f87c73445bb9f740c98a3f6f5c283f028119511bc7852383419a91a93e68f",
+      "source_checkpoint": {
+        "name": "smp_upernet_resnet101--railsem19--seed-0",
+        "model": "smp_upernet_resnet101",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/smp_upernet_resnet101--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/smp_upernet_resnet101--railsem19--seed-0/attempt-001/train/smp_upernet_resnet101--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "786e3d81df9181457bb198b058bfd34662540be50b92ea3c4a9c4a3f361f8087",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "smp_upernet_resnet101--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_upernet_resnet101",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "b8c1501685749aaf76cf6ae0048000befdb28e6ca8dc17fe31b09ccb09dfd5ab",
+      "source_checkpoint": {
+        "name": "smp_upernet_resnet101--cityscapes_to_railsem19--seed-0",
+        "model": "smp_upernet_resnet101",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/smp_upernet_resnet101--cityscapes_to_railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/city-rail-transfer-rail20/smp_upernet_resnet101/railsem19/last.ckpt",
+        "recorded_sha256": "bf38a8644b50069166169dc4cbbf1f86c68fa67b2ee40952131b104c44c9c103",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "upernet_convnext--rtis_only--seed-0",
+      "model": "upernet_convnext",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "config_sha256": "e62853c9e40b8753c51416bab62d8f1058c383886aef2e78b795a08b0b2ef9f1",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued"
+    },
+    {
+      "name": "upernet_convnext--cityscapes_to_rtis--seed-0",
+      "model": "upernet_convnext",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "config_sha256": "5c3481892cc500208e5974170b03dd1eab27bb76c582fa50f88ae9dc1a3734f1",
+      "source_checkpoint": {
+        "name": "upernet_convnext--cityscapes--seed-0",
+        "model": "upernet_convnext",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/upernet_convnext--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--cityscapes--seed-0/attempt-001/train/upernet_convnext--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "fb45ace4437433d1713d6afef5ee260284b053b7301e6be003f89249012dc698",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "upernet_convnext--railsem19_to_rtis--seed-0",
+      "model": "upernet_convnext",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "f04dd1037c0f8ae535eba708e4b280db8931735d5f37735289491859ecebbc95",
+      "source_checkpoint": {
+        "name": "upernet_convnext--railsem19--seed-0",
+        "model": "upernet_convnext",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/upernet_convnext--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--railsem19--seed-0/attempt-001/train/upernet_convnext--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "6e246e8e61f02c4359f944d776168359392cec5c1c750d4ba29c6637f80b9f3a",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    },
+    {
+      "name": "upernet_convnext--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "upernet_convnext",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "config_sha256": "4c0ae7be41ceed55e0645008f8f4fcad67aeb2b5dad61bb5eb4771d83c87f2cb",
+      "source_checkpoint": {
+        "name": "upernet_convnext--cityscapes_to_railsem19--seed-0",
+        "model": "upernet_convnext",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/upernet_convnext--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/upernet_convnext--cityscapes_to_railsem19--seed-0/attempt-001/train/upernet_convnext--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "34bf26bec67bfd5835de6d65f89d12653539ddf276166dc985cfdf5103bb27eb",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued"
+    }
+  ]
+}
