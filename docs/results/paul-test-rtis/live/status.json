@@ -2160,9 +2160,9 @@
       "model": "native_resnet101_uper",
       "protocol": "rtis_only",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 3249,
+      "status": "evaluating",
+      "final_step": 3309,
+      "observed_step": null,
       "record": "models/native_resnet101_uper/record.json"
     },
     {
@@ -2172,7 +2172,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2699,
+      "observed_step": 2799,
       "record": "models/native_resnet101_uper/record.json"
     },
     {
@@ -2202,7 +2202,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1849,
+      "observed_step": 1899,
       "record": "models/native_resnet101_uper/record.json"
     },
     {
@@ -2212,7 +2212,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1649,
+      "observed_step": 1749,
       "record": "models/native_resnet101_uper/record.json"
     },
     {
@@ -2222,7 +2222,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1599,
+      "observed_step": 1699,
       "record": "models/native_resnet101_uper/record.json"
     },
     {
@@ -2242,7 +2242,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1549,
+      "observed_step": 1649,
       "record": "models/native_resnet101_uper/record.json"
     },
     {
@@ -2252,7 +2252,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1199,
+      "observed_step": 1299,
       "record": "models/native_resnet101_uper/record.json"
     },
     {
@@ -2262,7 +2262,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 763,
+      "observed_step": 899,
       "record": "models/native_resnet18_fpn_fcn/record.json"
     },
     {
@@ -2272,7 +2272,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 508,
+      "observed_step": 649,
       "record": "models/native_resnet18_fpn_fcn/record.json"
     },
     {
