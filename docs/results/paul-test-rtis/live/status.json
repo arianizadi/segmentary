@@ -662,7 +662,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2799,
+      "observed_step": 3099,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -672,7 +672,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2999,
+      "observed_step": 3308,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -690,9 +690,9 @@
       "model": "eomt_large",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2499,
+      "status": "evaluating",
+      "final_step": 2800,
+      "observed_step": null,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -712,7 +712,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1299,
+      "observed_step": 1499,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -722,7 +722,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 999,
+      "observed_step": 1199,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -732,7 +732,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 508,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -742,7 +742,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 399,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -752,7 +752,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 49,
+      "observed_step": 249,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -762,7 +762,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 49,
+      "observed_step": 249,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
