@@ -520,9 +520,9 @@
       "model": "eomt_dinov3_large",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 3949,
+      "status": "evaluating",
+      "final_step": 4000,
+      "observed_step": null,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -552,7 +552,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 3299,
+      "observed_step": 3349,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -562,7 +562,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1599,
+      "observed_step": 1749,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -572,7 +572,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1449,
+      "observed_step": 1527,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -582,7 +582,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1399,
+      "observed_step": 1499,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -592,7 +592,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 849,
+      "observed_step": 949,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -602,7 +602,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 763,
+      "observed_step": 899,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -612,7 +612,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 763,
+      "observed_step": 899,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -622,7 +622,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 763,
+      "observed_step": 849,
       "record": "models/eomt_large/record.json"
     },
     {
