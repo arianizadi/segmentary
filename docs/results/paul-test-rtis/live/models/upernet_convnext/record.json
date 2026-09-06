@@ -2,9 +2,11 @@
   "campaign": {
     "schema_version": 1,
     "dataset": "paul-test-rtis",
-    "created_at": "2026-09-06T01:42:24.078964+00:00",
-    "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
-    "plan_sha256": "e2d790847e8837179a988a14e9e2ee49dd441e9dbe1412280b1f079e349e9e4e",
+    "created_at": "2026-09-06T04:19:33.533018+00:00",
+    "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+    "plan_sha256": "517ff6ca78de7953f98549b49848b4b1535fc6609e2e7c0ac91006c659dde8ee",
+    "selection_metric": "val_iou/mud-pumping",
+    "collection_contract": "rtis-full-statistics-v1",
     "split_sha256": "71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d",
     "grouping_status": "provisional_until_recording_provenance_confirmed",
     "source_checkpoints": {
@@ -446,222 +448,11 @@
     "target_steps": 4000,
     "selection": "best validation checkpoint; auto raw/EMA-safe weights; no TTA",
     "test": "held out; not evaluated",
-    "retention": "Best and periodic snapshots during training; final last.ckpt at termination. Remove periodic snapshots only after successful best-checkpoint evaluation. Preserve historical source checkpoints.",
-    "preflight_code_sha": "2cf41f9f731751cbde5c8f73e915ca02f273d249",
-    "revision_note": "Added initial live report before launch; training, runner, configs and taxonomy identical to smoke-tested preflight revision.",
-    "early_stopping": {
-      "monitor": "val/miou",
-      "mode": "max",
-      "patience": 3,
-      "min_delta": 0.002,
-      "validation_interval": 250
-    },
-    "amendments": [
-      {
-        "at": "2026-09-06T02:14:57.063274+00:00",
-        "reason": "User requested protection against overfitting on the small dataset",
-        "previous_code_sha": "d070133fd0ead4ba64f945a3bcaa89326e2c8750",
-        "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b",
-        "resumed_jobs": 10,
-        "resume_steps": [
-          509,
-          509,
-          509,
-          509,
-          509,
-          509,
-          509,
-          509,
-          509,
-          509
-        ],
-        "monitoring_checkpoint_migrations": [
-          {
-            "name": "eomt_dinov3_large--rtis_only--seed-0",
-            "original_checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_dinov3_large--rtis_only--seed-0_seed0/rtis/best.ckpt",
-            "original_sha256": "150dd7ed60b9767eb5efbd521f5f84c41afab18757bd4d8941ba0c3042cc60b4",
-            "checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_dinov3_large--rtis_only--seed-0_seed0/rtis/step-00000509.ckpt",
-            "sha256": "8caa674d5dc257224fd7a38465e6d4d3fd2719ec08f0b70c66a80bc0d35cc524",
-            "step": 509,
-            "changed_train_fields": [
-              "early_stopping_min_delta",
-              "early_stopping_patience",
-              "val_every"
-            ],
-            "early_stopping_best_score": 0.3643706738948822
-          },
-          {
-            "name": "eomt_dinov3_large--cityscapes_to_rtis--seed-0",
-            "original_checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_dinov3_large--cityscapes_to_rtis--seed-0_seed0/rtis/best.ckpt",
-            "original_sha256": "108c835a31607dd4d5b5f38fb50b12359f175d2f1b97771e930b9e1428ed0cfc",
-            "checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_dinov3_large--cityscapes_to_rtis--seed-0_seed0/rtis/step-00000509.ckpt",
-            "sha256": "0c34b553e35fc988f415c97fb9ba37ce15c58e82bbe1031e49f3e4d8dae2e43f",
-            "step": 509,
-            "changed_train_fields": [
-              "early_stopping_min_delta",
-              "early_stopping_patience",
-              "val_every"
-            ],
-            "early_stopping_best_score": 0.47025153040885925
-          },
-          {
-            "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
-            "original_checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_dinov3_large--railsem19_to_rtis--seed-0_seed0/rtis/best.ckpt",
-            "original_sha256": "0e055216ebba47962413d8a15379c8bce7d8397137bacaea6725434f25749b0a",
-            "checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_dinov3_large--railsem19_to_rtis--seed-0_seed0/rtis/step-00000509.ckpt",
-            "sha256": "bc0374a414027c1fed3a3d5e2498d37a32bbc0e7c9a3bf546d6c2907ac7bf038",
-            "step": 509,
-            "changed_train_fields": [
-              "early_stopping_min_delta",
-              "early_stopping_patience",
-              "val_every"
-            ],
-            "early_stopping_best_score": 0.47235575318336487
-          },
-          {
-            "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
-            "original_checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/best.ckpt",
-            "original_sha256": "c6037f0832377f032834bce48ece8668adc04e5d0a119df9d4e9564dcf759afa",
-            "checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/step-00000509.ckpt",
-            "sha256": "0ac7f15d622ad23d4a11c0ba39b032e578250bb6e466e92e8917720dae902d06",
-            "step": 509,
-            "changed_train_fields": [
-              "early_stopping_min_delta",
-              "early_stopping_patience",
-              "val_every"
-            ],
-            "early_stopping_best_score": 0.4546225965023041
-          },
-          {
-            "name": "eomt_large--rtis_only--seed-0",
-            "original_checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_large--rtis_only--seed-0_seed0/rtis/best.ckpt",
-            "original_sha256": "7c97f722c3019ba2af3a00f835e8bcd0f1cf27ff1363511c6cc6aac03df68d46",
-            "checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_large--rtis_only--seed-0_seed0/rtis/step-00000509.ckpt",
-            "sha256": "724450069911c12510d4ec3cd14b9f54461122456f18b85290bd29438dc1a4e3",
-            "step": 509,
-            "changed_train_fields": [
-              "early_stopping_min_delta",
-              "early_stopping_patience",
-              "val_every"
-            ],
-            "early_stopping_best_score": 0.38746190071105957
-          },
-          {
-            "name": "eomt_large--cityscapes_to_rtis--seed-0",
-            "original_checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_large--cityscapes_to_rtis--seed-0_seed0/rtis/best.ckpt",
-            "original_sha256": "45ac6b879fd13352ce5da3734141d0f0e23fd0ac85237ee57b65804159206ac6",
-            "checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_large--cityscapes_to_rtis--seed-0_seed0/rtis/step-00000509.ckpt",
-            "sha256": "9dd00f5e9ba2f373d3f6930c91a390462c35178637f7bae203dac01de88d8e3f",
-            "step": 509,
-            "changed_train_fields": [
-              "early_stopping_min_delta",
-              "early_stopping_patience",
-              "val_every"
-            ],
-            "early_stopping_best_score": 0.47787976264953613
-          },
-          {
-            "name": "eomt_large--railsem19_to_rtis--seed-0",
-            "original_checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_large--railsem19_to_rtis--seed-0_seed0/rtis/best.ckpt",
-            "original_sha256": "4d79dfd851b538129a82fb844658638b2af71a6fe1c192c1eff0b27efa27e9fb",
-            "checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_large--railsem19_to_rtis--seed-0_seed0/rtis/step-00000509.ckpt",
-            "sha256": "6f69ec0ebceb47bdbf3c09378bf34b220f7706983bad92435a6357983be5a6cf",
-            "step": 509,
-            "changed_train_fields": [
-              "early_stopping_min_delta",
-              "early_stopping_patience",
-              "val_every"
-            ],
-            "early_stopping_best_score": 0.5146582722663879
-          },
-          {
-            "name": "eomt_large--cityscapes_to_railsem19_to_rtis--seed-0",
-            "original_checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_large--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/best.ckpt",
-            "original_sha256": "d9f39a4e23af22621e76617d8faf7015a0943750965b9f5f7c79fce01b89804f",
-            "checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/eomt_large--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/step-00000509.ckpt",
-            "sha256": "c32f8b377bc5fa9a47e25686e5bc8f86e7a52e1d9535c70d1da1cf50fd9046b7",
-            "step": 509,
-            "changed_train_fields": [
-              "early_stopping_min_delta",
-              "early_stopping_patience",
-              "val_every"
-            ],
-            "early_stopping_best_score": 0.5515219569206238
-          },
-          {
-            "name": "hf_auto_beit_base_ade--rtis_only--seed-0",
-            "original_checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_beit_base_ade--rtis_only--seed-0_seed0/rtis/best.ckpt",
-            "original_sha256": "de6e63b7949fcb8765a786c399df73cca220b8c1f7bb78d815dbf6495766fe9f",
-            "checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_beit_base_ade--rtis_only--seed-0_seed0/rtis/step-00000509.ckpt",
-            "sha256": "f5d4d063d7c381682451a4befbce910c6feabcccf5b650a806aadca99de69c31",
-            "step": 509,
-            "changed_train_fields": [
-              "early_stopping_min_delta",
-              "early_stopping_patience",
-              "val_every"
-            ],
-            "early_stopping_best_score": 0.16372761130332947
-          },
-          {
-            "name": "hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0",
-            "original_checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0_seed0/rtis/best.ckpt",
-            "original_sha256": "0dd07dc0f2a121d9b6f76144ab7077f5b080511ba8fbc5f6f8ea7bc82b53e9de",
-            "checkpoint": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs/hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0_seed0/rtis/step-00000509.ckpt",
-            "sha256": "66fe2a2b57c131732885ba11ee42d2aff02c17586e57a8a263f1f877f81fb084",
-            "step": 509,
-            "changed_train_fields": [
-              "early_stopping_min_delta",
-              "early_stopping_patience",
-              "val_every"
-            ],
-            "early_stopping_best_score": 0.191266268491745
-          }
-        ],
-        "secondary_paused_jobs": [
-          {
-            "name": "hf_auto_mobilenetv2_deeplabv3--railsem19_to_rtis--seed-0",
-            "resume_step": 0
-          },
-          {
-            "name": "hf_auto_beit_base_ade--railsem19_to_rtis--seed-0",
-            "resume_step": 0
-          },
-          {
-            "name": "hf_auto_mobilevit_xxs_deeplabv3--rtis_only--seed-0",
-            "resume_step": 0
-          },
-          {
-            "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0",
-            "resume_step": 0
-          },
-          {
-            "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_railsem19_to_rtis--seed-0",
-            "resume_step": 0
-          },
-          {
-            "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_rtis--seed-0",
-            "resume_step": 0
-          },
-          {
-            "name": "hf_auto_beit_base_ade--cityscapes_to_railsem19_to_rtis--seed-0",
-            "resume_step": 0
-          },
-          {
-            "name": "hf_auto_mobilevit_xxs_deeplabv3--cityscapes_to_rtis--seed-0",
-            "resume_step": 0
-          },
-          {
-            "name": "hf_auto_mobilevit_xxs_deeplabv3--railsem19_to_rtis--seed-0",
-            "resume_step": 0
-          },
-          {
-            "name": "hf_auto_mobilenetv2_deeplabv3--rtis_only--seed-0",
-            "resume_step": 0
-          }
-        ],
-        "resume_policy": "Strict checkpoint loader retained; only val_every and newly added early-stopping metadata migrated. Model tensors verified identical; optimizer, scheduler and EMA preserved."
-      }
-    ]
+    "retention": "Keep best and final; delete periodic snapshots only after successful validation. Keep failed-run checkpoints for recovery.",
+    "previous_report_commit": "aeb4157a66487fe1b2271c01a0ad9383c51b958b",
+    "previous_campaign": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906",
+    "publisher_handoff_at": "2026-09-06T04:44:47.240457+00:00",
+    "previous_active_at_handoff": 4
   },
   "jobs": [
     {
@@ -669,7 +460,7 @@
       "model": "upernet_convnext",
       "protocol": "rtis_only",
       "seed": 0,
-      "config_sha256": "81ff765e5c8c36215e0962fea8d95c8e02482d9c3c659cc4884400d6aff220c8",
+      "config_sha256": "b8be43b36048f6fb7673602ac1cba48bea838e2fed02e4c76eb95f3ba785156c",
       "source_checkpoint": null,
       "reset_head": false,
       "status": "queued",
@@ -700,8 +491,8 @@
           "batch_norm_momentum": null
         },
         "space": "paul-test-rtis",
-        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-guarded-4f5ebf0/taxonomy",
-        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
         "optim": {
           "backbone_lr": 6e-05,
           "head_lr_mult": 10.0,
@@ -726,10 +517,301 @@
           "ema_decay": 0.9998,
           "val_every": 250,
           "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
           "seed": 0,
-          "devices": 1,
-          "early_stopping_patience": 3,
-          "early_stopping_min_delta": 0.002
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": null
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 1.0,
+            "head_group_lr_scale": 1.0,
+            "init_from": "pretrained",
+            "reset_head": false,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
+      "performance": {
+        "status": "waiting_for_idle_gpu",
+        "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+      }
+    },
+    {
+      "name": "upernet_convnext--rtis_only--seed-1",
+      "model": "upernet_convnext",
+      "protocol": "rtis_only",
+      "seed": 1,
+      "config_sha256": "bd415b7211d945806cf7e899eff5250fadfb44b6fbb4f2bcccfab6049e69ed5d",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued",
+      "resolved_config": {
+        "name": "upernet_convnext--rtis_only--seed-1",
+        "model": {
+          "arch": "upernet_convnext",
+          "checkpoint": "openmmlab/upernet-convnext-small",
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": null,
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 6e-05,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 1.0,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 1,
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": null
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 1.0,
+            "head_group_lr_scale": 1.0,
+            "init_from": "pretrained",
+            "reset_head": false,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
+      "performance": {
+        "status": "waiting_for_idle_gpu",
+        "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+      }
+    },
+    {
+      "name": "upernet_convnext--rtis_only--seed-2",
+      "model": "upernet_convnext",
+      "protocol": "rtis_only",
+      "seed": 2,
+      "config_sha256": "f97218319176f44a85363796e5e1612781caaed492277bfa15aea0d9211b046f",
+      "source_checkpoint": null,
+      "reset_head": false,
+      "status": "queued",
+      "resolved_config": {
+        "name": "upernet_convnext--rtis_only--seed-2",
+        "model": {
+          "arch": "upernet_convnext",
+          "checkpoint": "openmmlab/upernet-convnext-small",
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": null,
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 6e-05,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 1.0,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 2,
+          "devices": 1
         },
         "eval": {
           "sliding_window": true,
@@ -813,7 +895,7 @@
       "model": "upernet_convnext",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "config_sha256": "df251c5d3b5253759ee771600e58ff5f515a6994055035ec541a65159cc649f5",
+      "config_sha256": "14a084047fe7696587cca284902948b0fe5eade0768ac19c3135164806e62c81",
       "source_checkpoint": {
         "name": "upernet_convnext--cityscapes--seed-0",
         "model": "upernet_convnext",
@@ -852,8 +934,8 @@
           "batch_norm_momentum": null
         },
         "space": "paul-test-rtis",
-        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-guarded-4f5ebf0/taxonomy",
-        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
         "optim": {
           "backbone_lr": 6e-05,
           "head_lr_mult": 10.0,
@@ -878,10 +960,317 @@
           "ema_decay": 0.9998,
           "val_every": 250,
           "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
           "seed": 0,
-          "devices": 1,
-          "early_stopping_patience": 3,
-          "early_stopping_min_delta": 0.002
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": null
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 0.1,
+            "head_group_lr_scale": 1.0,
+            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--cityscapes--seed-0/attempt-001/train/upernet_convnext--cityscapes_seed0/cityscapes/last.ckpt",
+            "reset_head": true,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
+      "performance": {
+        "status": "waiting_for_idle_gpu",
+        "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+      }
+    },
+    {
+      "name": "upernet_convnext--cityscapes_to_rtis--seed-1",
+      "model": "upernet_convnext",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 1,
+      "config_sha256": "7095e79beb7f959c6d35e71851f4b65a27f0855af6c48dcee62f69256e8c4931",
+      "source_checkpoint": {
+        "name": "upernet_convnext--cityscapes--seed-0",
+        "model": "upernet_convnext",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/upernet_convnext--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--cityscapes--seed-0/attempt-001/train/upernet_convnext--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "fb45ace4437433d1713d6afef5ee260284b053b7301e6be003f89249012dc698",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued",
+      "resolved_config": {
+        "name": "upernet_convnext--cityscapes_to_rtis--seed-1",
+        "model": {
+          "arch": "upernet_convnext",
+          "checkpoint": "openmmlab/upernet-convnext-small",
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": null,
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 6e-05,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 1.0,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 1,
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": null
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 0.1,
+            "head_group_lr_scale": 1.0,
+            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--cityscapes--seed-0/attempt-001/train/upernet_convnext--cityscapes_seed0/cityscapes/last.ckpt",
+            "reset_head": true,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
+      "performance": {
+        "status": "waiting_for_idle_gpu",
+        "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+      }
+    },
+    {
+      "name": "upernet_convnext--cityscapes_to_rtis--seed-2",
+      "model": "upernet_convnext",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 2,
+      "config_sha256": "9a1b2e09466b9130121ac6c7b987aa216690ad574750bf30cf9690ec6cbc6e85",
+      "source_checkpoint": {
+        "name": "upernet_convnext--cityscapes--seed-0",
+        "model": "upernet_convnext",
+        "protocol": "cityscapes",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/upernet_convnext--cityscapes--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--cityscapes--seed-0/attempt-001/train/upernet_convnext--cityscapes_seed0/cityscapes/last.ckpt",
+        "recorded_sha256": "fb45ace4437433d1713d6afef5ee260284b053b7301e6be003f89249012dc698",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued",
+      "resolved_config": {
+        "name": "upernet_convnext--cityscapes_to_rtis--seed-2",
+        "model": {
+          "arch": "upernet_convnext",
+          "checkpoint": "openmmlab/upernet-convnext-small",
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": null,
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 6e-05,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 1.0,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 2,
+          "devices": 1
         },
         "eval": {
           "sliding_window": true,
@@ -965,7 +1354,7 @@
       "model": "upernet_convnext",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "6af21c2bbe0f3e1657b68c312b4e56f0d7a902eefc279799828ad73a17644c6f",
+      "config_sha256": "e5d7742977aa9701a6a3b448555589617cb09f9b91021ba3fd1d087756df9b4a",
       "source_checkpoint": {
         "name": "upernet_convnext--railsem19--seed-0",
         "model": "upernet_convnext",
@@ -1004,8 +1393,8 @@
           "batch_norm_momentum": null
         },
         "space": "paul-test-rtis",
-        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-guarded-4f5ebf0/taxonomy",
-        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
         "optim": {
           "backbone_lr": 6e-05,
           "head_lr_mult": 10.0,
@@ -1030,10 +1419,317 @@
           "ema_decay": 0.9998,
           "val_every": 250,
           "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
           "seed": 0,
-          "devices": 1,
-          "early_stopping_patience": 3,
-          "early_stopping_min_delta": 0.002
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": null
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 0.1,
+            "head_group_lr_scale": 1.0,
+            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--railsem19--seed-0/attempt-001/train/upernet_convnext--railsem19_seed0/railsem19/last.ckpt",
+            "reset_head": true,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
+      "performance": {
+        "status": "waiting_for_idle_gpu",
+        "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+      }
+    },
+    {
+      "name": "upernet_convnext--railsem19_to_rtis--seed-1",
+      "model": "upernet_convnext",
+      "protocol": "railsem19_to_rtis",
+      "seed": 1,
+      "config_sha256": "eae701ab60a3802ed357c03812f09a474e36bb48b50920aa0322abf8b11f4091",
+      "source_checkpoint": {
+        "name": "upernet_convnext--railsem19--seed-0",
+        "model": "upernet_convnext",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/upernet_convnext--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--railsem19--seed-0/attempt-001/train/upernet_convnext--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "6e246e8e61f02c4359f944d776168359392cec5c1c750d4ba29c6637f80b9f3a",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued",
+      "resolved_config": {
+        "name": "upernet_convnext--railsem19_to_rtis--seed-1",
+        "model": {
+          "arch": "upernet_convnext",
+          "checkpoint": "openmmlab/upernet-convnext-small",
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": null,
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 6e-05,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 1.0,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 1,
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": null
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 0.1,
+            "head_group_lr_scale": 1.0,
+            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--railsem19--seed-0/attempt-001/train/upernet_convnext--railsem19_seed0/railsem19/last.ckpt",
+            "reset_head": true,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
+      "performance": {
+        "status": "waiting_for_idle_gpu",
+        "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+      }
+    },
+    {
+      "name": "upernet_convnext--railsem19_to_rtis--seed-2",
+      "model": "upernet_convnext",
+      "protocol": "railsem19_to_rtis",
+      "seed": 2,
+      "config_sha256": "6e2223e17be9910095dea7dd63e354f199fe11be2995b63375326b025c90842b",
+      "source_checkpoint": {
+        "name": "upernet_convnext--railsem19--seed-0",
+        "model": "upernet_convnext",
+        "protocol": "railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/upernet_convnext--railsem19--seed-0/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--railsem19--seed-0/attempt-001/train/upernet_convnext--railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "6e246e8e61f02c4359f944d776168359392cec5c1c750d4ba29c6637f80b9f3a",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued",
+      "resolved_config": {
+        "name": "upernet_convnext--railsem19_to_rtis--seed-2",
+        "model": {
+          "arch": "upernet_convnext",
+          "checkpoint": "openmmlab/upernet-convnext-small",
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": null,
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 6e-05,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 1.0,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 2,
+          "devices": 1
         },
         "eval": {
           "sliding_window": true,
@@ -1117,7 +1813,7 @@
       "model": "upernet_convnext",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "config_sha256": "092578a97edbc4c0f658a13f004757bc4f9c7e1c4342b0025523b639e5ee1a73",
+      "config_sha256": "23d8d119d40b782e5571122017ea6acb081ce9a7915a81e72e198e5968a73225",
       "source_checkpoint": {
         "name": "upernet_convnext--cityscapes_to_railsem19--seed-0",
         "model": "upernet_convnext",
@@ -1156,8 +1852,8 @@
           "batch_norm_momentum": null
         },
         "space": "paul-test-rtis",
-        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-guarded-4f5ebf0/taxonomy",
-        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/pilot-20260906/future-runs",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
         "optim": {
           "backbone_lr": 6e-05,
           "head_lr_mult": 10.0,
@@ -1182,10 +1878,317 @@
           "ema_decay": 0.9998,
           "val_every": 250,
           "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
           "seed": 0,
-          "devices": 1,
-          "early_stopping_patience": 3,
-          "early_stopping_min_delta": 0.002
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": null
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 0.1,
+            "head_group_lr_scale": 1.0,
+            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/upernet_convnext--cityscapes_to_railsem19--seed-0/attempt-001/train/upernet_convnext--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+            "reset_head": true,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
+      "performance": {
+        "status": "waiting_for_idle_gpu",
+        "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+      }
+    },
+    {
+      "name": "upernet_convnext--cityscapes_to_railsem19_to_rtis--seed-1",
+      "model": "upernet_convnext",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 1,
+      "config_sha256": "fa92e8d55af6e23e2794e6a9eebd25dff130453c85f0cea50db9a8913102b7fd",
+      "source_checkpoint": {
+        "name": "upernet_convnext--cityscapes_to_railsem19--seed-0",
+        "model": "upernet_convnext",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/upernet_convnext--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/upernet_convnext--cityscapes_to_railsem19--seed-0/attempt-001/train/upernet_convnext--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "34bf26bec67bfd5835de6d65f89d12653539ddf276166dc985cfdf5103bb27eb",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued",
+      "resolved_config": {
+        "name": "upernet_convnext--cityscapes_to_railsem19_to_rtis--seed-1",
+        "model": {
+          "arch": "upernet_convnext",
+          "checkpoint": "openmmlab/upernet-convnext-small",
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": null,
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 6e-05,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 1.0,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 1,
+          "devices": 1
+        },
+        "eval": {
+          "sliding_window": true,
+          "window": [
+            1024,
+            1024
+          ],
+          "stride": [
+            768,
+            768
+          ],
+          "batch_size": 1,
+          "num_workers": 2,
+          "tta_scales": [],
+          "tta_flip": false,
+          "threshold": 0.5,
+          "boundary_tolerance_frac": 0.0075,
+          "save_confusion": true
+        },
+        "loss": {
+          "task": "multiclass",
+          "activation": "auto",
+          "terms": [],
+          "aux": "none",
+          "aux_weight": 0.0,
+          "ce_weight": 1.0,
+          "label_smoothing": 0.0,
+          "class_weights": null,
+          "query": null
+        },
+        "aug": {
+          "crop": [
+            1024,
+            1024
+          ],
+          "scale_min": 0.5,
+          "scale_max": 2.0,
+          "hflip_p": 0.5,
+          "color_jitter_p": 0.5,
+          "brightness": 0.25,
+          "contrast": 0.25,
+          "saturation": 0.25,
+          "hue": 0.05
+        },
+        "stages": [
+          {
+            "name": "rtis",
+            "data": [
+              {
+                "name": "paul-test-rtis",
+                "root": "/data/izadia1/datasets/paul-test-rtis",
+                "variant": null,
+                "split_file": "splits.json",
+                "train_split": "train",
+                "val_split": "val",
+                "limit": null,
+                "loader": "folder",
+                "mapping": "paul-test-rtis",
+                "loader_options": {
+                  "require_groups": true
+                }
+              }
+            ],
+            "iters": null,
+            "lr_scale": 0.1,
+            "head_group_lr_scale": 1.0,
+            "init_from": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/upernet_convnext--cityscapes_to_railsem19--seed-0/attempt-001/train/upernet_convnext--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+            "reset_head": true,
+            "freeze": null,
+            "sample_weights": null
+          }
+        ]
+      },
+      "performance": {
+        "status": "waiting_for_idle_gpu",
+        "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+      }
+    },
+    {
+      "name": "upernet_convnext--cityscapes_to_railsem19_to_rtis--seed-2",
+      "model": "upernet_convnext",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 2,
+      "config_sha256": "b20ac601c3f561e66ae2d339a7274c16b87111909808345160d4d3240fe0fe38",
+      "source_checkpoint": {
+        "name": "upernet_convnext--cityscapes_to_railsem19--seed-0",
+        "model": "upernet_convnext",
+        "protocol": "cityscapes_to_railsem19",
+        "config": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/upernet_convnext--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml",
+        "checkpoint": "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/upernet_convnext--cityscapes_to_railsem19--seed-0/attempt-001/train/upernet_convnext--cityscapes_to_railsem19_seed0/railsem19/last.ckpt",
+        "recorded_sha256": "34bf26bec67bfd5835de6d65f89d12653539ddf276166dc985cfdf5103bb27eb",
+        "exists": true
+      },
+      "reset_head": true,
+      "status": "queued",
+      "resolved_config": {
+        "name": "upernet_convnext--cityscapes_to_railsem19_to_rtis--seed-2",
+        "model": {
+          "arch": "upernet_convnext",
+          "checkpoint": "openmmlab/upernet-convnext-small",
+          "tuning": "full",
+          "head": "unified_head",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "lora_targets": [],
+          "drop_path": null,
+          "revision": null,
+          "subfolder": null,
+          "local_files_only": false,
+          "trust_remote_code": false,
+          "backbone_path": null,
+          "head_paths": [],
+          "classifier_path": null,
+          "inactive_parameter_paths": [],
+          "smp_arch": null,
+          "encoder_name": null,
+          "encoder_weights": null,
+          "native": null,
+          "batch_norm_momentum": null
+        },
+        "space": "paul-test-rtis",
+        "taxonomy_root": "/data/izadia1/projects/segmentary-rtis-fullstats-066afb2/taxonomy",
+        "output_root": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs",
+        "optim": {
+          "backbone_lr": 6e-05,
+          "head_lr_mult": 10.0,
+          "weight_decay": 0.05,
+          "llrd": 1.0,
+          "warmup_iters": 1500,
+          "warmup_ratio": 1e-06,
+          "poly_power": 0.9,
+          "min_lr_ratio": 0.0,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "grad_clip": 1.0
+        },
+        "train": {
+          "iters": 4000,
+          "batch_size": 2,
+          "accum": 8,
+          "num_workers": 2,
+          "precision": "bf16-mixed",
+          "ema_decay": 0.9998,
+          "val_every": 250,
+          "ckpt_every": 500,
+          "selection_metric": "val_iou/mud-pumping",
+          "early_stopping_patience": 5,
+          "early_stopping_min_delta": 0.001,
+          "seed": 2,
+          "devices": 1
         },
         "eval": {
           "sliding_window": true,
