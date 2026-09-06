@@ -11,6 +11,8 @@ name: checks
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "docs/results/paul-test-rtis/live/**"
   pull_request:
   workflow_dispatch:
 

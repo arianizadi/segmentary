@@ -2,14 +2,15 @@
 name: paul-test-rtis
 dataset_config: configs/datasets/paul-test-rtis.yaml
 model_catalog: configs/campaigns/all_models_cityscapes_railsem19.yaml
-status: preparation_only
-publisher: false
+status: pilot
+publisher: true
 seeds: [0]
 # Initial pilot budget. Review before a full comparison; not the old 40k protocol.
 target_steps: 4000
 batch_size: 2
 accumulation: 8
 validation_interval: 500
+num_workers: 2
 protocols:
   rtis_only:
     label: Pretrained backbone -> RTIS

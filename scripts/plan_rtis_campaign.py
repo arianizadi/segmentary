@@ -56,6 +56,8 @@ def main() -> None:
                 cfg.train.val_every = spec["validation_interval"]
                 cfg.train.ckpt_every = spec["validation_interval"]
                 cfg.train.devices = 1
+                cfg.train.num_workers = spec.get("num_workers", 2)
+                cfg.eval.num_workers = spec.get("num_workers", 2)
                 stage = cfg.stages[0]
                 stage.data[0].root = str(root)
                 stage.init_from = "pretrained" if source is None else source["checkpoint"]

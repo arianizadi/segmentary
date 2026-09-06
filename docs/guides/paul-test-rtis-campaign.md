@@ -82,3 +82,55 @@ publisher was launched. Historical campaign manifests remain intact.
 The old runner/importer and their tests now target only the explicitly named
 Cityscapes/RailSem19 report. RTIS reports and future run outputs occupy their
 own directories. No results were committed or pushed automatically.
+
+## Running the authorized pilot
+
+`scripts/run_rtis_campaign.py` now provides the RTIS runtime. Use a clean,
+fixed-revision training worktree and a **different** clean publisher worktree
+tracking GitHub `main`. The historical Cityscapes/RailSem19 runner is not started.
+The runtime verifies all 108 source checkpoint hashes, all 307 image/mask hashes,
+the split, and resolved configurations before initializing the queue. Two data
+loader workers per run limit contention across the ten GPUs.
+
+```bash
+# First generate a new plan with the preparation command above.
+python scripts/run_rtis_campaign.py init --campaign /path/to/new/rtis-plan
+python scripts/run_rtis_campaign.py launch --campaign /path/to/new/rtis-plan \
+  --checkout /path/to/separate/publisher --gpus 0,1,2,3,4,5,6,7,8,9
+```
+
+The launcher starts independent tmux workers and a publisher. Each GPU claims
+one job at a time. The queue covers 36 recipes and all four arms, with 4,000
+optimizer steps per job. Incompatible or failed runs are reported as failed;
+settings are not silently changed to obtain a score. Existing model weights
+must be cached: workers use offline Hugging Face loading.
+
+Each successful job validates its best checkpoint on all 37 validation images
+with the model's configured inference geometry, no TTA, and the repository's
+raw/EMA-safe weight policy. The final checkpoint's training-time validation
+record is also retained. Test is held out. Original recording groups remain
+provisional, and validation lacks three classes, so this is a descriptive pilot.
+
+The publisher checks every 30 seconds and commits changed results to
+[`docs/results/paul-test-rtis/live/`](../results/paul-test-rtis/live/README.md).
+Only its README and status JSON are staged. It follows upstream changes without
+editing the training checkout or historical reports; conflicts stop publishing
+and are logged for review. Report-only pushes skip the expensive code CI suite;
+code changes continue to run all checks.
+
+After training and best-checkpoint evaluation succeed, checkpoint hashes and
+results are written durably. Only then are that run's `step-*.ckpt` snapshots
+removed, with byte counts, hashes and deletion outcomes under `cleanup/`.
+Best and final full-state checkpoints remain. Failed/interrupted runs retain
+all recovery snapshots. Historical source checkpoints are never cleaned by this
+runner. During training, at most eight periodic snapshots accumulate per job.
+
+`state/` has job outcomes, `logs/` has model output, `service-logs/` has worker
+and publisher output, `services.json` lists tmux sessions, and
+`publisher-status.json` records the last successful GitHub commit. Add `STOP`
+to the campaign directory to drain workers after current jobs; add
+`STOP_PUBLISHER` to stop publishing. These files are not created by default.
+An interrupted worker can be restarted with `worker --campaign ... --gpu N`;
+job/GPU locks prevent duplicate work and full optimizer/scheduler/EMA state is
+resumed from the newest readable recovery snapshot. Failed jobs require review
+before their state is explicitly requeued.
