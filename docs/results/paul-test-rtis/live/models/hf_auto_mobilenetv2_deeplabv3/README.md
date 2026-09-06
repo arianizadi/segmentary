@@ -6,10 +6,10 @@ Mud-pumping detection is the primary application. Current pilot checkpoints were
 
 | Model | Initialization path | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_mobilenetv2_deeplabv3 | rtis_only | training | 1149 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | training | 799 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | training | 599 | — | — | — | — | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | training | 549 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | rtis_only | training | 1799 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | training | 1449 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | evaluating | 1272 | — | — | — | — | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | training | 1199 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 images, held out. One seed; visually grouped split with unconfirmed recording identities. Percentages are descriptive, not statistically established rankings.
 
@@ -91,6 +91,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 17.53 | 0.10 |
 | 763 | 17.04 | 0.15 |
 | 1017 | 18.56 | 0.22 |
+| 1272 | 18.58 | 0.25 |
+| 1527 | 21.05 | 0.05 |
+| 1781 | 20.26 | 0.10 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -327,6 +330,8 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 17.60 | 0.71 |
 | 508 | 18.98 | 0.73 |
 | 763 | 20.71 | 0.66 |
+| 1017 | 21.79 | 1.38 |
+| 1272 | 20.76 | 0.83 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -490,7 +495,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis
 
-Status: **training**. Started: 2026-09-06T03:08:33.527449+00:00. Finished: —.
+Status: **evaluating**. Started: 2026-09-06T03:08:33.527449+00:00. Finished: —.
 
 Recipe pretrained initializer: `google/deeplabv3_mobilenet_v2_1.0_513`.
 
@@ -562,6 +567,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 22.48 | 1.09 |
 | 508 | 25.51 | 2.29 |
+| 763 | 23.83 | 2.14 |
+| 1017 | 23.15 | 3.90 |
+| 1272 | 22.09 | 2.34 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -797,6 +805,8 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 21.87 | 0.99 |
 | 508 | 22.55 | 1.70 |
+| 763 | 23.33 | 1.71 |
+| 1017 | 23.85 | 2.30 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 

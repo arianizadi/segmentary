@@ -14,22 +14,22 @@ Click any model for all initialization paths, full class metrics, training/valid
 
 | Model | Initialization path | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | training | 2049 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | training | 2449 | — | — | — | — | — | — | — |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | completed | 1272 | 509 | 2.06 | 2.71 | 7.95 | 12.46 | 47.03 | 49.64 |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | completed | 1781 | 1018 | 17.34 | 24.29 | 37.74 | 26.13 | 54.56 | 60.62 |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | completed | 1781 | 1018 | 7.85 | 9.50 | 31.21 | 8.39 | 50.65 | 53.47 |
-| [eomt_large](models/eomt_large/README.md) | rtis_only | training | 2149 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | rtis_only | training | 2499 | — | — | — | — | — | — | — |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | completed | 1527 | 1527 | 10.26 | 13.26 | 31.21 | 10.26 | 50.69 | 53.50 |
 | [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | completed | 1781 | 1018 | 4.40 | 5.81 | 15.31 | 3.64 | 53.74 | 59.71 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | completed | 1527 | 763 | 13.33 | 16.58 | 40.49 | 14.81 | 58.34 | 58.34 |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | training | 1699 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | training | 1699 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | training | 699 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | training | 499 | — | — | — | — | — | — | — |
-| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | rtis_only | training | 1149 | — | — | — | — | — | — | — |
-| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | cityscapes_to_rtis | training | 799 | — | — | — | — | — | — | — |
-| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | railsem19_to_rtis | training | 599 | — | — | — | — | — | — | — |
-| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | training | 549 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | training | 1899 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | training | 1899 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | training | 949 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | training | 749 | — | — | — | — | — | — | — |
+| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | rtis_only | training | 1799 | — | — | — | — | — | — | — |
+| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | cityscapes_to_rtis | training | 1449 | — | — | — | — | — | — | — |
+| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | railsem19_to_rtis | evaluating | 1272 | — | — | — | — | — | — | — |
+| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | training | 1199 | — | — | — | — | — | — | — |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | rtis_only | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | cityscapes_to_rtis | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | railsem19_to_rtis | queued | — | — | — | — | — | — | — | — |

@@ -6,10 +6,10 @@ Mud-pumping detection is the primary application. Current pilot checkpoints were
 
 | Model | Initialization path | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_beit_base_ade | rtis_only | training | 1699 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | cityscapes_to_rtis | training | 1699 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | railsem19_to_rtis | training | 699 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | training | 499 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | rtis_only | training | 1899 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_rtis | training | 1899 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | railsem19_to_rtis | training | 949 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | training | 749 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 images, held out. One seed; visually grouped split with unconfirmed recording identities. Percentages are descriptive, not statistically established rankings.
 
@@ -92,6 +92,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1017 | 24.36 | 2.55 |
 | 1272 | 24.31 | 0.12 |
 | 1527 | 26.33 | 0.06 |
+| 1781 | 22.02 | 0.06 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -331,6 +332,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1017 | 22.99 | 0.15 |
 | 1272 | 26.43 | 0.43 |
 | 1527 | 27.23 | 0.14 |
+| 1781 | 28.70 | 0.14 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -567,6 +569,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 21.38 | 3.51 |
 | 508 | 21.83 | 4.97 |
+| 763 | 20.30 | 2.65 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -802,6 +805,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 20.32 | 0.93 |
+| 508 | 21.92 | 0.81 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
