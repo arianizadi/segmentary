@@ -4,18 +4,18 @@
 
 Mud-pumping detection is the primary application. Current pilot checkpoints were selected by overall validation mIoU, **not mud IoU**. All numbers here describe that existing policy; a mud-focused experiment must be explicitly versioned.
 
-| Model | Initialization path | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| eomt_large | rtis_only | completed | 4000 | 3818 | 9.68 | 11.78 | 35.15 | 9.68 | 48.53 | 53.92 |
-| eomt_large | cityscapes_to_rtis | completed | 1527 | 1527 | 10.26 | 13.26 | 31.21 | 10.26 | 50.69 | 53.50 |
-| eomt_large | railsem19_to_rtis | completed | 1781 | 1018 | 4.40 | 5.81 | 15.31 | 3.64 | 53.74 | 59.71 |
-| eomt_large | cityscapes_to_railsem19_to_rtis | completed | 1527 | 763 | 13.33 | 16.58 | 40.49 | 14.81 | 58.34 | 58.34 |
+| Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| eomt_large | rtis_only | 0 | completed | 4000 | 3818 | 9.68 | 11.78 | 35.15 | 9.68 | 48.53 | 53.92 |
+| eomt_large | cityscapes_to_rtis | 0 | completed | 1527 | 1527 | 10.26 | 13.26 | 31.21 | 10.26 | 50.69 | 53.50 |
+| eomt_large | railsem19_to_rtis | 0 | completed | 1781 | 1018 | 4.40 | 5.81 | 15.31 | 3.64 | 53.74 | 59.71 |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | completed | 1527 | 763 | 13.33 | 16.58 | 40.49 | 14.81 | 58.34 | 58.34 |
 
-Training: 220 images. Validation: 37 images. Test: 50 images, held out. One seed; visually grouped split with unconfirmed recording identities. Percentages are descriptive, not statistically established rankings.
+Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
 Training code: `4f5ebf0095cc097d491ad42ea5e6f77939b7119b`. Split SHA-256: `71fef8292610c352da0709fe3bd030f3bcc18f97560394835f4b22826463b83d`.
 
-## rtis_only
+## rtis_only — seed 0
 
 Status: **completed**. Started: 2026-09-06T02:31:19.830270+00:00. Finished: 2026-09-06T04:05:33.896712+00:00.
 
@@ -124,7 +124,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 3817 | 48.53 | 9.68 |
 | 4000 | 48.56 | 9.68 |
 
-All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
+All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
 ### Stopping and checkpoint provenance
 
@@ -399,7 +399,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 }
 ```
 
-## cityscapes_to_rtis
+## cityscapes_to_rtis — seed 0
 
 Status: **completed**. Started: 2026-09-06T02:31:23.353790+00:00. Finished: 2026-09-06T03:00:37.012657+00:00.
 
@@ -498,7 +498,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1272 | 49.65 | 8.75 |
 | 1527 | 50.69 | 10.26 |
 
-All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
+All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
 ### Stopping and checkpoint provenance
 
@@ -773,7 +773,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 }
 ```
 
-## railsem19_to_rtis
+## railsem19_to_rtis — seed 0
 
 Status: **completed**. Started: 2026-09-06T02:31:23.373690+00:00. Finished: 2026-09-06T03:05:32.840169+00:00.
 
@@ -873,7 +873,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1527 | 51.41 | 3.42 |
 | 1781 | 51.71 | 3.64 |
 
-All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
+All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
 ### Stopping and checkpoint provenance
 
@@ -1148,7 +1148,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 }
 ```
 
-## cityscapes_to_railsem19_to_rtis
+## cityscapes_to_railsem19_to_rtis — seed 0
 
 Status: **completed**. Started: 2026-09-06T02:31:23.159810+00:00. Finished: 2026-09-06T02:57:48.352603+00:00.
 
@@ -1247,7 +1247,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1272 | 55.44 | 12.98 |
 | 1527 | 56.15 | 14.81 |
 
-All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: this pilot saved the aggregate-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
+All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
 ### Stopping and checkpoint provenance
 
