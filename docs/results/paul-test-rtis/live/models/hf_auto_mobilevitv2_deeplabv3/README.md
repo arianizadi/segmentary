@@ -6,9 +6,9 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_mobilevitv2_deeplabv3 | rtis_only | 0 | training | 508 | — | — | — | — | — | — | — |
-| hf_auto_mobilevitv2_deeplabv3 | rtis_only | 1 | training | 349 | — | — | — | — | — | — | — |
-| hf_auto_mobilevitv2_deeplabv3 | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
+| hf_auto_mobilevitv2_deeplabv3 | rtis_only | 0 | training | 599 | — | — | — | — | — | — | — |
+| hf_auto_mobilevitv2_deeplabv3 | rtis_only | 1 | training | 449 | — | — | — | — | — | — | — |
+| hf_auto_mobilevitv2_deeplabv3 | rtis_only | 2 | training | — | — | — | — | — | — | — | — |
 | hf_auto_mobilevitv2_deeplabv3 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilevitv2_deeplabv3 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_mobilevitv2_deeplabv3 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -492,7 +492,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## rtis_only — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-06T12:29:12.950426+00:00. Finished: —.
 
 Recipe pretrained initializer: `apple/mobilevitv2-1.0-voc-deeplabv3`.
 

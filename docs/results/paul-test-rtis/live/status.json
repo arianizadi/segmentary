@@ -952,7 +952,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3899,
+      "observed_step": 3949,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -990,7 +990,7 @@
       "model": "hf_auto_mobilevit_xxs_deeplabv3",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 3309,
       "observed_step": null,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
@@ -1002,7 +1002,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 3349,
+      "observed_step": 3399,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -1012,7 +1012,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3308,
+      "observed_step": 3349,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -1022,7 +1022,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2649,
+      "observed_step": 2699,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -1032,7 +1032,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2099,
+      "observed_step": 2149,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -1042,7 +1042,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 649,
+      "observed_step": 699,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -1052,7 +1052,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 299,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -1062,7 +1062,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 508,
+      "observed_step": 599,
       "record": "models/hf_auto_mobilevitv2_deeplabv3/record.json"
     },
     {
@@ -1072,7 +1072,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 449,
       "record": "models/hf_auto_mobilevitv2_deeplabv3/record.json"
     },
     {
@@ -1080,7 +1080,7 @@
       "model": "hf_auto_mobilevitv2_deeplabv3",
       "protocol": "rtis_only",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/hf_auto_mobilevitv2_deeplabv3/record.json"

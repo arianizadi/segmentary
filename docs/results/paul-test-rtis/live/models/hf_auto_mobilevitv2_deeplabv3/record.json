@@ -639,6 +639,14 @@
           {
             "step": 499,
             "value": 0.37389546632766724
+          },
+          {
+            "step": 549,
+            "value": 0.7043728828430176
+          },
+          {
+            "step": 599,
+            "value": 0.3583325445652008
           }
         ],
         "val/miou": [
@@ -1710,7 +1718,7 @@
           }
         ]
       },
-      "observed_step": 508,
+      "observed_step": 599,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1888,6 +1896,14 @@
           {
             "step": 349,
             "value": 0.3365147113800049
+          },
+          {
+            "step": 399,
+            "value": 0.3475494384765625
+          },
+          {
+            "step": 449,
+            "value": 0.696514904499054
           }
         ],
         "val/miou": [
@@ -2539,7 +2555,7 @@
           }
         ]
       },
-      "observed_step": 349,
+      "observed_step": 449,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2553,7 +2569,10 @@
       "config_sha256": "57f9c3032cc609541a1c1c0e80bdef2f979f61ea63714353a4ad9879a56a5a2a",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-06T12:29:12.950426+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hf_auto_mobilevitv2_deeplabv3--rtis_only--seed-2",
         "model": {
