@@ -5069,7 +5069,8 @@
             "value": 0.5068565607070923
           }
         ]
-      }
+      },
+      "checkpoint_bytes_removed": 20264224549
     },
     {
       "name": "eomt_large--railsem19_to_rtis--seed-0",
@@ -7358,9 +7359,10 @@
       "config_sha256": "2bb0ec7a862af1c70e004aa4f5d101238b9e092b28c399e0fe831476958c107e",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
-      "resume_step": 0,
-      "note": "Validated full-state continuation after explicit monitoring-only checkpoint migration"
+      "status": "training",
+      "gpu": 5,
+      "started_at": "2026-09-06T03:01:01.332213+00:00",
+      "code_sha": "4f5ebf0095cc097d491ad42ea5e6f77939b7119b"
     },
     {
       "name": "hf_auto_mobilenetv2_deeplabv3--cityscapes_to_rtis--seed-0",

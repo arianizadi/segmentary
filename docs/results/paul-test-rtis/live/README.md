@@ -28,7 +28,7 @@ Validation every 250 steps; stop after three checks without a 0.2-point mIoU imp
 | hf_auto_beit_base_ade | cityscapes_to_rtis | training | — | — | — |
 | hf_auto_beit_base_ade | railsem19_to_rtis | training | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | training | — | — | — |
-| hf_auto_mobilenetv2_deeplabv3 | rtis_only | queued | — | — | — |
+| hf_auto_mobilenetv2_deeplabv3 | rtis_only | training | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_rtis | queued | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | railsem19_to_rtis | queued | — | — | — |
 | hf_auto_mobilenetv2_deeplabv3 | cityscapes_to_railsem19_to_rtis | queued | — | — | — |
