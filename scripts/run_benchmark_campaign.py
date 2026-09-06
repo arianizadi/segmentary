@@ -6083,7 +6083,9 @@ def _publish_snapshot(record: dict[str, Any], campaign: Path, count: int) -> str
             "docs/results/cityscapes-railsem19/README.md",
             "docs/results/cityscapes-railsem19/results.csv",
             "docs/results/cityscapes-railsem19/status.json",
-        } or (path.startswith("docs/results/cityscapes-railsem19/records/") and path.endswith(".json"))
+        } or (
+            path.startswith("docs/results/cityscapes-railsem19/records/") and path.endswith(".json")
+        )
         if not comparison_file and not (
             path.startswith("docs/catalog/models/") and path.endswith("/README.md")
         ):
