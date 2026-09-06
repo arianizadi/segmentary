@@ -181,16 +181,16 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 0 | completed | 2290 | 1018 | 12.60 | 14.96 | 44.36 | 11.17 | 46.14 | 51.27 |
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 1 | completed | 2290 | 1018 | 24.76 | 42.02 | 37.60 | 17.76 | 45.89 | 50.99 |
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 2 | completed | 2036 | 763 | 9.29 | 10.45 | 45.40 | 4.17 | 41.29 | 45.88 |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 0 | training | 2349 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 1 | training | 2299 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 2 | training | 1399 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 0 | training | 1149 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 1 | training | 649 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 2 | training | 499 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 449 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 449 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 199 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 0 | training | — | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 0 | collecting | 2545 | 2036 | 9.20 | 13.98 | 21.21 | 9.08 | 52.85 | 55.79 |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 1 | training | 2599 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 2 | training | 1599 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 0 | training | 1399 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 1 | training | 849 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 2 | training | 763 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 699 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 599 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 449 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 0 | training | 199 | — | — | — | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 1 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -628,7 +628,7 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 17.70 | 10.80 | 3614.75 | 21.99 |
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 17.70 | 10.80 | 3498.95 | 21.48 |
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 17.70 | 10.80 | 3027.46 | 22.06 |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 17.70 | 10.80 | 3944.40 | 22.01 |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | — | — | — | — |
 | [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | — | — | — | — |
 | [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | — | — | — | — |
