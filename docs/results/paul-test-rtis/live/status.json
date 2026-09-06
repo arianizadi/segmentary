@@ -2502,7 +2502,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2099,
+      "observed_step": 2649,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2512,7 +2512,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1449,
+      "observed_step": 2036,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2522,7 +2522,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1299,
+      "observed_step": 1849,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2530,9 +2530,9 @@
       "model": "native_resnet50_aspp",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1199,
+      "status": "evaluating",
+      "final_step": 1781,
+      "observed_step": null,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2542,7 +2542,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 849,
+      "observed_step": 1449,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2552,7 +2552,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 649,
+      "observed_step": 1272,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2562,7 +2562,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 849,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2572,7 +2572,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 799,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2582,7 +2582,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 149,
+      "observed_step": 699,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
@@ -2592,7 +2592,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 49,
+      "observed_step": 599,
       "record": "models/native_resnet50_aspp/record.json"
     },
     {
