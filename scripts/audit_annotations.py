@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from scripts.prepare_rtis import ALIASES, digest, render
 
 
@@ -100,6 +100,13 @@ def inspect_layers(
             )
         expected[region] = class_id
         owner[region] = index
+    source_counts = {}
+    for class_id in sorted({layer[1] for layer in layers}):
+        union = np.zeros(final.shape, dtype=bool)
+        for _, category, region in layers:
+            if category == class_id:
+                union |= region
+        source_counts[str(class_id)] = int(union.sum())
     flags, objects = [], []
     for index, (object_id, class_id, region) in enumerate(layers):
         area = int(region.sum())
@@ -136,6 +143,7 @@ def inspect_layers(
         "mismatch_pixels": int(mismatch.sum()),
         "uncovered_source_pixels": int(np.count_nonzero(owner < 0)),
         "class_pixels": counts,
+        "class_source_pixels": source_counts,
         "objects": objects,
         "overwrite_events": events,
         "flags": flags,
@@ -148,18 +156,21 @@ def audit(
     source_root: Path | None = None,
     coverage: float = 0.85,
     overwrite: float = 0.5,
+    focus_class: str | None = None,
 ) -> dict:
     dataset, out = dataset.resolve(), out.resolve()
     if not 0 < coverage <= 1 or not 0 < overwrite <= 1:
         raise ValueError("Coverage and overwrite thresholds must be in (0,1]")
     if out.resolve().is_relative_to(dataset.resolve()):
         raise ValueError("Audit output must be outside the immutable dataset")
-    out.mkdir(parents=True, exist_ok=False)
     schema = json.loads((dataset / "classes.json").read_text())
     ignore = schema.get("ignore_index", 255)
     labels = {c["name"]: c["id"] for c in schema["classes"]} | {"void": ignore}
     colors = {c["id"]: c["color"] for c in schema["classes"]}
     rows = json.loads((dataset / "audit/samples.json").read_text())
+    if focus_class is not None and focus_class not in {c["name"] for c in schema["classes"]}:
+        raise ValueError(f"Unknown focus class: {focus_class}")
+    out.mkdir(parents=True, exist_ok=False)
     results = []
     for row in rows:
         record = {"key": row["key"], "split": row["split"], "source": row["source"]}
@@ -205,26 +216,73 @@ def audit(
                 rgb = np.asarray(im.convert("RGB"))
             if rgb.shape[:2] != final.shape:
                 raise ValueError("Source image dimensions differ")
-            panels = [rgb]
-            for mask in (maps["native"], final):
-                color = np.zeros_like(rgb)
-                for class_id, color_value in colors.items():
-                    color[mask == class_id] = color_value
-                panels.append(
-                    np.where((mask != ignore)[..., None], 0.5 * rgb + 0.5 * color, rgb).astype(
-                        np.uint8
+            if focus_class is not None:
+                focus_id = labels[focus_class]
+                source_focus = np.zeros(final.shape, dtype=bool)
+                for _, category, region in layers:
+                    if category == focus_id:
+                        source_focus |= region
+                masks = (source_focus, final == focus_id)
+                panels = [rgb]
+                tint = np.array(colors.get(focus_id, [255, 255, 255]), dtype=np.uint8)
+                for region in masks:
+                    panels.append(
+                        np.where(region[..., None], 0.55 * rgb + 0.45 * tint, rgb).astype(np.uint8)
                     )
+                diagnostic = rgb.copy()
+                lost = source_focus & (final != focus_id)
+                added = ~source_focus & (final == focus_id)
+                diagnostic[lost] = (0.35 * rgb[lost] + 0.65 * np.array([255, 0, 180])).astype(
+                    np.uint8
                 )
-            diagnostic = (rgb * 0.3).astype(np.uint8)
-            diagnostic[maps["overlap"]] = [255, 210, 0]
-            diagnostic[maps["cross_class"]] = [255, 70, 0]
-            diagnostic[maps["mismatch"]] = [255, 0, 255]
-            panels.append(diagnostic)
+                diagnostic[added] = [0, 255, 255]
+                panels.append(diagnostic)
+                titles = [
+                    "A  Original image",
+                    f"B  Source {focus_class}: {100 * source_focus.mean():.2f}%",
+                    f"C  Training {focus_class}: {100 * masks[1].mean():.2f}%",
+                    "D  Magenta = changed to another class; cyan = added",
+                ]
+            else:
+                panels = [rgb]
+                for mask in (maps["native"], final):
+                    color = np.zeros_like(rgb)
+                    for class_id, color_value in colors.items():
+                        color[mask == class_id] = color_value
+                    panels.append(
+                        np.where((mask != ignore)[..., None], 0.5 * rgb + 0.5 * color, rgb).astype(
+                            np.uint8
+                        )
+                    )
+                diagnostic = (rgb * 0.3).astype(np.uint8)
+                diagnostic[maps["overlap"]] = [255, 210, 0]
+                diagnostic[maps["cross_class"]] = [255, 70, 0]
+                diagnostic[maps["mismatch"]] = [255, 0, 255]
+                panels.append(diagnostic)
+                titles = [
+                    "A  Original image",
+                    "B  Native annotation render",
+                    "C  Training labels",
+                    "D  Yellow overlap; orange changed class; magenta mismatch",
+                ]
             preview = safe_path(out, f"previews/{row['split']}/{row['key']}.jpg")
             preview.parent.mkdir(parents=True, exist_ok=True)
-            contact = Image.fromarray(np.concatenate(panels, axis=1))
-            contact.thumbnail((2400, 900))
-            contact.save(preview)
+            tile_width = 850
+            tile_height = round(rgb.shape[0] * tile_width / rgb.shape[1])
+            header = 36
+            contact = Image.new("RGB", (2 * tile_width, 2 * (tile_height + header)), "#15212c")
+            draw = ImageDraw.Draw(contact)
+            font = ImageFont.load_default(size=17)
+            for index, (panel, title) in enumerate(zip(panels, titles, strict=True)):
+                x, y = (index % 2) * tile_width, (index // 2) * (tile_height + header)
+                draw.text((x + 12, y + 9), title, font=font, fill="white")
+                contact.paste(
+                    Image.fromarray(panel).resize(
+                        (tile_width, tile_height), Image.Resampling.LANCZOS
+                    ),
+                    (x, y + header),
+                )
+            contact.save(preview, quality=90)
             record["preview"] = str(preview.relative_to(out))
         except (OSError, ValueError, KeyError, ET.ParseError) as exc:
             record["error"] = str(exc)
@@ -233,12 +291,16 @@ def audit(
     report = {
         "schema_version": 1,
         "dataset": str(dataset.resolve()),
+        "focus_class": focus_class,
         "thresholds": {"dominant_coverage": coverage, "object_class_loss": overwrite},
         "images": len(results),
         "flagged_images": sum(bool(r["flags"]) for r in results),
         "errors": sum("error" in r for r in results),
         "samples": results,
     }
+    from scripts.annotation_review import write_review
+
+    report["review"] = write_review(out, report, schema, focus_class)
     (out / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     with (out / "review.csv").open("w", newline="") as stream:
         fields = [
@@ -251,12 +313,12 @@ def audit(
             "preview",
             "error",
         ]
-        writer = csv.DictWriter(stream, fields, extrasaction="ignore")
+        writer = csv.DictWriter(stream, fields, extrasaction="ignore", lineterminator="\n")
         writer.writeheader()
         writer.writerows({**r, "flags": ";".join(r["flags"])} for r in results if r["flags"])
     (out / "README.md").write_text(
-        "# Annotation review\n\nPanels: original image, native annotation render, training mask, diagnostics.\n\n"
-        "Diagnostics: yellow = any overlap; orange = cross-class overwrite; magenta = native/training mismatch.\n\n"
+        "# Annotation review\n\nOpen index.html for the ranked review queue and per-image decisions. Panels are labeled in a two-by-two grid. With --focus-class, previews isolate that class and mark only its changed pixels. Without it, panels show original image, native render, training mask and all overlaps.\n\n"
+        "Focused diagnostics: magenta = source class changed to another class; cyan = class added. All-class diagnostics: yellow = any overlap; orange = cross-class overwrite; magenta = native/training mismatch.\n\n"
         "See review.csv and report.json. Flags are review heuristics, not proof of bad labels. "
         "Overwrites follow source order, not an inferred sky/vegetation hierarchy. "
         "Per-object loss measures pixels whose final class differs; event counts can count the same pixel repeatedly.\n"
@@ -379,6 +441,9 @@ def main() -> None:
     check.add_argument("--source-root", type=Path)
     check.add_argument("--dominant-coverage", type=float, default=0.85)
     check.add_argument("--overwrite-fraction", type=float, default=0.5)
+    check.add_argument(
+        "--focus-class", help="Class name for focused previews and review priorities"
+    )
     version = sub.add_parser("version")
     version.add_argument("--dataset", type=Path, required=True)
     version.add_argument("--corrections", type=Path, required=True)
@@ -391,6 +456,7 @@ def main() -> None:
             args.source_root,
             args.dominant_coverage,
             args.overwrite_fraction,
+            args.focus_class,
         )
         print(json.dumps({k: v for k, v in result.items() if k != "samples"}, indent=2))
         if result["errors"]:

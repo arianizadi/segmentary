@@ -8,7 +8,8 @@ From the repository root, using the installed Segmentary Python environment:
 python -m scripts.audit_annotations audit \
   --dataset /data/datasets/paul-test-rtis \
   --source-root /data/exports/rtis \
-  --out artifacts/rtis-annotation-review
+  --out artifacts/rtis-annotation-review \
+  --focus-class mud-pumping
 ```
 
 `--source-root` is optional when `audit/samples.json` still points to accessible native files. When supplied, it relocates paths under `supervisely/` and `cvat/` into that directory. Keep original exports: packaged semantic labels alone cannot recover overwritten polygons or separate overlapping objects.
@@ -19,7 +20,8 @@ Required packaged inputs are `classes.json`, `audit/samples.json`, `masks/<split
 
 - `report.json`: every image, source and training-mask file hashes, class pixel counts, per-object source area and remaining class coverage, overwrite events, and flags.
 - `review.csv`: only flagged images, with split, key, reason, and preview path.
-- `previews/<split>/<key>.jpg`: four panels in order: original image, native rendered labels, actual training labels, and overlap/mismatch diagnostics. Yellow marks any overlap, orange cross-class overwrites, and magenta native/training disagreements. Exact counts are computed at original resolution; contact sheets may be resized.
+- `index.html`, `review-ranked.csv`, `review-summary.json`: [focused human review](annotation-review.md), with saved verdicts and exported decisions.
+- `previews/<split>/<key>.jpg`: labeled 2×2 panels. With `--focus-class`, these show the original, source class union, final training class, and lost/added class pixels (magenta/cyan). Without a focus class, the panels are: original image, native rendered labels, actual training labels, and overlap/mismatch diagnostics. Yellow marks any overlap, orange cross-class overwrites, and magenta native/training disagreements. Exact counts are computed at original resolution; contact sheets may be resized.
 
 An audit exits nonzero if any image could not be inspected. Errors are recorded in the review list so inaccessible or malformed sources cannot silently count as clean images.
 
@@ -71,3 +73,14 @@ python -m pytest tests/test_annotation_audit.py tests/test_prepare_rtis.py -q
 ```
 
 Tests use independently specified pixels to check cross-class overlap, same-class overwrite, explicit void, CVAT z-order and RLE, native/training agreement, changed source provenance, immutable version creation, split preservation, stale derived-artifact handling, and refusal of unsafe corrections. They do not establish that a human-reviewed label is semantically correct.
+
+## Audit validation and reference datasets
+
+See the [empirical validation report](../results/annotation-audit-validation/README.md) and [Cityscapes/RailSem19 recipes](reference-dataset-audit.md). Run controlled integrity faults against disposable copies of a real RTIS sample:
+
+```bash
+python -m scripts.validate_annotation_audit --dataset data/paul-test-rtis \
+  --out artifacts/annotation-audit-fault-validation
+```
+
+The unchanged control must pass, and each injected fault must produce its expected flag. This verifies integrity checks, not semantic label correctness or the precision of review heuristics.

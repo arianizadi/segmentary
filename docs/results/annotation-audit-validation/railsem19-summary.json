@@ -1,0 +1,601 @@
+{
+  "dataset": "railsem19",
+  "pillow_version": "12.2.0",
+  "image_count": 8500,
+  "limited": false,
+  "duration_seconds": 248.82358837127686,
+  "class_names": {
+    "0": "road",
+    "1": "sidewalk",
+    "2": "construction",
+    "3": "tram-track",
+    "4": "fence",
+    "5": "pole",
+    "6": "traffic-light",
+    "7": "traffic-sign",
+    "8": "vegetation",
+    "9": "terrain",
+    "10": "sky",
+    "11": "human",
+    "12": "rail-track",
+    "13": "car",
+    "14": "truck",
+    "15": "trackbed",
+    "16": "on-rails",
+    "17": "rail-raised",
+    "18": "rail-embedded",
+    "255": "void"
+  },
+  "mask_checks": "Native source ID masks; all fractions use all image pixels; ignored IDs excluded only from dominant-class flags",
+  "thresholds": {
+    "dominant_class": 0.85,
+    "object_cross_class_loss": 0.5
+  },
+  "geometry_comparison": "Unavailable: sparse geometry plus weakly supervised dense masks; full rerender would not be a valid equality test",
+  "sources": [
+    "rs19-config.json",
+    "readme.txt",
+    "example-vis.py"
+  ],
+  "splits": {
+    "test": {
+      "images": 500,
+      "readable_masks": 500,
+      "flagged_images": 1,
+      "flags": {
+        "dominant_class": 1
+      },
+      "pixels": 1036800000,
+      "ignore_pixels": 35596611,
+      "boundary_fraction": {
+        "min": 0.0016741470006273829,
+        "p25": 0.006573403793253221,
+        "median": 0.007870517832150958,
+        "p75": 0.009520474397953766,
+        "p95": 0.012758626514164371,
+        "max": 0.01629819989382752
+      },
+      "geometry_checked_images": 0,
+      "geometry": {
+        "source_objects": null,
+        "empty_objects": null,
+        "objects_lost_at_least_half": null,
+        "overlap_pixels": null,
+        "cross_class_overlap_pixels": null,
+        "mismatch_pixels": null,
+        "mismatch_near_boundary_2px": null,
+        "mismatch_interior_beyond_2px": null
+      }
+    },
+    "train": {
+      "images": 3000,
+      "readable_masks": 3000,
+      "flagged_images": 7,
+      "flags": {
+        "dominant_class": 7
+      },
+      "pixels": 6220800000,
+      "ignore_pixels": 208510757,
+      "boundary_fraction": {
+        "min": 0.001252352685681193,
+        "p25": 0.006327337001109985,
+        "median": 0.007921311712755176,
+        "p75": 0.009572535109309395,
+        "p95": 0.012292107041165963,
+        "max": 0.02195333236812895
+      },
+      "geometry_checked_images": 0,
+      "geometry": {
+        "source_objects": null,
+        "empty_objects": null,
+        "objects_lost_at_least_half": null,
+        "overlap_pixels": null,
+        "cross_class_overlap_pixels": null,
+        "mismatch_pixels": null,
+        "mismatch_near_boundary_2px": null,
+        "mismatch_interior_beyond_2px": null
+      }
+    },
+    "unassigned": {
+      "images": 4500,
+      "readable_masks": 4500,
+      "flagged_images": 7,
+      "flags": {
+        "dominant_class": 7
+      },
+      "pixels": 9331200000,
+      "ignore_pixels": 333748325,
+      "boundary_fraction": {
+        "min": 0.0014772453066936924,
+        "p25": 0.0062335312002316495,
+        "median": 0.007855074562038513,
+        "p75": 0.009553472322764345,
+        "p95": 0.01242828531441533,
+        "max": 0.02158510689638531
+      },
+      "geometry_checked_images": 0,
+      "geometry": {
+        "source_objects": null,
+        "empty_objects": null,
+        "objects_lost_at_least_half": null,
+        "overlap_pixels": null,
+        "cross_class_overlap_pixels": null,
+        "mismatch_pixels": null,
+        "mismatch_near_boundary_2px": null,
+        "mismatch_interior_beyond_2px": null
+      }
+    },
+    "val": {
+      "images": 500,
+      "readable_masks": 500,
+      "flagged_images": 3,
+      "flags": {
+        "dominant_class": 3
+      },
+      "pixels": 1036800000,
+      "ignore_pixels": 38810364,
+      "boundary_fraction": {
+        "min": 0.001975049466724579,
+        "p25": 0.006265382944838569,
+        "median": 0.007712827566237151,
+        "p75": 0.009597147821051108,
+        "p95": 0.012875054292746478,
+        "max": 0.015962791371072826
+      },
+      "geometry_checked_images": 0,
+      "geometry": {
+        "source_objects": null,
+        "empty_objects": null,
+        "objects_lost_at_least_half": null,
+        "overlap_pixels": null,
+        "cross_class_overlap_pixels": null,
+        "mismatch_pixels": null,
+        "mismatch_near_boundary_2px": null,
+        "mismatch_interior_beyond_2px": null
+      }
+    }
+  },
+  "classes": {
+    "0": {
+      "name": "road",
+      "ignored": false,
+      "images_present": 7275,
+      "total_pixels": 566749063,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 3.472222222222222e-05,
+        "median": 0.001154272762345679,
+        "p75": 0.02475441261574074,
+        "p95": 0.19560816936728395,
+        "max": 0.5473596643518519
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.000216772762345679,
+        "median": 0.0021773726851851854,
+        "p75": 0.039320505401234565,
+        "p95": 0.20857735339506167,
+        "max": 0.5473596643518519
+      }
+    },
+    "1": {
+      "name": "sidewalk",
+      "ignored": false,
+      "images_present": 7008,
+      "total_pixels": 449090153,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.00013973283179012346,
+        "median": 0.005023389274691358,
+        "p75": 0.028165388695987652,
+        "p95": 0.1304783950617282,
+        "max": 0.30320698302469135
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.0015828751929012346,
+        "median": 0.009619020061728396,
+        "p75": 0.03795355902777778,
+        "p95": 0.14025585937499982,
+        "max": 0.30320698302469135
+      }
+    },
+    "2": {
+      "name": "construction",
+      "ignored": false,
+      "images_present": 8340,
+      "total_pixels": 2114616629,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.01453245563271605,
+        "median": 0.05520351080246913,
+        "p75": 0.1651388888888889,
+        "p95": 0.471319034529321,
+        "max": 0.9420490933641975
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.01624831211419753,
+        "median": 0.057635754243827164,
+        "p75": 0.16815731095679012,
+        "p95": 0.4734261188271601,
+        "max": 0.9420490933641975
+      }
+    },
+    "3": {
+      "name": "tram-track",
+      "ignored": false,
+      "images_present": 1928,
+      "total_pixels": 131426532,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 0.0,
+        "p75": 0.0,
+        "p95": 0.06172178819444437,
+        "max": 0.24933641975308643
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.0012876157407407406,
+        "median": 0.01697120949074074,
+        "p75": 0.057635513117283946,
+        "p95": 0.10181732253086417,
+        "max": 0.24933641975308643
+      }
+    },
+    "4": {
+      "name": "fence",
+      "ignored": false,
+      "images_present": 7181,
+      "total_pixels": 369168634,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.00022316261574074073,
+        "median": 0.004639515817901235,
+        "p75": 0.02511393229166667,
+        "p95": 0.09723201195987645,
+        "max": 0.34890625
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.0013908179012345678,
+        "median": 0.00814573688271605,
+        "p75": 0.032022087191358024,
+        "p95": 0.10569492669753086,
+        "max": 0.34890625
+      }
+    },
+    "5": {
+      "name": "pole",
+      "ignored": false,
+      "images_present": 8359,
+      "total_pixels": 482435484,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.006002845293209876,
+        "median": 0.01767529899691358,
+        "p75": 0.03856529706790123,
+        "p95": 0.08648536361882715,
+        "max": 0.27545235339506174
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.006431568287037037,
+        "median": 0.018125482253086418,
+        "p75": 0.03893904320987654,
+        "p95": 0.08681963734567896,
+        "max": 0.27545235339506174
+      }
+    },
+    "6": {
+      "name": "traffic-light",
+      "ignored": false,
+      "images_present": 4104,
+      "total_pixels": 24083165,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 0.0,
+        "p75": 0.0006030574845679012,
+        "p95": 0.008088734567901221,
+        "max": 0.05989535108024691
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.00013587480709876542,
+        "median": 0.0006821469907407408,
+        "p75": 0.0029910542052469136,
+        "p95": 0.013163893711419747,
+        "max": 0.05989535108024691
+      }
+    },
+    "7": {
+      "name": "traffic-sign",
+      "ignored": false,
+      "images_present": 6072,
+      "total_pixels": 23866554,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 0.00016878858024691357,
+        "p75": 0.00101538387345679,
+        "p95": 0.006522497106481474,
+        "max": 0.07146604938271604
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.00012056327160493826,
+        "median": 0.0004993730709876543,
+        "p75": 0.0017019917052469135,
+        "p95": 0.008422284915123455,
+        "max": 0.07146604938271604
+      }
+    },
+    "8": {
+      "name": "vegetation",
+      "ignored": false,
+      "images_present": 8380,
+      "total_pixels": 4050541274,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.08700219425154321,
+        "median": 0.19499204282407406,
+        "p75": 0.3378741078317901,
+        "p95": 0.575518711419753,
+        "max": 0.9436096643518519
+      },
+      "coverage_when_present": {
+        "min": 9.645061728395062e-07,
+        "p25": 0.09105131172839506,
+        "median": 0.19831114969135802,
+        "p75": 0.3403241946373457,
+        "p95": 0.576745683834876,
+        "max": 0.9436096643518519
+      }
+    },
+    "9": {
+      "name": "terrain",
+      "ignored": false,
+      "images_present": 7766,
+      "total_pixels": 1308637386,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.00469798900462963,
+        "median": 0.039469521604938274,
+        "p75": 0.11525390625,
+        "p95": 0.2604549816743827,
+        "max": 0.6371947337962963
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.010133101851851851,
+        "median": 0.048931568287037035,
+        "p75": 0.12466676311728395,
+        "p95": 0.26822133005401233,
+        "max": 0.6371947337962963
+      }
+    },
+    "10": {
+      "name": "sky",
+      "ignored": false,
+      "images_present": 8241,
+      "total_pixels": 3813778365,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.0969504726080247,
+        "median": 0.22115523726851852,
+        "p75": 0.32538001543209877,
+        "p95": 0.4310811149691358,
+        "max": 0.9637909915123457
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.10761140046296297,
+        "median": 0.22918499228395062,
+        "p75": 0.32828510802469135,
+        "p95": 0.4321629050925926,
+        "max": 0.9637909915123457
+      }
+    },
+    "11": {
+      "name": "human",
+      "ignored": false,
+      "images_present": 2403,
+      "total_pixels": 26381542,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 0.0,
+        "p75": 2.4594907407407408e-05,
+        "p95": 0.006137948495370344,
+        "max": 0.18928771219135804
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.00010440779320987654,
+        "median": 0.0006438078703703703,
+        "p75": 0.003238329475308642,
+        "p95": 0.028853780864197546,
+        "max": 0.18928771219135804
+      }
+    },
+    "12": {
+      "name": "rail-track",
+      "ignored": false,
+      "images_present": 7772,
+      "total_pixels": 1078006714,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.03376772280092592,
+        "median": 0.057277440200617286,
+        "p75": 0.08439850983796296,
+        "p95": 0.1313507908950617,
+        "max": 0.30887538580246915
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.03916112075617284,
+        "median": 0.06072096836419753,
+        "p75": 0.08741403838734568,
+        "p95": 0.1345046055169753,
+        "max": 0.30887538580246915
+      }
+    },
+    "13": {
+      "name": "car",
+      "ignored": false,
+      "images_present": 4169,
+      "total_pixels": 66935711,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 0.0,
+        "p75": 0.0007527970679012346,
+        "p95": 0.019725067515432043,
+        "max": 0.2733227237654321
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.00011043595679012346,
+        "median": 0.0008097029320987654,
+        "p75": 0.005415702160493827,
+        "p95": 0.039541087962962955,
+        "max": 0.2733227237654321
+      }
+    },
+    "14": {
+      "name": "truck",
+      "ignored": false,
+      "images_present": 1642,
+      "total_pixels": 22002630,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 0.0,
+        "p75": 0.0,
+        "p95": 0.0034605999228394927,
+        "max": 0.24435860339506174
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 6.462191358024691e-05,
+        "median": 0.0005348186728395062,
+        "p75": 0.003702739197530864,
+        "p95": 0.029972366898148122,
+        "max": 0.24435860339506174
+      }
+    },
+    "15": {
+      "name": "trackbed",
+      "ignored": false,
+      "images_present": 7774,
+      "total_pixels": 1810755773,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.042672284915123454,
+        "median": 0.09354576581790124,
+        "p75": 0.14935896508487656,
+        "p95": 0.241322868441358,
+        "max": 0.5047183641975309
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.056446277006172836,
+        "median": 0.1029735725308642,
+        "p75": 0.15622034143518518,
+        "p95": 0.24488481385030864,
+        "max": 0.5047183641975309
+      }
+    },
+    "16": {
+      "name": "on-rails",
+      "ignored": false,
+      "images_present": 3210,
+      "total_pixels": 215306076,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 0.0,
+        "p75": 0.00047935956790123456,
+        "p95": 0.06957822145061714,
+        "max": 0.6327478780864197
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.00021797839506172839,
+        "median": 0.0018036265432098764,
+        "p75": 0.02045753761574074,
+        "p95": 0.21904832175925906,
+        "max": 0.6327478780864197
+      }
+    },
+    "17": {
+      "name": "rail-raised",
+      "ignored": false,
+      "images_present": 7772,
+      "total_pixels": 413432894,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.009388623649691358,
+        "median": 0.019075279706790123,
+        "p75": 0.03152982735339506,
+        "p95": 0.06165540605709875,
+        "max": 0.15281876929012345
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.01339988425925926,
+        "median": 0.019866898148148147,
+        "p75": 0.03342206790123457,
+        "p95": 0.06297472993827159,
+        "max": 0.15281876929012345
+      }
+    },
+    "18": {
+      "name": "rail-embedded",
+      "ignored": false,
+      "images_present": 1942,
+      "total_pixels": 41719364,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 0.0,
+        "p75": 0.0,
+        "p95": 0.019299238040123432,
+        "max": 0.12789496527777777
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.0004875578703703704,
+        "median": 0.004127604166666667,
+        "p75": 0.01822482638888889,
+        "p95": 0.0346983265817901,
+        "max": 0.12789496527777777
+      }
+    },
+    "255": {
+      "name": "void",
+      "ignored": true,
+      "images_present": 5902,
+      "total_pixels": 616666057,
+      "coverage_all_images": {
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 0.003325376157407407,
+        "p75": 0.033368537808641976,
+        "p95": 0.18271906346450573,
+        "max": 0.8965813078703704
+      },
+      "coverage_when_present": {
+        "min": 4.822530864197531e-07,
+        "p25": 0.0021383101851851854,
+        "median": 0.012918354552469136,
+        "p75": 0.06200038580246914,
+        "p95": 0.20899348958333333,
+        "max": 0.8965813078703704
+      }
+    }
+  },
+  "script_sha256": "ac72a6389d208b1b595e12aecea3a30165ab95c403f8d1a0a196fa8cdd026634"
+}

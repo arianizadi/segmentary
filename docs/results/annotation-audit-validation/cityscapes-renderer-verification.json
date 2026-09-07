@@ -1,0 +1,134 @@
+{
+  "description": "20 evenly-spaced source annotations; full-canvas PIL official rendering order versus bounding-box optimization, comparing all pixels",
+  "images": [
+    {
+      "source": "gtFine/train/aachen/aachen_000000_000019_gtFine_polygons.json",
+      "source_sha256": "79a66e53e14ff99b1282643a2bf25564b2756f2f5d60d069174db120bd2463a0",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/bochum/bochum_000000_003005_gtFine_polygons.json",
+      "source_sha256": "244925de9a166d8440246688a46ba669429cae44f20c9d692a5806ee36ac9190",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/bremen/bremen_000095_000019_gtFine_polygons.json",
+      "source_sha256": "a1eacc2181a642e7e6d019e75680250a11c5e7373549e52a5a0ce04689f757fc",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/bremen/bremen_000278_000019_gtFine_polygons.json",
+      "source_sha256": "6535ea271754e38acf5a12f6c21900d73ee46e92507e93ae4a4049d8829b8503",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/cologne/cologne_000145_000019_gtFine_polygons.json",
+      "source_sha256": "81d1cdf154e943f73ae9b34491e4a972e5b2a66c06dbb16f97f2a293220b3267",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/dusseldorf/dusseldorf_000089_000019_gtFine_polygons.json",
+      "source_sha256": "9bcc7e645af50fcd833b403346a395613ca28e0414a2507bf563c8ac0757ac3b",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/erfurt/erfurt_000051_000019_gtFine_polygons.json",
+      "source_sha256": "fcb4ee8376330177c0c0b634d2037596201e9bd7dfcc789f473e574257534151",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/hamburg/hamburg_000000_061048_gtFine_polygons.json",
+      "source_sha256": "54e959ec30004593a34c2d9f66acab8968f2adfc6a5e24f0b360a5b2b3369286",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/hanover/hanover_000000_022645_gtFine_polygons.json",
+      "source_sha256": "986b50ee035ebc840e61b485c33cf44102daf8346abba3ec8a91ee3e2717a61e",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/jena/jena_000046_000019_gtFine_polygons.json",
+      "source_sha256": "0bb79bcede26fc536f3ebec375285d568f0cd41fc3c5e13f6a9b46be19b1aa11",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/monchengladbach/monchengladbach_000000_005876_gtFine_polygons.json",
+      "source_sha256": "eaa47780515381fb45398aee8c6d47c7b73a2a0a038e675911275f3628e02057",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/strasbourg/strasbourg_000000_028240_gtFine_polygons.json",
+      "source_sha256": "ef71bd7404409d742a3f8a0ef1b5d1a4c5b95482dc41287b374886f41a117fc3",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/strasbourg/strasbourg_000001_040761_gtFine_polygons.json",
+      "source_sha256": "0b7115445960669ed34fc6012473be1da0ce738aa1c9bb4c713e4a8337c2af9b",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/stuttgart/stuttgart_000100_000019_gtFine_polygons.json",
+      "source_sha256": "49c268c80bbaf6107621deeac9a170a93b9c1bb93203ad8885d780744925c2f4",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/tubingen/tubingen_000087_000019_gtFine_polygons.json",
+      "source_sha256": "a36272ee8df4783dac6e50fbf55b0482436b8cdaf67b82e91182711ee3706f3f",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/weimar/weimar_000031_000019_gtFine_polygons.json",
+      "source_sha256": "b1f9537147da47a7aba1e671a1c842599131d99cd482c6e2c4751c7f6d9180ac",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/train/zurich/zurich_000072_000019_gtFine_polygons.json",
+      "source_sha256": "a7bf6d1df6078a576886adf7e421f95beee7e57d6d6f1cf86445431360423620",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/val/frankfurt/frankfurt_000001_032711_gtFine_polygons.json",
+      "source_sha256": "aac9c6b9e571c2933faa1bed75f2e7482446ffd5a53a999a22c301f6f8fc0d19",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/val/lindau/lindau_000049_000019_gtFine_polygons.json",
+      "source_sha256": "8a6c5bda6c88481acb3aef43bd5edcaf0a18d452868d42618e0b67dba675e411",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    },
+    {
+      "source": "gtFine/val/munster/munster_000173_000019_gtFine_polygons.json",
+      "source_sha256": "4b91d558dda3d8b3106b4a23601c998f85d483e5a98825ce07f32dff0831567e",
+      "optimized_vs_full_canvas_mismatch_pixels": 0
+    }
+  ],
+  "regression_fixture": {
+    "canvas": [
+      64,
+      64
+    ],
+    "polygon": [
+      [
+        38,
+        52
+      ],
+      [
+        9,
+        30
+      ],
+      [
+        38,
+        20
+      ],
+      [
+        34,
+        59
+      ]
+    ],
+    "translation_changes_pixel_xy": [
+      23,
+      41
+    ],
+    "fix": "Rasterize in native coordinates before cropping, preserving Pillow edge rounding"
+  }
+}

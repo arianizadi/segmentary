@@ -1,0 +1,2443 @@
+{
+  "summary": {
+    "images": 307,
+    "errors": 0,
+    "flagged_images": 218,
+    "thresholds": {
+      "dominant_coverage": 0.85,
+      "object_class_loss": 0.5
+    },
+    "review": {
+      "focus_class": "mud-pumping",
+      "images": 307,
+      "priority_counts": {
+        "integrity": 0,
+        "focus": 38,
+        "other": 128,
+        "context": 78,
+        "notices": 0,
+        "clear": 63
+      },
+      "source_full_frame_candidates": 17,
+      "final_broad_coverage_candidates": 37,
+      "fingerprint": "77bbb3f6186d3df3775f5e76d17c478c9bf6c8bc97ffb03b73ca1c4f97933816"
+    }
+  },
+  "examples": [
+    {
+      "key": "rural-overcast-cab-view/100",
+      "split": "val",
+      "pixels": 2073600,
+      "mismatch_pixels": 0,
+      "class_pixels": {
+        "2": 98334,
+        "6": 2814,
+        "7": 21506,
+        "10": 425,
+        "11": 50830,
+        "12": 18913,
+        "13": 37048,
+        "14": 23347,
+        "15": 1012019,
+        "16": 433545,
+        "17": 155,
+        "18": 32178,
+        "19": 342215,
+        "255": 271
+      },
+      "class_source_pixels": {
+        "2": 116734,
+        "6": 2814,
+        "7": 47190,
+        "10": 591,
+        "11": 55825,
+        "12": 18913,
+        "13": 38354,
+        "14": 23347,
+        "15": 1073202,
+        "16": 803520,
+        "17": 166,
+        "18": 32194,
+        "19": 638576,
+        "255": 271
+      },
+      "objects": [
+        {
+          "id": "1723294870",
+          "class_id": 16,
+          "source_pixels": 803520,
+          "overwritten_pixels": 369975,
+          "cross_class_lost_pixels": 369975,
+          "remaining_class_pixels": 433545,
+          "lost_fraction": 0.4604428016726404
+        },
+        {
+          "id": "1723294871",
+          "class_id": 7,
+          "source_pixels": 44261,
+          "overwritten_pixels": 24147,
+          "cross_class_lost_pixels": 24147,
+          "remaining_class_pixels": 20114,
+          "lost_fraction": 0.5455592959942162
+        },
+        {
+          "id": "1723294872",
+          "class_id": 15,
+          "source_pixels": 176879,
+          "overwritten_pixels": 159868,
+          "cross_class_lost_pixels": 26629,
+          "remaining_class_pixels": 150250,
+          "lost_fraction": 0.15054924552942972
+        },
+        {
+          "id": "1723294873",
+          "class_id": 19,
+          "source_pixels": 638576,
+          "overwritten_pixels": 296361,
+          "cross_class_lost_pixels": 296361,
+          "remaining_class_pixels": 342215,
+          "lost_fraction": 0.4640966776076771
+        },
+        {
+          "id": "1723294874",
+          "class_id": 7,
+          "source_pixels": 2929,
+          "overwritten_pixels": 1537,
+          "cross_class_lost_pixels": 1537,
+          "remaining_class_pixels": 1392,
+          "lost_fraction": 0.5247524752475248
+        },
+        {
+          "id": "1723294875",
+          "class_id": 15,
+          "source_pixels": 502084,
+          "overwritten_pixels": 18281,
+          "cross_class_lost_pixels": 18192,
+          "remaining_class_pixels": 483892,
+          "lost_fraction": 0.036232980935461
+        },
+        {
+          "id": "1723294876",
+          "class_id": 15,
+          "source_pixels": 173630,
+          "overwritten_pixels": 1835,
+          "cross_class_lost_pixels": 1432,
+          "remaining_class_pixels": 172198,
+          "lost_fraction": 0.008247422680412371
+        },
+        {
+          "id": "1723294877",
+          "class_id": 15,
+          "source_pixels": 353399,
+          "overwritten_pixels": 31111,
+          "cross_class_lost_pixels": 31111,
+          "remaining_class_pixels": 322288,
+          "lost_fraction": 0.08803363903123665
+        },
+        {
+          "id": "1723294878",
+          "class_id": 15,
+          "source_pixels": 6012,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 6012,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294879",
+          "class_id": 15,
+          "source_pixels": 11916,
+          "overwritten_pixels": 806,
+          "cross_class_lost_pixels": 806,
+          "remaining_class_pixels": 11110,
+          "lost_fraction": 0.06764014770057065
+        },
+        {
+          "id": "1723294880",
+          "class_id": 11,
+          "source_pixels": 7892,
+          "overwritten_pixels": 174,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 7892,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294881",
+          "class_id": 11,
+          "source_pixels": 9647,
+          "overwritten_pixels": 3230,
+          "cross_class_lost_pixels": 2319,
+          "remaining_class_pixels": 7328,
+          "lost_fraction": 0.2403856121073909
+        },
+        {
+          "id": "1723294882",
+          "class_id": 11,
+          "source_pixels": 2560,
+          "overwritten_pixels": 1383,
+          "cross_class_lost_pixels": 70,
+          "remaining_class_pixels": 2490,
+          "lost_fraction": 0.02734375
+        },
+        {
+          "id": "1723294883",
+          "class_id": 11,
+          "source_pixels": 19039,
+          "overwritten_pixels": 2590,
+          "cross_class_lost_pixels": 2590,
+          "remaining_class_pixels": 16449,
+          "lost_fraction": 0.1360365565418352
+        },
+        {
+          "id": "1723294884",
+          "class_id": 6,
+          "source_pixels": 1406,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 1406,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294885",
+          "class_id": 12,
+          "source_pixels": 10113,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 10113,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294886",
+          "class_id": 12,
+          "source_pixels": 7611,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 7611,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294887",
+          "class_id": 11,
+          "source_pixels": 11491,
+          "overwritten_pixels": 98,
+          "cross_class_lost_pixels": 34,
+          "remaining_class_pixels": 11457,
+          "lost_fraction": 0.0029588373509703246
+        },
+        {
+          "id": "1723294888",
+          "class_id": 11,
+          "source_pixels": 3433,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 3433,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294889",
+          "class_id": 11,
+          "source_pixels": 1408,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 1408,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294890",
+          "class_id": 11,
+          "source_pixels": 115,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 115,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294891",
+          "class_id": 11,
+          "source_pixels": 277,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 277,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294892",
+          "class_id": 11,
+          "source_pixels": 261,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 261,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294893",
+          "class_id": 11,
+          "source_pixels": 49,
+          "overwritten_pixels": 5,
+          "cross_class_lost_pixels": 5,
+          "remaining_class_pixels": 44,
+          "lost_fraction": 0.10204081632653061
+        },
+        {
+          "id": "1723294894",
+          "class_id": 11,
+          "source_pixels": 20,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 20,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294895",
+          "class_id": 11,
+          "source_pixels": 20,
+          "overwritten_pixels": 15,
+          "cross_class_lost_pixels": 15,
+          "remaining_class_pixels": 5,
+          "lost_fraction": 0.75
+        },
+        {
+          "id": "1723294896",
+          "class_id": 6,
+          "source_pixels": 538,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 538,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294897",
+          "class_id": 6,
+          "source_pixels": 399,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 399,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294898",
+          "class_id": 6,
+          "source_pixels": 243,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 243,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294899",
+          "class_id": 6,
+          "source_pixels": 228,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 228,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294900",
+          "class_id": 14,
+          "source_pixels": 23347,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 23347,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294901",
+          "class_id": 13,
+          "source_pixels": 38354,
+          "overwritten_pixels": 1306,
+          "cross_class_lost_pixels": 1306,
+          "remaining_class_pixels": 37048,
+          "lost_fraction": 0.034051207175262034
+        },
+        {
+          "id": "1723294902",
+          "class_id": 2,
+          "source_pixels": 116734,
+          "overwritten_pixels": 18400,
+          "cross_class_lost_pixels": 18400,
+          "remaining_class_pixels": 98334,
+          "lost_fraction": 0.15762331454417736
+        },
+        {
+          "id": "1723294903",
+          "class_id": 18,
+          "source_pixels": 14076,
+          "overwritten_pixels": 10,
+          "cross_class_lost_pixels": 10,
+          "remaining_class_pixels": 14066,
+          "lost_fraction": 0.0007104290991759022
+        },
+        {
+          "id": "1723294904",
+          "class_id": 18,
+          "source_pixels": 17880,
+          "overwritten_pixels": 6,
+          "cross_class_lost_pixels": 6,
+          "remaining_class_pixels": 17874,
+          "lost_fraction": 0.0003355704697986577
+        },
+        {
+          "id": "1723294905",
+          "class_id": 10,
+          "source_pixels": 591,
+          "overwritten_pixels": 166,
+          "cross_class_lost_pixels": 166,
+          "remaining_class_pixels": 425,
+          "lost_fraction": 0.2808798646362098
+        },
+        {
+          "id": "1723294906",
+          "class_id": 17,
+          "source_pixels": 76,
+          "overwritten_pixels": 5,
+          "cross_class_lost_pixels": 5,
+          "remaining_class_pixels": 71,
+          "lost_fraction": 0.06578947368421052
+        },
+        {
+          "id": "1723294907",
+          "class_id": 17,
+          "source_pixels": 90,
+          "overwritten_pixels": 6,
+          "cross_class_lost_pixels": 6,
+          "remaining_class_pixels": 84,
+          "lost_fraction": 0.06666666666666667
+        },
+        {
+          "id": "1723294908",
+          "class_id": 18,
+          "source_pixels": 107,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 107,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294909",
+          "class_id": 18,
+          "source_pixels": 131,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 131,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294910",
+          "class_id": 11,
+          "source_pixels": 503,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 503,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294911",
+          "class_id": 255,
+          "source_pixels": 271,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 271,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294912",
+          "class_id": 12,
+          "source_pixels": 1189,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 1189,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294913",
+          "class_id": 11,
+          "source_pixels": 771,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 771,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723294914",
+          "class_id": 11,
+          "source_pixels": 839,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 839,
+          "lost_fraction": 0.0
+        }
+      ],
+      "overwrite_events": [
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294872",
+          "from_class": 16,
+          "to_class": 15,
+          "pixels": 73313
+        },
+        {
+          "from_object": "1723294872",
+          "to_object": "1723294873",
+          "from_class": 15,
+          "to_class": 19,
+          "pixels": 15766
+        },
+        {
+          "from_object": "1723294872",
+          "to_object": "1723294874",
+          "from_class": 15,
+          "to_class": 7,
+          "pixels": 699
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294874",
+          "from_class": 19,
+          "to_class": 7,
+          "pixels": 2230
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294875",
+          "from_class": 16,
+          "to_class": 15,
+          "pixels": 87408
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294875",
+          "from_class": 19,
+          "to_class": 15,
+          "pixels": 72202
+        },
+        {
+          "from_object": "1723294874",
+          "to_object": "1723294875",
+          "from_class": 7,
+          "to_class": 15,
+          "pixels": 141
+        },
+        {
+          "from_object": "1723294871",
+          "to_object": "1723294876",
+          "from_class": 7,
+          "to_class": 15,
+          "pixels": 13282
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294876",
+          "from_class": 19,
+          "to_class": 15,
+          "pixels": 48071
+        },
+        {
+          "from_object": "1723294874",
+          "to_object": "1723294876",
+          "from_class": 7,
+          "to_class": 15,
+          "pixels": 430
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294877",
+          "from_class": 16,
+          "to_class": 15,
+          "pixels": 163600
+        },
+        {
+          "from_object": "1723294871",
+          "to_object": "1723294877",
+          "from_class": 7,
+          "to_class": 15,
+          "pixels": 10865
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294877",
+          "from_class": 19,
+          "to_class": 15,
+          "pixels": 17
+        },
+        {
+          "from_object": "1723294874",
+          "to_object": "1723294877",
+          "from_class": 7,
+          "to_class": 15,
+          "pixels": 387
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294878",
+          "from_class": 16,
+          "to_class": 15,
+          "pixels": 3136
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294879",
+          "from_class": 16,
+          "to_class": 15,
+          "pixels": 4849
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294880",
+          "from_class": 19,
+          "to_class": 11,
+          "pixels": 6200
+        },
+        {
+          "from_object": "1723294875",
+          "to_object": "1723294880",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 1692
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294881",
+          "from_class": 16,
+          "to_class": 11,
+          "pixels": 1407
+        },
+        {
+          "from_object": "1723294875",
+          "to_object": "1723294881",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 8066
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294882",
+          "from_class": 16,
+          "to_class": 11,
+          "pixels": 2560
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294883",
+          "from_class": 16,
+          "to_class": 11,
+          "pixels": 9046
+        },
+        {
+          "from_object": "1723294875",
+          "to_object": "1723294883",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 7731
+        },
+        {
+          "from_object": "1723294875",
+          "to_object": "1723294884",
+          "from_class": 15,
+          "to_class": 6,
+          "pixels": 108
+        },
+        {
+          "from_object": "1723294881",
+          "to_object": "1723294884",
+          "from_class": 11,
+          "to_class": 6,
+          "pixels": 1079
+        },
+        {
+          "from_object": "1723294883",
+          "to_object": "1723294884",
+          "from_class": 11,
+          "to_class": 6,
+          "pixels": 219
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294885",
+          "from_class": 16,
+          "to_class": 12,
+          "pixels": 7699
+        },
+        {
+          "from_object": "1723294881",
+          "to_object": "1723294885",
+          "from_class": 11,
+          "to_class": 12,
+          "pixels": 41
+        },
+        {
+          "from_object": "1723294882",
+          "to_object": "1723294885",
+          "from_class": 11,
+          "to_class": 12,
+          "pixels": 2
+        },
+        {
+          "from_object": "1723294883",
+          "to_object": "1723294885",
+          "from_class": 11,
+          "to_class": 12,
+          "pixels": 2371
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294886",
+          "from_class": 16,
+          "to_class": 12,
+          "pixels": 7571
+        },
+        {
+          "from_object": "1723294882",
+          "to_object": "1723294886",
+          "from_class": 11,
+          "to_class": 12,
+          "pixels": 40
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294887",
+          "from_class": 16,
+          "to_class": 11,
+          "pixels": 5513
+        },
+        {
+          "from_object": "1723294872",
+          "to_object": "1723294887",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 15
+        },
+        {
+          "from_object": "1723294876",
+          "to_object": "1723294887",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 992
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294887",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 4971
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294888",
+          "from_class": 16,
+          "to_class": 11,
+          "pixels": 3384
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294889",
+          "from_class": 16,
+          "to_class": 11,
+          "pixels": 341
+        },
+        {
+          "from_object": "1723294872",
+          "to_object": "1723294889",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 294
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294889",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 420
+        },
+        {
+          "from_object": "1723294879",
+          "to_object": "1723294889",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 353
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294890",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 115
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294891",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 277
+        },
+        {
+          "from_object": "1723294876",
+          "to_object": "1723294892",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 2
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294892",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 244
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294893",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 49
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294894",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 20
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294895",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 20
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294896",
+          "from_class": 15,
+          "to_class": 6,
+          "pixels": 504
+        },
+        {
+          "from_object": "1723294887",
+          "to_object": "1723294896",
+          "from_class": 11,
+          "to_class": 6,
+          "pixels": 24
+        },
+        {
+          "from_object": "1723294895",
+          "to_object": "1723294896",
+          "from_class": 11,
+          "to_class": 6,
+          "pixels": 10
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294897",
+          "from_class": 15,
+          "to_class": 6,
+          "pixels": 379
+        },
+        {
+          "from_object": "1723294887",
+          "to_object": "1723294897",
+          "from_class": 11,
+          "to_class": 6,
+          "pixels": 10
+        },
+        {
+          "from_object": "1723294893",
+          "to_object": "1723294897",
+          "from_class": 11,
+          "to_class": 6,
+          "pixels": 5
+        },
+        {
+          "from_object": "1723294895",
+          "to_object": "1723294897",
+          "from_class": 11,
+          "to_class": 6,
+          "pixels": 5
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294898",
+          "from_class": 15,
+          "to_class": 6,
+          "pixels": 243
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294899",
+          "from_class": 15,
+          "to_class": 6,
+          "pixels": 228
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294900",
+          "from_class": 15,
+          "to_class": 14,
+          "pixels": 23347
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294901",
+          "from_class": 19,
+          "to_class": 13,
+          "pixels": 38354
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294902",
+          "from_class": 19,
+          "to_class": 2,
+          "pixels": 116311
+        },
+        {
+          "from_object": "1723294874",
+          "to_object": "1723294902",
+          "from_class": 7,
+          "to_class": 2,
+          "pixels": 423
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294903",
+          "from_class": 19,
+          "to_class": 18,
+          "pixels": 5434
+        },
+        {
+          "from_object": "1723294874",
+          "to_object": "1723294903",
+          "from_class": 7,
+          "to_class": 18,
+          "pixels": 2
+        },
+        {
+          "from_object": "1723294902",
+          "to_object": "1723294903",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 8640
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294904",
+          "from_class": 19,
+          "to_class": 18,
+          "pixels": 7419
+        },
+        {
+          "from_object": "1723294874",
+          "to_object": "1723294904",
+          "from_class": 7,
+          "to_class": 18,
+          "pixels": 1
+        },
+        {
+          "from_object": "1723294901",
+          "to_object": "1723294904",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 1306
+        },
+        {
+          "from_object": "1723294902",
+          "to_object": "1723294904",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 9154
+        },
+        {
+          "from_object": "1723294874",
+          "to_object": "1723294905",
+          "from_class": 7,
+          "to_class": 10,
+          "pixels": 153
+        },
+        {
+          "from_object": "1723294902",
+          "to_object": "1723294905",
+          "from_class": 2,
+          "to_class": 10,
+          "pixels": 422
+        },
+        {
+          "from_object": "1723294903",
+          "to_object": "1723294905",
+          "from_class": 18,
+          "to_class": 10,
+          "pixels": 10
+        },
+        {
+          "from_object": "1723294904",
+          "to_object": "1723294905",
+          "from_class": 18,
+          "to_class": 10,
+          "pixels": 6
+        },
+        {
+          "from_object": "1723294905",
+          "to_object": "1723294906",
+          "from_class": 10,
+          "to_class": 17,
+          "pixels": 76
+        },
+        {
+          "from_object": "1723294905",
+          "to_object": "1723294907",
+          "from_class": 10,
+          "to_class": 17,
+          "pixels": 90
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294908",
+          "from_class": 19,
+          "to_class": 18,
+          "pixels": 14
+        },
+        {
+          "from_object": "1723294902",
+          "to_object": "1723294908",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 88
+        },
+        {
+          "from_object": "1723294906",
+          "to_object": "1723294908",
+          "from_class": 17,
+          "to_class": 18,
+          "pixels": 5
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294909",
+          "from_class": 19,
+          "to_class": 18,
+          "pixels": 29
+        },
+        {
+          "from_object": "1723294902",
+          "to_object": "1723294909",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 96
+        },
+        {
+          "from_object": "1723294907",
+          "to_object": "1723294909",
+          "from_class": 17,
+          "to_class": 18,
+          "pixels": 6
+        },
+        {
+          "from_object": "1723294875",
+          "to_object": "1723294910",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 503
+        },
+        {
+          "from_object": "1723294876",
+          "to_object": "1723294911",
+          "from_class": 15,
+          "to_class": 255,
+          "pixels": 271
+        },
+        {
+          "from_object": "1723294881",
+          "to_object": "1723294912",
+          "from_class": 11,
+          "to_class": 12,
+          "pixels": 1189
+        },
+        {
+          "from_object": "1723294872",
+          "to_object": "1723294913",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 320
+        },
+        {
+          "from_object": "1723294877",
+          "to_object": "1723294913",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 294
+        },
+        {
+          "from_object": "1723294879",
+          "to_object": "1723294913",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 157
+        },
+        {
+          "from_object": "1723294870",
+          "to_object": "1723294914",
+          "from_class": 16,
+          "to_class": 11,
+          "pixels": 148
+        },
+        {
+          "from_object": "1723294872",
+          "to_object": "1723294914",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 223
+        },
+        {
+          "from_object": "1723294873",
+          "to_object": "1723294914",
+          "from_class": 19,
+          "to_class": 11,
+          "pixels": 80
+        },
+        {
+          "from_object": "1723294875",
+          "to_object": "1723294914",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 92
+        },
+        {
+          "from_object": "1723294879",
+          "to_object": "1723294914",
+          "from_class": 15,
+          "to_class": 11,
+          "pixels": 296
+        }
+      ],
+      "flags": [
+        "object_class_coverage_lost:1723294871",
+        "object_class_coverage_lost:1723294874",
+        "object_class_coverage_lost:1723294895"
+      ],
+      "annotation_sha256": "cfed56e55a6a240bd0cfdc875e59fa196b63db6f6f279812494d14893902ac6a",
+      "mask_file_sha256": "d770d68bae9d152839dabfbbca5399fa46c9632edf7057e8f206bf6fcbbdc947"
+    },
+    {
+      "key": "trackside-maintenance/57",
+      "split": "train",
+      "pixels": 2088960,
+      "mismatch_pixels": 0,
+      "class_pixels": {
+        "13": 1197675,
+        "15": 92007,
+        "18": 251820,
+        "19": 547458
+      },
+      "class_source_pixels": {
+        "13": 2088960,
+        "15": 92007,
+        "18": 251820,
+        "19": 639465
+      },
+      "objects": [
+        {
+          "id": "1723293780",
+          "class_id": 13,
+          "source_pixels": 2088960,
+          "overwritten_pixels": 891285,
+          "cross_class_lost_pixels": 891285,
+          "remaining_class_pixels": 1197675,
+          "lost_fraction": 0.42666446461397056
+        },
+        {
+          "id": "1723293781",
+          "class_id": 19,
+          "source_pixels": 567626,
+          "overwritten_pixels": 92007,
+          "cross_class_lost_pixels": 92007,
+          "remaining_class_pixels": 475619,
+          "lost_fraction": 0.16209088378615497
+        },
+        {
+          "id": "1723293782",
+          "class_id": 15,
+          "source_pixels": 92007,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 92007,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293783",
+          "class_id": 18,
+          "source_pixels": 42397,
+          "overwritten_pixels": 42300,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 42397,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293784",
+          "class_id": 18,
+          "source_pixels": 87103,
+          "overwritten_pixels": 87103,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 87103,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293785",
+          "class_id": 19,
+          "source_pixels": 71839,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 71839,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293786",
+          "class_id": 18,
+          "source_pixels": 108107,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 108107,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293787",
+          "class_id": 18,
+          "source_pixels": 143616,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 143616,
+          "lost_fraction": 0.0
+        }
+      ],
+      "overwrite_events": [
+        {
+          "from_object": "1723293780",
+          "to_object": "1723293781",
+          "from_class": 13,
+          "to_class": 19,
+          "pixels": 567626
+        },
+        {
+          "from_object": "1723293781",
+          "to_object": "1723293782",
+          "from_class": 19,
+          "to_class": 15,
+          "pixels": 92007
+        },
+        {
+          "from_object": "1723293780",
+          "to_object": "1723293783",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 42397
+        },
+        {
+          "from_object": "1723293780",
+          "to_object": "1723293784",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 87103
+        },
+        {
+          "from_object": "1723293780",
+          "to_object": "1723293785",
+          "from_class": 13,
+          "to_class": 19,
+          "pixels": 71839
+        },
+        {
+          "from_object": "1723293780",
+          "to_object": "1723293786",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 65807
+        },
+        {
+          "from_object": "1723293780",
+          "to_object": "1723293787",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 56513
+        }
+      ],
+      "flags": [],
+      "annotation_sha256": "144a9a6cef08fc1abfbe41af86e0f0906d6d92a19ffd7a3dd6a08a93a1019ff0",
+      "mask_file_sha256": "e2b7d0803d05adb765b7d5fe14f6cb0c8344a81e07a2ff1115d7a13c035fa58f"
+    },
+    {
+      "key": "trackside-maintenance/9",
+      "split": "train",
+      "pixels": 2088960,
+      "mismatch_pixels": 0,
+      "class_pixels": {
+        "2": 639708,
+        "13": 784187,
+        "18": 356616,
+        "19": 308449
+      },
+      "class_source_pixels": {
+        "2": 1478048,
+        "13": 806717,
+        "18": 356616,
+        "19": 2088960
+      },
+      "objects": [
+        {
+          "id": "1723293970",
+          "class_id": 19,
+          "source_pixels": 2088960,
+          "overwritten_pixels": 1780511,
+          "cross_class_lost_pixels": 1780511,
+          "remaining_class_pixels": 308449,
+          "lost_fraction": 0.8523432712928921
+        },
+        {
+          "id": "1723293971",
+          "class_id": 2,
+          "source_pixels": 1478048,
+          "overwritten_pixels": 838340,
+          "cross_class_lost_pixels": 838340,
+          "remaining_class_pixels": 639708,
+          "lost_fraction": 0.5671940288813354
+        },
+        {
+          "id": "1723293972",
+          "class_id": 13,
+          "source_pixels": 11298,
+          "overwritten_pixels": 107,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 11298,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293973",
+          "class_id": 13,
+          "source_pixels": 19118,
+          "overwritten_pixels": 423,
+          "cross_class_lost_pixels": 423,
+          "remaining_class_pixels": 18695,
+          "lost_fraction": 0.022125745370854693
+        },
+        {
+          "id": "1723293974",
+          "class_id": 13,
+          "source_pixels": 386,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 386,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293975",
+          "class_id": 13,
+          "source_pixels": 18270,
+          "overwritten_pixels": 2236,
+          "cross_class_lost_pixels": 2236,
+          "remaining_class_pixels": 16034,
+          "lost_fraction": 0.1223864258347017
+        },
+        {
+          "id": "1723293976",
+          "class_id": 13,
+          "source_pixels": 25632,
+          "overwritten_pixels": 453,
+          "cross_class_lost_pixels": 453,
+          "remaining_class_pixels": 25179,
+          "lost_fraction": 0.017673220973782773
+        },
+        {
+          "id": "1723293977",
+          "class_id": 13,
+          "source_pixels": 56557,
+          "overwritten_pixels": 77,
+          "cross_class_lost_pixels": 77,
+          "remaining_class_pixels": 56480,
+          "lost_fraction": 0.0013614583517513306
+        },
+        {
+          "id": "1723293978",
+          "class_id": 13,
+          "source_pixels": 272484,
+          "overwritten_pixels": 6284,
+          "cross_class_lost_pixels": 1466,
+          "remaining_class_pixels": 271018,
+          "lost_fraction": 0.005380132411444341
+        },
+        {
+          "id": "1723293979",
+          "class_id": 13,
+          "source_pixels": 435,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 435,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293980",
+          "class_id": 13,
+          "source_pixels": 846,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 846,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293981",
+          "class_id": 13,
+          "source_pixels": 1866,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 1866,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293982",
+          "class_id": 13,
+          "source_pixels": 206,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 206,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293983",
+          "class_id": 13,
+          "source_pixels": 399,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 399,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293984",
+          "class_id": 13,
+          "source_pixels": 63003,
+          "overwritten_pixels": 596,
+          "cross_class_lost_pixels": 596,
+          "remaining_class_pixels": 62407,
+          "lost_fraction": 0.009459866990460771
+        },
+        {
+          "id": "1723293985",
+          "class_id": 13,
+          "source_pixels": 18469,
+          "overwritten_pixels": 496,
+          "cross_class_lost_pixels": 496,
+          "remaining_class_pixels": 17973,
+          "lost_fraction": 0.026855812442471167
+        },
+        {
+          "id": "1723293986",
+          "class_id": 13,
+          "source_pixels": 250299,
+          "overwritten_pixels": 5100,
+          "cross_class_lost_pixels": 5100,
+          "remaining_class_pixels": 245199,
+          "lost_fraction": 0.020375630745628228
+        },
+        {
+          "id": "1723293987",
+          "class_id": 13,
+          "source_pixels": 9547,
+          "overwritten_pixels": 9220,
+          "cross_class_lost_pixels": 9220,
+          "remaining_class_pixels": 327,
+          "lost_fraction": 0.9657484026395726
+        },
+        {
+          "id": "1723293988",
+          "class_id": 13,
+          "source_pixels": 63499,
+          "overwritten_pixels": 3135,
+          "cross_class_lost_pixels": 3135,
+          "remaining_class_pixels": 60364,
+          "lost_fraction": 0.04937085623395644
+        },
+        {
+          "id": "1723293989",
+          "class_id": 18,
+          "source_pixels": 180213,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 180213,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723293990",
+          "class_id": 18,
+          "source_pixels": 176403,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 176403,
+          "lost_fraction": 0.0
+        }
+      ],
+      "overwrite_events": [
+        {
+          "from_object": "1723293970",
+          "to_object": "1723293971",
+          "from_class": 19,
+          "to_class": 2,
+          "pixels": 1478048
+        },
+        {
+          "from_object": "1723293970",
+          "to_object": "1723293972",
+          "from_class": 19,
+          "to_class": 13,
+          "pixels": 11298
+        },
+        {
+          "from_object": "1723293970",
+          "to_object": "1723293973",
+          "from_class": 19,
+          "to_class": 13,
+          "pixels": 19118
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293974",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 386
+        },
+        {
+          "from_object": "1723293970",
+          "to_object": "1723293975",
+          "from_class": 19,
+          "to_class": 13,
+          "pixels": 18270
+        },
+        {
+          "from_object": "1723293970",
+          "to_object": "1723293976",
+          "from_class": 19,
+          "to_class": 13,
+          "pixels": 25632
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293977",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 56557
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293978",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 272484
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293979",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 435
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293980",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 846
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293981",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 1866
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293982",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 206
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293983",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 399
+        },
+        {
+          "from_object": "1723293970",
+          "to_object": "1723293984",
+          "from_class": 19,
+          "to_class": 13,
+          "pixels": 62896
+        },
+        {
+          "from_object": "1723293970",
+          "to_object": "1723293985",
+          "from_class": 19,
+          "to_class": 13,
+          "pixels": 18469
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293986",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 250015
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293987",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 8568
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293988",
+          "from_class": 2,
+          "to_class": 13,
+          "pixels": 59272
+        },
+        {
+          "from_object": "1723293970",
+          "to_object": "1723293989",
+          "from_class": 19,
+          "to_class": 18,
+          "pixels": 80921
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293989",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 85314
+        },
+        {
+          "from_object": "1723293973",
+          "to_object": "1723293989",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 423
+        },
+        {
+          "from_object": "1723293976",
+          "to_object": "1723293989",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 453
+        },
+        {
+          "from_object": "1723293977",
+          "to_object": "1723293989",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 28
+        },
+        {
+          "from_object": "1723293978",
+          "to_object": "1723293989",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 156
+        },
+        {
+          "from_object": "1723293985",
+          "to_object": "1723293989",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 496
+        },
+        {
+          "from_object": "1723293986",
+          "to_object": "1723293989",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 103
+        },
+        {
+          "from_object": "1723293987",
+          "to_object": "1723293989",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 9220
+        },
+        {
+          "from_object": "1723293988",
+          "to_object": "1723293989",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 3099
+        },
+        {
+          "from_object": "1723293970",
+          "to_object": "1723293990",
+          "from_class": 19,
+          "to_class": 18,
+          "pixels": 65859
+        },
+        {
+          "from_object": "1723293971",
+          "to_object": "1723293990",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 101992
+        },
+        {
+          "from_object": "1723293975",
+          "to_object": "1723293990",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 2236
+        },
+        {
+          "from_object": "1723293977",
+          "to_object": "1723293990",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 49
+        },
+        {
+          "from_object": "1723293978",
+          "to_object": "1723293990",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 638
+        },
+        {
+          "from_object": "1723293984",
+          "to_object": "1723293990",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 596
+        },
+        {
+          "from_object": "1723293986",
+          "to_object": "1723293990",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 4997
+        },
+        {
+          "from_object": "1723293988",
+          "to_object": "1723293990",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 36
+        }
+      ],
+      "flags": [
+        "object_class_coverage_lost:1723293970",
+        "object_class_coverage_lost:1723293971",
+        "object_class_coverage_lost:1723293987"
+      ],
+      "annotation_sha256": "2b7b6190dc1326712876a6d1448ef287c572504f50d974ba320c58fda8a2db80",
+      "mask_file_sha256": "2926b127ac1c58879258e38d89bc7a39db0ef80813cfc7bd8eab819125881d51"
+    },
+    {
+      "key": "trackside-maintenance/82",
+      "split": "train",
+      "pixels": 2088960,
+      "mismatch_pixels": 0,
+      "class_pixels": {
+        "2": 5949,
+        "3": 1614,
+        "5": 45896,
+        "13": 826279,
+        "15": 454103,
+        "18": 170803,
+        "19": 584316
+      },
+      "class_source_pixels": {
+        "2": 6520,
+        "3": 2120,
+        "5": 45896,
+        "13": 1355643,
+        "15": 458471,
+        "18": 170803,
+        "19": 771510
+      },
+      "objects": [
+        {
+          "id": "1723302648",
+          "class_id": 13,
+          "source_pixels": 1355643,
+          "overwritten_pixels": 529364,
+          "cross_class_lost_pixels": 529364,
+          "remaining_class_pixels": 826279,
+          "lost_fraction": 0.39048923647302425
+        },
+        {
+          "id": "1723302649",
+          "class_id": 2,
+          "source_pixels": 6520,
+          "overwritten_pixels": 571,
+          "cross_class_lost_pixels": 571,
+          "remaining_class_pixels": 5949,
+          "lost_fraction": 0.08757668711656441
+        },
+        {
+          "id": "1723302650",
+          "class_id": 19,
+          "source_pixels": 412033,
+          "overwritten_pixels": 119240,
+          "cross_class_lost_pixels": 119240,
+          "remaining_class_pixels": 292793,
+          "lost_fraction": 0.2893942960879347
+        },
+        {
+          "id": "1723302651",
+          "class_id": 19,
+          "source_pixels": 359477,
+          "overwritten_pixels": 67954,
+          "cross_class_lost_pixels": 67954,
+          "remaining_class_pixels": 291523,
+          "lost_fraction": 0.18903573803052767
+        },
+        {
+          "id": "1723302652",
+          "class_id": 15,
+          "source_pixels": 182153,
+          "overwritten_pixels": 2375,
+          "cross_class_lost_pixels": 2375,
+          "remaining_class_pixels": 179778,
+          "lost_fraction": 0.01303848962136226
+        },
+        {
+          "id": "1723302653",
+          "class_id": 15,
+          "source_pixels": 276318,
+          "overwritten_pixels": 1993,
+          "cross_class_lost_pixels": 1993,
+          "remaining_class_pixels": 274325,
+          "lost_fraction": 0.00721270420312828
+        },
+        {
+          "id": "1723302654",
+          "class_id": 3,
+          "source_pixels": 388,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 388,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723302655",
+          "class_id": 3,
+          "source_pixels": 529,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 529,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723302656",
+          "class_id": 3,
+          "source_pixels": 1203,
+          "overwritten_pixels": 506,
+          "cross_class_lost_pixels": 506,
+          "remaining_class_pixels": 697,
+          "lost_fraction": 0.42061512884455526
+        },
+        {
+          "id": "1723302657",
+          "class_id": 5,
+          "source_pixels": 45896,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 45896,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723302658",
+          "class_id": 18,
+          "source_pixels": 67199,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 67199,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723302659",
+          "class_id": 18,
+          "source_pixels": 63642,
+          "overwritten_pixels": 63169,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 63642,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723302660",
+          "class_id": 18,
+          "source_pixels": 103131,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 103131,
+          "lost_fraction": 0.0
+        }
+      ],
+      "overwrite_events": [
+        {
+          "from_object": "1723302648",
+          "to_object": "1723302649",
+          "from_class": 13,
+          "to_class": 2,
+          "pixels": 6520
+        },
+        {
+          "from_object": "1723302648",
+          "to_object": "1723302650",
+          "from_class": 13,
+          "to_class": 19,
+          "pixels": 92170
+        },
+        {
+          "from_object": "1723302648",
+          "to_object": "1723302651",
+          "from_class": 13,
+          "to_class": 19,
+          "pixels": 246621
+        },
+        {
+          "from_object": "1723302650",
+          "to_object": "1723302652",
+          "from_class": 19,
+          "to_class": 15,
+          "pixels": 117870
+        },
+        {
+          "from_object": "1723302648",
+          "to_object": "1723302653",
+          "from_class": 13,
+          "to_class": 15,
+          "pixels": 60
+        },
+        {
+          "from_object": "1723302651",
+          "to_object": "1723302653",
+          "from_class": 19,
+          "to_class": 15,
+          "pixels": 64422
+        },
+        {
+          "from_object": "1723302651",
+          "to_object": "1723302654",
+          "from_class": 19,
+          "to_class": 3,
+          "pixels": 388
+        },
+        {
+          "from_object": "1723302651",
+          "to_object": "1723302655",
+          "from_class": 19,
+          "to_class": 3,
+          "pixels": 529
+        },
+        {
+          "from_object": "1723302651",
+          "to_object": "1723302656",
+          "from_class": 19,
+          "to_class": 3,
+          "pixels": 1203
+        },
+        {
+          "from_object": "1723302648",
+          "to_object": "1723302657",
+          "from_class": 13,
+          "to_class": 5,
+          "pixels": 13539
+        },
+        {
+          "from_object": "1723302649",
+          "to_object": "1723302657",
+          "from_class": 2,
+          "to_class": 5,
+          "pixels": 222
+        },
+        {
+          "from_object": "1723302650",
+          "to_object": "1723302657",
+          "from_class": 19,
+          "to_class": 5,
+          "pixels": 1370
+        },
+        {
+          "from_object": "1723302651",
+          "to_object": "1723302657",
+          "from_class": 19,
+          "to_class": 5,
+          "pixels": 1412
+        },
+        {
+          "from_object": "1723302652",
+          "to_object": "1723302657",
+          "from_class": 15,
+          "to_class": 5,
+          "pixels": 2375
+        },
+        {
+          "from_object": "1723302653",
+          "to_object": "1723302657",
+          "from_class": 15,
+          "to_class": 5,
+          "pixels": 1993
+        },
+        {
+          "from_object": "1723302656",
+          "to_object": "1723302657",
+          "from_class": 3,
+          "to_class": 5,
+          "pixels": 506
+        },
+        {
+          "from_object": "1723302648",
+          "to_object": "1723302658",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 67059
+        },
+        {
+          "from_object": "1723302649",
+          "to_object": "1723302658",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 140
+        },
+        {
+          "from_object": "1723302648",
+          "to_object": "1723302659",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 63560
+        },
+        {
+          "from_object": "1723302649",
+          "to_object": "1723302659",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 82
+        },
+        {
+          "from_object": "1723302648",
+          "to_object": "1723302660",
+          "from_class": 13,
+          "to_class": 18,
+          "pixels": 39835
+        },
+        {
+          "from_object": "1723302649",
+          "to_object": "1723302660",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 127
+        }
+      ],
+      "flags": [],
+      "annotation_sha256": "e9ed2ead1d1815bbe9c8a22842c2313acf75dc802adbe8a90f19f00e331e0b3d",
+      "mask_file_sha256": "e2902d671f9cf602edf63b48d9e21064df82285c23995c27a72925e8b6e2ce35"
+    },
+    {
+      "key": "rural-overcast-cab-view/92",
+      "split": "val",
+      "pixels": 2088960,
+      "mismatch_pixels": 0,
+      "class_pixels": {
+        "2": 62915,
+        "3": 83173,
+        "15": 1899271,
+        "16": 8711,
+        "18": 19276,
+        "19": 15614
+      },
+      "class_source_pixels": {
+        "2": 78173,
+        "3": 1510080,
+        "15": 1899271,
+        "16": 25132,
+        "18": 19276,
+        "19": 125329
+      },
+      "objects": [
+        {
+          "id": "1723298289",
+          "class_id": 3,
+          "source_pixels": 1510080,
+          "overwritten_pixels": 1464741,
+          "cross_class_lost_pixels": 1426907,
+          "remaining_class_pixels": 83173,
+          "lost_fraction": 0.9449214611146429
+        },
+        {
+          "id": "1723298290",
+          "class_id": 3,
+          "source_pixels": 9133,
+          "overwritten_pixels": 7684,
+          "cross_class_lost_pixels": 6607,
+          "remaining_class_pixels": 2526,
+          "lost_fraction": 0.7234205627942626
+        },
+        {
+          "id": "1723298291",
+          "class_id": 19,
+          "source_pixels": 125324,
+          "overwritten_pixels": 110111,
+          "cross_class_lost_pixels": 109715,
+          "remaining_class_pixels": 15609,
+          "lost_fraction": 0.8754508314448949
+        },
+        {
+          "id": "1723298292",
+          "class_id": 16,
+          "source_pixels": 25132,
+          "overwritten_pixels": 16421,
+          "cross_class_lost_pixels": 16421,
+          "remaining_class_pixels": 8711,
+          "lost_fraction": 0.6533901002705714
+        },
+        {
+          "id": "1723298293",
+          "class_id": 2,
+          "source_pixels": 78173,
+          "overwritten_pixels": 15258,
+          "cross_class_lost_pixels": 15258,
+          "remaining_class_pixels": 62915,
+          "lost_fraction": 0.19518247988435905
+        },
+        {
+          "id": "1723298294",
+          "class_id": 3,
+          "source_pixels": 973,
+          "overwritten_pixels": 75,
+          "cross_class_lost_pixels": 75,
+          "remaining_class_pixels": 898,
+          "lost_fraction": 0.07708119218910586
+        },
+        {
+          "id": "1723298295",
+          "class_id": 3,
+          "source_pixels": 2341,
+          "overwritten_pixels": 290,
+          "cross_class_lost_pixels": 250,
+          "remaining_class_pixels": 2091,
+          "lost_fraction": 0.10679196924391286
+        },
+        {
+          "id": "1723298296",
+          "class_id": 3,
+          "source_pixels": 264,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 264,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723298297",
+          "class_id": 3,
+          "source_pixels": 250,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 250,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723298298",
+          "class_id": 3,
+          "source_pixels": 402,
+          "overwritten_pixels": 128,
+          "cross_class_lost_pixels": 128,
+          "remaining_class_pixels": 274,
+          "lost_fraction": 0.31840796019900497
+        },
+        {
+          "id": "1723298299",
+          "class_id": 3,
+          "source_pixels": 79,
+          "overwritten_pixels": 5,
+          "cross_class_lost_pixels": 5,
+          "remaining_class_pixels": 74,
+          "lost_fraction": 0.06329113924050633
+        },
+        {
+          "id": "1723298300",
+          "class_id": 3,
+          "source_pixels": 88548,
+          "overwritten_pixels": 55974,
+          "cross_class_lost_pixels": 55974,
+          "remaining_class_pixels": 32574,
+          "lost_fraction": 0.6321317251660117
+        },
+        {
+          "id": "1723298301",
+          "class_id": 15,
+          "source_pixels": 692068,
+          "overwritten_pixels": 8613,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 692068,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723298302",
+          "class_id": 15,
+          "source_pixels": 1215816,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 1215816,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723298303",
+          "class_id": 18,
+          "source_pixels": 7663,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 7663,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723298304",
+          "class_id": 18,
+          "source_pixels": 11613,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 11613,
+          "lost_fraction": 0.0
+        },
+        {
+          "id": "1723298305",
+          "class_id": 19,
+          "source_pixels": 401,
+          "overwritten_pixels": 0,
+          "cross_class_lost_pixels": 0,
+          "remaining_class_pixels": 401,
+          "lost_fraction": 0.0
+        }
+      ],
+      "overwrite_events": [
+        {
+          "from_object": "1723298289",
+          "to_object": "1723298291",
+          "from_class": 3,
+          "to_class": 19,
+          "pixels": 124457
+        },
+        {
+          "from_object": "1723298290",
+          "to_object": "1723298291",
+          "from_class": 3,
+          "to_class": 19,
+          "pixels": 867
+        },
+        {
+          "from_object": "1723298289",
+          "to_object": "1723298292",
+          "from_class": 3,
+          "to_class": 16,
+          "pixels": 1040
+        },
+        {
+          "from_object": "1723298289",
+          "to_object": "1723298293",
+          "from_class": 3,
+          "to_class": 2,
+          "pixels": 387
+        },
+        {
+          "from_object": "1723298291",
+          "to_object": "1723298293",
+          "from_class": 19,
+          "to_class": 2,
+          "pixels": 77786
+        },
+        {
+          "from_object": "1723298293",
+          "to_object": "1723298294",
+          "from_class": 2,
+          "to_class": 3,
+          "pixels": 973
+        },
+        {
+          "from_object": "1723298293",
+          "to_object": "1723298295",
+          "from_class": 2,
+          "to_class": 3,
+          "pixels": 2341
+        },
+        {
+          "from_object": "1723298293",
+          "to_object": "1723298296",
+          "from_class": 2,
+          "to_class": 3,
+          "pixels": 224
+        },
+        {
+          "from_object": "1723298293",
+          "to_object": "1723298297",
+          "from_class": 2,
+          "to_class": 3,
+          "pixels": 250
+        },
+        {
+          "from_object": "1723298293",
+          "to_object": "1723298298",
+          "from_class": 2,
+          "to_class": 3,
+          "pixels": 402
+        },
+        {
+          "from_object": "1723298291",
+          "to_object": "1723298299",
+          "from_class": 19,
+          "to_class": 3,
+          "pixels": 40
+        },
+        {
+          "from_object": "1723298291",
+          "to_object": "1723298300",
+          "from_class": 19,
+          "to_class": 3,
+          "pixels": 25741
+        },
+        {
+          "from_object": "1723298289",
+          "to_object": "1723298301",
+          "from_class": 3,
+          "to_class": 15,
+          "pixels": 371676
+        },
+        {
+          "from_object": "1723298290",
+          "to_object": "1723298301",
+          "from_class": 3,
+          "to_class": 15,
+          "pixels": 2132
+        },
+        {
+          "from_object": "1723298291",
+          "to_object": "1723298301",
+          "from_class": 19,
+          "to_class": 15,
+          "pixels": 168
+        },
+        {
+          "from_object": "1723298292",
+          "to_object": "1723298301",
+          "from_class": 16,
+          "to_class": 15,
+          "pixels": 9118
+        },
+        {
+          "from_object": "1723298299",
+          "to_object": "1723298301",
+          "from_class": 3,
+          "to_class": 15,
+          "pixels": 5
+        },
+        {
+          "from_object": "1723298300",
+          "to_object": "1723298301",
+          "from_class": 3,
+          "to_class": 15,
+          "pixels": 55878
+        },
+        {
+          "from_object": "1723298289",
+          "to_object": "1723298302",
+          "from_class": 3,
+          "to_class": 15,
+          "pixels": 898026
+        },
+        {
+          "from_object": "1723298291",
+          "to_object": "1723298302",
+          "from_class": 19,
+          "to_class": 15,
+          "pixels": 177
+        },
+        {
+          "from_object": "1723298292",
+          "to_object": "1723298302",
+          "from_class": 16,
+          "to_class": 15,
+          "pixels": 7303
+        },
+        {
+          "from_object": "1723298289",
+          "to_object": "1723298303",
+          "from_class": 3,
+          "to_class": 18,
+          "pixels": 1856
+        },
+        {
+          "from_object": "1723298291",
+          "to_object": "1723298303",
+          "from_class": 19,
+          "to_class": 18,
+          "pixels": 1729
+        },
+        {
+          "from_object": "1723298293",
+          "to_object": "1723298303",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 3753
+        },
+        {
+          "from_object": "1723298294",
+          "to_object": "1723298303",
+          "from_class": 3,
+          "to_class": 18,
+          "pixels": 75
+        },
+        {
+          "from_object": "1723298295",
+          "to_object": "1723298303",
+          "from_class": 3,
+          "to_class": 18,
+          "pixels": 250
+        },
+        {
+          "from_object": "1723298291",
+          "to_object": "1723298304",
+          "from_class": 19,
+          "to_class": 18,
+          "pixels": 4074
+        },
+        {
+          "from_object": "1723298293",
+          "to_object": "1723298304",
+          "from_class": 2,
+          "to_class": 18,
+          "pixels": 7315
+        },
+        {
+          "from_object": "1723298298",
+          "to_object": "1723298304",
+          "from_class": 3,
+          "to_class": 18,
+          "pixels": 128
+        },
+        {
+          "from_object": "1723298300",
+          "to_object": "1723298304",
+          "from_class": 3,
+          "to_class": 18,
+          "pixels": 96
+        },
+        {
+          "from_object": "1723298290",
+          "to_object": "1723298305",
+          "from_class": 3,
+          "to_class": 19,
+          "pixels": 5
+        }
+      ],
+      "flags": [
+        "object_class_coverage_lost:1723298289",
+        "object_class_coverage_lost:1723298290",
+        "object_class_coverage_lost:1723298291",
+        "object_class_coverage_lost:1723298292",
+        "object_class_coverage_lost:1723298300",
+        "dominant_class:15"
+      ],
+      "annotation_sha256": "44761fcd628ffb5dc5ea5210897121edf9c74a6637d03e45f2960d7252abe828",
+      "mask_file_sha256": "31910f2fdf4e0f323226890eaff96ca1b56e05572d1914ff56a94fa862c5b0df"
+    }
+  ]
+}

@@ -98,6 +98,7 @@ def test_same_class_overlap_is_not_class_loss():
     stats, _ = inspect_layers(
         [("a", 0, region), ("b", 0, region)], np.zeros((2, 2), int), 255, 1, 0.5
     )
+    assert stats["class_source_pixels"] == {"0": 4}
     assert stats["objects"][0]["overwritten_pixels"] == 4
     assert stats["objects"][0]["cross_class_lost_pixels"] == 0
     assert stats["cross_class_overlap_pixels"] == 0
@@ -236,3 +237,16 @@ def test_changed_source_image_and_missing_legacy_hash_are_explicit(tmp_path):
         "packaged_image_differs_from_native_source",
     } <= set(record["flags"])
     assert report["errors"] == 0
+
+
+def test_focus_review_and_invalid_focus_output(tmp_path):
+    dataset, _ = fixture_dataset(tmp_path)
+    out = tmp_path / "focused"
+    result = audit(dataset, out, focus_class="sky")
+    assert result["review"]["source_full_frame_candidates"] == 1
+    assert result["review"]["priority_counts"]["focus"] == 1
+    assert (out / "index.html").is_file()
+    bad = tmp_path / "bad-focus"
+    with pytest.raises(ValueError, match="Unknown focus class"):
+        audit(dataset, bad, focus_class="missing")
+    assert not bad.exists()

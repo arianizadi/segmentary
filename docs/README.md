@@ -46,6 +46,7 @@ and saved predictions with `./scripts/inspect.sh /path/to/bundle`.
   training, complete resume, mixed precision, accumulation, and prediction export.
 - [Annotation audit and reviewed versions](guides/annotation-audit.md): native layers,
   overlaps, overwritten pixels, review lists, and immutable corrections.
+- [Audit validation results](results/annotation-audit-validation/README.md): real RTIS findings, controlled faults, and Cityscapes/RailSem19 baselines.
 - [Object reports and comparisons](guides/object-reports.md): AP/PQ, per-class results,
   resources, timing, and provenance.
 - [Real benchmark validation](guides/object-benchmark-validation.md): Cityscapes data
