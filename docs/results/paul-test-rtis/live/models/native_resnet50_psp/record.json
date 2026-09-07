@@ -630,6 +630,27 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.1806139945983887
+          },
+          {
+            "step": 99,
+            "value": 0.6990548372268677
+          },
+          {
+            "step": 149,
+            "value": 0.946679949760437
+          },
+          {
+            "step": 199,
+            "value": 0.8169876337051392
+          }
+        ]
+      },
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -643,7 +664,10 @@
       "config_sha256": "1936fff27c25d720261dd76f72c52d470e604ee323ce3ccbb945392336604d65",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 0,
+      "started_at": "2026-09-07T00:17:04.879811+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_resnet50_psp--rtis_only--seed-1",
         "model": {
