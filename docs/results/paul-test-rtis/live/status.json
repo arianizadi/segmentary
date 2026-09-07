@@ -3562,7 +3562,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3199,
+      "observed_step": 3308,
       "record": "models/smp_deeplabv3plus_resnet101/record.json"
     },
     {
@@ -3572,7 +3572,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2449,
+      "observed_step": 2549,
       "record": "models/smp_deeplabv3plus_resnet101/record.json"
     },
     {
@@ -3580,7 +3580,7 @@
       "model": "smp_fpn_resnet50",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2290,
       "observed_step": null,
       "record": "models/smp_fpn_resnet50/record.json"
@@ -3590,9 +3590,9 @@
       "model": "smp_fpn_resnet50",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2290,
+      "status": "collecting",
+      "final_step": 2290,
+      "observed_step": null,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3612,7 +3612,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1849,
+      "observed_step": 1949,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3622,7 +3622,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 799,
+      "observed_step": 949,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3632,7 +3632,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 599,
+      "observed_step": 763,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3642,7 +3642,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 549,
+      "observed_step": 649,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3652,7 +3652,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 449,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3662,7 +3662,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 299,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3670,7 +3670,7 @@
       "model": "smp_fpn_resnet50",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_fpn_resnet50/record.json"
