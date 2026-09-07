@@ -9,15 +9,15 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | smp_unetplusplus_efficientnet_b0 | rtis_only | 0 | completed | 3563 | 2290 | 7.33 | 9.65 | 23.41 | 2.67 | 23.89 | 27.88 |
 | smp_unetplusplus_efficientnet_b0 | rtis_only | 1 | completed | 2036 | 763 | 3.18 | 5.71 | 6.70 | 1.94 | 19.85 | 20.95 |
 | smp_unetplusplus_efficientnet_b0 | rtis_only | 2 | completed | 1781 | 509 | 4.53 | 5.27 | 24.34 | 2.44 | 21.48 | 21.48 |
-| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 0 | collecting | 3054 | 1781 | 4.46 | 17.06 | 5.70 | 4.10 | 22.53 | 25.03 |
-| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 1 | training | 2999 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 0 | completed | 3054 | 1781 | 4.46 | 17.06 | 5.70 | 4.10 | 22.53 | 25.03 |
+| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 1 | training | 3054 | — | — | — | — | — | — | — |
 | smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 2 | completed | 1781 | 509 | 7.85 | 11.20 | 20.81 | 6.82 | 21.45 | 22.64 |
-| smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 0 | training | 2599 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 1 | training | 2549 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 0 | training | 2699 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 1 | training | 2649 | — | — | — | — | — | — | — |
 | smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 2 | completed | 1781 | 509 | 4.35 | 4.78 | 32.53 | 2.57 | 30.95 | 32.66 |
 | smp_unetplusplus_efficientnet_b0 | cityscapes_to_railsem19_to_rtis | 0 | completed | 1781 | 509 | 8.97 | 12.10 | 25.76 | 5.55 | 25.34 | 26.75 |
-| smp_unetplusplus_efficientnet_b0 | cityscapes_to_railsem19_to_rtis | 1 | training | 1599 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | cityscapes_to_railsem19_to_rtis | 2 | training | 1499 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | cityscapes_to_railsem19_to_rtis | 1 | training | 1699 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | cityscapes_to_railsem19_to_rtis | 2 | training | 1599 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -1908,7 +1908,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **collecting**. Started: 2026-09-07T09:56:20.272266+00:00. Finished: —.
+Status: **completed**. Started: 2026-09-07T09:56:20.272266+00:00. Finished: 2026-09-07T10:43:23.928480+00:00.
 
 Recipe pretrained initializer: `{"arch": "smp", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": "efficientnet-b0", "encoder_weights": "imagenet", "head": "unified_head", "head_paths": [], "inactive_parameter_paths": ["encoder._conv_head", "encoder._bn1"], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": null, "revision": null, "smp_arch": "UnetPlusPlus", "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -1950,7 +1950,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.22 |
 | Best full-state checkpoint (MiB) | 98.06 |
 | Final full-state checkpoint (MiB) | 98.04 |
-| Audited periodic checkpoints removed (GiB) | — |
+| Audited periodic checkpoints removed (GiB) | 0.57 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -2205,9 +2205,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Measurement | Value |
 | --- | --- |
-| Full GPU-reserved wall seconds, all recorded worker attempts | — |
-| Full reserved GPU-hours | — |
-| Whole-run timing complete | False |
+| Full GPU-reserved wall seconds, all recorded worker attempts | 2823.77 |
+| Full reserved GPU-hours | 0.78 |
+| Whole-run timing complete | True |
 
 | Phase | Wall seconds including failed attempts |
 | --- | --- |
@@ -2619,6 +2619,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2290 | 22.80 | 5.27 |
 | 2545 | 23.00 | 4.44 |
 | 2799 | 22.44 | 6.78 |
+| 3054 | 22.66 | 6.87 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -5465,6 +5466,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 23.67 | 16.32 |
 | 1017 | 27.66 | 9.56 |
 | 1272 | 27.74 | 4.33 |
+| 1527 | 27.58 | 8.09 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
