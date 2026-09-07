@@ -6,12 +6,12 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_pspnet_mobilenet_v2 | rtis_only | 0 | training | 1349 | — | — | — | — | — | — | — |
-| smp_pspnet_mobilenet_v2 | rtis_only | 1 | training | 1099 | — | — | — | — | — | — | — |
-| smp_pspnet_mobilenet_v2 | rtis_only | 2 | training | 849 | — | — | — | — | — | — | — |
-| smp_pspnet_mobilenet_v2 | cityscapes_to_rtis | 0 | training | 699 | — | — | — | — | — | — | — |
-| smp_pspnet_mobilenet_v2 | cityscapes_to_rtis | 1 | training | 449 | — | — | — | — | — | — | — |
-| smp_pspnet_mobilenet_v2 | cityscapes_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
+| smp_pspnet_mobilenet_v2 | rtis_only | 0 | training | 1599 | — | — | — | — | — | — | — |
+| smp_pspnet_mobilenet_v2 | rtis_only | 1 | training | 1349 | — | — | — | — | — | — | — |
+| smp_pspnet_mobilenet_v2 | rtis_only | 2 | training | 1099 | — | — | — | — | — | — | — |
+| smp_pspnet_mobilenet_v2 | cityscapes_to_rtis | 0 | training | 899 | — | — | — | — | — | — | — |
+| smp_pspnet_mobilenet_v2 | cityscapes_to_rtis | 1 | training | 699 | — | — | — | — | — | — | — |
+| smp_pspnet_mobilenet_v2 | cityscapes_to_rtis | 2 | training | 199 | — | — | — | — | — | — | — |
 | smp_pspnet_mobilenet_v2 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | smp_pspnet_mobilenet_v2 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | smp_pspnet_mobilenet_v2 | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -100,6 +100,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 14.06 | 0.23 |
 | 1017 | 16.45 | 3.41 |
 | 1272 | 16.83 | 0.48 |
+| 1527 | 16.26 | 0.72 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -349,6 +350,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 13.78 | 0.40 |
 | 763 | 14.77 | 2.87 |
 | 1017 | 15.72 | 0.95 |
+| 1272 | 13.10 | 0.64 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -597,6 +599,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 10.84 | 0.08 |
 | 508 | 10.41 | 0.27 |
 | 763 | 15.34 | 0.14 |
+| 1017 | 13.89 | 0.92 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -844,6 +847,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 16.15 | 1.47 |
 | 508 | 16.41 | 3.00 |
+| 763 | 17.67 | 0.60 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1090,6 +1094,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 15.78 | 0.98 |
+| 508 | 16.02 | 3.28 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
