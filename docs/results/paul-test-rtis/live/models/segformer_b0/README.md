@@ -6,14 +6,14 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| segformer_b0 | rtis_only | 0 | training | 1549 | — | — | — | — | — | — | — |
-| segformer_b0 | rtis_only | 1 | training | 1399 | — | — | — | — | — | — | — |
-| segformer_b0 | rtis_only | 2 | training | 849 | — | — | — | — | — | — | — |
-| segformer_b0 | cityscapes_to_rtis | 0 | training | 699 | — | — | — | — | — | — | — |
-| segformer_b0 | cityscapes_to_rtis | 1 | training | 499 | — | — | — | — | — | — | — |
-| segformer_b0 | cityscapes_to_rtis | 2 | training | 349 | — | — | — | — | — | — | — |
-| segformer_b0 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| segformer_b0 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
+| segformer_b0 | rtis_only | 0 | training | 1649 | — | — | — | — | — | — | — |
+| segformer_b0 | rtis_only | 1 | training | 1549 | — | — | — | — | — | — | — |
+| segformer_b0 | rtis_only | 2 | training | 999 | — | — | — | — | — | — | — |
+| segformer_b0 | cityscapes_to_rtis | 0 | training | 849 | — | — | — | — | — | — | — |
+| segformer_b0 | cityscapes_to_rtis | 1 | training | 599 | — | — | — | — | — | — | — |
+| segformer_b0 | cityscapes_to_rtis | 2 | training | 449 | — | — | — | — | — | — | — |
+| segformer_b0 | railsem19_to_rtis | 0 | training | 49 | — | — | — | — | — | — | — |
+| segformer_b0 | railsem19_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
 | segformer_b0 | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | segformer_b0 | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | segformer_b0 | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -338,6 +338,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 25.42 | 0.70 |
 | 1017 | 25.23 | 1.01 |
 | 1272 | 26.10 | 3.46 |
+| 1527 | 26.73 | 1.21 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -807,6 +808,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 18.49 | 2.91 |
 | 508 | 22.03 | 0.97 |
+| 763 | 23.40 | 1.24 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1040,6 +1042,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 18.77 | 2.20 |
+| 508 | 21.72 | 2.11 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1435,7 +1438,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T01:21:04.476775+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b0`.
 
@@ -1667,7 +1670,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 1
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T01:21:48.236196+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b0`.
 
