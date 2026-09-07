@@ -573,9 +573,9 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 0 | completed | 3563 | 2290 | 5.41 | 7.66 | 15.57 | 2.23 | 41.38 | 48.28 |
 | [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 1 | completed | 2545 | 1272 | 4.76 | 6.72 | 14.03 | 3.53 | 46.78 | 49.37 |
 | [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 2 | completed | 2800 | 1527 | 3.57 | 4.58 | 13.91 | 1.65 | 39.31 | 45.86 |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 3449 | — | — | — | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 3399 | — | — | — | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 3149 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 3649 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 1 | collecting | 3563 | 2290 | 7.30 | 14.96 | 12.47 | 2.52 | 39.49 | 46.07 |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 3349 | — | — | — | — | — | — | — |
 
 </details>
 
@@ -1026,7 +1026,7 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 1 | 13.46 | 7.68 | 3588.05 | 21.50 |
 | [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 2 | 13.46 | 7.68 | 3951.82 | 21.78 |
 | [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 0 | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 1 | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 1 | 13.46 | 7.68 | 5033.52 | 21.80 |
 | [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 2 | — | — | — | — |
 
 </details>
