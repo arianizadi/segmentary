@@ -3942,7 +3942,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2849,
+      "observed_step": 2949,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3950,7 +3950,7 @@
       "model": "smp_pan_resnext50",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2545,
       "observed_step": null,
       "record": "models/smp_pan_resnext50/record.json"
@@ -3970,7 +3970,7 @@
       "model": "smp_pan_resnext50",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 1781,
       "observed_step": null,
       "record": "models/smp_pan_resnext50/record.json"
@@ -3980,9 +3980,9 @@
       "model": "smp_pan_resnext50",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1649,
+      "status": "evaluating",
+      "final_step": 1781,
+      "observed_step": null,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3992,7 +3992,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1199,
+      "observed_step": 1349,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -4002,7 +4002,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1049,
+      "observed_step": 1199,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -4012,7 +4012,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1017,
+      "observed_step": 1149,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -4022,7 +4022,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 299,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -4032,7 +4032,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 299,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -4042,7 +4042,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 149,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -4050,7 +4050,7 @@
       "model": "smp_pan_resnext50",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_pan_resnext50/record.json"
@@ -4060,7 +4060,7 @@
       "model": "smp_pspnet_mobilenet_v2",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_pspnet_mobilenet_v2/record.json"

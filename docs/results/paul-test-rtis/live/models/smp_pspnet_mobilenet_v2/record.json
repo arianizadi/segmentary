@@ -463,7 +463,10 @@
       "config_sha256": "b407a30fee8d85ed2188bfff826d207ea29abb781044568ab5a628b8e9c8dd01",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-07T08:48:13.578227+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_pspnet_mobilenet_v2--rtis_only--seed-0",
         "model": {
