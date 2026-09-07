@@ -3860,7 +3860,7 @@
       "model": "smp_manet_efficientnet_b0",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 3054,
       "observed_step": null,
       "record": "models/smp_manet_efficientnet_b0/record.json"
@@ -3902,7 +3902,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2549,
+      "observed_step": 2649,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3912,7 +3912,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1599,
+      "observed_step": 1749,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3930,9 +3930,9 @@
       "model": "smp_manet_efficientnet_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1499,
+      "status": "collecting",
+      "final_step": 1527,
+      "observed_step": null,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3942,7 +3942,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1499,
+      "observed_step": 1649,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3952,7 +3952,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1349,
+      "observed_step": 1527,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3962,7 +3962,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 649,
+      "observed_step": 799,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3972,7 +3972,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 599,
+      "observed_step": 749,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3982,7 +3982,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 499,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3990,7 +3990,7 @@
       "model": "smp_pan_resnext50",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_pan_resnext50/record.json"

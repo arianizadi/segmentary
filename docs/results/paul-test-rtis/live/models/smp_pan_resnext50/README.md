@@ -6,12 +6,12 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_pan_resnext50 | rtis_only | 0 | training | 1499 | — | — | — | — | — | — | — |
-| smp_pan_resnext50 | rtis_only | 1 | training | 1349 | — | — | — | — | — | — | — |
-| smp_pan_resnext50 | rtis_only | 2 | training | 649 | — | — | — | — | — | — | — |
-| smp_pan_resnext50 | cityscapes_to_rtis | 0 | training | 599 | — | — | — | — | — | — | — |
-| smp_pan_resnext50 | cityscapes_to_rtis | 1 | training | 349 | — | — | — | — | — | — | — |
-| smp_pan_resnext50 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | rtis_only | 0 | training | 1649 | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | rtis_only | 1 | training | 1527 | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | rtis_only | 2 | training | 799 | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | cityscapes_to_rtis | 0 | training | 749 | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | cityscapes_to_rtis | 1 | training | 499 | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | cityscapes_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
 | smp_pan_resnext50 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | smp_pan_resnext50 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | smp_pan_resnext50 | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -100,6 +100,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 22.71 | 0.91 |
 | 1017 | 25.91 | 2.43 |
 | 1272 | 26.65 | 0.27 |
+| 1527 | 27.83 | 0.35 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -337,6 +338,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 25.78 | 5.62 |
 | 1017 | 27.09 | 5.65 |
 | 1272 | 27.79 | 7.60 |
+| 1527 | 26.50 | 1.86 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -571,6 +573,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 19.36 | 1.80 |
 | 508 | 20.85 | 0.02 |
+| 763 | 23.23 | 0.45 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1200,7 +1203,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T08:34:46.496346+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "smp", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": "resnext50_32x4d", "encoder_weights": "imagenet", "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": null, "revision": null, "smp_arch": "PAN", "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
