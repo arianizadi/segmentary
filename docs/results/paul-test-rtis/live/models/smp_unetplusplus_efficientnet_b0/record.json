@@ -463,7 +463,10 @@
       "config_sha256": "b16d8bdf664069325dbd6c4ead7313590d817562f961839a33d5d8e78e366186",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 9,
+      "started_at": "2026-09-07T09:46:45.661147+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_unetplusplus_efficientnet_b0--rtis_only--seed-0",
         "model": {
