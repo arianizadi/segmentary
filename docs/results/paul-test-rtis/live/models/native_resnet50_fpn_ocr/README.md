@@ -6,16 +6,16 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| native_resnet50_fpn_ocr | rtis_only | 0 | training | 1499 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | rtis_only | 1 | training | 1449 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | rtis_only | 2 | training | 1249 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | cityscapes_to_rtis | 0 | training | 1099 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | cityscapes_to_rtis | 1 | training | 1049 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | cityscapes_to_rtis | 2 | training | 999 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | railsem19_to_rtis | 0 | training | 649 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | railsem19_to_rtis | 1 | training | 199 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | railsem19_to_rtis | 2 | training | 149 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | rtis_only | 0 | training | 1599 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | rtis_only | 1 | training | 1549 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | rtis_only | 2 | training | 1349 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | cityscapes_to_rtis | 0 | training | 1199 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | cityscapes_to_rtis | 1 | training | 1199 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | cityscapes_to_rtis | 2 | training | 1099 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | railsem19_to_rtis | 0 | training | 763 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | railsem19_to_rtis | 1 | training | 299 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | railsem19_to_rtis | 2 | training | 254 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | cityscapes_to_railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | native_resnet50_fpn_ocr | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | native_resnet50_fpn_ocr | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 
@@ -100,6 +100,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 21.89 | 0.31 |
 | 1017 | 23.20 | 0.56 |
 | 1272 | 24.87 | 0.71 |
+| 1527 | 27.95 | 1.09 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -375,6 +376,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 20.30 | 0.32 |
 | 1017 | 24.90 | 0.21 |
 | 1272 | 23.72 | 0.05 |
+| 1527 | 29.53 | 0.33 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -649,6 +651,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 19.40 | 0.40 |
 | 763 | 20.80 | 0.48 |
 | 1017 | 23.07 | 2.09 |
+| 1272 | 24.75 | 1.31 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1470,6 +1473,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 22.07 | 0.76 |
 | 508 | 25.40 | 0.00 |
 | 763 | 28.56 | 0.11 |
+| 1017 | 30.83 | 0.55 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1742,6 +1746,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 30.03 | 0.21 |
 | 508 | 39.49 | 11.10 |
+| 763 | 37.39 | 0.26 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -2012,6 +2017,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 27.60 | 0.03 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -2282,6 +2288,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 28.40 | 0.07 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -2482,7 +2489,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T00:01:38.017848+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": null, "encoder_weights": null, "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": {"auxiliary_heads": [], "backbone": {"in_channels": 3, "kind": "timm", "name": "resnet50.a1_in1k", "out_indices": [1, 2, 3, 4], "weights": "pretrained"}, "head": {"activation": "relu", "attention_scale": 1, "channels": 512, "coarse_loss_weight": 0.4, "dropout": 0.05, "in_indices": [0, 1, 2, 3], "key_channels": 256, "kind": "ocr", "norm": "group"}, "neck": {"activation": "relu", "kind": "fpn", "norm": "group", "num_outputs": 4, "out_channels": 256}, "task": "multiclass"}, "revision": null, "smp_arch": null, "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
