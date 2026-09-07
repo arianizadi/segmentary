@@ -6,15 +6,15 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| native_resnet50_fpn_ocr | rtis_only | 0 | training | 1299 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | rtis_only | 1 | training | 1299 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | rtis_only | 2 | training | 1049 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | cityscapes_to_rtis | 0 | training | 949 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | cityscapes_to_rtis | 1 | training | 899 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | cityscapes_to_rtis | 2 | training | 799 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | railsem19_to_rtis | 0 | training | 499 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | railsem19_to_rtis | 1 | training | 49 | — | — | — | — | — | — | — |
-| native_resnet50_fpn_ocr | railsem19_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | rtis_only | 0 | training | 1499 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | rtis_only | 1 | training | 1449 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | rtis_only | 2 | training | 1249 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | cityscapes_to_rtis | 0 | training | 1099 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | cityscapes_to_rtis | 1 | training | 1049 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | cityscapes_to_rtis | 2 | training | 999 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | railsem19_to_rtis | 0 | training | 649 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | railsem19_to_rtis | 1 | training | 199 | — | — | — | — | — | — | — |
+| native_resnet50_fpn_ocr | railsem19_to_rtis | 2 | training | 149 | — | — | — | — | — | — | — |
 | native_resnet50_fpn_ocr | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | native_resnet50_fpn_ocr | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | native_resnet50_fpn_ocr | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -922,6 +922,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 22.33 | 0.27 |
 | 508 | 22.00 | 0.61 |
 | 763 | 27.25 | 0.05 |
+| 1017 | 29.25 | 0.00 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1195,6 +1196,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 22.68 | 0.15 |
 | 508 | 21.40 | 0.02 |
 | 763 | 28.61 | 0.01 |
+| 1017 | 29.23 | 0.14 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1739,6 +1741,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 30.03 | 0.21 |
+| 508 | 39.49 | 11.10 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
