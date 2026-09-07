@@ -6,10 +6,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| upernet_convnext | rtis_only | 0 | training | 599 | — | — | — | — | — | — | — |
-| upernet_convnext | rtis_only | 1 | training | 299 | — | — | — | — | — | — | — |
-| upernet_convnext | rtis_only | 2 | training | 249 | — | — | — | — | — | — | — |
-| upernet_convnext | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
+| upernet_convnext | rtis_only | 0 | training | 749 | — | — | — | — | — | — | — |
+| upernet_convnext | rtis_only | 1 | training | 449 | — | — | — | — | — | — | — |
+| upernet_convnext | rtis_only | 2 | training | 349 | — | — | — | — | — | — | — |
+| upernet_convnext | cityscapes_to_rtis | 0 | training | 99 | — | — | — | — | — | — | — |
 | upernet_convnext | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | upernet_convnext | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | upernet_convnext | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -562,6 +562,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 28.68 | 0.14 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
