@@ -463,7 +463,10 @@
       "config_sha256": "cc28c7cd23c60434c99889dbddc33bbb6e71b7ad84ebbe5c4570d02eb56803e2",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 3,
+      "started_at": "2026-09-07T08:18:12.205366+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_pan_resnext50--rtis_only--seed-0",
         "model": {

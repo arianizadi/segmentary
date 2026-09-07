@@ -6,7 +6,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_pan_resnext50 | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | rtis_only | 0 | training | — | — | — | — | — | — | — | — |
 | smp_pan_resnext50 | rtis_only | 1 | queued | — | — | — | — | — | — | — | — |
 | smp_pan_resnext50 | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
 | smp_pan_resnext50 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -25,7 +25,7 @@ Training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256: `71fef
 
 ## rtis_only — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T08:18:12.205366+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "smp", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": "resnext50_32x4d", "encoder_weights": "imagenet", "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": null, "revision": null, "smp_arch": "PAN", "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
