@@ -16,7 +16,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | segformer_b5 | railsem19_to_rtis | 1 | completed | 3563 | 2290 | 7.14 | 10.12 | 19.54 | 6.44 | 46.85 | 54.66 |
 | segformer_b5 | railsem19_to_rtis | 2 | completed | 3818 | 2545 | 5.50 | 8.06 | 14.77 | 4.20 | 45.96 | 53.63 |
 | segformer_b5 | cityscapes_to_railsem19_to_rtis | 0 | completed | 3818 | 2545 | 4.04 | 4.50 | 27.96 | 3.10 | 47.39 | 50.03 |
-| segformer_b5 | cityscapes_to_railsem19_to_rtis | 1 | collecting | 4000 | 3818 | 6.55 | 7.36 | 37.32 | 6.20 | 45.95 | 51.06 |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | 1 | completed | 4000 | 3818 | 6.55 | 7.36 | 37.32 | 6.20 | 45.95 | 51.06 |
 | segformer_b5 | cityscapes_to_railsem19_to_rtis | 2 | completed | 3818 | 2545 | 4.69 | 5.38 | 26.63 | 3.92 | 45.41 | 50.46 |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
@@ -9539,7 +9539,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 1
 
-Status: **collecting**. Started: 2026-09-07T03:49:12.223612+00:00. Finished: —.
+Status: **completed**. Started: 2026-09-07T03:49:12.223612+00:00. Finished: 2026-09-07T05:43:11.334004+00:00.
 
 Recipe pretrained initializer: `nvidia/mit-b5`.
 
@@ -9581,7 +9581,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 1.26 |
 | Best full-state checkpoint (MiB) | 1292.96 |
 | Final full-state checkpoint (MiB) | 1292.91 |
-| Audited periodic checkpoints removed (GiB) | — |
+| Audited periodic checkpoints removed (GiB) | 10.10 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -9591,12 +9591,218 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Status | Parameters | Weight MiB | FPS | p50 ms | p95 ms | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- |
-| waiting_for_idle_gpu | — | — | — | — | — | — |
+| complete | 84609493 | 322.76 | 26.44 | 37.29 | 41.73 | 2.57 |
 
 ```json
 {
-  "status": "waiting_for_idle_gpu",
-  "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+  "schema_version": 1,
+  "model_id": "segformer_b5",
+  "measured_at": "2026-09-07T05:42:57+00:00",
+  "status": "complete",
+  "benchmark_scope": "rtis_selected_checkpoint_model_only",
+  "applies_to": [
+    "segformer_b5--cityscapes_to_railsem19_to_rtis--seed-1"
+  ],
+  "source": {
+    "campaign_git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+    "git_dirty": false,
+    "config_hash": "5e9610ae7f64",
+    "resolved_config": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/configs/segformer_b5--cityscapes_to_railsem19_to_rtis--seed-1.yaml",
+    "config_sha256": "1c375e7abc1f32b1e30fd199eb30fb10d906818e4d326f0fe421c5a96ff31ec2",
+    "checkpoint_sha256": "5893d1c8c4f631b6889ffb6ec2dca4619de75606584fda9b6cc31dd0b8dbbd55",
+    "checkpoint_global_step": 3818,
+    "checkpoint_bytes": 1355768057,
+    "checkpoint_kind": "resume checkpoint with optimizer and EMA state",
+    "weights": "raw",
+    "measured_checkpoint_job_id": "segformer_b5--cityscapes_to_railsem19_to_rtis--seed-1",
+    "result_sha256": "b54ae209c92983f723c83bd62540e7dd70091cb02a04e1b22172a746cf4484e1",
+    "result_git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+    "result_stage": "eval:paul-test-rtis:val",
+    "result_seed": 1
+  },
+  "hardware": {
+    "gpu_name": "NVIDIA L40S",
+    "gpu_uuid": "GPU-84f5ca4d-68db-ae98-d056-40654d859dd9",
+    "logical_device": "cuda:0",
+    "physical_visibility_token": "0",
+    "compute_capability": [
+      8,
+      9
+    ],
+    "total_memory_bytes": 47677177856
+  },
+  "model": {
+    "parameter_count": 84609493,
+    "trainable_parameter_count": 84609493,
+    "resident_parameter_bytes": 338437972,
+    "parameter_dtype_counts": {
+      "float32": 84609493
+    }
+  },
+  "contract": {
+    "backend": "pytorch",
+    "precision": "bf16_autocast",
+    "batch_size": 1,
+    "input_shape_nchw": [
+      1,
+      3,
+      1024,
+      1024
+    ],
+    "warmup_iterations": 20,
+    "measured_iterations": 100,
+    "timing": "per-forward CUDA events with end-event synchronization",
+    "includes_preprocessing": false,
+    "includes_data_loader": false,
+    "includes_sliding_window": false,
+    "input_resident_on_gpu": true,
+    "model_only": true,
+    "entrypoint": "public model(image) dense-logits forward"
+  },
+  "measurements": {
+    "latency": {
+      "p50_ms": 37.29302406311035,
+      "p95_ms": 41.72539024353027,
+      "mean_ms": 37.8247452545166,
+      "minimum_ms": 36.425758361816406,
+      "maximum_ms": 44.12108612060547,
+      "fps": 26.437719362580278,
+      "raw_ms": [
+        37.644287109375,
+        36.801536560058594,
+        36.979713439941406,
+        36.5404167175293,
+        36.67660903930664,
+        37.025760650634766,
+        36.68684768676758,
+        38.63449478149414,
+        36.9356803894043,
+        37.295040130615234,
+        38.563838958740234,
+        37.21113586425781,
+        37.535743713378906,
+        37.07084655761719,
+        37.92588806152344,
+        37.18860626220703,
+        38.08972930908203,
+        37.173248291015625,
+        41.37984085083008,
+        37.086143493652344,
+        36.67660903930664,
+        39.39020919799805,
+        37.22547149658203,
+        37.215232849121094,
+        37.72723388671875,
+        37.25823974609375,
+        36.60185623168945,
+        37.30022430419922,
+        36.88447952270508,
+        36.717567443847656,
+        38.4266242980957,
+        36.66227340698242,
+        36.699134826660156,
+        38.198272705078125,
+        37.25209426879883,
+        37.69343948364258,
+        36.87628936767578,
+        37.50297546386719,
+        37.53779220581055,
+        38.89766311645508,
+        38.67638397216797,
+        36.713470458984375,
+        38.05081558227539,
+        36.94182586669922,
+        42.253440856933594,
+        37.49776077270508,
+        37.0780143737793,
+        36.66944122314453,
+        36.68899154663086,
+        37.517311096191406,
+        38.88332748413086,
+        38.84748840332031,
+        36.77695846557617,
+        38.20134353637695,
+        36.83843231201172,
+        39.02259063720703,
+        36.74931335449219,
+        36.68467330932617,
+        38.87001419067383,
+        37.29100799560547,
+        38.140926361083984,
+        37.23161697387695,
+        37.07699203491211,
+        41.71571350097656,
+        37.380096435546875,
+        37.242881774902344,
+        36.879390716552734,
+        37.3678092956543,
+        37.756927490234375,
+        39.33695983886719,
+        39.014400482177734,
+        38.61811065673828,
+        37.81836700439453,
+        37.64326477050781,
+        38.436767578125,
+        37.42720031738281,
+        38.45427322387695,
+        36.8721923828125,
+        41.90924835205078,
+        37.171199798583984,
+        38.60889434814453,
+        36.88140869140625,
+        43.74732971191406,
+        36.78412628173828,
+        37.90131378173828,
+        37.62188720703125,
+        44.12108612060547,
+        36.5035514831543,
+        36.838401794433594,
+        37.20908737182617,
+        42.22771072387695,
+        37.0656623840332,
+        38.0579833984375,
+        36.76979064941406,
+        38.791168212890625,
+        36.75337600708008,
+        36.425758361816406,
+        36.622337341308594,
+        37.592063903808594,
+        37.01555252075195
+      ],
+      "percentile_method": "numpy linear interpolation"
+    },
+    "peak_reserved_bytes": 2755657728,
+    "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
+    "benchmark_wall_clock_s": 7.781650833785534
+  },
+  "started_at": "2026-09-07T05:42:49+00:00",
+  "finished_at": "2026-09-07T05:42:57+00:00",
+  "environment": {
+    "hostname": "hdrfs-app-001",
+    "python": "3.11.15",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "cuda_available": true,
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "cuda_visible_devices": "0",
+    "packages": {
+      "segmentary": "0.1.0",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0",
+      "timm": "1.0.28",
+      "segmentation-models-pytorch": "0.5.0",
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4"
+    }
+  }
 }
 ```
 
@@ -9625,6 +9831,45 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | tram-track | 56179 | 61.69 | 82.70 | 70.83 | 76.31 | 67.01 |
 | truck | 0 | — | — | — | — | — |
 | vegetation-overgrowth | 5901821 | 46.00 | 78.98 | 52.42 | 63.02 | 70.20 |
+
+### Full-run accounting
+
+| Measurement | Value |
+| --- | --- |
+| Full GPU-reserved wall seconds, all recorded worker attempts | 6840.04 |
+| Full reserved GPU-hours | 1.90 |
+| Whole-run timing complete | True |
+
+| Phase | Wall seconds including failed attempts |
+| --- | --- |
+| training | 6532.65 |
+| diagnostics | 235.89 |
+| performance | 17.50 |
+
+GPU-reserved time includes model loading, training, validation, collection, profiling, checkpoint I/O and orchestration while the worker owns one GPU. It is not GPU kernel-active time. Phase timings and sampled device memory/power/utilization are retained separately; sampled device memory is not the allocator high-water mark.
+
+### Train/validation and raw/EMA diagnostics
+
+| Checkpoint / weights / split | Images | Mud IoU (%) | Mud precision (%) | Mud recall (%) |
+| --- | --- | --- | --- | --- |
+| best-auto-train / raw | 220 | 95.79 | 97.53 | 98.17 |
+| best-auto-val / raw | 37 | 6.55 | 7.36 | 37.32 |
+| best-alternate-val / ema | 37 | 3.86 | 4.49 | 21.56 |
+| final-auto-val / raw | 37 | 6.20 | 7.23 | 30.33 |
+
+Train uses the evaluation transform without augmentation. Compare mud train/validation metrics for the same selected weights. Alternate EMA on running-stat BatchNorm is explicitly uncalibrated and is diagnostic only. Score-threshold curves use uncalibrated normalized scores and are pixel-level diagnostics, not event detection rates or a selected deployment operating point.
+
+### Downloadable evidence
+
+- best-auto-train: [per-image.csv](cityscapes_to_railsem19_to_rtis--seed-1/best-auto-train/per-image.csv) · [per-image-confusion.json.gz](cityscapes_to_railsem19_to_rtis--seed-1/best-auto-train/per-image-confusion.json.gz) · [groups.json](cityscapes_to_railsem19_to_rtis--seed-1/best-auto-train/groups.json) · [mud-score-curves.json](cityscapes_to_railsem19_to_rtis--seed-1/best-auto-train/mud-score-curves.json)
+- best-auto-val: [per-image.csv](cityscapes_to_railsem19_to_rtis--seed-1/best-auto-val/per-image.csv) · [per-image-confusion.json.gz](cityscapes_to_railsem19_to_rtis--seed-1/best-auto-val/per-image-confusion.json.gz) · [groups.json](cityscapes_to_railsem19_to_rtis--seed-1/best-auto-val/groups.json) · [mud-score-curves.json](cityscapes_to_railsem19_to_rtis--seed-1/best-auto-val/mud-score-curves.json) · [examples.jpg](cityscapes_to_railsem19_to_rtis--seed-1/best-auto-val/examples.jpg)
+- best-alternate-val: [per-image.csv](cityscapes_to_railsem19_to_rtis--seed-1/best-alternate-val/per-image.csv) · [per-image-confusion.json.gz](cityscapes_to_railsem19_to_rtis--seed-1/best-alternate-val/per-image-confusion.json.gz) · [groups.json](cityscapes_to_railsem19_to_rtis--seed-1/best-alternate-val/groups.json) · [mud-score-curves.json](cityscapes_to_railsem19_to_rtis--seed-1/best-alternate-val/mud-score-curves.json)
+- final-auto-val: [per-image.csv](cityscapes_to_railsem19_to_rtis--seed-1/final-auto-val/per-image.csv) · [per-image-confusion.json.gz](cityscapes_to_railsem19_to_rtis--seed-1/final-auto-val/per-image-confusion.json.gz) · [groups.json](cityscapes_to_railsem19_to_rtis--seed-1/final-auto-val/groups.json) · [mud-score-curves.json](cityscapes_to_railsem19_to_rtis--seed-1/final-auto-val/mud-score-curves.json)
+- resources: [telemetry.csv](cityscapes_to_railsem19_to_rtis--seed-1/resources/telemetry.csv)
+
+![Selected-checkpoint validation examples](cityscapes_to_railsem19_to_rtis--seed-1/best-auto-val/examples.jpg)
+
+Examples are two lowest and two highest mud-IoU positive images, plus up to two negative images with the most false-positive mud pixels. They are targeted diagnostic examples, not random samples. Green: true positive; red: false positive; yellow: false negative. Full predictions remain on HDRFS.
 
 ### Validation tracking
 
