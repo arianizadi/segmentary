@@ -3622,7 +3622,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2249,
+      "observed_step": 2599,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3632,7 +3632,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2099,
+      "observed_step": 2449,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3642,7 +3642,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2036,
+      "observed_step": 2349,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3650,9 +3650,9 @@
       "model": "smp_fpn_resnet50",
       "protocol": "railsem19_to_rtis",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1781,
+      "status": "collecting",
+      "final_step": 2036,
+      "observed_step": null,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3662,7 +3662,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1699,
+      "observed_step": 2036,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3672,7 +3672,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1349,
+      "observed_step": 1699,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3682,7 +3682,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1199,
+      "observed_step": 1499,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3692,7 +3692,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 763,
+      "observed_step": 1099,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3702,7 +3702,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 549,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3712,7 +3712,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 299,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {

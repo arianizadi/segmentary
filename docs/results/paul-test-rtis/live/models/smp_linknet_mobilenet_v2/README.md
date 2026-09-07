@@ -6,8 +6,8 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_linknet_mobilenet_v2 | rtis_only | 0 | training | 199 | — | — | — | — | — | — | — |
-| smp_linknet_mobilenet_v2 | rtis_only | 1 | training | — | — | — | — | — | — | — | — |
+| smp_linknet_mobilenet_v2 | rtis_only | 0 | training | 549 | — | — | — | — | — | — | — |
+| smp_linknet_mobilenet_v2 | rtis_only | 1 | training | 299 | — | — | — | — | — | — | — |
 | smp_linknet_mobilenet_v2 | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
 | smp_linknet_mobilenet_v2 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | smp_linknet_mobilenet_v2 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -95,6 +95,8 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 7.53 | 0.54 |
+| 508 | 13.65 | 6.53 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -327,6 +329,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 11.42 | 1.03 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
