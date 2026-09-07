@@ -667,6 +667,14 @@
           {
             "step": 849,
             "value": 0.11173486709594727
+          },
+          {
+            "step": 899,
+            "value": 0.11279866844415665
+          },
+          {
+            "step": 949,
+            "value": 0.07451403886079788
           }
         ],
         "val/miou": [
@@ -2170,7 +2178,7 @@
           }
         ]
       },
-      "observed_step": 849,
+      "observed_step": 949,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2364,6 +2372,14 @@
           {
             "step": 549,
             "value": 0.1559203416109085
+          },
+          {
+            "step": 599,
+            "value": 0.14083021879196167
+          },
+          {
+            "step": 649,
+            "value": 0.08682987093925476
           }
         ],
         "val/miou": [
@@ -3447,7 +3463,7 @@
           }
         ]
       },
-      "observed_step": 549,
+      "observed_step": 649,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -3637,6 +3653,10 @@
           {
             "step": 499,
             "value": 0.22221778333187103
+          },
+          {
+            "step": 549,
+            "value": 0.1477980613708496
           }
         ],
         "val/miou": [
@@ -4708,7 +4728,7 @@
           }
         ]
       },
-      "observed_step": 508,
+      "observed_step": 549,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -4886,6 +4906,10 @@
           {
             "step": 249,
             "value": 0.506432831287384
+          },
+          {
+            "step": 299,
+            "value": 0.32298240065574646
           }
         ],
         "val/miou": [
@@ -5501,7 +5525,7 @@
           }
         ]
       },
-      "observed_step": 254,
+      "observed_step": 299,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -5658,6 +5682,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.0251119136810303
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -5679,7 +5712,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-07T12:27:55.773159+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "upernet_convnext--cityscapes_to_rtis--seed-2",
         "model": {
