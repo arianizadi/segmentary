@@ -6,11 +6,11 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| native_resnet50_psp | rtis_only | 0 | training | 1149 | — | — | — | — | — | — | — |
-| native_resnet50_psp | rtis_only | 1 | training | 1017 | — | — | — | — | — | — | — |
-| native_resnet50_psp | rtis_only | 2 | training | 399 | — | — | — | — | — | — | — |
-| native_resnet50_psp | cityscapes_to_rtis | 0 | training | 254 | — | — | — | — | — | — | — |
-| native_resnet50_psp | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
+| native_resnet50_psp | rtis_only | 0 | training | 1899 | — | — | — | — | — | — | — |
+| native_resnet50_psp | rtis_only | 1 | training | 1749 | — | — | — | — | — | — | — |
+| native_resnet50_psp | rtis_only | 2 | training | 1099 | — | — | — | — | — | — | — |
+| native_resnet50_psp | cityscapes_to_rtis | 0 | training | 999 | — | — | — | — | — | — | — |
+| native_resnet50_psp | cityscapes_to_rtis | 1 | training | 699 | — | — | — | — | — | — | — |
 | native_resnet50_psp | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | native_resnet50_psp | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | native_resnet50_psp | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -99,6 +99,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 19.34 | 0.00 |
 | 763 | 26.34 | 0.19 |
 | 1017 | 28.03 | 1.06 |
+| 1272 | 29.65 | 3.96 |
+| 1527 | 31.19 | 1.27 |
+| 1781 | 29.98 | 0.83 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -367,6 +370,8 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 23.44 | 0.08 |
 | 763 | 25.21 | 1.24 |
 | 1017 | 26.75 | 3.11 |
+| 1272 | 24.76 | 1.39 |
+| 1527 | 28.97 | 0.36 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -632,6 +637,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 15.59 | 0.33 |
+| 508 | 22.01 | 0.32 |
+| 763 | 24.08 | 2.28 |
+| 1017 | 25.59 | 2.24 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -897,6 +905,8 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 19.49 | 0.91 |
+| 508 | 27.32 | 6.69 |
+| 763 | 27.31 | 5.40 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1161,6 +1171,8 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 19.45 | 0.00 |
+| 508 | 22.95 | 0.00 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
