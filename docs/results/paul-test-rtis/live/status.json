@@ -3902,7 +3902,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2649,
+      "observed_step": 2799,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3912,7 +3912,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1749,
+      "observed_step": 1849,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3920,7 +3920,7 @@
       "model": "smp_manet_efficientnet_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 1527,
       "observed_step": null,
       "record": "models/smp_manet_efficientnet_b0/record.json"
@@ -3930,7 +3930,7 @@
       "model": "smp_manet_efficientnet_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 1527,
       "observed_step": null,
       "record": "models/smp_manet_efficientnet_b0/record.json"
@@ -3942,7 +3942,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1649,
+      "observed_step": 1781,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3952,7 +3952,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1527,
+      "observed_step": 1649,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3962,7 +3962,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 799,
+      "observed_step": 949,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3972,7 +3972,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 749,
+      "observed_step": 899,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3982,7 +3982,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 499,
+      "observed_step": 599,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3992,7 +3992,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 149,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -4000,7 +4000,7 @@
       "model": "smp_pan_resnext50",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_pan_resnext50/record.json"
@@ -4010,7 +4010,7 @@
       "model": "smp_pan_resnext50",
       "protocol": "railsem19_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_pan_resnext50/record.json"
