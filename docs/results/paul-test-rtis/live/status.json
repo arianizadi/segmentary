@@ -4670,9 +4670,9 @@
       "model": "upernet_convnext",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2290,
+      "status": "collecting",
+      "final_step": 2290,
+      "observed_step": null,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4682,7 +4682,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2199,
+      "observed_step": 2290,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4702,7 +4702,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1699,
+      "observed_step": 1749,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4710,7 +4710,7 @@
       "model": "upernet_convnext",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 1527,
       "observed_step": null,
       "record": "models/upernet_convnext/record.json"
@@ -4722,7 +4722,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1499,
+      "observed_step": 1549,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4732,7 +4732,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 749,
+      "observed_step": 799,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4742,7 +4742,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 299,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4752,7 +4752,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 249,
+      "observed_step": 299,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4762,7 +4762,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 254,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4770,7 +4770,7 @@
       "model": "upernet_convnext",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/upernet_convnext/record.json"

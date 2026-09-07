@@ -1,6 +1,6 @@
 # RTIS model comparison
 
-**421/432 completed · 0 failed**
+**422/432 completed · 0 failed**
 
 Overall segmentation quality and mud-pumping results across four initialization paths. Every completed job includes quality evaluation, training diagnostics and isolated performance profiling.
 
@@ -49,7 +49,7 @@ Validation **mIoU (%)** across classes. Cells show the mean over completed seeds
 | [smp_unetplusplus_efficientnet_b0](models/smp_unetplusplus_efficientnet_b0/README.md) | 12/12 | 21.74 | 22.64 | 30.84 | 25.71 |
 | [smp_upernet_mit_b0](models/smp_upernet_mit_b0/README.md) | 12/12 | 22.68 | 27.92 | 37.54 | 37.50 |
 | [smp_upernet_resnet101](models/smp_upernet_resnet101/README.md) | 12/12 | 29.74 | 24.83 | 38.89 | 31.62 |
-| [upernet_convnext](models/upernet_convnext/README.md) | 1/12 | — | 25.93 | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | 2/12 | — | 25.37 | — | — |
 
 ## Mud-pumping
 
@@ -92,7 +92,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [smp_unetplusplus_efficientnet_b0](models/smp_unetplusplus_efficientnet_b0/README.md) | 12/12 | 5.01 | 6.69 | 5.30 | 12.85 |
 | [smp_upernet_mit_b0](models/smp_upernet_mit_b0/README.md) | 12/12 | 4.39 | 14.86 | 9.01 | 14.84 |
 | [smp_upernet_resnet101](models/smp_upernet_resnet101/README.md) | 12/12 | 6.94 | 13.53 | 8.94 | 10.96 |
-| [upernet_convnext](models/upernet_convnext/README.md) | 1/12 | — | 6.69 | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | 2/12 | — | 6.30 | — | — |
 
 ## Standardized model-only inference
 
@@ -135,7 +135,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [smp_unetplusplus_efficientnet_b0](models/smp_unetplusplus_efficientnet_b0/README.md) | 12/12 | 68.62 | 69.74 | 70.92 | 68.79 |
 | [smp_upernet_mit_b0](models/smp_upernet_mit_b0/README.md) | 12/12 | 54.32 | 54.07 | 54.03 | 54.14 |
 | [smp_upernet_resnet101](models/smp_upernet_resnet101/README.md) | 12/12 | 68.86 | 71.30 | 72.04 | 71.87 |
-| [upernet_convnext](models/upernet_convnext/README.md) | 1/12 | — | 38.30 | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | 2/12 | — | 40.29 | — | — |
 
 <details>
 <summary>Individual runs: quality, mud precision/recall, steps and status</summary>
@@ -565,17 +565,17 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [smp_upernet_resnet101](models/smp_upernet_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 1 | completed | 1527 | 254 | 6.57 | 9.53 | 17.43 | 2.60 | 27.31 | 28.83 |
 | [smp_upernet_resnet101](models/smp_upernet_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 2 | completed | 1527 | 254 | 15.76 | 31.67 | 23.87 | 4.45 | 28.00 | 29.56 |
 | [upernet_convnext](models/upernet_convnext/README.md) | rtis_only | 0 | collecting | 2545 | 1272 | 9.36 | 17.88 | 16.43 | 2.60 | 35.24 | 39.15 |
-| [upernet_convnext](models/upernet_convnext/README.md) | rtis_only | 1 | training | 2290 | — | — | — | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | rtis_only | 2 | training | 2199 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | rtis_only | 1 | collecting | 2290 | 1018 | 4.64 | 5.80 | 18.86 | 0.50 | 32.26 | 37.64 |
+| [upernet_convnext](models/upernet_convnext/README.md) | rtis_only | 2 | training | 2290 | — | — | — | — | — | — | — |
 | [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_rtis | 0 | completed | 1527 | 254 | 6.69 | 10.96 | 14.65 | 4.15 | 25.93 | 27.37 |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_rtis | 1 | training | 1699 | — | — | — | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_rtis | 2 | collecting | 1527 | 254 | 5.91 | 10.74 | 11.63 | 1.00 | 24.81 | 26.19 |
-| [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 0 | training | 1499 | — | — | — | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 1 | training | 749 | — | — | — | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 2 | training | 254 | — | — | — | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 249 | — | — | — | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 199 | — | — | — | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_rtis | 1 | training | 1749 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_rtis | 2 | completed | 1527 | 254 | 5.91 | 10.74 | 11.63 | 1.00 | 24.81 | 26.19 |
+| [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 0 | training | 1549 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 1 | training | 799 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 2 | training | 299 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 299 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 254 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
 
 </details>
 
@@ -1017,7 +1017,7 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [smp_upernet_resnet101](models/smp_upernet_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 1 | 11.08 | 7.69 | 1313.84 | 15.93 |
 | [smp_upernet_resnet101](models/smp_upernet_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 2 | 11.08 | 7.69 | 1309.86 | 15.85 |
 | [upernet_convnext](models/upernet_convnext/README.md) | rtis_only | 0 | 13.46 | 7.68 | 3580.41 | 21.89 |
-| [upernet_convnext](models/upernet_convnext/README.md) | rtis_only | 1 | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | rtis_only | 1 | 13.46 | 7.68 | 3236.50 | 22.14 |
 | [upernet_convnext](models/upernet_convnext/README.md) | rtis_only | 2 | — | — | — | — |
 | [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_rtis | 0 | 13.46 | 7.68 | 2173.01 | 22.14 |
 | [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_rtis | 1 | — | — | — | — |
