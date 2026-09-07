@@ -463,7 +463,10 @@
       "config_sha256": "622937c8e0114f365fe443f837648b7848464c8f62e6a745cbba99d6ac599c6a",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 1,
+      "started_at": "2026-09-07T00:14:57.917338+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_resnet50_psp--rtis_only--seed-0",
         "model": {
