@@ -463,7 +463,10 @@
       "config_sha256": "8f10f93b40397ad35e22bcc1ac6f8d591f3873b333c543c76f08898b6c45e424",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 0,
+      "started_at": "2026-09-07T02:48:29.514193+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "segformer_b5--rtis_only--seed-0",
         "model": {
@@ -608,7 +611,10 @@
       "config_sha256": "734dbc8821fd102d19fb7da0642d60236b2001b13610e1354b0a3e2a972c2acd",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 9,
+      "started_at": "2026-09-07T02:48:37.159726+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "segformer_b5--rtis_only--seed-1",
         "model": {
