@@ -598,6 +598,23 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.2034406661987305
+          },
+          {
+            "step": 99,
+            "value": 0.726937472820282
+          },
+          {
+            "step": 149,
+            "value": 0.7117632031440735
+          }
+        ]
+      },
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
