@@ -16,7 +16,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | segformer_b5 | railsem19_to_rtis | 1 | completed | 3563 | 2290 | 7.14 | 10.12 | 19.54 | 6.44 | 46.85 | 54.66 |
 | segformer_b5 | railsem19_to_rtis | 2 | completed | 3818 | 2545 | 5.50 | 8.06 | 14.77 | 4.20 | 45.96 | 53.63 |
 | segformer_b5 | cityscapes_to_railsem19_to_rtis | 0 | completed | 3818 | 2545 | 4.04 | 4.50 | 27.96 | 3.10 | 47.39 | 50.03 |
-| segformer_b5 | cityscapes_to_railsem19_to_rtis | 1 | training | 3899 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | 1 | training | 3949 | — | — | — | — | — | — | — |
 | segformer_b5 | cityscapes_to_railsem19_to_rtis | 2 | collecting | 3818 | 2545 | 4.69 | 5.38 | 26.63 | 3.92 | 45.41 | 50.46 |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.

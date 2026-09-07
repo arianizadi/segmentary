@@ -114721,6 +114721,10 @@
           {
             "step": 3899,
             "value": 0.3181379437446594
+          },
+          {
+            "step": 3949,
+            "value": 0.25404196977615356
           }
         ],
         "val/miou": [
@@ -121180,7 +121184,7 @@
           }
         ]
       },
-      "observed_step": 3899,
+      "observed_step": 3949,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -130300,7 +130304,7 @@
           }
         ]
       },
-      "collection_phase": "diagnostics",
+      "collection_phase": "performance",
       "resolved_config": {
         "name": "segformer_b5--cityscapes_to_railsem19_to_rtis--seed-2",
         "model": {
