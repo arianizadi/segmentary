@@ -6,10 +6,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| segformer_b0 | rtis_only | 0 | training | 763 | — | — | — | — | — | — | — |
-| segformer_b0 | rtis_only | 1 | training | 649 | — | — | — | — | — | — | — |
-| segformer_b0 | rtis_only | 2 | training | 99 | — | — | — | — | — | — | — |
-| segformer_b0 | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
+| segformer_b0 | rtis_only | 0 | training | 899 | — | — | — | — | — | — | — |
+| segformer_b0 | rtis_only | 1 | training | 799 | — | — | — | — | — | — | — |
+| segformer_b0 | rtis_only | 2 | training | 199 | — | — | — | — | — | — | — |
+| segformer_b0 | cityscapes_to_rtis | 0 | training | 99 | — | — | — | — | — | — | — |
 | segformer_b0 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | segformer_b0 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | segformer_b0 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -332,6 +332,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 19.92 | 0.19 |
 | 508 | 23.93 | 0.30 |
+| 763 | 25.42 | 0.70 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
