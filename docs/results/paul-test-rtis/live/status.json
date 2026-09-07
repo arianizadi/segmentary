@@ -4750,7 +4750,7 @@
       "model": "upernet_convnext",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 4000,
       "observed_step": null,
       "record": "models/upernet_convnext/record.json"
@@ -4772,7 +4772,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 3699,
+      "observed_step": 3849,
       "record": "models/upernet_convnext/record.json"
     }
   ]
