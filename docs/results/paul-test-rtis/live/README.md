@@ -1,6 +1,6 @@
 # RTIS model comparison
 
-**251/432 completed · 0 failed**
+**252/432 completed · 0 failed**
 
 Overall segmentation quality and mud-pumping results across four initialization paths. Every completed job includes quality evaluation, training diagnostics and isolated performance profiling.
 
@@ -34,7 +34,7 @@ Validation **mIoU (%)** across classes. Cells show the mean over completed seeds
 | [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | 12/12 | 26.17 | 23.27 | 32.25 | 31.28 |
 | [native_resnet50_deeplabv3plus](models/native_resnet50_deeplabv3plus/README.md) | 12/12 | 25.77 | 26.62 | 34.04 | 33.68 |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | 12/12 | 26.20 | 25.28 | 39.99 | 37.39 |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | 11/12 | 27.93 | 25.15 | 29.23 | 28.34 |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | 12/12 | 27.93 | 25.15 | 31.34 | 28.34 |
 | [segformer_b0](models/segformer_b0/README.md) | 0/12 | — | — | — | — |
 | [segformer_b2](models/segformer_b2/README.md) | 0/12 | — | — | — | — |
 | [segformer_b5](models/segformer_b5/README.md) | 0/12 | — | — | — | — |
@@ -77,7 +77,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | 12/12 | 2.16 | 3.31 | 1.89 | 1.50 |
 | [native_resnet50_deeplabv3plus](models/native_resnet50_deeplabv3plus/README.md) | 12/12 | 1.16 | 0.93 | 0.86 | 1.72 |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | 12/12 | 1.41 | 0.52 | 5.98 | 2.37 |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | 11/12 | 3.98 | 3.07 | 2.57 | 4.56 |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | 12/12 | 3.98 | 3.07 | 2.00 | 4.56 |
 | [segformer_b0](models/segformer_b0/README.md) | 0/12 | — | — | — | — |
 | [segformer_b2](models/segformer_b2/README.md) | 0/12 | — | — | — | — |
 | [segformer_b5](models/segformer_b5/README.md) | 0/12 | — | — | — | — |
@@ -120,7 +120,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [native_resnet50_aspp](models/native_resnet50_aspp/README.md) | 12/12 | 218.28 | 217.43 | 219.87 | 224.25 |
 | [native_resnet50_deeplabv3plus](models/native_resnet50_deeplabv3plus/README.md) | 12/12 | 134.08 | 132.34 | 129.69 | 136.24 |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | 12/12 | 48.32 | 48.03 | 47.73 | 47.54 |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | 11/12 | 209.60 | 198.92 | 210.27 | 205.61 |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | 12/12 | 209.60 | 198.92 | 211.98 | 205.61 |
 | [segformer_b0](models/segformer_b0/README.md) | 0/12 | — | — | — | — |
 | [segformer_b2](models/segformer_b2/README.md) | 0/12 | — | — | — | — |
 | [segformer_b5](models/segformer_b5/README.md) | 0/12 | — | — | — | — |
@@ -392,20 +392,20 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_rtis | 2 | completed | 1527 | 254 | 1.73 | 4.08 | 2.93 | 0.01 | 21.59 | 22.79 |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | railsem19_to_rtis | 0 | completed | 2036 | 763 | 1.98 | 34.54 | 2.06 | 0.15 | 33.56 | 39.15 |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | railsem19_to_rtis | 1 | completed | 1527 | 254 | 3.15 | 11.11 | 4.21 | 0.00 | 24.90 | 27.67 |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | railsem19_to_rtis | 2 | collecting | 2800 | 1527 | 0.86 | 95.21 | 0.86 | 0.01 | 35.56 | 41.49 |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | railsem19_to_rtis | 2 | completed | 2800 | 1527 | 0.86 | 95.21 | 0.86 | 0.01 | 35.56 | 41.49 |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 2036 | 763 | 7.19 | 41.31 | 8.01 | 2.41 | 30.37 | 35.43 |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_railsem19_to_rtis | 1 | completed | 1527 | 254 | 2.33 | 6.57 | 3.49 | 0.01 | 22.54 | 25.04 |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_railsem19_to_rtis | 2 | completed | 2036 | 763 | 4.17 | 13.15 | 5.75 | 0.73 | 32.10 | 37.45 |
-| [segformer_b0](models/segformer_b0/README.md) | rtis_only | 0 | training | 2349 | — | — | — | — | — | — | — |
-| [segformer_b0](models/segformer_b0/README.md) | rtis_only | 1 | training | 2199 | — | — | — | — | — | — | — |
-| [segformer_b0](models/segformer_b0/README.md) | rtis_only | 2 | training | 1649 | — | — | — | — | — | — | — |
-| [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_rtis | 0 | evaluating | 1527 | — | — | — | — | — | — | — |
-| [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_rtis | 1 | training | 1299 | — | — | — | — | — | — | — |
-| [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_rtis | 2 | training | 1099 | — | — | — | — | — | — | — |
-| [segformer_b0](models/segformer_b0/README.md) | railsem19_to_rtis | 0 | training | 749 | — | — | — | — | — | — | — |
-| [segformer_b0](models/segformer_b0/README.md) | railsem19_to_rtis | 1 | training | 649 | — | — | — | — | — | — | — |
-| [segformer_b0](models/segformer_b0/README.md) | railsem19_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
-| [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| [segformer_b0](models/segformer_b0/README.md) | rtis_only | 0 | training | 2499 | — | — | — | — | — | — | — |
+| [segformer_b0](models/segformer_b0/README.md) | rtis_only | 1 | training | 2349 | — | — | — | — | — | — | — |
+| [segformer_b0](models/segformer_b0/README.md) | rtis_only | 2 | training | 1799 | — | — | — | — | — | — | — |
+| [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_rtis | 0 | collecting | 1527 | 254 | 2.91 | 3.98 | 9.75 | 1.25 | 18.50 | 18.50 |
+| [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_rtis | 1 | training | 1449 | — | — | — | — | — | — | — |
+| [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_rtis | 2 | training | 1272 | — | — | — | — | — | — | — |
+| [segformer_b0](models/segformer_b0/README.md) | railsem19_to_rtis | 0 | training | 849 | — | — | — | — | — | — | — |
+| [segformer_b0](models/segformer_b0/README.md) | railsem19_to_rtis | 1 | training | 763 | — | — | — | — | — | — | — |
+| [segformer_b0](models/segformer_b0/README.md) | railsem19_to_rtis | 2 | training | 99 | — | — | — | — | — | — | — |
+| [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | [segformer_b2](models/segformer_b2/README.md) | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
@@ -851,7 +851,7 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [segformer_b0](models/segformer_b0/README.md) | rtis_only | 0 | — | — | — | — |
 | [segformer_b0](models/segformer_b0/README.md) | rtis_only | 1 | — | — | — | — |
 | [segformer_b0](models/segformer_b0/README.md) | rtis_only | 2 | — | — | — | — |
-| [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_rtis | 0 | — | — | — | — |
+| [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_rtis | 0 | 7.79 | 7.03 | 923.21 | 13.01 |
 | [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_rtis | 1 | — | — | — | — |
 | [segformer_b0](models/segformer_b0/README.md) | cityscapes_to_rtis | 2 | — | — | — | — |
 | [segformer_b0](models/segformer_b0/README.md) | railsem19_to_rtis | 0 | — | — | — | — |
