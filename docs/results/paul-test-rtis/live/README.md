@@ -413,15 +413,15 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [segformer_b2](models/segformer_b2/README.md) | rtis_only | 2 | completed | 2545 | 1272 | 6.81 | 8.61 | 24.55 | 4.89 | 34.76 | 40.55 |
 | [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_rtis | 0 | collecting | 4000 | 3054 | 15.11 | 38.93 | 19.81 | 11.53 | 37.92 | 44.24 |
 | [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_rtis | 1 | completed | 3054 | 1781 | 20.70 | 40.36 | 29.82 | 16.72 | 37.70 | 43.99 |
-| [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_rtis | 2 | training | 3308 | — | — | — | — | — | — | — |
-| [segformer_b2](models/segformer_b2/README.md) | railsem19_to_rtis | 0 | training | 2799 | — | — | — | — | — | — | — |
-| [segformer_b2](models/segformer_b2/README.md) | railsem19_to_rtis | 1 | training | 2749 | — | — | — | — | — | — | — |
-| [segformer_b2](models/segformer_b2/README.md) | railsem19_to_rtis | 2 | training | 2749 | — | — | — | — | — | — | — |
-| [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 2449 | — | — | — | — | — | — | — |
-| [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 1749 | — | — | — | — | — | — | — |
-| [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 599 | — | — | — | — | — | — | — |
-| [segformer_b5](models/segformer_b5/README.md) | rtis_only | 0 | training | 254 | — | — | — | — | — | — | — |
-| [segformer_b5](models/segformer_b5/README.md) | rtis_only | 1 | training | 254 | — | — | — | — | — | — | — |
+| [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_rtis | 2 | training | 3399 | — | — | — | — | — | — | — |
+| [segformer_b2](models/segformer_b2/README.md) | railsem19_to_rtis | 0 | training | 2849 | — | — | — | — | — | — | — |
+| [segformer_b2](models/segformer_b2/README.md) | railsem19_to_rtis | 1 | training | 2849 | — | — | — | — | — | — | — |
+| [segformer_b2](models/segformer_b2/README.md) | railsem19_to_rtis | 2 | collecting | 2800 | 1527 | 8.80 | 11.64 | 26.54 | 4.76 | 47.82 | 53.13 |
+| [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 2499 | — | — | — | — | — | — | — |
+| [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 1799 | — | — | — | — | — | — | — |
+| [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 649 | — | — | — | — | — | — | — |
+| [segformer_b5](models/segformer_b5/README.md) | rtis_only | 0 | training | 299 | — | — | — | — | — | — | — |
+| [segformer_b5](models/segformer_b5/README.md) | rtis_only | 1 | training | 299 | — | — | — | — | — | — | — |
 | [segformer_b5](models/segformer_b5/README.md) | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
 | [segformer_b5](models/segformer_b5/README.md) | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | [segformer_b5](models/segformer_b5/README.md) | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -868,7 +868,7 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_rtis | 2 | — | — | — | — |
 | [segformer_b2](models/segformer_b2/README.md) | railsem19_to_rtis | 0 | — | — | — | — |
 | [segformer_b2](models/segformer_b2/README.md) | railsem19_to_rtis | 1 | — | — | — | — |
-| [segformer_b2](models/segformer_b2/README.md) | railsem19_to_rtis | 2 | — | — | — | — |
+| [segformer_b2](models/segformer_b2/README.md) | railsem19_to_rtis | 2 | 11.73 | 7.46 | 2690.23 | 22.25 |
 | [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_railsem19_to_rtis | 0 | — | — | — | — |
 | [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_railsem19_to_rtis | 1 | — | — | — | — |
 | [segformer_b2](models/segformer_b2/README.md) | cityscapes_to_railsem19_to_rtis | 2 | — | — | — | — |

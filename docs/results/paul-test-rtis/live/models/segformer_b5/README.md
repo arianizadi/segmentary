@@ -6,8 +6,8 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| segformer_b5 | rtis_only | 0 | training | 254 | — | — | — | — | — | — | — |
-| segformer_b5 | rtis_only | 1 | training | 254 | — | — | — | — | — | — | — |
+| segformer_b5 | rtis_only | 0 | training | 299 | — | — | — | — | — | — | — |
+| segformer_b5 | rtis_only | 1 | training | 299 | — | — | — | — | — | — | — |
 | segformer_b5 | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
 | segformer_b5 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | segformer_b5 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |

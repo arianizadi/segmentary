@@ -3152,7 +3152,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 3308,
+      "observed_step": 3399,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3162,7 +3162,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2799,
+      "observed_step": 2849,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3172,7 +3172,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2749,
+      "observed_step": 2849,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3180,9 +3180,9 @@
       "model": "segformer_b2",
       "protocol": "railsem19_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2749,
+      "status": "collecting",
+      "final_step": 2800,
+      "observed_step": null,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3192,7 +3192,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2449,
+      "observed_step": 2499,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3202,7 +3202,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1749,
+      "observed_step": 1799,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3212,7 +3212,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 599,
+      "observed_step": 649,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3222,7 +3222,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 299,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3232,7 +3232,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 299,
       "record": "models/segformer_b5/record.json"
     },
     {
