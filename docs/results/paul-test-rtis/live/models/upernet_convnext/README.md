@@ -17,7 +17,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | upernet_convnext | railsem19_to_rtis | 2 | completed | 2800 | 1527 | 3.57 | 4.58 | 13.91 | 1.65 | 39.31 | 45.86 |
 | upernet_convnext | cityscapes_to_railsem19_to_rtis | 0 | completed | 4000 | 3309 | 2.38 | 3.16 | 8.87 | 1.45 | 38.28 | 44.66 |
 | upernet_convnext | cityscapes_to_railsem19_to_rtis | 1 | completed | 3563 | 2290 | 7.30 | 14.96 | 12.47 | 2.52 | 39.49 | 46.07 |
-| upernet_convnext | cityscapes_to_railsem19_to_rtis | 2 | training | 3849 | — | — | — | — | — | — | — |
+| upernet_convnext | cityscapes_to_railsem19_to_rtis | 2 | evaluating | 4000 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -7100,7 +7100,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 2
 
-Status: **training**. Started: 2026-09-07T13:08:09.219850+00:00. Finished: —.
+Status: **evaluating**. Started: 2026-09-07T13:08:09.219850+00:00. Finished: —.
 
 Recipe pretrained initializer: `openmmlab/upernet-convnext-small`.
 
@@ -7185,6 +7185,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 3308 | 37.26 | 1.83 |
 | 3563 | 37.14 | 3.21 |
 | 3817 | 39.50 | 1.68 |
+| 4000 | 37.42 | 1.42 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
