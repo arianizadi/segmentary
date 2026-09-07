@@ -6,14 +6,14 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_unetplusplus_efficientnet_b0 | rtis_only | 0 | training | 1299 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | rtis_only | 1 | training | 1199 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | rtis_only | 2 | training | 1099 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 0 | training | 649 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 1 | training | 399 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 2 | training | 299 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 0 | training | 49 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | rtis_only | 0 | training | 1499 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | rtis_only | 1 | training | 1399 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | rtis_only | 2 | training | 1272 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 0 | training | 799 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 1 | training | 599 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 2 | training | 449 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 0 | training | 199 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 1 | training | 149 | — | — | — | — | — | — | — |
 | smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | smp_unetplusplus_efficientnet_b0 | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | smp_unetplusplus_efficientnet_b0 | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -339,6 +339,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 20.17 | 1.57 |
 | 763 | 19.84 | 3.19 |
 | 1017 | 21.59 | 0.50 |
+| 1272 | 22.88 | 1.44 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -578,6 +579,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 21.48 | 4.53 |
 | 763 | 21.01 | 2.10 |
 | 1017 | 22.45 | 4.31 |
+| 1272 | 24.09 | 0.48 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -815,6 +817,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 21.70 | 1.51 |
 | 508 | 21.65 | 3.55 |
+| 763 | 22.40 | 2.96 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1051,6 +1054,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 20.93 | 1.59 |
+| 508 | 23.73 | 2.01 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
