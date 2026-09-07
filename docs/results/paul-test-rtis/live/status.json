@@ -3250,7 +3250,7 @@
       "model": "segformer_b5",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 4000,
       "observed_step": null,
       "record": "models/segformer_b5/record.json"
@@ -3262,7 +3262,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3699,
+      "observed_step": 3849,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3272,7 +3272,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 3649,
+      "observed_step": 3799,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3292,7 +3292,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3299,
+      "observed_step": 3399,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3302,7 +3302,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 3199,
+      "observed_step": 3349,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3312,7 +3312,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2449,
+      "observed_step": 2549,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3322,7 +3322,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2149,
+      "observed_step": 2290,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3332,7 +3332,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2099,
+      "observed_step": 2249,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3352,7 +3352,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 799,
+      "observed_step": 949,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3362,7 +3362,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 249,
+      "observed_step": 399,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3370,7 +3370,7 @@
       "model": "smp_deeplabv3_resnet50",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_deeplabv3_resnet50/record.json"
