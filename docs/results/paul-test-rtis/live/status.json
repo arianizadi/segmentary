@@ -4562,7 +4562,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 3799,
+      "observed_step": 3899,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -4602,7 +4602,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2449,
+      "observed_step": 2549,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -4622,7 +4622,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1599,
+      "observed_step": 1699,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -4632,7 +4632,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1599,
+      "observed_step": 1699,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -4640,7 +4640,7 @@
       "model": "smp_upernet_resnet101",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 1,
-      "status": "evaluating",
+      "status": "collecting",
       "final_step": 1527,
       "observed_step": null,
       "record": "models/smp_upernet_resnet101/record.json"
@@ -4650,9 +4650,9 @@
       "model": "smp_upernet_resnet101",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1527,
+      "status": "collecting",
+      "final_step": 1527,
+      "observed_step": null,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -4662,7 +4662,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 749,
+      "observed_step": 799,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4672,7 +4672,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 508,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4682,7 +4682,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 449,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4692,7 +4692,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 99,
+      "observed_step": 199,
       "record": "models/upernet_convnext/record.json"
     },
     {
