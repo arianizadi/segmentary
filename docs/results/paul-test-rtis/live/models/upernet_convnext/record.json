@@ -463,7 +463,10 @@
       "config_sha256": "b8be43b36048f6fb7673602ac1cba48bea838e2fed02e4c76eb95f3ba785156c",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 5,
+      "started_at": "2026-09-07T12:06:51.751101+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "upernet_convnext--rtis_only--seed-0",
         "model": {

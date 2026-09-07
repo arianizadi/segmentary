@@ -6,7 +6,7 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| upernet_convnext | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
+| upernet_convnext | rtis_only | 0 | training | — | — | — | — | — | — | — | — |
 | upernet_convnext | rtis_only | 1 | queued | — | — | — | — | — | — | — | — |
 | upernet_convnext | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
 | upernet_convnext | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -25,7 +25,7 @@ Training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256: `71fef
 
 ## rtis_only — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T12:06:51.751101+00:00. Finished: —.
 
 Recipe pretrained initializer: `openmmlab/upernet-convnext-small`.
 
