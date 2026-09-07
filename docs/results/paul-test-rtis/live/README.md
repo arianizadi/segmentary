@@ -484,19 +484,19 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | rtis_only | 1 | completed | 3054 | 1781 | 8.63 | 10.14 | 36.62 | 3.20 | 20.99 | 22.16 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | rtis_only | 2 | completed | 2290 | 1018 | 4.46 | 5.37 | 20.91 | 1.05 | 18.98 | 20.04 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_rtis | 0 | completed | 1781 | 509 | 11.04 | 13.46 | 38.07 | 2.76 | 21.47 | 22.66 |
-| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_rtis | 1 | evaluating | 3054 | — | — | — | — | — | — | — |
+| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_rtis | 1 | collecting | 3054 | 1781 | 8.68 | 11.48 | 26.26 | 2.73 | 21.37 | 23.74 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_rtis | 2 | completed | 2290 | 1018 | 3.28 | 3.97 | 15.86 | 0.48 | 21.11 | 22.28 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | railsem19_to_rtis | 0 | completed | 2545 | 1272 | 8.27 | 11.60 | 22.35 | 2.94 | 25.62 | 28.47 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | railsem19_to_rtis | 1 | completed | 1527 | 254 | 2.34 | 2.60 | 18.85 | 0.40 | 25.52 | 25.52 |
-| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | railsem19_to_rtis | 2 | training | 2399 | — | — | — | — | — | — | — |
-| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 1499 | — | — | — | — | — | — | — |
-| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 1449 | — | — | — | — | — | — | — |
-| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 1399 | — | — | — | — | — | — | — |
-| [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | rtis_only | 0 | training | 1349 | — | — | — | — | — | — | — |
-| [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | rtis_only | 1 | training | 1249 | — | — | — | — | — | — | — |
-| [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | rtis_only | 2 | training | 508 | — | — | — | — | — | — | — |
-| [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | cityscapes_to_rtis | 0 | training | 449 | — | — | — | — | — | — | — |
-| [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | cityscapes_to_rtis | 1 | training | 199 | — | — | — | — | — | — | — |
+| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | railsem19_to_rtis | 2 | training | 2549 | — | — | — | — | — | — | — |
+| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 1599 | — | — | — | — | — | — | — |
+| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_railsem19_to_rtis | 1 | collecting | 1527 | 254 | 6.48 | 7.33 | 35.73 | 5.93 | 23.85 | 23.85 |
+| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 1499 | — | — | — | — | — | — | — |
+| [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | rtis_only | 0 | training | 1499 | — | — | — | — | — | — | — |
+| [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | rtis_only | 1 | training | 1349 | — | — | — | — | — | — | — |
+| [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | rtis_only | 2 | training | 649 | — | — | — | — | — | — | — |
+| [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | cityscapes_to_rtis | 0 | training | 599 | — | — | — | — | — | — | — |
+| [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | cityscapes_to_rtis | 1 | training | 349 | — | — | — | — | — | — | — |
 | [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -936,13 +936,13 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | rtis_only | 1 | 8.80 | 6.37 | 2191.43 | 10.65 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | rtis_only | 2 | 8.80 | 6.37 | 1651.16 | 10.78 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_rtis | 0 | 8.80 | 6.37 | 1307.32 | 11.05 |
-| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_rtis | 1 | — | — | — | — |
+| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_rtis | 1 | 8.80 | 6.37 | 2189.52 | 11.21 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_rtis | 2 | 8.80 | 6.37 | 1643.11 | 10.99 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | railsem19_to_rtis | 0 | 8.80 | 6.37 | 1824.76 | 10.50 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | railsem19_to_rtis | 1 | 8.80 | 6.37 | 1127.03 | 10.66 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | railsem19_to_rtis | 2 | — | — | — | — |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_railsem19_to_rtis | 0 | — | — | — | — |
-| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_railsem19_to_rtis | 1 | — | — | — | — |
+| [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_railsem19_to_rtis | 1 | 8.80 | 6.37 | 1144.61 | 10.95 |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | cityscapes_to_railsem19_to_rtis | 2 | — | — | — | — |
 | [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | rtis_only | 0 | — | — | — | — |
 | [smp_pan_resnext50](models/smp_pan_resnext50/README.md) | rtis_only | 1 | — | — | — | — |
