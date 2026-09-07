@@ -3830,9 +3830,9 @@
       "model": "smp_manet_efficientnet_b0",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2599,
+      "status": "evaluating",
+      "final_step": 3054,
+      "observed_step": null,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3862,7 +3862,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1949,
+      "observed_step": 2399,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3870,9 +3870,9 @@
       "model": "smp_manet_efficientnet_b0",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1899,
+      "status": "collecting",
+      "final_step": 2290,
+      "observed_step": null,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3882,7 +3882,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1849,
+      "observed_step": 2349,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3902,7 +3902,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1272,
+      "observed_step": 1749,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3912,7 +3912,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 849,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3922,7 +3922,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 799,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3932,7 +3932,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 249,
+      "observed_step": 699,
       "record": "models/smp_manet_efficientnet_b0/record.json"
     },
     {
@@ -3942,7 +3942,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 49,
+      "observed_step": 599,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -3952,7 +3952,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 508,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
