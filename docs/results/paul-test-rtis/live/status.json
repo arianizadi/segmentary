@@ -3252,7 +3252,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 3799,
+      "observed_step": 3849,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3262,7 +3262,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3449,
+      "observed_step": 3499,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3272,7 +3272,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 3399,
+      "observed_step": 3449,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3292,7 +3292,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2999,
+      "observed_step": 3054,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3302,7 +3302,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2949,
+      "observed_step": 2999,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3312,7 +3312,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2199,
+      "observed_step": 2249,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3322,7 +3322,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1849,
+      "observed_step": 1899,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3332,7 +3332,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1849,
+      "observed_step": 1899,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3340,7 +3340,7 @@
       "model": "smp_deeplabv3_resnet50",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "evaluating",
+      "status": "collecting",
       "final_step": 2290,
       "observed_step": null,
       "record": "models/smp_deeplabv3_resnet50/record.json"
@@ -3352,7 +3352,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 508,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
