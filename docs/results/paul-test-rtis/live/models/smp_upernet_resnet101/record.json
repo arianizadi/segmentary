@@ -623,6 +623,18 @@
           {
             "step": 299,
             "value": 0.22668638825416565
+          },
+          {
+            "step": 349,
+            "value": 0.6668998599052429
+          },
+          {
+            "step": 399,
+            "value": 0.16316331923007965
+          },
+          {
+            "step": 449,
+            "value": 0.15886247158050537
           }
         ],
         "val/miou": [
@@ -1256,7 +1268,7 @@
           }
         ]
       },
-      "observed_step": 299,
+      "observed_step": 449,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1270,7 +1282,10 @@
       "config_sha256": "d68e857901dfa90b5a194c36f4822f47032492a6c4f662ecce79a22301d6604a",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 9,
+      "started_at": "2026-09-07T11:22:44.335695+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_upernet_resnet101--rtis_only--seed-1",
         "model": {
