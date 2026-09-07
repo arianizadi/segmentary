@@ -619,6 +619,14 @@
           {
             "step": 249,
             "value": 0.2195330113172531
+          },
+          {
+            "step": 299,
+            "value": 0.24153690040111542
+          },
+          {
+            "step": 349,
+            "value": 0.2219250351190567
           }
         ],
         "val/miou": [
@@ -1252,7 +1260,7 @@
           }
         ]
       },
-      "observed_step": 254,
+      "observed_step": 349,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1401,6 +1409,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.0313661098480225
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1414,7 +1431,10 @@
       "config_sha256": "f97218319176f44a85363796e5e1612781caaed492277bfa15aea0d9211b046f",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 1,
+      "started_at": "2026-09-07T12:15:22.608898+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "upernet_convnext--rtis_only--seed-2",
         "model": {
