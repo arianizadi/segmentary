@@ -380,20 +380,20 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_rtis | 2 | completed | 1527 | 254 | 0.76 | 0.93 | 4.07 | 0.34 | 22.07 | 23.29 |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | railsem19_to_rtis | 0 | completed | 1781 | 509 | 11.10 | 82.48 | 11.37 | 0.12 | 39.49 | 46.07 |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | railsem19_to_rtis | 1 | completed | 1527 | 1018 | 0.09 | 0.90 | 0.10 | 0.05 | 38.31 | 44.70 |
-| [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | railsem19_to_rtis | 2 | evaluating | 2800 | — | — | — | — | — | — | — |
+| [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | railsem19_to_rtis | 2 | collecting | 2800 | 1527 | 6.74 | 30.84 | 7.94 | 0.62 | 42.16 | 46.84 |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 1781 | 509 | 2.29 | 2.94 | 9.47 | 1.21 | 36.84 | 42.97 |
-| [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 1 | evaluating | 2036 | — | — | — | — | — | — | — |
-| [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 1949 | — | — | — | — | — | — | — |
+| [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 1 | collecting | 2036 | 763 | 1.41 | 1.98 | 4.62 | 1.02 | 38.91 | 45.39 |
+| [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 2036 | — | — | — | — | — | — | — |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | rtis_only | 0 | completed | 2545 | 1272 | 3.95 | 52.87 | 4.09 | 1.22 | 29.66 | 32.95 |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | rtis_only | 1 | completed | 2290 | 1018 | 3.11 | 5.13 | 7.29 | 0.40 | 26.74 | 31.20 |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | rtis_only | 2 | training | 2349 | — | — | — | — | — | — | — |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | rtis_only | 2 | training | 2449 | — | — | — | — | — | — | — |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_rtis | 0 | completed | 1781 | 509 | 6.67 | 9.52 | 18.21 | 0.09 | 27.32 | 30.35 |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_rtis | 1 | training | 1899 | — | — | — | — | — | — | — |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_rtis | 2 | training | 949 | — | — | — | — | — | — | — |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | railsem19_to_rtis | 0 | training | 699 | — | — | — | — | — | — | — |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | railsem19_to_rtis | 1 | training | 449 | — | — | — | — | — | — | — |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | railsem19_to_rtis | 2 | training | 349 | — | — | — | — | — | — | — |
-| [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 249 | — | — | — | — | — | — | — |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_rtis | 1 | training | 1999 | — | — | — | — | — | — | — |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_rtis | 2 | training | 1049 | — | — | — | — | — | — | — |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | railsem19_to_rtis | 0 | training | 799 | — | — | — | — | — | — | — |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | railsem19_to_rtis | 1 | training | 549 | — | — | — | — | — | — | — |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | railsem19_to_rtis | 2 | training | 449 | — | — | — | — | — | — | — |
+| [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 299 | — | — | — | — | — | — | — |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | [segformer_b0](models/segformer_b0/README.md) | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
@@ -832,9 +832,9 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_rtis | 2 | 11.64 | 7.02 | 1955.07 | 16.74 |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | railsem19_to_rtis | 0 | 11.64 | 7.02 | 2295.24 | 16.91 |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | railsem19_to_rtis | 1 | 11.64 | 7.02 | 1966.99 | 17.13 |
-| [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | railsem19_to_rtis | 2 | — | — | — | — |
+| [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | railsem19_to_rtis | 2 | 11.64 | 7.02 | 3556.86 | 17.36 |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 0 | 11.64 | 7.02 | 2289.87 | 17.34 |
-| [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 1 | — | — | — | — |
+| [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 1 | 11.64 | 7.02 | 2602.89 | 17.11 |
 | [native_resnet50_fpn_ocr](models/native_resnet50_fpn_ocr/README.md) | cityscapes_to_railsem19_to_rtis | 2 | — | — | — | — |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | rtis_only | 0 | 8.29 | 6.75 | 2025.59 | 10.36 |
 | [native_resnet50_psp](models/native_resnet50_psp/README.md) | rtis_only | 1 | 8.29 | 6.75 | 1813.85 | 11.00 |
