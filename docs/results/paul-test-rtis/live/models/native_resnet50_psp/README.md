@@ -6,13 +6,13 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| native_resnet50_psp | rtis_only | 0 | training | 2349 | — | — | — | — | — | — | — |
-| native_resnet50_psp | rtis_only | 1 | training | 2199 | — | — | — | — | — | — | — |
-| native_resnet50_psp | rtis_only | 2 | training | 1599 | — | — | — | — | — | — | — |
-| native_resnet50_psp | cityscapes_to_rtis | 0 | training | 1449 | — | — | — | — | — | — | — |
-| native_resnet50_psp | cityscapes_to_rtis | 1 | training | 1149 | — | — | — | — | — | — | — |
-| native_resnet50_psp | cityscapes_to_rtis | 2 | training | 199 | — | — | — | — | — | — | — |
-| native_resnet50_psp | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| native_resnet50_psp | rtis_only | 0 | training | 2449 | — | — | — | — | — | — | — |
+| native_resnet50_psp | rtis_only | 1 | evaluating | 2290 | — | — | — | — | — | — | — |
+| native_resnet50_psp | rtis_only | 2 | training | 1699 | — | — | — | — | — | — | — |
+| native_resnet50_psp | cityscapes_to_rtis | 0 | training | 1549 | — | — | — | — | — | — | — |
+| native_resnet50_psp | cityscapes_to_rtis | 1 | training | 1272 | — | — | — | — | — | — | — |
+| native_resnet50_psp | cityscapes_to_rtis | 2 | training | 299 | — | — | — | — | — | — | — |
+| native_resnet50_psp | railsem19_to_rtis | 0 | training | 49 | — | — | — | — | — | — | — |
 | native_resnet50_psp | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | native_resnet50_psp | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | native_resnet50_psp | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -298,7 +298,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## rtis_only — seed 1
 
-Status: **training**. Started: 2026-09-07T00:17:04.879811+00:00. Finished: —.
+Status: **evaluating**. Started: 2026-09-07T00:17:04.879811+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": null, "encoder_weights": null, "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": {"auxiliary_heads": [], "backbone": {"in_channels": 3, "kind": "timm", "name": "resnet50.a1_in1k", "out_indices": [1, 2, 3, 4], "weights": "pretrained"}, "head": {"activation": "relu", "channels": 256, "dropout": 0.1, "in_index": 3, "kind": "psp", "norm": "group", "pool_bins": [1, 2, 3, 6]}, "neck": {"kind": "identity"}, "task": "multiclass"}, "revision": null, "smp_arch": null, "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -376,6 +376,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1527 | 28.97 | 0.36 |
 | 1781 | 26.70 | 0.64 |
 | 2036 | 27.58 | 0.98 |
+| 2290 | 27.07 | 0.40 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -915,6 +916,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 27.31 | 5.40 |
 | 1017 | 29.29 | 0.37 |
 | 1272 | 29.85 | 0.10 |
+| 1527 | 29.78 | 1.37 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1183,6 +1185,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 22.95 | 0.00 |
 | 763 | 26.05 | 0.55 |
 | 1017 | 30.63 | 0.22 |
+| 1272 | 29.72 | 0.61 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1447,6 +1450,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 21.59 | 1.73 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1641,7 +1645,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T00:46:30.857204+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "native", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": null, "encoder_weights": null, "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": {"auxiliary_heads": [], "backbone": {"in_channels": 3, "kind": "timm", "name": "resnet50.a1_in1k", "out_indices": [1, 2, 3, 4], "weights": "pretrained"}, "head": {"activation": "relu", "channels": 256, "dropout": 0.1, "in_index": 3, "kind": "psp", "norm": "group", "pool_bins": [1, 2, 3, 6]}, "neck": {"kind": "identity"}, "task": "multiclass"}, "revision": null, "smp_arch": null, "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
