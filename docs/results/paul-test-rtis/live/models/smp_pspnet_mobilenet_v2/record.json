@@ -636,6 +636,18 @@
           {
             "step": 299,
             "value": 1.1978204250335693
+          },
+          {
+            "step": 349,
+            "value": 0.5271095037460327
+          },
+          {
+            "step": 399,
+            "value": 1.3451299667358398
+          },
+          {
+            "step": 449,
+            "value": 0.716652512550354
           }
         ],
         "val/miou": [
@@ -1269,7 +1281,7 @@
           }
         ]
       },
-      "observed_step": 299,
+      "observed_step": 449,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1431,6 +1443,23 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.5147452354431152
+          },
+          {
+            "step": 99,
+            "value": 1.3016327619552612
+          },
+          {
+            "step": 149,
+            "value": 1.7775760889053345
+          }
+        ]
+      },
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1444,7 +1473,10 @@
       "config_sha256": "bb60732d289b76ba921216e43e9ef417c9d97284da8bfe340f28ae7631de0297",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 9,
+      "started_at": "2026-09-07T08:53:16.370278+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_pspnet_mobilenet_v2--rtis_only--seed-2",
         "model": {
