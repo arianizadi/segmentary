@@ -6,12 +6,12 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| segformer_b5 | rtis_only | 0 | training | 699 | — | — | — | — | — | — | — |
-| segformer_b5 | rtis_only | 1 | training | 699 | — | — | — | — | — | — | — |
-| segformer_b5 | rtis_only | 2 | training | 349 | — | — | — | — | — | — | — |
-| segformer_b5 | cityscapes_to_rtis | 0 | training | 254 | — | — | — | — | — | — | — |
-| segformer_b5 | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
-| segformer_b5 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
+| segformer_b5 | rtis_only | 0 | training | 749 | — | — | — | — | — | — | — |
+| segformer_b5 | rtis_only | 1 | training | 763 | — | — | — | — | — | — | — |
+| segformer_b5 | rtis_only | 2 | training | 399 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_rtis | 0 | training | 299 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_rtis | 1 | training | 49 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
 | segformer_b5 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | segformer_b5 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | segformer_b5 | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -331,6 +331,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 26.92 | 2.32 |
 | 508 | 33.34 | 2.55 |
+| 763 | 34.04 | 1.60 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1191,7 +1192,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T03:09:29.768916+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b5`.
 
