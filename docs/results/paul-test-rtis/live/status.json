@@ -4680,9 +4680,9 @@
       "model": "upernet_convnext",
       "protocol": "rtis_only",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2290,
+      "status": "collecting",
+      "final_step": 2290,
+      "observed_step": null,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4700,9 +4700,9 @@
       "model": "upernet_convnext",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1749,
+      "status": "collecting",
+      "final_step": 1781,
+      "observed_step": null,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4722,7 +4722,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1549,
+      "observed_step": 1599,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4732,7 +4732,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 799,
+      "observed_step": 849,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4742,7 +4742,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 349,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4752,7 +4752,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 349,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4762,7 +4762,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 254,
+      "observed_step": 349,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4772,7 +4772,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 49,
       "record": "models/upernet_convnext/record.json"
     }
   ]
