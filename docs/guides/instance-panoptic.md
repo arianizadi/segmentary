@@ -23,9 +23,10 @@ segmentary-objects --help
 The objects extra installs pinned `pycocotools` for exact COCO polygon decoding
 and instance RLE export. Panoptic IDs and RLE inputs are validated locally.
 
-The new engine consumes raw class/mask queries from **EoMT Large**, **EoMT DINOv3
-Large**. Other architectures are not yet enabled for object tasks. It rejects semantic-only
-architectures. It uses Segmentary's existing model factory and tuning settings;
+The engine supports **EoMT Large**, **EoMT DINOv3 Large**, **MaskFormer Swin-T**,
+and **Mask2Former Swin-T**. Both new Swin families support instance and panoptic
+tasks with full, frozen-backbone, or LoRA tuning. Semantic-only architectures are
+rejected. It uses explicit architecture constructors and Segmentary's tuning settings;
 full tuning is the default. A model pretrained on panoptic data is still adapted
 to the categories declared by your dataset. First loading a Hub checkpoint needs
 network access; a local pretrained model directory is also supported.
@@ -85,7 +86,7 @@ These examples default to CPU deliberately. Set `device: cuda:0` explicitly for
 a GPU. Starting one of these commands starts a new independent run; adding the
 feature does not start or change an existing training campaign.
 
-The initial object workflow uses single-device float32 AdamW, a constant learning
+The object workflow uses single-device AdamW (float32 by default), a constant learning
 rate, gradient clipping at 1.0, fixed-size image resizing and no augmentation.
 Masks use nearest-neighbor resizing; a resize that erases a segment is rejected.
 Query matching uses class/BCE/Dice costs with configurable sampled matching
@@ -101,10 +102,51 @@ overwritten. Only `best.pt` and `last.pt` are kept. Config, annotation hashes,
 category mapping, architecture config, Git provenance, step/loss/validation history, wall time and
 CUDA peak allocated memory (when applicable) are written alongside checkpoints.
 
-This first object workflow does not yet implement distributed training, resume,
-EMA, curricula, sliding-window/TTA merging, ONNX/TensorRT object export, or the
-semantic inference checker's interactive instance view. These remain separate
+This object workflow does not yet implement distributed training,
+EMA, curricula, sliding-window/TTA merging, or ONNX/TensorRT object export. These remain separate
 from the mature semantic engine; no support is inferred from a model's name.
+
+## Interruption, resume and mixed precision
+
+```bash
+segmentary-objects train configs/examples/instance.yaml \
+  --resume runs/my-instance-run/last.pt
+```
+
+Use the same configuration and output directory. `max_steps` counts successful
+optimizer updates and may be increased; other training settings must match.
+Resume verifies image, annotation and panoptic mask content hashes, model/category
+configuration and PyTorch version. It restores model and AdamW state, FP16
+GradScaler, Python/NumPy/PyTorch/CUDA random states, exact shuffled sample order,
+epoch/cursor, best metric, history and elapsed training time. Older weights-only
+checkpoints remain usable for prediction but cannot resume training. Continuation
+uses the original run's `last.pt`; `best.pt` is for evaluation.
+
+SIGINT/Ctrl-C and SIGTERM finish the current optimizer update and save before
+returning `status: interrupted`. Atomic `last.pt` is replaced after every update;
+a hard kill or unexpected failure can replay the unfinished update on resume.
+Snapshots are only made at accumulation boundaries, so partial gradients are
+never mistaken for a finished optimizer update. A signal cannot finish until
+an in-progress device operation returns. This single-process runner uses zero
+loader workers. Reproducibility assumes the same hardware/runtime and deterministic
+kernels. CPU float32/bfloat16 and CUDA float16/bfloat16 continuation are tested
+for exact equality; cross-hardware bitwise identity is not promised. See the
+[recorded CUDA checks](../results/object-validation/README.md).
+
+Optional YAML settings:
+
+```yaml
+precision: bfloat16       # float32 (default), bfloat16, or CUDA-only float16
+batch_size: 2
+gradient_accumulation: 4  # default 1; up to 8 images per optimizer update here
+```
+
+Epoch-tail groups use their actual sample count when weighting microbatch losses;
+an update never crosses an epoch. Gradients are unscaled before clipping. FP16
+overflow skips the optimizer update, updates/persists the scaler, and consumes the
+sample group without incrementing `step`. Validation stays float32 at native target
+resolution. AMP behavior follows the [PyTorch AMP recipe](https://docs.pytorch.org/tutorials/recipes/recipes/amp_recipe.html);
+full continuation follows [PyTorch checkpoint guidance](https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html).
 
 ## Evaluate and export predictions
 
@@ -171,3 +213,21 @@ randomly initialized EoMT on CPU. Instance loss fell from 8.93738 to 0.04390 wit
 same-image AP 1.000; panoptic loss fell from 9.54115 to 0.11781 with same-image
 PQ 0.97825. These are deliberately overfit synthetic examples, not held-out
 benchmark results. The active RTIS campaign was not used for these tests.
+
+## Additional families and tools
+
+| Architecture key | Default initialization | Backbone |
+| --- | --- | --- |
+| `maskformer_swin_tiny` | `facebook/maskformer-swin-tiny-coco` | Swin Tiny |
+| `mask2former_swin_tiny` | `facebook/mask2former-swin-tiny-coco-panoptic` | Swin Tiny |
+
+These are pretrained complete query models; the target classifier is resized when
+the category count differs. Loading never silently falls back to random weights.
+Set `model.revision` to a Hub commit for reproducible initialization; a local
+checkpoint directory works too. See [Mask2Former instance example](../../configs/examples/instance-mask2former.yaml)
+and [MaskFormer panoptic example](../../configs/examples/panoptic-maskformer.yaml).
+Swin inputs support rectangular shapes; EoMT retains its saved fixed token grid.
+
+Use the [Inference Checker](inference-checker.md) for object review,
+[object reports](object-reports.md) for linked AP/PQ comparisons, and
+[benchmark validation](object-benchmark-validation.md) for reproducible real-data checks.

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import time
 from dataclasses import asdict
 from pathlib import Path
@@ -12,14 +13,13 @@ from typing import Any, cast
 import numpy as np
 import torch
 from PIL import Image
-from torch.utils.data import DataLoader
 
-from ..models.factory import build_model
 from ..models.tuning import apply_tuning
 from ..utils.provenance import git_sha
 from ..utils.seed import seed_everything
 from .checkpoint_model import model_spec, restore_model
 from .config import ObjectConfig, ObjectDataConfig
+from .continuation import BatchOrder, graceful_stop, restore_rng, rng_state
 from .data import (
     ObjectDataset,
     ObjectTarget,
@@ -30,6 +30,7 @@ from .data import (
 )
 from .loss import ObjectQueryLoss
 from .metrics import InstanceMetrics, PanopticMetrics
+from .model_factory import build_object_model as build_model
 from .prediction import postprocess
 
 
@@ -154,21 +155,73 @@ def provenance(config: ObjectConfig, train: ObjectDataset, val: ObjectDataset) -
     }
 
 
-def train(config: ObjectConfig) -> dict:
-    """Start a new isolated run; existing output directories are never overwritten."""
+def data_fingerprint(
+    config: ObjectConfig, training: ObjectDataset, validation: ObjectDataset
+) -> dict:
+    """Hash actual data bytes, including masks; annotation hashes alone miss image edits."""
+    result = {}
+    for split, data, settings in (
+        ("train", training, config.train),
+        ("val", validation, config.val),
+    ):
+        rows = {"annotations": file_digest(Path(settings.annotations))}
+        for row in data.images:
+            rows["image/" + row["file_name"]] = file_digest(data.image_root / row["file_name"])
+        if data.panoptic_root:
+            document = json.loads(Path(settings.annotations).read_text())
+            for row in document["annotations"]:
+                rows["mask/" + row["file_name"]] = file_digest(
+                    data.panoptic_root / row["file_name"]
+                )
+        result[split] = hashlib.sha256(json.dumps(rows, sort_keys=True).encode()).hexdigest()
+    return result
+
+
+def train(config: ObjectConfig, *, resume: Path | None = None) -> dict:
+    """Continue only full optimizer-boundary snapshots; new runs refuse existing output."""
     seed_everything(config.seed)
     train_data = dataset(config, config.train, training=True)
     val_data = dataset(config, config.val, categories=train_data.categories)
     check_split_overlap(config, train_data, val_data)
-    # Fail before model construction if any annotation is invalid.
     for data in (train_data, val_data):
         for _ in data:
             pass
+    fingerprints = data_fingerprint(config, train_data, val_data)
+    if resume and resume.resolve() != (Path(config.output) / "last.pt").resolve():
+        raise ValueError("Resume requires last.pt in the original run output directory")
+    saved = torch.load(resume, map_location="cpu", weights_only=True) if resume else None
+    if saved:
+        if saved.get("continuation_version") != 1:
+            raise ValueError(
+                "Checkpoint lacks full continuation state; weights-only initialization is not resume"
+            )
+        previous, current = dict(saved["config"]), asdict(config)
+        for key in ("output", "max_steps"):
+            previous.pop(key, None)
+            current.pop(key, None)
+        if previous != current or saved["data_fingerprint"] != fingerprints:
+            raise ValueError("Resume configuration or dataset content differs")
+        if saved["torch_version"] != str(torch.__version__):
+            raise ValueError("Resume requires the same PyTorch version")
+        if config.max_steps < saved["step"]:
+            raise ValueError("max_steps cannot precede the resumed optimizer step")
+        if Path(saved["config"]["output"]).resolve() != Path(config.output).resolve():
+            raise ValueError("Resume must use its original output directory")
     out = Path(config.output)
-    out.mkdir(parents=True, exist_ok=False)
+    out.mkdir(parents=True, exist_ok=bool(saved))
     record = provenance(config, train_data, val_data)
-    write_json(out / "config.json", record)
-    model = make_model(config, train_data.num_classes)
+    record["data_fingerprint"] = fingerprints
+    record["protocol"] = (
+        f"single-device {config.precision} AdamW; accumulation={config.gradient_accumulation}; fixed resize; native-resolution validation"
+    )
+    record["resumed_from"] = (
+        {"path": str(resume), "sha256": file_digest(resume)} if resume else None
+    )
+    model = (
+        restore_model(saved["architecture"], config.model, train_data.num_classes).to(config.device)
+        if saved
+        else make_model(config, train_data.num_classes)
+    )
     architecture = model_spec(model)
     record["model_native_size"] = getattr(model, "native_size", None)
     write_json(out / "config.json", record)
@@ -177,78 +230,164 @@ def train(config: ObjectConfig) -> dict:
         lr=config.lr,
         weight_decay=config.weight_decay,
     )
+    device_type = torch.device(config.device).type
+    if (
+        config.precision == "bfloat16"
+        and device_type == "cuda"
+        and not torch.cuda.is_bf16_supported()
+    ):
+        raise ValueError("Selected CUDA device does not support bfloat16")
+    scaler = torch.amp.GradScaler("cuda", enabled=config.precision == "float16")
+    dtype = torch.float16 if config.precision == "float16" else torch.bfloat16
     criterion = ObjectQueryLoss(train_data.num_classes, num_points=config.num_points)
-    loader = DataLoader(
-        train_data,
-        batch_size=config.batch_size,
-        shuffle=True,
-        num_workers=0,
-        collate_fn=collate_objects,
-        generator=torch.Generator().manual_seed(config.seed),
-    )
-    iterator = iter(loader)
-    best, best_step = -1.0, 0
+    order = BatchOrder(len(train_data), config.seed)
+    best, best_step, step = -1.0, 0, 0
     history: list[dict] = []
+    elapsed = 0.0
+    previous_peak = 0
+    if saved:
+        model.load_state_dict(saved["model"], strict=True)
+        optimizer.load_state_dict(saved["optimizer"])
+        scaler.load_state_dict(saved["scaler"])
+        order.load_state_dict(saved["batch_order"])
+        best, best_step, step = saved["best"], saved["best_step"], saved["step"]
+        history, elapsed = saved["history"], saved["elapsed_s"]
+        previous_peak = saved.get("peak_allocated_bytes", 0) or 0
+        restore_rng(saved["rng"])
     started = time.monotonic()
-    if str(config.device).startswith("cuda"):
+    if device_type == "cuda":
         torch.cuda.reset_peak_memory_stats(config.device)
-    for step in range(1, config.max_steps + 1):
+
+    def snapshot() -> dict:
+        return {
+            "schema": "segmentary-objects-v1",
+            "continuation_version": 1,
+            "architecture": architecture,
+            "task": config.task,
+            "categories": train_data.categories,
+            "config": asdict(config),
+            "model": model.state_dict(),
+            "optimizer": optimizer.state_dict(),
+            "scaler": scaler.state_dict(),
+            "step": step,
+            "best": best,
+            "best_step": best_step,
+            "history": history,
+            "elapsed_s": elapsed + time.monotonic() - started,
+            "rng": rng_state(),
+            "batch_order": order.state_dict(),
+            "data_fingerprint": fingerprints,
+            "torch_version": str(torch.__version__),
+            "peak_allocated_bytes": max(
+                previous_peak, torch.cuda.max_memory_allocated(config.device)
+            )
+            if device_type == "cuda"
+            else None,
+        }
+
+    # Initial snapshot also makes an interruption during the first update recoverable.
+    if not saved:
+        _save_checkpoint(out / "last.pt", snapshot())
+    status = "completed"
+    with graceful_stop() as stop:
         try:
-            images, targets, _ = next(iterator)
-        except StopIteration:
-            iterator = iter(loader)
-            images, targets, _ = next(iterator)
-        model.train()
-        optimizer.zero_grad(set_to_none=True)
-        loss = criterion(
-            query_output(model, images.to(config.device)),
-            [target_to(t, config.device) for t in targets],
-        )
-        if not torch.isfinite(loss):
-            raise FloatingPointError(f"Non-finite object loss at step {step}")
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0, error_if_nonfinite=True)
-        optimizer.step()
-        entry: dict = {"step": step, "loss": float(loss.detach())}
-        if step % config.val_every == 0 or step == config.max_steps:
-            entry["validation"] = evaluate(model, config, val_data)
-            score = entry["validation"]["map" if config.task == "instance" else "pq"]
-            checkpoint = {
-                "schema": "segmentary-objects-v1",
-                "architecture": architecture,
-                "task": config.task,
-                "categories": train_data.categories,
-                "config": asdict(config),
-                "model": model.state_dict(),
-                "optimizer": optimizer.state_dict(),
-                "step": step,
-            }
-            if score is not None and score > best:
-                best, best_step = score, step
-                _save_checkpoint(out / "best.pt", checkpoint)
-            _save_checkpoint(out / "last.pt", checkpoint)
-        history.append(entry)
-        write_json(out / "history.json", history)
+            while step < config.max_steps:
+                groups = order.take(config.batch_size, config.gradient_accumulation)
+                count = sum(map(len, groups))
+                model.train()
+                optimizer.zero_grad(set_to_none=True)
+                total_loss = 0.0
+                for indices in groups:
+                    images, targets, _ = collate_objects([train_data[i] for i in indices])
+                    with torch.autocast(
+                        device_type=device_type, dtype=dtype, enabled=config.precision != "float32"
+                    ):
+                        loss = criterion(
+                            query_output(model, images.to(config.device)),
+                            [target_to(t, config.device) for t in targets],
+                        )
+                        loss = loss * (len(indices) / count)
+                    if not torch.isfinite(loss):
+                        raise FloatingPointError(
+                            f"Non-finite object loss after optimizer step {step}"
+                        )
+                    scaler.scale(loss).backward()
+                    total_loss += float(loss.detach())
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(
+                    model.parameters(), 1.0, error_if_nonfinite=not scaler.is_enabled()
+                )
+                old_scale = scaler.get_scale()
+                scaler.step(optimizer)
+                scaler.update()
+                if scaler.is_enabled() and scaler.get_scale() < old_scale:
+                    # Overflow consumes this sample group but is not an optimizer update.
+                    _save_checkpoint(out / "last.pt", snapshot())
+                    if stop["stop"]:
+                        status = "interrupted"
+                        break
+                    continue
+                step += 1
+                entry: dict = {
+                    "step": step,
+                    "loss": total_loss,
+                    "micro_batches": len(groups),
+                    "samples": count,
+                    "epoch": order.epoch,
+                }
+                improved = False
+                if step % config.val_every == 0 or step == config.max_steps:
+                    random_before_eval = rng_state()
+                    try:
+                        entry["validation"] = evaluate(model, config, val_data)
+                    finally:
+                        restore_rng(random_before_eval)
+                    score = entry["validation"]["map" if config.task == "instance" else "pq"]
+                    if score is not None and score > best:
+                        best, best_step, improved = score, step, True
+                history.append(entry)
+                checkpoint = snapshot()
+                if improved:
+                    _save_checkpoint(out / "best.pt", checkpoint)
+                _save_checkpoint(out / "last.pt", checkpoint)
+                write_json(out / "history.json", history)
+                if stop["stop"]:
+                    status = "interrupted"
+                    break
+        except KeyboardInterrupt:
+            # A caller-raised interruption mid-update keeps the last atomic boundary.
+            status = "interrupted"
+            stable = torch.load(out / "last.pt", map_location="cpu", weights_only=True)
+            step, history, best, best_step = (
+                stable["step"],
+                stable["history"],
+                stable["best"],
+                stable["best_step"],
+            )
     result = {
         **record,
-        "status": "completed",
-        "steps": config.max_steps,
+        "status": status,
+        "steps": step,
         "selection_metric": "mask_AP" if config.task == "instance" else "PQ",
         "best_metric": best if best_step else None,
         "best_step": best_step or None,
-        "wall_clock_s": time.monotonic() - started,
+        "wall_clock_s": elapsed + time.monotonic() - started,
         "history": history,
-        "peak_allocated_bytes": torch.cuda.max_memory_allocated(config.device)
-        if str(config.device).startswith("cuda")
+        "peak_allocated_bytes": max(previous_peak, torch.cuda.max_memory_allocated(config.device))
+        if device_type == "cuda"
         else None,
     }
+    write_json(out / "history.json", history)
     write_json(out / "results.json", result)
     return result
 
 
 def _save_checkpoint(path: Path, checkpoint: dict) -> None:
     temporary = path.with_suffix(".tmp")
-    torch.save(checkpoint, temporary)
+    with temporary.open("wb") as handle:
+        torch.save(checkpoint, handle)
+        handle.flush()
+        os.fsync(handle.fileno())
     temporary.replace(path)
 
 

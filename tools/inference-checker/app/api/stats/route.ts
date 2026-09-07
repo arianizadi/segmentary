@@ -101,6 +101,9 @@ export function GET(request: NextRequest) {
   } catch (error) {
     return NextResponse.json({ error: errorMessage(error) }, { status: 422 });
   }
+  if (bundle.config.task) {
+    return NextResponse.json({error: "Object bundles use independent masks. Use segmentary-objects eval for AP/PQ; semantic preview PNGs are not evaluation labels."}, {status: 422});
+  }
   const scene = bundle.scenesById.get(sceneId);
   if (!scene) {
     return NextResponse.json(

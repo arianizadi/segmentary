@@ -111,3 +111,11 @@ Search the compact legend, or use **Isolate a class** to focus on mud-pumping.
 **Reset view** restores all classes, 1× zoom, and the default overlay opacity.
 In Compare and Diff modes, legend metrics and the footer describe the **right**
 model. Help explains the metric denominators and displays supplied provenance.
+
+## Instance and panoptic review
+
+For object-level masks and panoptic RGB segment maps, use the
+[object review exporter and viewer](object-inference-checker.md). It preserves
+independent instances, shows IDs, confidence and thing/stuff labels, and provides
+explicit missed/extra/merge/split review heuristics. The same `inspect.sh` command
+automatically selects the appropriate viewer from the bundle task.

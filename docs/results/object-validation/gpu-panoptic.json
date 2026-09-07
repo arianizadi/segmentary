@@ -1,0 +1,895 @@
+{
+  "purpose": "real-data GPU execution smoke; random tiny architectures; not benchmark accuracy",
+  "arguments": {
+    "train_images": "/data/izadia1/datasets/cityscapes/leftImg8bit/train",
+    "train_annotations": "/data/izadia1/datasets/cityscapes-object-validation-v1/train/panoptic.json",
+    "train_panoptic_masks": "/data/izadia1/datasets/cityscapes-object-validation-v1/train/panoptic",
+    "val_images": "/data/izadia1/datasets/cityscapes/leftImg8bit/val",
+    "val_annotations": "/data/izadia1/datasets/cityscapes-object-validation-v1/val/panoptic.json",
+    "val_panoptic_masks": "/data/izadia1/datasets/cityscapes-object-validation-v1/val/panoptic",
+    "task": "panoptic",
+    "output": "/data/izadia1/projects/segmentary-runs/object-validation-20260906/gpu-panoptic-v1",
+    "device": "cuda:0",
+    "memory_fraction": 0.15,
+    "allow_cpu": false,
+    "models": [
+      "eomt_large",
+      "eomt_dinov3_large",
+      "maskformer_swin_tiny",
+      "mask2former_swin_tiny"
+    ],
+    "steps": 2,
+    "limit": 2,
+    "height": 256,
+    "width": 512,
+    "accumulation": 2,
+    "precision": "bfloat16",
+    "seed": 0
+  },
+  "categories": [
+    {
+      "id": 7,
+      "name": "road",
+      "isthing": 0
+    },
+    {
+      "id": 8,
+      "name": "sidewalk",
+      "isthing": 0
+    },
+    {
+      "id": 11,
+      "name": "building",
+      "isthing": 0
+    },
+    {
+      "id": 12,
+      "name": "wall",
+      "isthing": 0
+    },
+    {
+      "id": 13,
+      "name": "fence",
+      "isthing": 0
+    },
+    {
+      "id": 17,
+      "name": "pole",
+      "isthing": 0
+    },
+    {
+      "id": 19,
+      "name": "traffic light",
+      "isthing": 0
+    },
+    {
+      "id": 20,
+      "name": "traffic sign",
+      "isthing": 0
+    },
+    {
+      "id": 21,
+      "name": "vegetation",
+      "isthing": 0
+    },
+    {
+      "id": 22,
+      "name": "terrain",
+      "isthing": 0
+    },
+    {
+      "id": 23,
+      "name": "sky",
+      "isthing": 0
+    },
+    {
+      "id": 24,
+      "name": "person",
+      "isthing": 1
+    },
+    {
+      "id": 25,
+      "name": "rider",
+      "isthing": 1
+    },
+    {
+      "id": 26,
+      "name": "car",
+      "isthing": 1
+    },
+    {
+      "id": 27,
+      "name": "truck",
+      "isthing": 1
+    },
+    {
+      "id": 28,
+      "name": "bus",
+      "isthing": 1
+    },
+    {
+      "id": 31,
+      "name": "train",
+      "isthing": 1
+    },
+    {
+      "id": 32,
+      "name": "motorcycle",
+      "isthing": 1
+    },
+    {
+      "id": 33,
+      "name": "bicycle",
+      "isthing": 1
+    }
+  ],
+  "content_sha256": {
+    "train": {
+      "images": {
+        "aachen/aachen_000000_000019_leftImg8bit.png": "609ed9a96d70dba716aed3758398164f9fd6865596ee5d7973beb5b29d05a9ea",
+        "aachen/aachen_000001_000019_leftImg8bit.png": "6550c536dc5df197000d2ce063c82858b93254a1be40842e79ab6104ddc59adc"
+      },
+      "panoptic_masks": {
+        "aachen_000000_000019.png": "21200db15d0940ff60ca2cc7eccba7e7e9f212e71631c92ff51be1e490ae470a",
+        "aachen_000001_000019.png": "b84d82e298b6d1ab94e77f8da5ff17ac0ca8d81dc6e26c734870e3447b5736b4"
+      }
+    },
+    "val": {
+      "images": {
+        "frankfurt/frankfurt_000000_000294_leftImg8bit.png": "3957f8cbb5f5ca483df2c4d39ba0bd581368225d160ab013166f54596cea6ade",
+        "frankfurt/frankfurt_000000_000576_leftImg8bit.png": "665ed5e09a0b8708b7aa01897194b4fe7a59fc299298a4f0b06a52634edbde10"
+      },
+      "panoptic_masks": {
+        "frankfurt_000000_000294.png": "40a47afd6c74b755de7635fa336c8c9fbf9ec1b10a50e50dcd3d3d702777e313",
+        "frankfurt_000000_000576.png": "c24d44da1246415f5ea4ecb7b9183e46987673622867c4f89cf47ead658cd008"
+      }
+    }
+  },
+  "torch": "2.11.0+cu128",
+  "device_name": "NVIDIA L40S",
+  "annotation_sha256": {
+    "train": "da2af4fcaaf16fd6091d1a03e1f3a87b49e00e9bac32166f3e6f5a0db24efaa4",
+    "val": "120ac93bf1b61958075b1a2744e7d5a345d10142e946946e08f1d72035f5a68e"
+  },
+  "image_ids": {
+    "train": [
+      1,
+      2
+    ],
+    "val": [
+      1,
+      2
+    ]
+  },
+  "target_protocol": "Native-resolution masks unchanged; only RGB model input resized",
+  "num_queries": 33,
+  "results": [
+    {
+      "family": "eomt_large",
+      "initialization": "random tiny configuration",
+      "status": "passed",
+      "architecture": {
+        "schema": "segmentary-object-model-v1",
+        "model_class": "EomtForUniversalSegmentation",
+        "num_classes": 19,
+        "hf_config": {
+          "transformers_version": "5.15.0",
+          "architectures": null,
+          "output_hidden_states": false,
+          "return_dict": true,
+          "dtype": null,
+          "chunk_size_feed_forward": 0,
+          "is_encoder_decoder": false,
+          "id2label": {
+            "0": "LABEL_0",
+            "1": "LABEL_1",
+            "2": "LABEL_2",
+            "3": "LABEL_3",
+            "4": "LABEL_4",
+            "5": "LABEL_5",
+            "6": "LABEL_6",
+            "7": "LABEL_7",
+            "8": "LABEL_8",
+            "9": "LABEL_9",
+            "10": "LABEL_10",
+            "11": "LABEL_11",
+            "12": "LABEL_12",
+            "13": "LABEL_13",
+            "14": "LABEL_14",
+            "15": "LABEL_15",
+            "16": "LABEL_16",
+            "17": "LABEL_17",
+            "18": "LABEL_18"
+          },
+          "label2id": {
+            "LABEL_0": 0,
+            "LABEL_1": 1,
+            "LABEL_2": 2,
+            "LABEL_3": 3,
+            "LABEL_4": 4,
+            "LABEL_5": 5,
+            "LABEL_6": 6,
+            "LABEL_7": 7,
+            "LABEL_8": 8,
+            "LABEL_9": 9,
+            "LABEL_10": 10,
+            "LABEL_11": 11,
+            "LABEL_12": 12,
+            "LABEL_13": 13,
+            "LABEL_14": 14,
+            "LABEL_15": 15,
+            "LABEL_16": 16,
+            "LABEL_17": 17,
+            "LABEL_18": 18
+          },
+          "problem_type": null,
+          "hidden_size": 32,
+          "num_hidden_layers": 2,
+          "num_attention_heads": 4,
+          "hidden_act": "gelu",
+          "hidden_dropout_prob": 0.0,
+          "initializer_range": 0.02,
+          "layer_norm_eps": 1e-06,
+          "image_size": 256,
+          "patch_size": 16,
+          "num_channels": 3,
+          "mlp_ratio": 4,
+          "layerscale_value": 1.0,
+          "drop_path_rate": 0.0,
+          "num_upscale_blocks": 1,
+          "attention_dropout": 0.0,
+          "use_swiglu_ffn": false,
+          "num_blocks": 1,
+          "no_object_weight": 0.1,
+          "class_weight": 2.0,
+          "mask_weight": 5.0,
+          "dice_weight": 5.0,
+          "train_num_points": 12544,
+          "oversample_ratio": 3.0,
+          "importance_sample_ratio": 0.75,
+          "num_queries": 33,
+          "num_register_tokens": 0,
+          "_name_or_path": "",
+          "intermediate_size": 64,
+          "model_type": "eomt",
+          "output_attentions": false
+        },
+        "wrapper": {
+          "backbone_paths": [
+            "embeddings",
+            "layers"
+          ],
+          "head_paths": [
+            "class_predictor",
+            "mask_head",
+            "query"
+          ],
+          "native_size": [
+            256,
+            256
+          ],
+          "classifier_component": "class_predictor",
+          "request_auxiliary_logits": false
+        }
+      },
+      "losses": [
+        {
+          "step": 1,
+          "loss": 13.010449886322021,
+          "gradient_norm": 14.665695190429688
+        },
+        {
+          "step": 2,
+          "loss": 12.804096221923828,
+          "gradient_norm": 13.492873191833496
+        }
+      ],
+      "optimizer_steps": 2,
+      "attempts": 2,
+      "train_wall_clock_s": 2.2638106532394886,
+      "validation_forward_finite": true,
+      "peak_allocated_bytes": 1044721152,
+      "peak_reserved_bytes": 1293942784,
+      "checkpoint": "eomt_large.pt",
+      "checkpoint_sha256": "32099599a2784044f6d4c3f67507d0617dfc1e807361df8ea6ddfda9b3fa114d"
+    },
+    {
+      "family": "eomt_dinov3_large",
+      "initialization": "random tiny configuration",
+      "status": "passed",
+      "architecture": {
+        "schema": "segmentary-object-model-v1",
+        "model_class": "EomtDinov3ForUniversalSegmentation",
+        "num_classes": 19,
+        "hf_config": {
+          "transformers_version": "5.15.0",
+          "architectures": null,
+          "output_hidden_states": false,
+          "return_dict": true,
+          "dtype": null,
+          "chunk_size_feed_forward": 0,
+          "is_encoder_decoder": false,
+          "id2label": {
+            "0": "LABEL_0",
+            "1": "LABEL_1",
+            "2": "LABEL_2",
+            "3": "LABEL_3",
+            "4": "LABEL_4",
+            "5": "LABEL_5",
+            "6": "LABEL_6",
+            "7": "LABEL_7",
+            "8": "LABEL_8",
+            "9": "LABEL_9",
+            "10": "LABEL_10",
+            "11": "LABEL_11",
+            "12": "LABEL_12",
+            "13": "LABEL_13",
+            "14": "LABEL_14",
+            "15": "LABEL_15",
+            "16": "LABEL_16",
+            "17": "LABEL_17",
+            "18": "LABEL_18"
+          },
+          "label2id": {
+            "LABEL_0": 0,
+            "LABEL_1": 1,
+            "LABEL_2": 2,
+            "LABEL_3": 3,
+            "LABEL_4": 4,
+            "LABEL_5": 5,
+            "LABEL_6": 6,
+            "LABEL_7": 7,
+            "LABEL_8": 8,
+            "LABEL_9": 9,
+            "LABEL_10": 10,
+            "LABEL_11": 11,
+            "LABEL_12": 12,
+            "LABEL_13": 13,
+            "LABEL_14": 14,
+            "LABEL_15": 15,
+            "LABEL_16": 16,
+            "LABEL_17": 17,
+            "LABEL_18": 18
+          },
+          "problem_type": null,
+          "hidden_size": 32,
+          "num_hidden_layers": 2,
+          "num_attention_heads": 4,
+          "hidden_act": "gelu",
+          "hidden_dropout_prob": 0.0,
+          "initializer_range": 0.02,
+          "layer_norm_eps": 1e-06,
+          "image_size": 256,
+          "patch_size": 16,
+          "num_channels": 3,
+          "layerscale_value": 1.0,
+          "drop_path_rate": 0.0,
+          "num_upscale_blocks": 1,
+          "attention_dropout": 0.0,
+          "num_blocks": 1,
+          "no_object_weight": 0.1,
+          "class_weight": 2.0,
+          "mask_weight": 5.0,
+          "dice_weight": 5.0,
+          "train_num_points": 12544,
+          "oversample_ratio": 3.0,
+          "importance_sample_ratio": 0.75,
+          "num_queries": 33,
+          "num_register_tokens": 0,
+          "intermediate_size": 64,
+          "rope_parameters": {
+            "rope_theta": 100.0,
+            "rope_type": "default"
+          },
+          "query_bias": true,
+          "key_bias": false,
+          "value_bias": true,
+          "proj_bias": true,
+          "mlp_bias": true,
+          "use_gated_mlp": false,
+          "pos_embed_shift": null,
+          "pos_embed_jitter": null,
+          "pos_embed_rescale": 2.0,
+          "_name_or_path": "",
+          "model_type": "eomt_dinov3",
+          "output_attentions": false
+        },
+        "wrapper": {
+          "backbone_paths": [
+            "embeddings",
+            "layers"
+          ],
+          "head_paths": [
+            "class_predictor",
+            "mask_head",
+            "query"
+          ],
+          "native_size": [
+            256,
+            256
+          ],
+          "classifier_component": "class_predictor",
+          "request_auxiliary_logits": false
+        }
+      },
+      "losses": [
+        {
+          "step": 1,
+          "loss": 13.922659873962402,
+          "gradient_norm": 8.642097473144531
+        },
+        {
+          "step": 2,
+          "loss": 13.883884906768799,
+          "gradient_norm": 8.559134483337402
+        }
+      ],
+      "optimizer_steps": 2,
+      "attempts": 2,
+      "train_wall_clock_s": 1.1170483343303204,
+      "validation_forward_finite": true,
+      "peak_allocated_bytes": 1044333568,
+      "peak_reserved_bytes": 2229272576,
+      "checkpoint": "eomt_dinov3_large.pt",
+      "checkpoint_sha256": "0e2b935a62efae0d6bce7c0b0346c6ea2b96adb7806793037c7e2a6d02d35d7f"
+    },
+    {
+      "family": "maskformer_swin_tiny",
+      "initialization": "random tiny configuration",
+      "status": "passed",
+      "architecture": {
+        "schema": "segmentary-object-model-v1",
+        "model_class": "MaskFormerForInstanceSegmentation",
+        "num_classes": 19,
+        "hf_config": {
+          "transformers_version": "5.15.0",
+          "architectures": null,
+          "output_hidden_states": true,
+          "return_dict": true,
+          "dtype": null,
+          "chunk_size_feed_forward": 0,
+          "is_encoder_decoder": false,
+          "id2label": {
+            "0": "LABEL_0",
+            "1": "LABEL_1",
+            "2": "LABEL_2",
+            "3": "LABEL_3",
+            "4": "LABEL_4",
+            "5": "LABEL_5",
+            "6": "LABEL_6",
+            "7": "LABEL_7",
+            "8": "LABEL_8",
+            "9": "LABEL_9",
+            "10": "LABEL_10",
+            "11": "LABEL_11",
+            "12": "LABEL_12",
+            "13": "LABEL_13",
+            "14": "LABEL_14",
+            "15": "LABEL_15",
+            "16": "LABEL_16",
+            "17": "LABEL_17",
+            "18": "LABEL_18"
+          },
+          "label2id": {
+            "LABEL_0": 0,
+            "LABEL_1": 1,
+            "LABEL_2": 2,
+            "LABEL_3": 3,
+            "LABEL_4": 4,
+            "LABEL_5": 5,
+            "LABEL_6": 6,
+            "LABEL_7": 7,
+            "LABEL_8": 8,
+            "LABEL_9": 9,
+            "LABEL_10": 10,
+            "LABEL_11": 11,
+            "LABEL_12": 12,
+            "LABEL_13": 13,
+            "LABEL_14": 14,
+            "LABEL_15": 15,
+            "LABEL_16": 16,
+            "LABEL_17": 17,
+            "LABEL_18": 18
+          },
+          "problem_type": null,
+          "fpn_feature_size": 32,
+          "mask_feature_size": 32,
+          "no_object_weight": 0.1,
+          "use_auxiliary_loss": true,
+          "backbone_config": {
+            "architectures": null,
+            "output_hidden_states": false,
+            "return_dict": true,
+            "dtype": null,
+            "chunk_size_feed_forward": 0,
+            "is_encoder_decoder": false,
+            "id2label": {
+              "0": "LABEL_0",
+              "1": "LABEL_1"
+            },
+            "label2id": {
+              "LABEL_0": 0,
+              "LABEL_1": 1
+            },
+            "problem_type": null,
+            "image_size": 224,
+            "patch_size": 4,
+            "num_channels": 3,
+            "embed_dim": 32,
+            "depths": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "num_heads": [
+              1,
+              2,
+              4,
+              8
+            ],
+            "window_size": 2,
+            "mlp_ratio": 4.0,
+            "qkv_bias": true,
+            "hidden_dropout_prob": 0.0,
+            "attention_probs_dropout_prob": 0.0,
+            "drop_path_rate": 0,
+            "hidden_act": "gelu",
+            "use_absolute_embeddings": false,
+            "initializer_range": 0.02,
+            "layer_norm_eps": 1e-05,
+            "hidden_size": 256,
+            "stage_names": [
+              "stem",
+              "stage1",
+              "stage2",
+              "stage3",
+              "stage4"
+            ],
+            "_name_or_path": "",
+            "encoder_stride": 32,
+            "num_layers": 4,
+            "model_type": "maskformer-swin",
+            "output_attentions": false,
+            "out_features": [
+              "stage1",
+              "stage2",
+              "stage3",
+              "stage4"
+            ],
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "decoder_config": {
+            "architectures": null,
+            "output_hidden_states": false,
+            "return_dict": true,
+            "dtype": null,
+            "chunk_size_feed_forward": 0,
+            "is_encoder_decoder": true,
+            "id2label": {
+              "0": "LABEL_0",
+              "1": "LABEL_1"
+            },
+            "label2id": {
+              "LABEL_0": 0,
+              "LABEL_1": 1
+            },
+            "problem_type": null,
+            "backbone_config": {
+              "architectures": null,
+              "output_hidden_states": false,
+              "return_dict": true,
+              "dtype": null,
+              "chunk_size_feed_forward": 0,
+              "is_encoder_decoder": false,
+              "id2label": {
+                "0": "LABEL_0",
+                "1": "LABEL_1"
+              },
+              "label2id": {
+                "LABEL_0": 0,
+                "LABEL_1": 1
+              },
+              "problem_type": null,
+              "backbone": "resnet50",
+              "num_channels": 3,
+              "features_only": true,
+              "freeze_batch_norm_2d": false,
+              "output_stride": null,
+              "_name_or_path": "",
+              "use_pretrained_backbone": false,
+              "model_type": "timm_backbone",
+              "output_attentions": false,
+              "out_features": null,
+              "out_indices": [
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "num_channels": 3,
+            "num_queries": 33,
+            "encoder_layers": 6,
+            "encoder_ffn_dim": 2048,
+            "encoder_attention_heads": 8,
+            "decoder_layers": 2,
+            "decoder_ffn_dim": 64,
+            "decoder_attention_heads": 4,
+            "encoder_layerdrop": 0.0,
+            "decoder_layerdrop": 0.0,
+            "activation_function": "relu",
+            "d_model": 32,
+            "dropout": 0.1,
+            "attention_dropout": 0.0,
+            "activation_dropout": 0.0,
+            "init_std": 0.02,
+            "init_xavier_std": 1.0,
+            "auxiliary_loss": false,
+            "position_embedding_type": "sine",
+            "dilation": false,
+            "class_cost": 1,
+            "bbox_cost": 5,
+            "giou_cost": 2,
+            "mask_loss_coefficient": 1,
+            "dice_loss_coefficient": 1,
+            "bbox_loss_coefficient": 5,
+            "giou_loss_coefficient": 2,
+            "eos_coefficient": 0.1,
+            "_name_or_path": "",
+            "model_type": "detr",
+            "output_attentions": false
+          },
+          "init_std": 0.02,
+          "init_xavier_std": 1.0,
+          "dice_weight": 1.0,
+          "cross_entropy_weight": 1.0,
+          "mask_weight": 20.0,
+          "output_auxiliary_logits": null,
+          "num_attention_heads": 8,
+          "num_hidden_layers": 6,
+          "_name_or_path": "",
+          "model_type": "maskformer",
+          "output_attentions": false
+        },
+        "wrapper": {
+          "backbone_paths": [
+            "model.pixel_level_module.encoder"
+          ],
+          "head_paths": [
+            "pixel_level_module.decoder",
+            "transformer_module",
+            "class_predictor",
+            "mask_embedder"
+          ],
+          "native_size": null,
+          "classifier_component": "class_predictor",
+          "request_auxiliary_logits": true
+        }
+      },
+      "losses": [
+        {
+          "step": 1,
+          "loss": 44.448869705200195,
+          "gradient_norm": 47077.45703125
+        },
+        {
+          "step": 2,
+          "loss": 39.33047866821289,
+          "gradient_norm": 3847.453125
+        }
+      ],
+      "optimizer_steps": 2,
+      "attempts": 2,
+      "train_wall_clock_s": 14.788172412663698,
+      "validation_forward_finite": true,
+      "peak_allocated_bytes": 2260237824,
+      "peak_reserved_bytes": 2545942528,
+      "checkpoint": "maskformer_swin_tiny.pt",
+      "checkpoint_sha256": "e79c5a82cb09f58c20f38b76b61e32e40b4f818b8abb98932fb58dfa74426f1e"
+    },
+    {
+      "family": "mask2former_swin_tiny",
+      "initialization": "random tiny configuration",
+      "status": "passed",
+      "architecture": {
+        "schema": "segmentary-object-model-v1",
+        "model_class": "Mask2FormerForUniversalSegmentation",
+        "num_classes": 19,
+        "hf_config": {
+          "transformers_version": "5.15.0",
+          "architectures": null,
+          "output_hidden_states": false,
+          "return_dict": true,
+          "dtype": null,
+          "chunk_size_feed_forward": 0,
+          "is_encoder_decoder": false,
+          "id2label": {
+            "0": "LABEL_0",
+            "1": "LABEL_1",
+            "2": "LABEL_2",
+            "3": "LABEL_3",
+            "4": "LABEL_4",
+            "5": "LABEL_5",
+            "6": "LABEL_6",
+            "7": "LABEL_7",
+            "8": "LABEL_8",
+            "9": "LABEL_9",
+            "10": "LABEL_10",
+            "11": "LABEL_11",
+            "12": "LABEL_12",
+            "13": "LABEL_13",
+            "14": "LABEL_14",
+            "15": "LABEL_15",
+            "16": "LABEL_16",
+            "17": "LABEL_17",
+            "18": "LABEL_18"
+          },
+          "label2id": {
+            "LABEL_0": 0,
+            "LABEL_1": 1,
+            "LABEL_2": 2,
+            "LABEL_3": 3,
+            "LABEL_4": 4,
+            "LABEL_5": 5,
+            "LABEL_6": 6,
+            "LABEL_7": 7,
+            "LABEL_8": 8,
+            "LABEL_9": 9,
+            "LABEL_10": 10,
+            "LABEL_11": 11,
+            "LABEL_12": 12,
+            "LABEL_13": 13,
+            "LABEL_14": 14,
+            "LABEL_15": 15,
+            "LABEL_16": 16,
+            "LABEL_17": 17,
+            "LABEL_18": 18
+          },
+          "problem_type": null,
+          "backbone_config": {
+            "architectures": null,
+            "output_hidden_states": false,
+            "return_dict": true,
+            "dtype": null,
+            "chunk_size_feed_forward": 0,
+            "is_encoder_decoder": false,
+            "id2label": {
+              "0": "LABEL_0",
+              "1": "LABEL_1"
+            },
+            "label2id": {
+              "LABEL_0": 0,
+              "LABEL_1": 1
+            },
+            "problem_type": null,
+            "image_size": 224,
+            "patch_size": 4,
+            "num_channels": 3,
+            "embed_dim": 32,
+            "depths": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "num_heads": [
+              1,
+              2,
+              4,
+              8
+            ],
+            "window_size": 2,
+            "mlp_ratio": 4.0,
+            "qkv_bias": true,
+            "hidden_dropout_prob": 0.0,
+            "attention_probs_dropout_prob": 0.0,
+            "drop_path_rate": 0,
+            "hidden_act": "gelu",
+            "use_absolute_embeddings": false,
+            "initializer_range": 0.02,
+            "layer_norm_eps": 1e-05,
+            "encoder_stride": 32,
+            "num_layers": 4,
+            "hidden_size": 256,
+            "stage_names": [
+              "stem",
+              "stage1",
+              "stage2",
+              "stage3",
+              "stage4"
+            ],
+            "_name_or_path": "",
+            "model_type": "swin",
+            "output_attentions": false,
+            "out_features": [
+              "stage1",
+              "stage2",
+              "stage3",
+              "stage4"
+            ],
+            "out_indices": [
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "feature_size": 32,
+          "mask_feature_size": 32,
+          "hidden_dim": 32,
+          "encoder_feedforward_dim": 64,
+          "activation_function": "relu",
+          "encoder_layers": 1,
+          "decoder_layers": 2,
+          "num_attention_heads": 4,
+          "dropout": 0.0,
+          "dim_feedforward": 64,
+          "pre_norm": false,
+          "enforce_input_projection": false,
+          "common_stride": 4,
+          "ignore_value": 255,
+          "num_queries": 33,
+          "no_object_weight": 0.1,
+          "class_weight": 2.0,
+          "mask_weight": 5.0,
+          "dice_weight": 5.0,
+          "train_num_points": 12544,
+          "oversample_ratio": 3.0,
+          "importance_sample_ratio": 0.75,
+          "init_std": 0.02,
+          "init_xavier_std": 1.0,
+          "use_auxiliary_loss": true,
+          "feature_strides": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "output_auxiliary_logits": null,
+          "_name_or_path": "",
+          "model_type": "mask2former",
+          "output_attentions": false
+        },
+        "wrapper": {
+          "backbone_paths": [
+            "model.pixel_level_module.encoder"
+          ],
+          "head_paths": [
+            "pixel_level_module.decoder",
+            "transformer_module",
+            "class_predictor"
+          ],
+          "native_size": null,
+          "classifier_component": "class_predictor",
+          "request_auxiliary_logits": true
+        }
+      },
+      "losses": [
+        {
+          "step": 1,
+          "loss": 28.051210403442383,
+          "gradient_norm": 10.562220573425293
+        },
+        {
+          "step": 2,
+          "loss": 27.80124568939209,
+          "gradient_norm": 7.954681396484375
+        }
+      ],
+      "optimizer_steps": 2,
+      "attempts": 2,
+      "train_wall_clock_s": 1.0214093141257763,
+      "validation_forward_finite": true,
+      "peak_allocated_bytes": 1685884928,
+      "peak_reserved_bytes": 3384803328,
+      "checkpoint": "mask2former_swin_tiny.pt",
+      "checkpoint_sha256": "0bdb7bc3af1e5c0a4d6164f45059f1067ab2bb31b1ed21ddf1ec57d2466f7980"
+    }
+  ]
+}

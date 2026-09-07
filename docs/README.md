@@ -1,7 +1,7 @@
 # Segmentary documentation
 
-Segmentary is a semantic-segmentation library with a simple folder-dataset path
-and explicit controls for advanced training and benchmarking. Choose the path
+Segmentary supports semantic, instance, and panoptic segmentation with a simple
+folder-dataset path and explicit controls for advanced training and benchmarking. Choose the path
 that matches your goal; you do not need to read every page first.
 
 ## New user: get one complete run
@@ -39,6 +39,17 @@ evaluate an exact checkpoint
 
 [Bundled Inference Checker](guides/inference-checker.md): open images, annotations,
 and saved predictions with `./scripts/inspect.sh /path/to/bundle`.
+
+## Object segmentation and annotation review
+
+- [Instance and panoptic workflows](guides/instance-panoptic.md): models, COCO data,
+  training, complete resume, mixed precision, accumulation, and prediction export.
+- [Annotation audit and reviewed versions](guides/annotation-audit.md): native layers,
+  overlaps, overwritten pixels, review lists, and immutable corrections.
+- [Object reports and comparisons](guides/object-reports.md): AP/PQ, per-class results,
+  resources, timing, and provenance.
+- [Real benchmark validation](guides/object-benchmark-validation.md): Cityscapes data
+  recipes, official evaluator agreement, and GPU evidence.
 
 ## Bring your own data or model
 

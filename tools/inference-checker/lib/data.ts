@@ -10,6 +10,7 @@ export interface SegmentationClass {
 }
 
 export interface SegmentationConfig {
+  task?: "instance" | "panoptic";
   labels: SegmentationClass[];
   version: number | string;
   title?: string;
@@ -302,7 +303,11 @@ export function validateConfig(value: unknown): SegmentationConfig {
     throw new Error("Config ignoreIndex must not overlap a class index");
   }
 
+  if (value.task !== undefined && value.task !== "instance" && value.task !== "panoptic") {
+    throw new Error("Config task must be instance or panoptic when present");
+  }
   return {
+    task: value.task as "instance" | "panoptic" | undefined,
     labels,
     version: value.version,
     title: value.title as string | undefined,

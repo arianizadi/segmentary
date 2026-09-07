@@ -32,8 +32,9 @@ need it.
 
 Semantic segmentation uses the existing training, evaluation and comparison pipeline.
 Instance and panoptic segmentation use the opt-in `segmentary-objects` workflow:
-COCO annotations, query-based models, object-preserving predictions, mask AP and
-panoptic PQ. Existing semantic campaigns keep their current behavior.
+COCO annotations, EoMT/EoMT DINOv3/MaskFormer/Mask2Former models, object-preserving
+predictions, mask AP and panoptic PQ. Object training supports full interruption/resume,
+float16/bfloat16 mixed precision, and gradient accumulation. Existing semantic campaigns keep their current behavior.
 
 ```bash
 pip install -e '.[objects]'
@@ -43,6 +44,13 @@ segmentary-objects train configs/examples/instance.yaml
 
 Configure your own data paths first. For data formats, panoptic examples, prediction
 exports and current scope, see the [instance and panoptic guide](docs/guides/instance-panoptic.md).
+
+- [Audit original annotations](docs/guides/annotation-audit.md): inspect polygon/mask
+  overlaps and overwritten pixels, export a review list, and create reviewed dataset versions.
+- [Object reports](docs/guides/object-reports.md): per-model AP/PQ pages, per-class
+  results, VRAM, timing, checkpoint provenance, and linked comparison tables.
+- [Real benchmark validation](docs/guides/object-benchmark-validation.md):
+  reproducible Cityscapes conversion and official evaluator parity checks.
 
 ## Quick start
 
@@ -95,7 +103,9 @@ installed, open an existing comparison bundle with one command:
 ```
 
 Compare ground truth and saved predictions, isolate classes, zoom, and inspect
-pixel-level differences. No GPU is required. See the [viewer guide](docs/guides/inference-checker.md)
+pixel-level differences. Instance/panoptic bundles add object IDs, boundaries,
+confidence, thing/stuff labels, and missed/extra/merge/split review modes. See the
+[object viewer guide](docs/guides/object-inference-checker.md). No GPU is required. See the [viewer guide](docs/guides/inference-checker.md)
 to prepare a bundle from your images and masks.
 
 ## How a run flows

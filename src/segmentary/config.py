@@ -708,6 +708,10 @@ class ModelConfig:
             "classifier_path": self.classifier_path,
             "batch_norm_momentum": self.batch_norm_momentum,
         }
+        if self.arch in ("maskformer_swin_tiny", "mask2former_swin_tiny"):
+            # Explicit object loaders honor these Hub transport options.
+            for key in ("revision", "subfolder", "local_files_only"):
+                hf_options.pop(key)
         if self.arch != "hf_auto":
             used = [key for key, value in hf_options.items() if value not in (None, False, [])]
             if used:

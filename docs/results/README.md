@@ -10,3 +10,10 @@ Their mIoU values are not interchangeable. RTIS diagnostics do not update the
 Cityscapes/RailSem19 model leaderboard.
 
 [RTIS preparation and source-only diagnostics](paul-test-rtis/README.md) are recorded separately from the live adaptation campaign.
+
+## Implementation and data validation
+
+- [Instance and panoptic validation](object-validation/README.md): real Cityscapes
+  GPU execution, pretrained AP/PQ, official evaluator parity, and full resume checks.
+- [RTIS original-annotation audit](paul-test-rtis/annotation-audit-v1/README.md):
+  all 307 source/mask comparisons, overwritten pixels, and review queue.

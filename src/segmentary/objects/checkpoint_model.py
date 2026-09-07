@@ -23,9 +23,15 @@ def _implementations() -> dict[str, tuple[type[Any], type[Any]]]:
         EomtDinov3Config,
         EomtDinov3ForUniversalSegmentation,
         EomtForUniversalSegmentation,
+        Mask2FormerConfig,
+        Mask2FormerForUniversalSegmentation,
+        MaskFormerConfig,
+        MaskFormerForInstanceSegmentation,
     )
 
     return {
+        "mask2former_swin_tiny": (Mask2FormerConfig, Mask2FormerForUniversalSegmentation),
+        "maskformer_swin_tiny": (MaskFormerConfig, MaskFormerForInstanceSegmentation),
         "eomt_large": (EomtConfig, EomtForUniversalSegmentation),
         "eomt_dinov3_large": (EomtDinov3Config, EomtDinov3ForUniversalSegmentation),
     }
@@ -55,6 +61,7 @@ def model_spec(model: MaskClassWrapper) -> dict[str, Any]:
         "model_class": type(model.model).__name__,
         "num_classes": model.num_classes,
         "hf_config": config,
+        "initialization": json.loads(json.dumps(getattr(model, "object_initialization", None))),
         "wrapper": {
             "backbone_paths": list(model.backbone_paths),
             "head_paths": list(model.head_paths),
@@ -136,6 +143,8 @@ def restore_model(
     native_size = (size[0], size[1]) if size is not None else None
     upstream = model_type(config)
     if native_size is not None:
+        if not model_cfg.arch.startswith("eomt_"):
+            raise ValueError("Swin object architectures require native_size=null")
         patch = config.patch_size
         expected = tuple(dimension * patch for dimension in upstream.grid_size)
         if native_size != expected:
@@ -149,5 +158,6 @@ def restore_model(
         classifier_component=classifier,
         request_auxiliary_logits=auxiliary,
     )
+    cast(Any, model).object_initialization = spec.get("initialization")
     apply_tuning(model, model_cfg)
     return model

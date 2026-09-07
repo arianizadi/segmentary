@@ -1,0 +1,151 @@
+{
+  "config": {
+    "task": "instance",
+    "model": {
+      "arch": "mask2former_swin_tiny",
+      "checkpoint": "facebook/mask2former-swin-tiny-cityscapes-instance",
+      "tuning": "full",
+      "head": "unified_head",
+      "lora_r": 16,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "lora_targets": [],
+      "drop_path": null,
+      "revision": "3b56d06423be6d02bd19cff886eb8ac68b92f5ec",
+      "subfolder": null,
+      "local_files_only": false,
+      "trust_remote_code": false,
+      "backbone_path": null,
+      "head_paths": [],
+      "classifier_path": null,
+      "inactive_parameter_paths": [],
+      "smp_arch": null,
+      "encoder_name": null,
+      "encoder_weights": null,
+      "native": null,
+      "batch_norm_momentum": null
+    },
+    "train": {
+      "images": "/data/izadia1/datasets/cityscapes/leftImg8bit/train",
+      "annotations": "/data/izadia1/datasets/cityscapes-object-validation-v1/train/instance.json",
+      "panoptic_masks": null
+    },
+    "val": {
+      "images": "/data/izadia1/datasets/cityscapes/leftImg8bit/val",
+      "annotations": "/data/izadia1/datasets/cityscapes-object-validation-v1/val/instance.json",
+      "panoptic_masks": null
+    },
+    "output": "/data/izadia1/projects/segmentary-runs/object-validation-20260906/pretrained-v2/instance/unused-training",
+    "image_size": [
+      512,
+      1024
+    ],
+    "max_steps": 1000,
+    "val_every": 100,
+    "batch_size": 1,
+    "precision": "float32",
+    "gradient_accumulation": 1,
+    "lr": 0.0001,
+    "weight_decay": 0.05,
+    "allow_train_val_overlap": false,
+    "seed": 0,
+    "device": "cuda:0",
+    "num_points": 1024,
+    "score_threshold": 0.05,
+    "mask_threshold": 0.5,
+    "overlap_threshold": 0.8
+  },
+  "dataset_manifest": {
+    "schema": "segmentary-cityscapes-objects-v1",
+    "source": "/data/izadia1/datasets/cityscapes",
+    "selection": "sorted relative annotation filenames within official train and val splits",
+    "limit_per_split": 3,
+    "splits": {
+      "train": {
+        "images": "/data/izadia1/datasets/cityscapes/leftImg8bit/train",
+        "count": 3,
+        "files": [
+          {
+            "image": "aachen/aachen_000000_000019_leftImg8bit.png",
+            "image_sha256": "609ed9a96d70dba716aed3758398164f9fd6865596ee5d7973beb5b29d05a9ea",
+            "source_mask": "gtFine/train/aachen/aachen_000000_000019_gtFine_instanceIds.png",
+            "source_mask_sha256": "7a484833827f76f737ef176bcff287f81b2596b0018e21a0d140813d88de4093"
+          },
+          {
+            "image": "aachen/aachen_000001_000019_leftImg8bit.png",
+            "image_sha256": "6550c536dc5df197000d2ce063c82858b93254a1be40842e79ab6104ddc59adc",
+            "source_mask": "gtFine/train/aachen/aachen_000001_000019_gtFine_instanceIds.png",
+            "source_mask_sha256": "0e578810736c07f2bc9169ede1fe8a0876d2902ea6eafb6f02359de4b718611f"
+          },
+          {
+            "image": "aachen/aachen_000002_000019_leftImg8bit.png",
+            "image_sha256": "1c3264ba60d63f6fb0f00227de44ce9c79e2e591abddf6911d72f43d6bbd7ce8",
+            "source_mask": "gtFine/train/aachen/aachen_000002_000019_gtFine_instanceIds.png",
+            "source_mask_sha256": "41faca93b2728dfc5d2bef57d7e9caf36439be6aa2f7053ebec54adaf2a16d54"
+          }
+        ]
+      },
+      "val": {
+        "images": "/data/izadia1/datasets/cityscapes/leftImg8bit/val",
+        "count": 3,
+        "files": [
+          {
+            "image": "frankfurt/frankfurt_000000_000294_leftImg8bit.png",
+            "image_sha256": "3957f8cbb5f5ca483df2c4d39ba0bd581368225d160ab013166f54596cea6ade",
+            "source_mask": "gtFine/val/frankfurt/frankfurt_000000_000294_gtFine_instanceIds.png",
+            "source_mask_sha256": "c1344c6f99a4cfac441ba57c2d6ebb9f8c78222ae210a62269b16422bf22b9e0"
+          },
+          {
+            "image": "frankfurt/frankfurt_000000_000576_leftImg8bit.png",
+            "image_sha256": "665ed5e09a0b8708b7aa01897194b4fe7a59fc299298a4f0b06a52634edbde10",
+            "source_mask": "gtFine/val/frankfurt/frankfurt_000000_000576_gtFine_instanceIds.png",
+            "source_mask_sha256": "30e00e698b266531c5e293dfbe190677f507fefc5d15bf5ea23d9e40468ef331"
+          },
+          {
+            "image": "frankfurt/frankfurt_000000_001016_leftImg8bit.png",
+            "image_sha256": "3d8d053391a10cbf49f35b3c731bf4afb025b9d6771191af6c5aaa0e0b57a283",
+            "source_mask": "gtFine/val/frankfurt/frankfurt_000000_001016_gtFine_instanceIds.png",
+            "source_mask_sha256": "9f4a9a137b8d7239c72274225940b76e32c7cac9555ed5855e48d780e5687397"
+          }
+        ]
+      }
+    },
+    "purpose": "subset integration validation"
+  },
+  "memory_fraction": 0.15,
+  "initialization_seed": 0,
+  "initialization": {
+    "checkpoint": "facebook/mask2former-swin-tiny-cityscapes-instance",
+    "requested_revision": "3b56d06423be6d02bd19cff886eb8ac68b92f5ec",
+    "resolved_revision": "3b56d06423be6d02bd19cff886eb8ac68b92f5ec",
+    "loading_info": {
+      "missing_keys": [
+        "model.pixel_level_module.encoder.swin.layernorm.bias",
+        "model.pixel_level_module.encoder.swin.layernorm.weight"
+      ],
+      "unexpected_keys": [
+        "model.pixel_level_module.encoder.swin.encoder.layers.0.blocks.0.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.0.blocks.1.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.1.blocks.0.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.1.blocks.1.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.2.blocks.0.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.2.blocks.1.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.2.blocks.2.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.2.blocks.3.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.2.blocks.4.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.2.blocks.5.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.3.blocks.0.attention.self.relative_position_index",
+        "model.pixel_level_module.encoder.swin.encoder.layers.3.blocks.1.attention.self.relative_position_index"
+      ],
+      "mismatched_keys": [],
+      "error_msgs": []
+    }
+  },
+  "loading_audit": {
+    "missing_final_norm": "SwinBackbone returns normalized per-stage reshaped_hidden_states; the final SwinModel.layernorm output is unused. Perturbation and absent-gradient regression test verifies Mask2Former path.",
+    "unexpected_relative_position_index": "Swin recomputes this deterministic non-persistent buffer from window_size; checkpoint copy is unused.",
+    "source": "transformers/models/swin/modeling_swin.py: SwinBackbone.forward and SwinRelativePositionBias.__init__"
+  },
+  "purpose": "held-out subset integration check",
+  "preprocessing": "fixed512x1024 resize; ImageNet normalization; native-resolution evaluation; no TTA"
+}

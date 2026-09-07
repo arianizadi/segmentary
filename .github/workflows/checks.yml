@@ -70,7 +70,9 @@ jobs:
             --index-url https://download.pytorch.org/whl/cpu
 
       - name: Install project and dev tools
-        run: python -m pip install -e '.[dev,objects]'
+        run: |
+          python -m pip install -e '.[dev,objects]'
+          python -m pip install -r requirements/object-benchmark.txt
 
       - name: Check the resolved environment is self-consistent
         run: python -m pip check

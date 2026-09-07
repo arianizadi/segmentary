@@ -1,4 +1,5 @@
 import { getBundleIndex, type SegmentationConfig } from "../lib/data";
+import ObjectViewer from "../components/ObjectViewer";
 import Viewer from "../components/Viewer";
 
 export const dynamic = "force-dynamic";
@@ -36,7 +37,8 @@ export default async function Home() {
 
   return (
     <main className="app-root">
-      <Viewer scenes={scenes} config={config} setupError={setupError} />
+      {config.task && !setupError ? <ObjectViewer scenes={scenes} config={config} /> :
+        <Viewer scenes={scenes} config={config} setupError={setupError} />}
     </main>
   );
 }

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Inference Checker — Semantic Segmentation Analysis",
+  title: "Inference Checker — Segmentation Analysis",
   description:
-    "Compare semantic segmentation predictions with overlays, side-by-side views, pixel-level diffs, and per-class metrics.",
+    "Inspect semantic, instance, and panoptic segmentation with overlays, synchronized comparisons, object identities, and error review.",
 };
 
 export default function RootLayout({

@@ -168,3 +168,13 @@ Repeat with `--name city-to-rail` and the transfer run's exact resolved config/c
 - The viewer validates mask pairs when metrics load; it does not replace a full dataset-integrity audit.
 - The repository does not bundle a training framework. Exporters should write this explicit contract and include their exact taxonomy in `config.json`.
 - The current launcher is a Bun repository command. A future release can wrap the same bundle contract in an `npx` package or Docker image without changing bundle contents.
+
+## Instance and panoptic object review
+
+Segmentary object bundles automatically open a dedicated viewer with independent
+object IDs, outlines, confidence, thing/stuff labels, and missed/extra/merge/split
+review views. Comparison panning is synchronized and the page fits one viewport.
+See the [object review guide](../../docs/guides/object-inference-checker.md) for
+bundle preparation, exact matching definitions, limits, and provenance.
+These review heuristics are separate from formal AP/PQ evaluation. Existing
+semantic bundles and standalone commands retain their original behavior.

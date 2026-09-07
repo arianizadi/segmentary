@@ -31,12 +31,16 @@ def main(argv: list[str] | None = None) -> None:
         if name in ("eval", "predict"):
             command.add_argument("--checkpoint", type=Path, required=True)
             command.add_argument("--out", type=Path, required=True)
+        if name == "train":
+            command.add_argument(
+                "--resume", type=Path, help="Continue a trusted full last.pt checkpoint"
+            )
         if name == "predict":
             command.add_argument("--images", type=Path, required=True)
     args = parser.parse_args(argv)
     config = load_config(args.config)
     if args.command == "train":
-        result = train(config)
+        result = train(config, resume=args.resume)
         print(json.dumps({k: result[k] for k in ("status", "steps", "best_metric", "best_step")}))
     elif args.command == "validate":
         training = dataset(config, config.train, training=True)

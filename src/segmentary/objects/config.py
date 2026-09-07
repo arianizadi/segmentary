@@ -28,6 +28,8 @@ class ObjectConfig:
     max_steps: int = 1000
     val_every: int = 100
     batch_size: int = 1
+    precision: Literal["float32", "float16", "bfloat16"] = "float32"
+    gradient_accumulation: int = 1
     lr: float = 0.0001
     weight_decay: float = 0.05
     allow_train_val_overlap: bool = False
@@ -43,9 +45,13 @@ class ObjectConfig:
             raise ValueError("objects.task must be instance or panoptic")
         if len(self.image_size) != 2 or any(n < 1 for n in self.image_size):
             raise ValueError("image_size must contain positive height and width")
-        for key in ("max_steps", "val_every", "batch_size", "num_points"):
+        for key in ("max_steps", "val_every", "batch_size", "num_points", "gradient_accumulation"):
             if getattr(self, key) < 1:
                 raise ValueError(f"{key} must be positive")
+        if self.precision not in ("float32", "float16", "bfloat16"):
+            raise ValueError("precision must be float32, float16 or bfloat16")
+        if self.precision == "float16" and not self.device.startswith("cuda"):
+            raise ValueError("float16 training requires CUDA")
         for key in ("score_threshold", "mask_threshold", "overlap_threshold"):
             if not 0 < getattr(self, key) <= 1:
                 raise ValueError(f"{key} must be in (0,1]")
@@ -55,8 +61,15 @@ class ObjectConfig:
             raise ValueError("weight_decay must be finite and nonnegative")
         if not 0 <= self.seed < 2**32:
             raise ValueError("seed must be in [0,2**32)")
-        if self.model.arch not in ("eomt_large", "eomt_dinov3_large"):
-            raise ValueError("Object tasks currently require eomt_large or eomt_dinov3_large")
+        if self.model.arch not in (
+            "eomt_large",
+            "eomt_dinov3_large",
+            "mask2former_swin_tiny",
+            "maskformer_swin_tiny",
+        ):
+            raise ValueError(
+                "Object tasks require a supported EoMT, Mask2Former or MaskFormer architecture"
+            )
         if self.task == "panoptic" and any(
             d.panoptic_masks is None for d in (self.train, self.val)
         ):

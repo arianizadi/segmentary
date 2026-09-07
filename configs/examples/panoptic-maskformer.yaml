@@ -1,0 +1,22 @@
+# COCO-panoptic pretrained MaskFormer with Swin-T; target classifier adapted.
+task: panoptic
+model:
+  arch: maskformer_swin_tiny
+  checkpoint: facebook/maskformer-swin-tiny-coco
+train:
+  images: ../../data/my-panoptic/train/images
+  annotations: ../../data/my-panoptic/train/panoptic.json
+  panoptic_masks: ../../data/my-panoptic/train/panoptic
+val:
+  images: ../../data/my-panoptic/val/images
+  annotations: ../../data/my-panoptic/val/panoptic.json
+  panoptic_masks: ../../data/my-panoptic/val/panoptic
+output: ../../runs/maskformer-panoptic
+image_size: [640, 640]
+max_steps: 1000
+val_every: 100
+batch_size: 1
+gradient_accumulation: 1
+precision: float32
+lr: 0.0001
+device: cpu
