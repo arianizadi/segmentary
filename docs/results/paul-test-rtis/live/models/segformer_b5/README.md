@@ -9,13 +9,13 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | segformer_b5 | rtis_only | 0 | collecting | 2036 | 763 | 2.23 | 2.60 | 13.76 | 1.20 | 34.12 | 39.81 |
 | segformer_b5 | rtis_only | 1 | completed | 1781 | 509 | 2.55 | 2.87 | 18.54 | 1.51 | 33.34 | 37.05 |
 | segformer_b5 | rtis_only | 2 | collecting | 1781 | 509 | 3.58 | 4.18 | 19.79 | 1.41 | 31.39 | 36.62 |
-| segformer_b5 | cityscapes_to_rtis | 0 | training | 1781 | — | — | — | — | — | — | — |
-| segformer_b5 | cityscapes_to_rtis | 1 | training | 1449 | — | — | — | — | — | — | — |
-| segformer_b5 | cityscapes_to_rtis | 2 | training | 1399 | — | — | — | — | — | — | — |
-| segformer_b5 | railsem19_to_rtis | 0 | training | 1149 | — | — | — | — | — | — | — |
-| segformer_b5 | railsem19_to_rtis | 1 | training | 1017 | — | — | — | — | — | — | — |
-| segformer_b5 | railsem19_to_rtis | 2 | training | 999 | — | — | — | — | — | — | — |
-| segformer_b5 | cityscapes_to_railsem19_to_rtis | 0 | training | 199 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_rtis | 0 | training | 1799 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_rtis | 1 | training | 1527 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_rtis | 2 | training | 1449 | — | — | — | — | — | — | — |
+| segformer_b5 | railsem19_to_rtis | 0 | training | 1199 | — | — | — | — | — | — | — |
+| segformer_b5 | railsem19_to_rtis | 1 | training | 1049 | — | — | — | — | — | — | — |
+| segformer_b5 | railsem19_to_rtis | 2 | training | 1017 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | 0 | training | 254 | — | — | — | — | — | — | — |
 | segformer_b5 | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | segformer_b5 | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 
@@ -77,12 +77,218 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Status | Parameters | Weight MiB | FPS | p50 ms | p95 ms | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- |
-| waiting_for_idle_gpu | — | — | — | — | — | — |
+| complete | 84609493 | 322.76 | 26.35 | 37.66 | 39.70 | 2.57 |
 
 ```json
 {
-  "status": "waiting_for_idle_gpu",
-  "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
+  "schema_version": 1,
+  "model_id": "segformer_b5",
+  "measured_at": "2026-09-07T03:49:02+00:00",
+  "status": "complete",
+  "benchmark_scope": "rtis_selected_checkpoint_model_only",
+  "applies_to": [
+    "segformer_b5--rtis_only--seed-0"
+  ],
+  "source": {
+    "campaign_git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+    "git_dirty": false,
+    "config_hash": "44f692bcf85b",
+    "resolved_config": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/configs/segformer_b5--rtis_only--seed-0.yaml",
+    "config_sha256": "8f10f93b40397ad35e22bcc1ac6f8d591f3873b333c543c76f08898b6c45e424",
+    "checkpoint_sha256": "91304f2fd69b323af62f90b692e6e9a2b6dd936f32d3303f58bcf0147ce81648",
+    "checkpoint_global_step": 763,
+    "checkpoint_bytes": 1355767993,
+    "checkpoint_kind": "resume checkpoint with optimizer and EMA state",
+    "weights": "raw",
+    "measured_checkpoint_job_id": "segformer_b5--rtis_only--seed-0",
+    "result_sha256": "f21fc6259755ff476c556aef145dbfaf35d68b7acb1ee1f83e9933f9bbba8cd9",
+    "result_git_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
+    "result_stage": "eval:paul-test-rtis:val",
+    "result_seed": 0
+  },
+  "hardware": {
+    "gpu_name": "NVIDIA L40S",
+    "gpu_uuid": "GPU-84f5ca4d-68db-ae98-d056-40654d859dd9",
+    "logical_device": "cuda:0",
+    "physical_visibility_token": "0",
+    "compute_capability": [
+      8,
+      9
+    ],
+    "total_memory_bytes": 47677177856
+  },
+  "model": {
+    "parameter_count": 84609493,
+    "trainable_parameter_count": 84609493,
+    "resident_parameter_bytes": 338437972,
+    "parameter_dtype_counts": {
+      "float32": 84609493
+    }
+  },
+  "contract": {
+    "backend": "pytorch",
+    "precision": "bf16_autocast",
+    "batch_size": 1,
+    "input_shape_nchw": [
+      1,
+      3,
+      1024,
+      1024
+    ],
+    "warmup_iterations": 20,
+    "measured_iterations": 100,
+    "timing": "per-forward CUDA events with end-event synchronization",
+    "includes_preprocessing": false,
+    "includes_data_loader": false,
+    "includes_sliding_window": false,
+    "input_resident_on_gpu": true,
+    "model_only": true,
+    "entrypoint": "public model(image) dense-logits forward"
+  },
+  "measurements": {
+    "latency": {
+      "p50_ms": 37.66476821899414,
+      "p95_ms": 39.70196418762207,
+      "mean_ms": 37.95691337585449,
+      "minimum_ms": 36.922367095947266,
+      "maximum_ms": 41.15046310424805,
+      "fps": 26.345661726965645,
+      "raw_ms": [
+        37.35142517089844,
+        37.219329833984375,
+        36.99711990356445,
+        37.22956848144531,
+        36.99097442626953,
+        37.00940704345703,
+        38.41331100463867,
+        38.430721282958984,
+        37.62688064575195,
+        36.922367095947266,
+        37.30739212036133,
+        38.993919372558594,
+        38.3875846862793,
+        37.9607048034668,
+        37.7815055847168,
+        38.531070709228516,
+        37.32070541381836,
+        38.46857452392578,
+        38.29350280761719,
+        39.69945526123047,
+        37.27974319458008,
+        37.83475112915039,
+        37.09849548339844,
+        37.215232849121094,
+        37.749759674072266,
+        38.30886459350586,
+        38.184959411621094,
+        37.403648376464844,
+        37.26847839355469,
+        38.2658576965332,
+        39.779327392578125,
+        37.405696868896484,
+        37.3678092956543,
+        39.77830505371094,
+        38.405120849609375,
+        37.970943450927734,
+        37.65862274169922,
+        37.140480041503906,
+        38.27094268798828,
+        38.00166320800781,
+        38.569984436035156,
+        38.59958267211914,
+        37.44460678100586,
+        37.365760803222656,
+        38.02214431762695,
+        37.23878479003906,
+        37.208065032958984,
+        37.186561584472656,
+        37.52755355834961,
+        38.953983306884766,
+        38.85260772705078,
+        38.42252731323242,
+        37.834686279296875,
+        37.58796691894531,
+        37.45897674560547,
+        37.564414978027344,
+        38.22489547729492,
+        37.35347366333008,
+        38.140926361083984,
+        37.4466552734375,
+        37.1333122253418,
+        38.33241653442383,
+        40.776702880859375,
+        37.501953125,
+        37.57465744018555,
+        37.09952163696289,
+        37.50707244873047,
+        37.465087890625,
+        37.6064338684082,
+        38.24028778076172,
+        38.78092956542969,
+        38.1767692565918,
+        37.29510498046875,
+        37.1682243347168,
+        37.129215240478516,
+        37.348350524902344,
+        39.52537536621094,
+        37.76921463012695,
+        37.19782257080078,
+        37.67091369628906,
+        39.64931106567383,
+        37.11692810058594,
+        38.08563232421875,
+        37.64633560180664,
+        37.36467361450195,
+        37.202945709228516,
+        37.206016540527344,
+        38.87513732910156,
+        37.292991638183594,
+        38.09689712524414,
+        38.48601531982422,
+        37.49068832397461,
+        39.197696685791016,
+        37.705726623535156,
+        38.07846450805664,
+        41.15046310424805,
+        38.54956817626953,
+        37.612545013427734,
+        39.7496337890625,
+        39.50592041015625
+      ],
+      "percentile_method": "numpy linear interpolation"
+    },
+    "peak_reserved_bytes": 2755657728,
+    "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
+    "benchmark_wall_clock_s": 7.829796526581049
+  },
+  "started_at": "2026-09-07T03:48:54+00:00",
+  "finished_at": "2026-09-07T03:49:02+00:00",
+  "environment": {
+    "hostname": "hdrfs-app-001",
+    "python": "3.11.15",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "cuda_available": true,
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "cuda_visible_devices": "0",
+    "packages": {
+      "segmentary": "0.1.0",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0",
+      "timm": "1.0.28",
+      "segmentation-models-pytorch": "0.5.0",
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4"
+    }
+  }
 }
 ```
 
@@ -2688,6 +2894,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 33.56 | 0.79 |
 | 1017 | 38.08 | 1.14 |
 | 1272 | 35.06 | 2.83 |
+| 1527 | 40.16 | 2.74 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3632,6 +3839,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 33.22 | 0.23 |
 | 508 | 40.90 | 0.23 |
 | 763 | 44.80 | 0.72 |
+| 1017 | 45.66 | 2.22 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3864,6 +4072,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 29.51 | 0.10 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
