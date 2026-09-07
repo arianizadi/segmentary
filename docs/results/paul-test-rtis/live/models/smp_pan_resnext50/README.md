@@ -6,11 +6,11 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_pan_resnext50 | rtis_only | 0 | training | 1099 | — | — | — | — | — | — | — |
-| smp_pan_resnext50 | rtis_only | 1 | training | 1017 | — | — | — | — | — | — | — |
-| smp_pan_resnext50 | rtis_only | 2 | training | 299 | — | — | — | — | — | — | — |
-| smp_pan_resnext50 | cityscapes_to_rtis | 0 | training | 249 | — | — | — | — | — | — | — |
-| smp_pan_resnext50 | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | rtis_only | 0 | training | 1349 | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | rtis_only | 1 | training | 1249 | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | rtis_only | 2 | training | 508 | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | cityscapes_to_rtis | 0 | training | 449 | — | — | — | — | — | — | — |
+| smp_pan_resnext50 | cityscapes_to_rtis | 1 | training | 199 | — | — | — | — | — | — | — |
 | smp_pan_resnext50 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | smp_pan_resnext50 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | smp_pan_resnext50 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -99,6 +99,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 23.22 | 0.29 |
 | 763 | 22.71 | 0.91 |
 | 1017 | 25.91 | 2.43 |
+| 1272 | 26.65 | 0.27 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -568,6 +569,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 19.36 | 1.80 |
+| 508 | 20.85 | 0.02 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -800,6 +802,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 19.88 | 3.70 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
