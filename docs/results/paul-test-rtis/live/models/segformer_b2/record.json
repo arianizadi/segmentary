@@ -119189,7 +119189,7 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "collecting",
+      "status": "completed",
       "gpu": 3,
       "started_at": "2026-09-07T02:27:40.747165+00:00",
       "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
@@ -126787,7 +126787,7 @@
           }
         ]
       },
-      "collection_phase": "cleanup",
+      "collection_phase": "complete",
       "performance": {
         "schema_version": 1,
         "model_id": "segformer_b2",
@@ -129965,11 +129965,25 @@
               "telemetry_samples": 3,
               "sampled_peak_device_used_mib": 2829.0
             }
-          ]
+          ],
+          "worker_attempts": [
+            {
+              "started_at": "2026-09-07T02:27:40.437858+00:00",
+              "status": "completed",
+              "gpu": 3,
+              "finished_at": "2026-09-07T03:20:47.682670+00:00",
+              "wall_clock_s": 3187.2448362857103
+            }
+          ],
+          "total_reserved_gpu_wall_seconds": 3187.2448362857103,
+          "total_reserved_gpu_hours": 0.8853457878571418,
+          "whole_run_accounting_complete": true
         },
         "verified": true,
         "smoke": false
       },
+      "checkpoint_bytes_removed": 2630783142,
+      "finished_at": "2026-09-07T03:20:47.684273+00:00",
       "resolved_config": {
         "name": "segformer_b2--cityscapes_to_railsem19_to_rtis--seed-1",
         "model": {
@@ -130426,6 +130440,10 @@
           {
             "step": 2149,
             "value": 0.09117954224348068
+          },
+          {
+            "step": 2199,
+            "value": 0.07077157497406006
           }
         ],
         "val/miou": [
@@ -133993,7 +134011,7 @@
           }
         ]
       },
-      "observed_step": 2149,
+      "observed_step": 2199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
