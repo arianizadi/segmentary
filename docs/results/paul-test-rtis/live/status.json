@@ -3712,7 +3712,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3499,
+      "observed_step": 3649,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3722,7 +3722,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2849,
+      "observed_step": 2999,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3732,7 +3732,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2749,
+      "observed_step": 2899,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3742,7 +3742,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2749,
+      "observed_step": 2849,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3752,7 +3752,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2549,
+      "observed_step": 2699,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3760,7 +3760,7 @@
       "model": "smp_linknet_mobilenet_v2",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2036,
       "observed_step": null,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
@@ -3772,7 +3772,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2049,
+      "observed_step": 2199,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3780,9 +3780,9 @@
       "model": "smp_linknet_mobilenet_v2",
       "protocol": "railsem19_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1899,
+      "status": "evaluating",
+      "final_step": 2036,
+      "observed_step": null,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3792,7 +3792,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1649,
+      "observed_step": 1799,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3802,7 +3802,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1349,
+      "observed_step": 1499,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3810,7 +3810,7 @@
       "model": "smp_linknet_mobilenet_v2",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
