@@ -6,15 +6,15 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| segformer_b2 | rtis_only | 0 | training | 1849 | — | — | — | — | — | — | — |
-| segformer_b2 | rtis_only | 1 | training | 1849 | — | — | — | — | — | — | — |
-| segformer_b2 | rtis_only | 2 | training | 1699 | — | — | — | — | — | — | — |
-| segformer_b2 | cityscapes_to_rtis | 0 | training | 1199 | — | — | — | — | — | — | — |
-| segformer_b2 | cityscapes_to_rtis | 1 | training | 1017 | — | — | — | — | — | — | — |
-| segformer_b2 | cityscapes_to_rtis | 2 | training | 449 | — | — | — | — | — | — | — |
-| segformer_b2 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| segformer_b2 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
-| segformer_b2 | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
+| segformer_b2 | rtis_only | 0 | training | 1949 | — | — | — | — | — | — | — |
+| segformer_b2 | rtis_only | 1 | training | 1899 | — | — | — | — | — | — | — |
+| segformer_b2 | rtis_only | 2 | training | 1799 | — | — | — | — | — | — | — |
+| segformer_b2 | cityscapes_to_rtis | 0 | training | 1299 | — | — | — | — | — | — | — |
+| segformer_b2 | cityscapes_to_rtis | 1 | training | 1099 | — | — | — | — | — | — | — |
+| segformer_b2 | cityscapes_to_rtis | 2 | training | 549 | — | — | — | — | — | — | — |
+| segformer_b2 | railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
+| segformer_b2 | railsem19_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
+| segformer_b2 | railsem19_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
 | segformer_b2 | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | segformer_b2 | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | segformer_b2 | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -579,6 +579,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1017 | 33.38 | 3.33 |
 | 1272 | 34.77 | 6.81 |
 | 1527 | 35.52 | 3.81 |
+| 1781 | 35.63 | 3.13 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -815,6 +816,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 27.80 | 2.86 |
 | 763 | 32.48 | 5.24 |
 | 1017 | 37.12 | 6.18 |
+| 1272 | 38.34 | 11.70 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1284,6 +1286,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 23.61 | 3.59 |
+| 508 | 25.96 | 1.72 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1446,7 +1449,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T02:10:45.307334+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b2`.
 
@@ -1678,7 +1681,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 1
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T02:10:46.575699+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b2`.
 
@@ -1910,7 +1913,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T02:11:32.094254+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b2`.
 
