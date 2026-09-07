@@ -3132,7 +3132,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 3449,
+      "observed_step": 3499,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3140,7 +3140,7 @@
       "model": "segformer_b2",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 3054,
       "observed_step": null,
       "record": "models/segformer_b2/record.json"
@@ -3152,7 +3152,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2649,
+      "observed_step": 2749,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3162,7 +3162,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2149,
+      "observed_step": 2249,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3172,7 +3172,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2099,
+      "observed_step": 2199,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3182,7 +3182,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2099,
+      "observed_step": 2199,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3192,7 +3192,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1799,
+      "observed_step": 1899,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3202,7 +3202,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 1149,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3210,7 +3210,7 @@
       "model": "segformer_b2",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/segformer_b2/record.json"
