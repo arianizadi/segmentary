@@ -516,17 +516,17 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [smp_pspnet_mobilenet_v2](models/smp_pspnet_mobilenet_v2/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 1781 | 509 | 5.14 | 5.22 | 77.10 | 5.02 | 17.61 | 18.58 |
 | [smp_pspnet_mobilenet_v2](models/smp_pspnet_mobilenet_v2/README.md) | cityscapes_to_railsem19_to_rtis | 1 | completed | 2290 | 1018 | 6.36 | 6.92 | 43.76 | 2.09 | 17.57 | 20.50 |
 | [smp_pspnet_mobilenet_v2](models/smp_pspnet_mobilenet_v2/README.md) | cityscapes_to_railsem19_to_rtis | 2 | completed | 1781 | 509 | 4.32 | 4.78 | 31.08 | 2.73 | 18.39 | 21.46 |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | rtis_only | 0 | training | 1949 | — | — | — | — | — | — | — |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | rtis_only | 0 | training | 2099 | — | — | — | — | — | — | — |
 | [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | rtis_only | 1 | completed | 1527 | 254 | 3.31 | 3.76 | 21.51 | 1.03 | 20.60 | 20.60 |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | rtis_only | 2 | evaluating | 1527 | — | — | — | — | — | — | — |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_rtis | 0 | training | 1349 | — | — | — | — | — | — | — |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_rtis | 1 | training | 1249 | — | — | — | — | — | — | — |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_rtis | 2 | training | 1149 | — | — | — | — | — | — | — |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | railsem19_to_rtis | 0 | training | 1049 | — | — | — | — | — | — | — |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | railsem19_to_rtis | 1 | training | 499 | — | — | — | — | — | — | — |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | railsem19_to_rtis | 2 | training | 349 | — | — | — | — | — | — | — |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 149 | — | — | — | — | — | — | — |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 49 | — | — | — | — | — | — | — |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | rtis_only | 2 | collecting | 1527 | 254 | 1.71 | 2.23 | 6.88 | 1.14 | 21.79 | 21.79 |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_rtis | 0 | training | 1449 | — | — | — | — | — | — | — |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_rtis | 1 | training | 1399 | — | — | — | — | — | — | — |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_rtis | 2 | training | 1299 | — | — | — | — | — | — | — |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | railsem19_to_rtis | 0 | training | 1199 | — | — | — | — | — | — | — |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | railsem19_to_rtis | 1 | training | 599 | — | — | — | — | — | — | — |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | railsem19_to_rtis | 2 | training | 508 | — | — | — | — | — | — | — |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 299 | — | — | — | — | — | — | — |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 199 | — | — | — | — | — | — | — |
 | [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | [smp_unetplusplus_efficientnet_b0](models/smp_unetplusplus_efficientnet_b0/README.md) | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
 | [smp_unetplusplus_efficientnet_b0](models/smp_unetplusplus_efficientnet_b0/README.md) | rtis_only | 1 | queued | — | — | — | — | — | — | — | — |
@@ -970,7 +970,7 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [smp_pspnet_mobilenet_v2](models/smp_pspnet_mobilenet_v2/README.md) | cityscapes_to_railsem19_to_rtis | 2 | 7.28 | 6.48 | 1088.84 | 11.26 |
 | [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | rtis_only | 0 | — | — | — | — |
 | [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | rtis_only | 1 | 7.91 | 6.50 | 968.74 | 10.00 |
-| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | rtis_only | 2 | — | — | — | — |
+| [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | rtis_only | 2 | 7.91 | 6.50 | 987.73 | 10.10 |
 | [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_rtis | 0 | — | — | — | — |
 | [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_rtis | 1 | — | — | — | — |
 | [smp_unet_resnet34](models/smp_unet_resnet34/README.md) | cityscapes_to_rtis | 2 | — | — | — | — |
