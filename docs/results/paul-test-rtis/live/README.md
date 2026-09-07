@@ -1,6 +1,6 @@
 # RTIS model comparison
 
-**429/432 completed · 0 failed**
+**430/432 completed · 0 failed**
 
 Overall segmentation quality and mud-pumping results across four initialization paths. Every completed job includes quality evaluation, training diagnostics and isolated performance profiling.
 
@@ -49,7 +49,7 @@ Validation **mIoU (%)** across classes. Cells show the mean over completed seeds
 | [smp_unetplusplus_efficientnet_b0](models/smp_unetplusplus_efficientnet_b0/README.md) | 12/12 | 21.74 | 22.64 | 30.84 | 25.71 |
 | [smp_upernet_mit_b0](models/smp_upernet_mit_b0/README.md) | 12/12 | 22.68 | 27.92 | 37.54 | 37.50 |
 | [smp_upernet_resnet101](models/smp_upernet_resnet101/README.md) | 12/12 | 29.74 | 24.83 | 38.89 | 31.62 |
-| [upernet_convnext](models/upernet_convnext/README.md) | 9/12 | 33.31 | 25.90 | 42.49 | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | 10/12 | 33.31 | 25.90 | 42.49 | 39.49 |
 
 ## Mud-pumping
 
@@ -92,7 +92,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [smp_unetplusplus_efficientnet_b0](models/smp_unetplusplus_efficientnet_b0/README.md) | 12/12 | 5.01 | 6.69 | 5.30 | 12.85 |
 | [smp_upernet_mit_b0](models/smp_upernet_mit_b0/README.md) | 12/12 | 4.39 | 14.86 | 9.01 | 14.84 |
 | [smp_upernet_resnet101](models/smp_upernet_resnet101/README.md) | 12/12 | 6.94 | 13.53 | 8.94 | 10.96 |
-| [upernet_convnext](models/upernet_convnext/README.md) | 9/12 | 6.20 | 5.83 | 4.58 | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | 10/12 | 6.20 | 5.83 | 4.58 | 7.30 |
 
 ## Standardized model-only inference
 
@@ -135,7 +135,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [smp_unetplusplus_efficientnet_b0](models/smp_unetplusplus_efficientnet_b0/README.md) | 12/12 | 68.62 | 69.74 | 70.92 | 68.79 |
 | [smp_upernet_mit_b0](models/smp_upernet_mit_b0/README.md) | 12/12 | 54.32 | 54.07 | 54.03 | 54.14 |
 | [smp_upernet_resnet101](models/smp_upernet_resnet101/README.md) | 12/12 | 68.86 | 71.30 | 72.04 | 71.87 |
-| [upernet_convnext](models/upernet_convnext/README.md) | 9/12 | 42.25 | 41.00 | 41.11 | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | 10/12 | 42.25 | 41.00 | 41.11 | 42.10 |
 
 <details>
 <summary>Individual runs: quality, mud precision/recall, steps and status</summary>
@@ -573,9 +573,9 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 0 | completed | 3563 | 2290 | 5.41 | 7.66 | 15.57 | 2.23 | 41.38 | 48.28 |
 | [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 1 | completed | 2545 | 1272 | 4.76 | 6.72 | 14.03 | 3.53 | 46.78 | 49.37 |
 | [upernet_convnext](models/upernet_convnext/README.md) | railsem19_to_rtis | 2 | completed | 2800 | 1527 | 3.57 | 4.58 | 13.91 | 1.65 | 39.31 | 45.86 |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 3649 | — | — | — | — | — | — | — |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 1 | collecting | 3563 | 2290 | 7.30 | 14.96 | 12.47 | 2.52 | 39.49 | 46.07 |
-| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 3349 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 3817 | — | — | — | — | — | — | — |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 1 | completed | 3563 | 2290 | 7.30 | 14.96 | 12.47 | 2.52 | 39.49 | 46.07 |
+| [upernet_convnext](models/upernet_convnext/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 3499 | — | — | — | — | — | — | — |
 
 </details>
 
