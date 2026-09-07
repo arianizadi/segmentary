@@ -15,9 +15,9 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | segformer_b5 | railsem19_to_rtis | 0 | completed | 2545 | 1272 | 4.16 | 5.25 | 16.70 | 3.26 | 44.69 | 52.14 |
 | segformer_b5 | railsem19_to_rtis | 1 | completed | 3563 | 2290 | 7.14 | 10.12 | 19.54 | 6.44 | 46.85 | 54.66 |
 | segformer_b5 | railsem19_to_rtis | 2 | completed | 3818 | 2545 | 5.50 | 8.06 | 14.77 | 4.20 | 45.96 | 53.63 |
-| segformer_b5 | cityscapes_to_railsem19_to_rtis | 0 | training | 3749 | — | — | — | — | — | — | — |
-| segformer_b5 | cityscapes_to_railsem19_to_rtis | 1 | training | 3399 | — | — | — | — | — | — | — |
-| segformer_b5 | cityscapes_to_railsem19_to_rtis | 2 | training | 3449 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | 0 | collecting | 3818 | 2545 | 4.04 | 4.50 | 27.96 | 3.10 | 47.39 | 50.03 |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | 1 | training | 3499 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | 2 | training | 3499 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -8585,7 +8585,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 0
 
-Status: **training**. Started: 2026-09-07T03:41:33.020798+00:00. Finished: —.
+Status: **collecting**. Started: 2026-09-07T03:41:33.020798+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b5`.
 
@@ -8593,25 +8593,25 @@ Recipe pretrained initializer: `nvidia/mit-b5`.
 
 Source checkpoint: `{'name': 'segformer_b5--cityscapes_to_railsem19--seed-0', 'model': 'segformer_b5', 'protocol': 'cityscapes_to_railsem19', 'config': '/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b5--cityscapes_to_railsem19--seed-0/attempt-001/resolved-config.yaml', 'checkpoint': '/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b5--cityscapes_to_railsem19--seed-0/attempt-001/train/segformer_b5--cityscapes_to_railsem19_seed0/railsem19/last.ckpt', 'recorded_sha256': '1a5f4c144fb89fea0250bbd390739f7e210be0bbb899acc2b64b6c0b2885051b', 'exists': True}`.
 
-Config SHA-256: `e2bb7ca10cf07f2250471ec18ecae32ccbcbe4ef85e87e9b7ccdc7cb07a2af63`. Weights used for validation: `—`.
+Config SHA-256: `e2bb7ca10cf07f2250471ec18ecae32ccbcbe4ef85e87e9b7ccdc7cb07a2af63`. Weights used for validation: `raw`.
 
 ### Mud-pumping and aggregate quality
 
 | Metric | Selected checkpoint | Final training validation |
 | --- | --- | --- |
-| Mud IoU | — | — |
-| Mud precision | — | — |
-| Mud recall | — | — |
-| Mud Dice/F1 | — | — |
-| mIoU | — | — |
-| Mean accuracy | — | — |
-| Mean precision | — | — |
-| Mean Dice | — | — |
-| Mean specificity | — | — |
-| Pixel accuracy | — | — |
-| Frequency-weighted IoU | — | — |
-| Fixed GT-present class mIoU | — | — |
-| Boundary F1 | — | — |
+| Mud IoU | 4.04 | 3.10 |
+| Mud precision | 4.50 | 3.48 |
+| Mud recall | 27.96 | 22.10 |
+| Mud Dice/F1 | 7.76 | 6.02 |
+| mIoU | 47.39 | 47.95 |
+| Mean accuracy | 58.76 | 59.26 |
+| Mean precision | 66.73 | 67.68 |
+| Mean Dice | 58.15 | 58.86 |
+| Mean specificity | 99.04 | 99.06 |
+| Pixel accuracy | 83.31 | 83.36 |
+| Frequency-weighted IoU | 77.24 | 77.71 |
+| Fixed GT-present class mIoU | 50.03 | 50.61 |
+| Boundary F1 | 56.44 | 57.33 |
 
 The selected checkpoint has independent evaluation evidence. Final values are the trainer's final validation record, not a new independent evaluation. mIoU averages classes with nonzero union, so false positives on absent classes can change its denominator. The fixed GT-class mean is supplementary and excludes absent classes; their false positives remain in the confusion matrix.
 
@@ -8619,14 +8619,14 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 
 | Measurement | Value |
 | --- | --- |
-| Peak training VRAM, retained training invocation (GiB) | — |
-| Peak evaluation VRAM (GiB) | — |
-| Retained training invocation wall time (seconds) | — |
-| Retained training invocation GPU-hours (one GPU) | — |
-| Evaluation wall time (seconds) | — |
-| Full evaluation pipeline images/second | — |
-| Best full-state checkpoint (MiB) | — |
-| Final full-state checkpoint (MiB) | — |
+| Peak training VRAM, retained training invocation (GiB) | 16.31 |
+| Peak evaluation VRAM (GiB) | 7.78 |
+| Retained training invocation wall time (seconds) | 6129.20 |
+| Retained training invocation GPU-hours (one GPU) | 1.70 |
+| Evaluation wall time (seconds) | 29.19 |
+| Full evaluation pipeline images/second | 1.27 |
+| Best full-state checkpoint (MiB) | 1292.96 |
+| Final full-state checkpoint (MiB) | 1292.91 |
 | Audited periodic checkpoints removed (GiB) | — |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
@@ -8650,6 +8650,27 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Class | GT pixels | IoU (%) | Precision (%) | Recall (%) | Dice (%) | Boundary F1 (%) |
 | --- | --- | --- | --- | --- | --- | --- |
+| car | 29664 | 72.22 | 80.00 | 88.13 | 83.87 | 61.58 |
+| construction | 311585 | 56.52 | 72.18 | 72.26 | 72.22 | 64.34 |
+| fence | 265137 | 17.58 | 72.87 | 18.82 | 29.91 | 47.36 |
+| mud-pumping | 1226250 | 4.04 | 4.50 | 27.96 | 7.76 | 12.59 |
+| on-rails | 0 | — | — | — | — | — |
+| person | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
+| pole | 628038 | 76.26 | 84.97 | 88.15 | 86.53 | 91.99 |
+| rail-embedded | 16799 | 57.93 | 79.24 | 68.30 | 73.36 | 89.15 |
+| rail-raised | 2969797 | 79.04 | 85.18 | 91.65 | 88.30 | 92.95 |
+| rail-track | 6323197 | 35.54 | 82.58 | 38.42 | 52.45 | 44.62 |
+| road | 1048831 | 10.16 | 22.14 | 15.82 | 18.45 | 23.43 |
+| sidewalk | 1297367 | 27.07 | 82.61 | 28.71 | 42.61 | 11.24 |
+| sky | 19121606 | 98.90 | 99.36 | 99.54 | 99.45 | 97.58 |
+| standing-water | 95802 | 2.72 | 4.26 | 7.01 | 5.30 | 10.95 |
+| terrain | 39239306 | 90.32 | 91.76 | 98.29 | 94.92 | 74.73 |
+| trackbed | 10643081 | 57.83 | 81.96 | 66.27 | 73.28 | 61.25 |
+| traffic-light | 19510 | 71.84 | 96.59 | 73.71 | 83.61 | 95.73 |
+| traffic-sign | 13285 | 47.21 | 77.13 | 54.89 | 64.14 | 71.36 |
+| tram-track | 56179 | 52.76 | 64.74 | 74.03 | 69.07 | 53.69 |
+| truck | 0 | — | — | — | — | — |
+| vegetation-overgrowth | 5901821 | 42.51 | 85.87 | 45.71 | 59.66 | 67.93 |
 
 ### Validation tracking
 
@@ -8669,6 +8690,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 3054 | 45.32 | 3.40 |
 | 3308 | 48.02 | 3.15 |
 | 3563 | 47.01 | 3.82 |
+| 3817 | 47.95 | 3.10 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -8676,8 +8698,28 @@ All retained scalar curves, including training loss and per-class IoU, are in re
 
 ```json
 {
-  "stopping": null,
-  "checkpoints": null,
+  "stopping": {
+    "actual_steps": 3818,
+    "maximum_steps": 4000,
+    "min_delta": 0.001,
+    "monitor": "val_iou/mud-pumping",
+    "patience": 5,
+    "reason": "validation_plateau"
+  },
+  "checkpoints": {
+    "best": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/segformer_b5--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/best.ckpt",
+      "sha256": "fda5fe85f62d18f352a8f26452561839bac8feae94e8b14ca216282b98334d78",
+      "global_step": 2545,
+      "bytes": 1355768057
+    },
+    "final": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/segformer_b5--cityscapes_to_railsem19_to_rtis--seed-0_seed0/rtis/last.ckpt",
+      "sha256": "59a759fc9104884a142f786da85ef9f1503ab841646ea060d13ebff17ad288e0",
+      "global_step": 3818,
+      "bytes": 1355712057
+    }
+  },
   "cleanup_error": null
 }
 ```
@@ -8824,8 +8866,429 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ```json
 {
-  "training": null,
-  "evaluation": null
+  "training": {
+    "cuda_available": true,
+    "cuda_visible_devices": "9",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "source": "imagenet",
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "model_origins": [
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.0.blocks.0.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.0.blocks.1.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.0.blocks.2.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.1.blocks.0.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.1.blocks.1.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.1.blocks.2.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.1.blocks.3.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.1.blocks.4.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.1.blocks.5.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.0.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.1.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.2.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.3.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.4.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.5.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.6.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.7.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.8.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.9.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.10.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.11.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.12.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.13.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.14.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.15.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.16.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.17.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.18.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.19.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.20.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.21.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.22.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.23.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.24.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.25.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.26.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.27.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.28.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.29.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.30.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.31.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.32.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.33.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.34.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.35.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.36.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.37.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.38.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.2.blocks.39.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.3.blocks.0.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.3.blocks.1.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.segformer.stages.3.blocks.2.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "40357155205b036cf11b61f132d53d2f8861f170",
+        "hf_name_or_path": "nvidia/mit-b5",
+        "module": "model.decode_head",
+        "timm_pretrained": {}
+      }
+    ],
+    "model_parameter_count": 84609493,
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8",
+    "trainable_parameter_count": 84609493,
+    "training_stop": {
+      "actual_steps": 3818,
+      "maximum_steps": 4000,
+      "min_delta": 0.001,
+      "monitor": "val_iou/mud-pumping",
+      "patience": 5,
+      "reason": "validation_plateau"
+    },
+    "validation_weights": "raw"
+  },
+  "evaluation": {
+    "cuda_available": true,
+    "cuda_visible_devices": "9",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "source": "imagenet",
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8"
+  }
 }
 ```
 

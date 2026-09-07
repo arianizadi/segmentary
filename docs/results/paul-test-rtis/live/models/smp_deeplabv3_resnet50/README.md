@@ -8,13 +8,13 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | smp_deeplabv3_resnet50 | rtis_only | 0 | completed | 2290 | 1018 | 2.24 | 3.78 | 5.20 | 0.97 | 26.83 | 31.30 |
 | smp_deeplabv3_resnet50 | rtis_only | 1 | completed | 2290 | 1018 | 10.22 | 48.39 | 11.47 | 3.29 | 26.25 | 30.62 |
-| smp_deeplabv3_resnet50 | rtis_only | 2 | training | 1849 | — | — | — | — | — | — | — |
-| smp_deeplabv3_resnet50 | cityscapes_to_rtis | 0 | training | 1399 | — | — | — | — | — | — | — |
-| smp_deeplabv3_resnet50 | cityscapes_to_rtis | 1 | training | 999 | — | — | — | — | — | — | — |
-| smp_deeplabv3_resnet50 | cityscapes_to_rtis | 2 | training | 949 | — | — | — | — | — | — | — |
-| smp_deeplabv3_resnet50 | railsem19_to_rtis | 0 | training | 899 | — | — | — | — | — | — | — |
-| smp_deeplabv3_resnet50 | railsem19_to_rtis | 1 | training | 549 | — | — | — | — | — | — | — |
-| smp_deeplabv3_resnet50 | railsem19_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
+| smp_deeplabv3_resnet50 | rtis_only | 2 | training | 1949 | — | — | — | — | — | — | — |
+| smp_deeplabv3_resnet50 | cityscapes_to_rtis | 0 | evaluating | 1527 | — | — | — | — | — | — | — |
+| smp_deeplabv3_resnet50 | cityscapes_to_rtis | 1 | training | 1099 | — | — | — | — | — | — | — |
+| smp_deeplabv3_resnet50 | cityscapes_to_rtis | 2 | training | 1099 | — | — | — | — | — | — | — |
+| smp_deeplabv3_resnet50 | railsem19_to_rtis | 0 | training | 1017 | — | — | — | — | — | — | — |
+| smp_deeplabv3_resnet50 | railsem19_to_rtis | 1 | training | 699 | — | — | — | — | — | — | — |
+| smp_deeplabv3_resnet50 | railsem19_to_rtis | 2 | training | 99 | — | — | — | — | — | — | — |
 | smp_deeplabv3_resnet50 | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | smp_deeplabv3_resnet50 | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | smp_deeplabv3_resnet50 | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -1512,7 +1512,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **training**. Started: 2026-09-07T04:51:17.981625+00:00. Finished: —.
+Status: **evaluating**. Started: 2026-09-07T04:51:17.981625+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "smp", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": "resnet50", "encoder_weights": "imagenet", "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": null, "revision": null, "smp_arch": "DeepLabV3", "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -1587,6 +1587,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 25.12 | 0.79 |
 | 1017 | 28.72 | 1.31 |
 | 1272 | 30.29 | 0.74 |
+| 1527 | 29.31 | 1.68 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1822,6 +1823,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 23.05 | 7.33 |
 | 508 | 22.07 | 7.50 |
 | 763 | 27.91 | 2.33 |
+| 1017 | 27.97 | 1.78 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -2057,6 +2059,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 22.87 | 6.61 |
 | 508 | 21.35 | 0.58 |
 | 763 | 26.71 | 2.45 |
+| 1017 | 29.99 | 0.87 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -2292,6 +2295,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 27.55 | 0.29 |
 | 508 | 31.34 | 1.12 |
 | 763 | 44.84 | 4.37 |
+| 1017 | 46.25 | 1.87 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
