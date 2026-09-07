@@ -6,11 +6,11 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_upernet_resnet101 | rtis_only | 0 | training | 2099 | — | — | — | — | — | — | — |
-| smp_upernet_resnet101 | rtis_only | 1 | training | 1649 | — | — | — | — | — | — | — |
-| smp_upernet_resnet101 | rtis_only | 2 | training | 1017 | — | — | — | — | — | — | — |
-| smp_upernet_resnet101 | cityscapes_to_rtis | 0 | training | 549 | — | — | — | — | — | — | — |
-| smp_upernet_resnet101 | cityscapes_to_rtis | 1 | training | 499 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | rtis_only | 0 | training | 2199 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | rtis_only | 1 | training | 1749 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | rtis_only | 2 | training | 1099 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | cityscapes_to_rtis | 0 | training | 699 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | cityscapes_to_rtis | 1 | training | 599 | — | — | — | — | — | — | — |
 | smp_upernet_resnet101 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | smp_upernet_resnet101 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | smp_upernet_resnet101 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -1044,6 +1044,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 22.50 | 12.64 |
+| 508 | 26.93 | 17.73 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
