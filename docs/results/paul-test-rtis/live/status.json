@@ -4302,7 +4302,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2249,
+      "observed_step": 2349,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -4310,7 +4310,7 @@
       "model": "smp_unetplusplus_efficientnet_b0",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2036,
       "observed_step": null,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
@@ -4332,7 +4332,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1549,
+      "observed_step": 1649,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -4342,7 +4342,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1349,
+      "observed_step": 1449,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -4352,7 +4352,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1199,
+      "observed_step": 1299,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -4362,7 +4362,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 949,
+      "observed_step": 1049,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -4372,7 +4372,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 899,
+      "observed_step": 1017,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -4382,7 +4382,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 599,
+      "observed_step": 699,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -4392,7 +4392,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 549,
+      "observed_step": 649,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -4402,7 +4402,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 99,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -4410,7 +4410,7 @@
       "model": "smp_unetplusplus_efficientnet_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
