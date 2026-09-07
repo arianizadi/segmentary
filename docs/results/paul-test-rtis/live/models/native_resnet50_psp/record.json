@@ -695,6 +695,14 @@
           {
             "step": 799,
             "value": 0.2364647388458252
+          },
+          {
+            "step": 849,
+            "value": 0.11072386056184769
+          },
+          {
+            "step": 899,
+            "value": 0.19746187329292297
           }
         ],
         "val/miou": [
@@ -2174,7 +2182,7 @@
           }
         ]
       },
-      "observed_step": 799,
+      "observed_step": 899,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2408,6 +2416,14 @@
           {
             "step": 649,
             "value": 0.2326372265815735
+          },
+          {
+            "step": 699,
+            "value": 0.25942263007164
+          },
+          {
+            "step": 749,
+            "value": 0.1393042653799057
           }
         ],
         "val/miou": [
@@ -3431,7 +3447,7 @@
           }
         ]
       },
-      "observed_step": 649,
+      "observed_step": 749,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -3612,6 +3628,19 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.5240087509155273
+          },
+          {
+            "step": 99,
+            "value": 1.7047245502471924
+          }
+        ]
+      },
+      "observed_step": 99,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -3633,7 +3662,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 8,
+      "started_at": "2026-09-07T00:26:51.626601+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_resnet50_psp--cityscapes_to_rtis--seed-0",
         "model": {
