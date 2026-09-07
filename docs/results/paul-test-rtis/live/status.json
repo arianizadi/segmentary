@@ -2850,7 +2850,7 @@
       "model": "native_resnet50_fpn_ocr",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2290,
       "observed_step": null,
       "record": "models/native_resnet50_fpn_ocr/record.json"
@@ -2882,7 +2882,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 3099,
+      "observed_step": 3199,
       "record": "models/native_resnet50_psp/record.json"
     },
     {
@@ -2902,7 +2902,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2649,
+      "observed_step": 2749,
       "record": "models/native_resnet50_psp/record.json"
     },
     {
@@ -2922,7 +2922,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1449,
+      "observed_step": 1549,
       "record": "models/native_resnet50_psp/record.json"
     },
     {
@@ -2932,7 +2932,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1249,
+      "observed_step": 1349,
       "record": "models/native_resnet50_psp/record.json"
     },
     {
@@ -2942,7 +2942,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1149,
+      "observed_step": 1249,
       "record": "models/native_resnet50_psp/record.json"
     },
     {
@@ -2952,7 +2952,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 949,
+      "observed_step": 1049,
       "record": "models/native_resnet50_psp/record.json"
     },
     {
@@ -2962,7 +2962,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 508,
+      "observed_step": 599,
       "record": "models/native_resnet50_psp/record.json"
     },
     {
@@ -2972,7 +2972,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 549,
       "record": "models/native_resnet50_psp/record.json"
     },
     {
@@ -2982,7 +2982,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 49,
+      "observed_step": 149,
       "record": "models/segformer_b0/record.json"
     },
     {
@@ -2990,9 +2990,9 @@
       "model": "segformer_b0",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 99,
       "record": "models/segformer_b0/record.json"
     },
     {

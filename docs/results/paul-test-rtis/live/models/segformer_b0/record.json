@@ -603,10 +603,18 @@
           {
             "step": 49,
             "value": 2.350074052810669
+          },
+          {
+            "step": 99,
+            "value": 1.694872260093689
+          },
+          {
+            "step": 149,
+            "value": 0.6371643543243408
           }
         ]
       },
-      "observed_step": 49,
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -620,7 +628,10 @@
       "config_sha256": "e31115d10f1c3a3fa1ad94c6d52a9f83f6580664df9dc63246df5df239960df1",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-07T01:06:02.912968+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "segformer_b0--rtis_only--seed-1",
         "model": {
@@ -752,6 +763,19 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.729356288909912
+          },
+          {
+            "step": 99,
+            "value": 1.6637227535247803
+          }
+        ]
+      },
+      "observed_step": 99,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
