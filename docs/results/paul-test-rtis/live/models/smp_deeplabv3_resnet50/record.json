@@ -10286,6 +10286,10 @@
           {
             "step": 1399,
             "value": 0.10036405175924301
+          },
+          {
+            "step": 1449,
+            "value": 0.09557535499334335
           }
         ],
         "val/miou": [
@@ -12629,7 +12633,7 @@
           }
         ]
       },
-      "observed_step": 1399,
+      "observed_step": 1449,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -12843,6 +12847,14 @@
           {
             "step": 799,
             "value": 0.1675049066543579
+          },
+          {
+            "step": 849,
+            "value": 0.1444689780473709
+          },
+          {
+            "step": 899,
+            "value": 0.2446303516626358
           }
         ],
         "val/miou": [
@@ -14322,7 +14334,7 @@
           }
         ]
       },
-      "observed_step": 799,
+      "observed_step": 899,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -14512,6 +14524,10 @@
           {
             "step": 399,
             "value": 0.37614530324935913
+          },
+          {
+            "step": 449,
+            "value": 0.41943153738975525
           }
         ],
         "val/miou": [
@@ -15127,7 +15143,7 @@
           }
         ]
       },
-      "observed_step": 399,
+      "observed_step": 449,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -15284,6 +15300,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.3769781589508057
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -15305,7 +15330,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 6,
+      "started_at": "2026-09-07T05:00:48.689275+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_deeplabv3_resnet50--cityscapes_to_rtis--seed-2",
         "model": {
@@ -15458,7 +15486,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-07T05:02:00.738740+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_deeplabv3_resnet50--railsem19_to_rtis--seed-0",
         "model": {
