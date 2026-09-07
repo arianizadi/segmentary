@@ -3100,9 +3100,9 @@
       "model": "segformer_b2",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 3899,
+      "status": "collecting",
+      "final_step": 4000,
+      "observed_step": null,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3110,9 +3110,9 @@
       "model": "segformer_b2",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 3899,
+      "status": "collecting",
+      "final_step": 4000,
+      "observed_step": null,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3132,7 +3132,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 3308,
+      "observed_step": 3449,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3152,7 +3152,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2545,
+      "observed_step": 2649,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3162,7 +3162,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1999,
+      "observed_step": 2149,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3172,7 +3172,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1999,
+      "observed_step": 2099,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3182,7 +3182,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1949,
+      "observed_step": 2099,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3192,7 +3192,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1649,
+      "observed_step": 1799,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3202,7 +3202,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 949,
+      "observed_step": 1099,
       "record": "models/segformer_b2/record.json"
     },
     {
