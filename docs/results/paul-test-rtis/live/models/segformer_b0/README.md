@@ -6,18 +6,18 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| segformer_b0 | rtis_only | 0 | training | 3308 | — | — | — | — | — | — | — |
+| segformer_b0 | rtis_only | 0 | collecting | 3309 | 2036 | 2.25 | 2.59 | 14.48 | 2.06 | 29.76 | 34.73 |
 | segformer_b0 | rtis_only | 1 | completed | 2545 | 1272 | 3.46 | 4.96 | 10.25 | 1.60 | 26.10 | 30.45 |
 | segformer_b0 | rtis_only | 2 | collecting | 2545 | 1272 | 1.88 | 2.34 | 8.64 | 1.15 | 25.71 | 30.00 |
 | segformer_b0 | cityscapes_to_rtis | 0 | completed | 1527 | 254 | 2.91 | 3.98 | 9.75 | 1.25 | 18.50 | 18.50 |
-| segformer_b0 | cityscapes_to_rtis | 1 | training | 2299 | — | — | — | — | — | — | — |
-| segformer_b0 | cityscapes_to_rtis | 2 | training | 2099 | — | — | — | — | — | — | — |
-| segformer_b0 | railsem19_to_rtis | 0 | training | 1699 | — | — | — | — | — | — | — |
-| segformer_b0 | railsem19_to_rtis | 1 | training | 1599 | — | — | — | — | — | — | — |
-| segformer_b0 | railsem19_to_rtis | 2 | training | 949 | — | — | — | — | — | — | — |
-| segformer_b0 | cityscapes_to_railsem19_to_rtis | 0 | training | 849 | — | — | — | — | — | — | — |
-| segformer_b0 | cityscapes_to_railsem19_to_rtis | 1 | training | 699 | — | — | — | — | — | — | — |
-| segformer_b0 | cityscapes_to_railsem19_to_rtis | 2 | training | 349 | — | — | — | — | — | — | — |
+| segformer_b0 | cityscapes_to_rtis | 1 | training | 2399 | — | — | — | — | — | — | — |
+| segformer_b0 | cityscapes_to_rtis | 2 | training | 2199 | — | — | — | — | — | — | — |
+| segformer_b0 | railsem19_to_rtis | 0 | training | 1849 | — | — | — | — | — | — | — |
+| segformer_b0 | railsem19_to_rtis | 1 | training | 1749 | — | — | — | — | — | — | — |
+| segformer_b0 | railsem19_to_rtis | 2 | training | 1099 | — | — | — | — | — | — | — |
+| segformer_b0 | cityscapes_to_railsem19_to_rtis | 0 | training | 999 | — | — | — | — | — | — | — |
+| segformer_b0 | cityscapes_to_railsem19_to_rtis | 1 | training | 849 | — | — | — | — | — | — | — |
+| segformer_b0 | cityscapes_to_railsem19_to_rtis | 2 | training | 508 | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -25,7 +25,7 @@ Training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256: `71fef
 
 ## rtis_only — seed 0
 
-Status: **training**. Started: 2026-09-07T01:05:11.133823+00:00. Finished: —.
+Status: **collecting**. Started: 2026-09-07T01:05:11.133823+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b0`.
 
@@ -33,25 +33,25 @@ Recipe pretrained initializer: `nvidia/mit-b0`.
 
 Source checkpoint: `Recipe pretrained initialization`.
 
-Config SHA-256: `b95873413d1050fe440baef6b6627cf06d55b59ba185927de8d297d83dd7e7ae`. Weights used for validation: `—`.
+Config SHA-256: `b95873413d1050fe440baef6b6627cf06d55b59ba185927de8d297d83dd7e7ae`. Weights used for validation: `raw`.
 
 ### Mud-pumping and aggregate quality
 
 | Metric | Selected checkpoint | Final training validation |
 | --- | --- | --- |
-| Mud IoU | — | — |
-| Mud precision | — | — |
-| Mud recall | — | — |
-| Mud Dice/F1 | — | — |
-| mIoU | — | — |
-| Mean accuracy | — | — |
-| Mean precision | — | — |
-| Mean Dice | — | — |
-| Mean specificity | — | — |
-| Pixel accuracy | — | — |
-| Frequency-weighted IoU | — | — |
-| Fixed GT-present class mIoU | — | — |
-| Boundary F1 | — | — |
+| Mud IoU | 2.25 | 2.06 |
+| Mud precision | 2.59 | 2.60 |
+| Mud recall | 14.48 | 9.14 |
+| Mud Dice/F1 | 4.39 | 4.04 |
+| mIoU | 29.76 | 32.18 |
+| Mean accuracy | 40.25 | 44.07 |
+| Mean precision | 53.57 | 59.08 |
+| Mean Dice | 38.48 | 41.14 |
+| Mean specificity | 98.80 | 98.98 |
+| Pixel accuracy | 80.46 | 82.53 |
+| Frequency-weighted IoU | 72.31 | 74.80 |
+| Fixed GT-present class mIoU | 34.73 | 37.55 |
+| Boundary F1 | 35.58 | 39.25 |
 
 The selected checkpoint has independent evaluation evidence. Final values are the trainer's final validation record, not a new independent evaluation. mIoU averages classes with nonzero union, so false positives on absent classes can change its denominator. The fixed GT-class mean is supplementary and excludes absent classes; their false positives remain in the confusion matrix.
 
@@ -59,14 +59,14 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 
 | Measurement | Value |
 | --- | --- |
-| Peak training VRAM, retained training invocation (GiB) | — |
-| Peak evaluation VRAM (GiB) | — |
-| Retained training invocation wall time (seconds) | — |
-| Retained training invocation GPU-hours (one GPU) | — |
-| Evaluation wall time (seconds) | — |
-| Full evaluation pipeline images/second | — |
-| Best full-state checkpoint (MiB) | — |
-| Final full-state checkpoint (MiB) | — |
+| Peak training VRAM, retained training invocation (GiB) | 7.79 |
+| Peak evaluation VRAM (GiB) | 7.03 |
+| Retained training invocation wall time (seconds) | 1978.41 |
+| Retained training invocation GPU-hours (one GPU) | 0.55 |
+| Evaluation wall time (seconds) | 13.35 |
+| Full evaluation pipeline images/second | 2.77 |
+| Best full-state checkpoint (MiB) | 57.10 |
+| Final full-state checkpoint (MiB) | 57.09 |
 | Audited periodic checkpoints removed (GiB) | — |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
@@ -90,6 +90,27 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Class | GT pixels | IoU (%) | Precision (%) | Recall (%) | Dice (%) | Boundary F1 (%) |
 | --- | --- | --- | --- | --- | --- | --- |
+| car | 29664 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| construction | 311585 | 38.54 | 60.39 | 51.58 | 55.64 | 60.18 |
+| fence | 265137 | 5.82 | 51.39 | 6.16 | 11.00 | 14.82 |
+| mud-pumping | 1226250 | 2.25 | 2.59 | 14.48 | 4.39 | 5.16 |
+| on-rails | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
+| person | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
+| pole | 628038 | 62.29 | 83.24 | 71.22 | 76.76 | 87.19 |
+| rail-embedded | 16799 | 13.58 | 98.11 | 13.62 | 23.92 | 13.49 |
+| rail-raised | 2969797 | 72.33 | 81.87 | 86.13 | 83.94 | 90.62 |
+| rail-track | 6323197 | 30.90 | 69.29 | 35.80 | 47.21 | 42.64 |
+| road | 1048831 | 18.41 | 37.45 | 26.59 | 31.10 | 25.33 |
+| sidewalk | 1297367 | 21.49 | 79.42 | 22.76 | 35.38 | 13.48 |
+| sky | 19121606 | 98.04 | 99.33 | 98.69 | 99.01 | 94.46 |
+| standing-water | 95802 | 1.61 | 2.97 | 3.39 | 3.17 | 6.73 |
+| terrain | 39239306 | 85.26 | 86.69 | 98.10 | 92.04 | 56.27 |
+| trackbed | 10643081 | 52.87 | 79.26 | 61.36 | 69.17 | 54.13 |
+| traffic-light | 19510 | 58.86 | 84.89 | 65.75 | 74.10 | 72.41 |
+| traffic-sign | 13285 | 8.91 | 59.12 | 9.49 | 16.36 | 34.03 |
+| tram-track | 56179 | 28.26 | 73.32 | 31.50 | 44.07 | 25.80 |
+| truck | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
+| vegetation-overgrowth | 5901821 | 25.64 | 75.66 | 27.95 | 40.82 | 50.52 |
 
 ### Validation tracking
 
@@ -115,8 +136,28 @@ All retained scalar curves, including training loss and per-class IoU, are in re
 
 ```json
 {
-  "stopping": null,
-  "checkpoints": null,
+  "stopping": {
+    "actual_steps": 3309,
+    "maximum_steps": 4000,
+    "min_delta": 0.001,
+    "monitor": "val_iou/mud-pumping",
+    "patience": 5,
+    "reason": "validation_plateau"
+  },
+  "checkpoints": {
+    "best": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/segformer_b0--rtis_only--seed-0_seed0/rtis/best.ckpt",
+      "sha256": "a4e137f1b8df77a3268eb4928a3469a9d5a8038ac45dfc6eb92bc2522cf0ff57",
+      "global_step": 2036,
+      "bytes": 59870093
+    },
+    "final": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis/mud-fullstats-v1-20260906-r2/future-runs/segformer_b0--rtis_only--seed-0_seed0/rtis/last.ckpt",
+      "sha256": "4175d56d80f2f6c8cd763549ffb4810b19f7a19551e319bf69b137ab7a7888cf",
+      "global_step": 3309,
+      "bytes": 59860301
+    }
+  },
   "cleanup_error": null
 }
 ```
@@ -263,8 +304,165 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ```json
 {
-  "training": null,
-  "evaluation": null
+  "training": {
+    "cuda_available": true,
+    "cuda_visible_devices": "9",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "source": "imagenet",
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "model_origins": [
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model.segformer",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model.segformer.stages.0.blocks.0.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model.segformer.stages.0.blocks.1.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model.segformer.stages.1.blocks.0.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model.segformer.stages.1.blocks.1.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model.segformer.stages.2.blocks.0.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model.segformer.stages.2.blocks.1.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model.segformer.stages.3.blocks.0.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model.segformer.stages.3.blocks.1.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "80983a413c30d36a39c20203974ae7807835e2b4",
+        "hf_name_or_path": "nvidia/mit-b0",
+        "module": "model.decode_head",
+        "timm_pretrained": {}
+      }
+    ],
+    "model_parameter_count": 3719541,
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8",
+    "trainable_parameter_count": 3719541,
+    "training_stop": {
+      "actual_steps": 3309,
+      "maximum_steps": 4000,
+      "min_delta": 0.001,
+      "monitor": "val_iou/mud-pumping",
+      "patience": 5,
+      "reason": "validation_plateau"
+    },
+    "validation_weights": "raw"
+  },
+  "evaluation": {
+    "cuda_available": true,
+    "cuda_visible_devices": "9",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "source": "imagenet",
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8"
+  }
 }
 ```
 
@@ -2633,6 +2831,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1017 | 31.40 | 0.32 |
 | 1272 | 35.08 | 0.81 |
 | 1527 | 38.06 | 1.34 |
+| 1781 | 37.23 | 3.76 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3106,6 +3305,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 26.91 | 0.07 |
 | 508 | 35.56 | 0.06 |
 | 763 | 34.00 | 0.17 |
+| 1017 | 32.53 | 0.54 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3575,6 +3775,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 25.40 | 0.17 |
 | 508 | 26.50 | 0.00 |
+| 763 | 26.11 | 2.41 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3808,6 +4009,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 24.94 | 0.29 |
+| 508 | 25.54 | 0.02 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
