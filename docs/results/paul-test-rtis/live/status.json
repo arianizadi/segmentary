@@ -3260,7 +3260,7 @@
       "model": "segformer_b5",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 4000,
       "observed_step": null,
       "record": "models/segformer_b5/record.json"
@@ -3302,7 +3302,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 3599,
+      "observed_step": 3699,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3312,7 +3312,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2849,
+      "observed_step": 2949,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3322,7 +3322,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2499,
+      "observed_step": 2599,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3332,7 +3332,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2499,
+      "observed_step": 2599,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3352,7 +3352,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1299,
+      "observed_step": 1399,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3362,7 +3362,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 699,
+      "observed_step": 799,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3372,7 +3372,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 399,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3380,7 +3380,7 @@
       "model": "smp_deeplabv3_resnet50",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_deeplabv3_resnet50/record.json"
