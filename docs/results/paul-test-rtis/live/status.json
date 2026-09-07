@@ -4462,7 +4462,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2699,
+      "observed_step": 2849,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -4472,7 +4472,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2349,
+      "observed_step": 2499,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -4482,7 +4482,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2199,
+      "observed_step": 2299,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -4490,7 +4490,7 @@
       "model": "smp_upernet_mit_b0",
       "protocol": "railsem19_to_rtis",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2036,
       "observed_step": null,
       "record": "models/smp_upernet_mit_b0/record.json"
@@ -4502,7 +4502,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1649,
+      "observed_step": 1799,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -4512,7 +4512,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1499,
+      "observed_step": 1649,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -4522,7 +4522,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1149,
+      "observed_step": 1299,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -4532,7 +4532,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 899,
+      "observed_step": 1049,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -4542,7 +4542,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 849,
+      "observed_step": 1017,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -4552,7 +4552,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 508,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -4560,7 +4560,7 @@
       "model": "smp_upernet_resnet101",
       "protocol": "rtis_only",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_upernet_resnet101/record.json"
