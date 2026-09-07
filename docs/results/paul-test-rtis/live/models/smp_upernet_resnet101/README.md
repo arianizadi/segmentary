@@ -14,8 +14,8 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | smp_upernet_resnet101 | cityscapes_to_rtis | 2 | completed | 1527 | 254 | 10.84 | 18.32 | 20.96 | 3.85 | 24.01 | 25.34 |
 | smp_upernet_resnet101 | railsem19_to_rtis | 0 | completed | 4000 | 2800 | 9.78 | 18.00 | 17.63 | 4.34 | 43.17 | 50.36 |
 | smp_upernet_resnet101 | railsem19_to_rtis | 1 | completed | 1781 | 509 | 2.65 | 3.46 | 10.14 | 0.93 | 31.31 | 36.53 |
-| smp_upernet_resnet101 | railsem19_to_rtis | 2 | training | 3399 | — | — | — | — | — | — | — |
-| smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 0 | training | 3399 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | railsem19_to_rtis | 2 | training | 4000 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 0 | training | 4000 | — | — | — | — | — | — | — |
 | smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 1 | completed | 1527 | 254 | 6.57 | 9.53 | 17.43 | 2.60 | 27.31 | 28.83 |
 | smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 2 | completed | 1527 | 254 | 15.76 | 31.67 | 23.87 | 4.45 | 28.00 | 29.56 |
 
@@ -5112,6 +5112,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2799 | 42.17 | 14.40 |
 | 3054 | 43.55 | 6.65 |
 | 3308 | 42.81 | 4.21 |
+| 3563 | 41.33 | 3.47 |
+| 3817 | 43.03 | 7.16 |
+| 4000 | 44.09 | 10.56 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -5357,6 +5360,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2799 | 39.54 | 10.57 |
 | 3054 | 37.75 | 2.39 |
 | 3308 | 37.81 | 3.08 |
+| 3563 | 37.22 | 2.25 |
+| 3817 | 37.78 | 1.68 |
+| 4000 | 37.15 | 1.38 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
