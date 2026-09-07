@@ -3360,7 +3360,7 @@
       "model": "smp_deeplabv3_resnet50",
       "protocol": "rtis_only",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 3309,
       "observed_step": null,
       "record": "models/smp_deeplabv3_resnet50/record.json"
@@ -3410,7 +3410,7 @@
       "model": "smp_deeplabv3_resnet50",
       "protocol": "railsem19_to_rtis",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2036,
       "observed_step": null,
       "record": "models/smp_deeplabv3_resnet50/record.json"
@@ -3422,7 +3422,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1499,
+      "observed_step": 1549,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3432,7 +3432,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1299,
+      "observed_step": 1349,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3442,7 +3442,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1149,
+      "observed_step": 1249,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3452,7 +3452,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 849,
+      "observed_step": 899,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3462,7 +3462,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1399,
+      "observed_step": 1499,
       "record": "models/smp_deeplabv3plus_resnet101/record.json"
     },
     {
@@ -3472,7 +3472,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 1199,
       "record": "models/smp_deeplabv3plus_resnet101/record.json"
     },
     {
@@ -3482,7 +3482,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 899,
+      "observed_step": 1017,
       "record": "models/smp_deeplabv3plus_resnet101/record.json"
     },
     {
@@ -3492,7 +3492,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 508,
+      "observed_step": 599,
       "record": "models/smp_deeplabv3plus_resnet101/record.json"
     },
     {
@@ -3500,7 +3500,7 @@
       "model": "smp_deeplabv3plus_resnet101",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_deeplabv3plus_resnet101/record.json"
@@ -3510,7 +3510,7 @@
       "model": "smp_deeplabv3plus_resnet101",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_deeplabv3plus_resnet101/record.json"
