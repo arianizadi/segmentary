@@ -3640,7 +3640,7 @@
       "model": "smp_fpn_resnet50",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 3309,
       "observed_step": null,
       "record": "models/smp_fpn_resnet50/record.json"
@@ -3692,7 +3692,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2149,
+      "observed_step": 2299,
       "record": "models/smp_fpn_resnet50/record.json"
     },
     {
@@ -3702,7 +3702,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1649,
+      "observed_step": 1781,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3712,7 +3712,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1399,
+      "observed_step": 1527,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3722,7 +3722,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 799,
+      "observed_step": 899,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3732,7 +3732,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 649,
+      "observed_step": 799,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3742,7 +3742,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 649,
+      "observed_step": 763,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3752,7 +3752,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 599,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3762,7 +3762,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 149,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3772,7 +3772,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 99,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
     },
     {
@@ -3780,7 +3780,7 @@
       "model": "smp_linknet_mobilenet_v2",
       "protocol": "railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/smp_linknet_mobilenet_v2/record.json"
