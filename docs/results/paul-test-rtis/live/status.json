@@ -4740,7 +4740,7 @@
       "model": "upernet_convnext",
       "protocol": "railsem19_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2800,
       "observed_step": null,
       "record": "models/upernet_convnext/record.json"
@@ -4752,7 +4752,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2849,
+      "observed_step": 2999,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4762,7 +4762,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2799,
+      "observed_step": 2949,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -4772,7 +4772,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2549,
+      "observed_step": 2699,
       "record": "models/upernet_convnext/record.json"
     }
   ]
