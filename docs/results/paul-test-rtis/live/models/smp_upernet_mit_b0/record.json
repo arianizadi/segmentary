@@ -647,6 +647,10 @@
           {
             "step": 599,
             "value": 0.22321367263793945
+          },
+          {
+            "step": 649,
+            "value": 0.2505996525287628
           }
         ],
         "val/miou": [
@@ -1730,7 +1734,7 @@
           }
         ]
       },
-      "observed_step": 599,
+      "observed_step": 649,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1884,10 +1888,18 @@
           {
             "step": 49,
             "value": 1.12822425365448
+          },
+          {
+            "step": 99,
+            "value": 1.2843471765518188
+          },
+          {
+            "step": 149,
+            "value": 0.6923307180404663
           }
         ]
       },
-      "observed_step": 49,
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2036,6 +2048,19 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.3511748313903809
+          },
+          {
+            "step": 99,
+            "value": 0.43514683842658997
+          }
+        ]
+      },
+      "observed_step": 99,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2057,7 +2082,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 9,
+      "started_at": "2026-09-07T10:41:08.324945+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_upernet_mit_b0--cityscapes_to_rtis--seed-0",
         "model": {
