@@ -6,10 +6,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| upernet_convnext | rtis_only | 0 | training | 508 | — | — | — | — | — | — | — |
-| upernet_convnext | rtis_only | 1 | training | 254 | — | — | — | — | — | — | — |
-| upernet_convnext | rtis_only | 2 | training | 149 | — | — | — | — | — | — | — |
-| upernet_convnext | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| upernet_convnext | rtis_only | 0 | training | 599 | — | — | — | — | — | — | — |
+| upernet_convnext | rtis_only | 1 | training | 299 | — | — | — | — | — | — | — |
+| upernet_convnext | rtis_only | 2 | training | 249 | — | — | — | — | — | — | — |
+| upernet_convnext | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | upernet_convnext | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | upernet_convnext | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | upernet_convnext | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -724,7 +724,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T12:21:24.156410+00:00. Finished: —.
 
 Recipe pretrained initializer: `openmmlab/upernet-convnext-small`.
 
