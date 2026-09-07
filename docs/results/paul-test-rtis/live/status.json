@@ -4050,9 +4050,9 @@
       "model": "smp_pan_resnext50",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1699,
+      "status": "collecting",
+      "final_step": 1781,
+      "observed_step": null,
       "record": "models/smp_pan_resnext50/record.json"
     },
     {
@@ -4062,7 +4062,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1749,
+      "observed_step": 1899,
       "record": "models/smp_pspnet_mobilenet_v2/record.json"
     },
     {
@@ -4072,7 +4072,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1499,
+      "observed_step": 1599,
       "record": "models/smp_pspnet_mobilenet_v2/record.json"
     },
     {
@@ -4082,7 +4082,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1249,
+      "observed_step": 1399,
       "record": "models/smp_pspnet_mobilenet_v2/record.json"
     },
     {
@@ -4092,7 +4092,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1049,
+      "observed_step": 1199,
       "record": "models/smp_pspnet_mobilenet_v2/record.json"
     },
     {
@@ -4102,7 +4102,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 849,
+      "observed_step": 1017,
       "record": "models/smp_pspnet_mobilenet_v2/record.json"
     },
     {
@@ -4112,7 +4112,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 499,
       "record": "models/smp_pspnet_mobilenet_v2/record.json"
     },
     {
@@ -4122,7 +4122,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 99,
       "record": "models/smp_pspnet_mobilenet_v2/record.json"
     },
     {
@@ -4132,7 +4132,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 99,
       "record": "models/smp_pspnet_mobilenet_v2/record.json"
     },
     {
