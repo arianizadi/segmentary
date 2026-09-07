@@ -2742,7 +2742,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2049,
+      "observed_step": 2099,
       "record": "models/native_resnet50_fpn_ocr/record.json"
     },
     {
@@ -2750,9 +2750,9 @@
       "model": "native_resnet50_fpn_ocr",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2036,
+      "status": "collecting",
+      "final_step": 2036,
+      "observed_step": null,
       "record": "models/native_resnet50_fpn_ocr/record.json"
     },
     {
@@ -2762,7 +2762,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1799,
+      "observed_step": 1849,
       "record": "models/native_resnet50_fpn_ocr/record.json"
     },
     {
@@ -2772,7 +2772,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1649,
+      "observed_step": 1749,
       "record": "models/native_resnet50_fpn_ocr/record.json"
     },
     {
@@ -2780,7 +2780,7 @@
       "model": "native_resnet50_fpn_ocr",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 1527,
       "observed_step": null,
       "record": "models/native_resnet50_fpn_ocr/record.json"
@@ -2802,7 +2802,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1199,
+      "observed_step": 1272,
       "record": "models/native_resnet50_fpn_ocr/record.json"
     },
     {
@@ -2812,7 +2812,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 763,
+      "observed_step": 849,
       "record": "models/native_resnet50_fpn_ocr/record.json"
     },
     {
@@ -2822,7 +2822,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 699,
+      "observed_step": 763,
       "record": "models/native_resnet50_fpn_ocr/record.json"
     },
     {
@@ -2832,7 +2832,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 449,
+      "observed_step": 508,
       "record": "models/native_resnet50_fpn_ocr/record.json"
     },
     {
@@ -2840,7 +2840,7 @@
       "model": "native_resnet50_fpn_ocr",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/native_resnet50_fpn_ocr/record.json"
