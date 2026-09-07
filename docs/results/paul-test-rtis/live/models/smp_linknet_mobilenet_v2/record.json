@@ -667,6 +667,18 @@
           {
             "step": 849,
             "value": 0.5644545555114746
+          },
+          {
+            "step": 899,
+            "value": 0.5629459023475647
+          },
+          {
+            "step": 949,
+            "value": 0.6819635033607483
+          },
+          {
+            "step": 999,
+            "value": 0.7371796369552612
           }
         ],
         "val/miou": [
@@ -2056,7 +2068,7 @@
           }
         ]
       },
-      "observed_step": 849,
+      "observed_step": 999,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2254,6 +2266,14 @@
           {
             "step": 599,
             "value": 1.4322470426559448
+          },
+          {
+            "step": 649,
+            "value": 1.4841206073760986
+          },
+          {
+            "step": 699,
+            "value": 1.0238126516342163
           }
         ],
         "val/miou": [
@@ -3247,7 +3267,7 @@
           }
         ]
       },
-      "observed_step": 599,
+      "observed_step": 699,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -3396,6 +3416,23 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 3.233841896057129
+          },
+          {
+            "step": 99,
+            "value": 3.0199875831604004
+          },
+          {
+            "step": 149,
+            "value": 2.9496662616729736
+          }
+        ]
+      },
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -3417,7 +3454,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 2,
+      "started_at": "2026-09-07T07:14:27.244353+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_linknet_mobilenet_v2--cityscapes_to_rtis--seed-0",
         "model": {
@@ -3570,7 +3610,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 6,
+      "started_at": "2026-09-07T07:14:40.946359+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_linknet_mobilenet_v2--cityscapes_to_rtis--seed-1",
         "model": {
