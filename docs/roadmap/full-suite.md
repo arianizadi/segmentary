@@ -1,6 +1,6 @@
 # Building Segmentary into a full segmentation suite
 
-Segmentary's goal is a broad, composable semantic-segmentation library with a
+Segmentary's goal is a broad, composable segmentation library with a
 small beginner path and strict advanced controls. “Full” does not mean that an
 arbitrary Python config or every model name from another package is silently
 accepted. It means the common pieces are independently selectable, their
@@ -39,9 +39,10 @@ checkpoint/EMA/TTA policy, code revision, and the planned seed set.
 | semantic query/mask training | **available** | Hungarian class, mask-BCE, and Dice objective over one mask per present semantic class |
 | binary semantic segmentation | **available end to end** | one foreground logit, canonical IDs `0`/`1`, sigmoid/threshold inference, binary-aware TTA, 2x2 metrics, checkpoints, results, and overfit checks |
 | multilabel objectives | **objective available; data/evaluator pending** | independent-channel targets are tested at the loss layer, not yet a public dataset/result protocol |
-| instance, panoptic, video, depth, or multimodal tasks | **not yet public** | these need different targets, postprocessing, metrics, and result schemas; they are not aliases for semantic segmentation |
+| instance and panoptic segmentation | **available as a separate single-device workflow** | `segmentary-objects`: native COCO targets, query loss, AP/PQ, complete resume, AMP/accumulation, reports and object viewer; [scope and evidence](../guides/instance-panoptic.md) |
+| video, depth, or multimodal tasks | **not yet public** | these need explicit targets, postprocessing, metrics and result schemas |
 
-The query objective is semantic set prediction: disconnected regions with the
+The semantic query objective is semantic set prediction: disconnected regions with the
 same class form one target mask. It is not an instance-segmentation objective.
 
 ### Model sources
@@ -134,16 +135,18 @@ we can place in a menu.
 2. Add PointRend/cascade refinement and a native query decoder one at a time.
 3. Add curated real-time families such as BiSeNet, DDRNet, and PIDNet through
    the same output, optimizer, checkpoint, and evaluation contracts.
-4. Add conventional Mask2Former with a valid hierarchical backbone before any
-   DINOv3 variant. DINOv3 requires an explicit spatial-prior/pyramid adapter;
+4. MaskFormer and Mask2Former with Swin backbones are now available in the
+   separate object workflow. Composable semantic catalog admission remains separate.
+   Add a valid hierarchical backbone before any Mask2Former DINOv3 variant. DINOv3 requires an explicit spatial-prior/pyramid adapter;
    a flat stride-16 ViT is not a valid shortcut.
 5. Expand pretrained native recipes only after exact source, normalization,
    variable-shape, optimizer, and DDP admission passes.
 
 ### Priority 2: additional tasks and deployment
 
-1. Add instance and panoptic target adapters, matching criteria,
-   postprocessors, and metrics as separate task protocols.
+1. Instance/panoptic target adapters, matching, postprocessing, AP/PQ, complete
+   continuation and object viewing are implemented. Expand full-dataset and
+   multi-seed comparisons beyond the [real-data integration checks](../results/object-validation/README.md).
 2. Add temporal/video and multimodal inputs only with explicit batch and
    evaluator contracts.
 3. Broaden ONNX/TensorRT support per architecture, retaining explicit
