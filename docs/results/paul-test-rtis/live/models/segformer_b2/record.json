@@ -603,10 +603,22 @@
           {
             "step": 49,
             "value": 2.1796157360076904
+          },
+          {
+            "step": 99,
+            "value": 0.5636357069015503
+          },
+          {
+            "step": 149,
+            "value": 0.8309280872344971
+          },
+          {
+            "step": 199,
+            "value": 0.7582897543907166
           }
         ]
       },
-      "observed_step": 49,
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -755,6 +767,23 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.6138149499893188
+          },
+          {
+            "step": 99,
+            "value": 0.5337417721748352
+          },
+          {
+            "step": 149,
+            "value": 0.7766493558883667
+          }
+        ]
+      },
+      "observed_step": 149,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -768,7 +797,10 @@
       "config_sha256": "f45e82906e3806f321a07448615cce5060440c6b345f18f612210d62297c852c",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 3,
+      "started_at": "2026-09-07T01:42:31.999764+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "segformer_b2--rtis_only--seed-2",
         "model": {
