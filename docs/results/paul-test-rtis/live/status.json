@@ -3150,7 +3150,7 @@
       "model": "segformer_b2",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 3818,
       "observed_step": null,
       "record": "models/segformer_b2/record.json"
@@ -3162,7 +3162,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 3449,
+      "observed_step": 3563,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3172,7 +3172,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3449,
+      "observed_step": 3549,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3202,7 +3202,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 2399,
+      "observed_step": 2499,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3212,7 +3212,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1272,
+      "observed_step": 1349,
       "record": "models/segformer_b2/record.json"
     },
     {
@@ -3222,7 +3222,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 649,
+      "observed_step": 699,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3232,7 +3232,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 649,
+      "observed_step": 699,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3242,7 +3242,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 349,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3252,7 +3252,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 249,
+      "observed_step": 254,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3260,7 +3260,7 @@
       "model": "segformer_b5",
       "protocol": "cityscapes_to_rtis",
       "seed": 1,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/segformer_b5/record.json"
