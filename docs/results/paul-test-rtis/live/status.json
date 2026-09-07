@@ -2982,7 +2982,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 2749,
+      "observed_step": 2999,
       "record": "models/segformer_b0/record.json"
     },
     {
@@ -2990,7 +2990,7 @@
       "model": "segformer_b0",
       "protocol": "rtis_only",
       "seed": 1,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 2545,
       "observed_step": null,
       "record": "models/segformer_b0/record.json"
@@ -3002,7 +3002,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2049,
+      "observed_step": 2299,
       "record": "models/segformer_b0/record.json"
     },
     {
@@ -3022,7 +3022,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1699,
+      "observed_step": 1949,
       "record": "models/segformer_b0/record.json"
     },
     {
@@ -3032,7 +3032,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 1527,
+      "observed_step": 1749,
       "record": "models/segformer_b0/record.json"
     },
     {
@@ -3042,7 +3042,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 1349,
       "record": "models/segformer_b0/record.json"
     },
     {
@@ -3052,7 +3052,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1049,
+      "observed_step": 1272,
       "record": "models/segformer_b0/record.json"
     },
     {
@@ -3062,7 +3062,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 399,
+      "observed_step": 599,
       "record": "models/segformer_b0/record.json"
     },
     {
@@ -3072,7 +3072,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 508,
       "record": "models/segformer_b0/record.json"
     },
     {
@@ -3082,7 +3082,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 149,
+      "observed_step": 349,
       "record": "models/segformer_b0/record.json"
     },
     {
@@ -3090,7 +3090,7 @@
       "model": "segformer_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 2,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
       "observed_step": null,
       "record": "models/segformer_b0/record.json"
