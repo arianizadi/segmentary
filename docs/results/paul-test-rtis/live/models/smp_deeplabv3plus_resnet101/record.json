@@ -103429,6 +103429,14 @@
           {
             "step": 3099,
             "value": 0.07415972650051117
+          },
+          {
+            "step": 3149,
+            "value": 0.04638577252626419
+          },
+          {
+            "step": 3199,
+            "value": 0.06683367490768433
           }
         ],
         "val/miou": [
@@ -108724,7 +108732,7 @@
           }
         ]
       },
-      "observed_step": 3099,
+      "observed_step": 3199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -109070,6 +109078,14 @@
           {
             "step": 2349,
             "value": 0.14491432905197144
+          },
+          {
+            "step": 2399,
+            "value": 0.04712148383259773
+          },
+          {
+            "step": 2449,
+            "value": 0.07635585963726044
           }
         ],
         "val/miou": [
@@ -113069,7 +113085,7 @@
           }
         ]
       },
-      "observed_step": 2349,
+      "observed_step": 2449,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
