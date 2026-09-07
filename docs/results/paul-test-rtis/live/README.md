@@ -1,6 +1,6 @@
 # RTIS model comparison
 
-**307/432 completed · 0 failed**
+**308/432 completed · 0 failed**
 
 Overall segmentation quality and mud-pumping results across four initialization paths. Every completed job includes quality evaluation, training diagnostics and isolated performance profiling.
 
@@ -39,7 +39,7 @@ Validation **mIoU (%)** across classes. Cells show the mean over completed seeds
 | [segformer_b2](models/segformer_b2/README.md) | 12/12 | 35.90 | 37.71 | 46.87 | 41.78 |
 | [segformer_b5](models/segformer_b5/README.md) | 12/12 | 32.95 | 39.96 | 45.84 | 46.25 |
 | [smp_deeplabv3_resnet50](models/smp_deeplabv3_resnet50/README.md) | 12/12 | 27.81 | 22.33 | 43.35 | 33.57 |
-| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | 7/12 | 24.55 | 30.07 | 46.87 | 40.45 |
+| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | 8/12 | 24.55 | 30.57 | 46.87 | 40.45 |
 | [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | 0/12 | — | — | — | — |
 | [smp_linknet_mobilenet_v2](models/smp_linknet_mobilenet_v2/README.md) | 0/12 | — | — | — | — |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | 0/12 | — | — | — | — |
@@ -82,7 +82,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [segformer_b2](models/segformer_b2/README.md) | 12/12 | 9.90 | 19.42 | 7.64 | 20.66 |
 | [segformer_b5](models/segformer_b5/README.md) | 12/12 | 2.79 | 4.05 | 5.60 | 5.09 |
 | [smp_deeplabv3_resnet50](models/smp_deeplabv3_resnet50/README.md) | 12/12 | 5.64 | 6.02 | 4.17 | 2.30 |
-| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | 7/12 | 4.42 | 2.20 | 4.15 | 3.51 |
+| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | 8/12 | 4.42 | 2.75 | 4.15 | 3.51 |
 | [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | 0/12 | — | — | — | — |
 | [smp_linknet_mobilenet_v2](models/smp_linknet_mobilenet_v2/README.md) | 0/12 | — | — | — | — |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | 0/12 | — | — | — | — |
@@ -125,7 +125,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [segformer_b2](models/segformer_b2/README.md) | 12/12 | 52.68 | 52.69 | 52.43 | 52.68 |
 | [segformer_b5](models/segformer_b5/README.md) | 12/12 | 26.82 | 27.08 | 26.70 | 26.49 |
 | [smp_deeplabv3_resnet50](models/smp_deeplabv3_resnet50/README.md) | 12/12 | 78.57 | 78.30 | 78.58 | 78.33 |
-| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | 7/12 | 112.24 | 112.07 | 110.67 | 108.84 |
+| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | 8/12 | 112.24 | 112.02 | 110.67 | 108.84 |
 | [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | 0/12 | — | — | — | — |
 | [smp_linknet_mobilenet_v2](models/smp_linknet_mobilenet_v2/README.md) | 0/12 | — | — | — | — |
 | [smp_manet_efficientnet_b0](models/smp_manet_efficientnet_b0/README.md) | 0/12 | — | — | — | — |
@@ -449,19 +449,19 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | rtis_only | 2 | completed | 2290 | 1018 | 3.45 | 3.83 | 25.72 | 1.28 | 25.15 | 27.94 |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_rtis | 0 | completed | 3563 | 2290 | 3.19 | 5.07 | 7.92 | 1.19 | 30.84 | 35.98 |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_rtis | 1 | completed | 2545 | 1272 | 1.21 | 1.79 | 3.62 | 0.54 | 29.30 | 34.18 |
-| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_rtis | 2 | collecting | 4000 | 2800 | 3.85 | 7.72 | 7.13 | 1.33 | 31.58 | 36.85 |
+| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_rtis | 2 | completed | 4000 | 2800 | 3.85 | 7.72 | 7.13 | 1.33 | 31.58 | 36.85 |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | railsem19_to_rtis | 0 | completed | 2036 | 763 | 4.15 | 5.60 | 13.82 | 1.88 | 46.87 | 52.07 |
-| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | railsem19_to_rtis | 1 | evaluating | 3309 | — | — | — | — | — | — | — |
-| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | railsem19_to_rtis | 2 | training | 2899 | — | — | — | — | — | — | — |
+| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | railsem19_to_rtis | 1 | collecting | 3309 | 2036 | 8.06 | 25.83 | 10.50 | 4.61 | 44.50 | 51.92 |
+| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | railsem19_to_rtis | 2 | training | 2999 | — | — | — | — | — | — | — |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 2290 | 1018 | 3.51 | 5.63 | 8.53 | 3.46 | 40.45 | 44.94 |
-| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 2499 | — | — | — | — | — | — | — |
-| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 1749 | — | — | — | — | — | — | — |
-| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | rtis_only | 0 | training | 1599 | — | — | — | — | — | — | — |
-| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | rtis_only | 1 | training | 1449 | — | — | — | — | — | — | — |
-| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | rtis_only | 2 | training | 1449 | — | — | — | — | — | — | — |
-| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | cityscapes_to_rtis | 0 | training | 1049 | — | — | — | — | — | — | — |
-| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
-| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
+| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 1 | training | 2649 | — | — | — | — | — | — | — |
+| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 2 | training | 1849 | — | — | — | — | — | — | — |
+| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | rtis_only | 0 | training | 1749 | — | — | — | — | — | — | — |
+| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | rtis_only | 1 | training | 1599 | — | — | — | — | — | — | — |
+| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | rtis_only | 2 | training | 1549 | — | — | — | — | — | — | — |
+| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | cityscapes_to_rtis | 0 | training | 1199 | — | — | — | — | — | — | — |
+| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | cityscapes_to_rtis | 1 | training | 149 | — | — | — | — | — | — | — |
+| [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | cityscapes_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
 | [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | [smp_fpn_resnet50](models/smp_fpn_resnet50/README.md) | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -903,7 +903,7 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_rtis | 1 | 10.08 | 7.19 | 1867.33 | 11.68 |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_rtis | 2 | 10.08 | 7.19 | 2886.31 | 11.78 |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | railsem19_to_rtis | 0 | 10.08 | 7.19 | 1489.44 | 11.60 |
-| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | railsem19_to_rtis | 1 | — | — | — | — |
+| [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | railsem19_to_rtis | 1 | 10.08 | 7.19 | 2386.06 | 12.09 |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | railsem19_to_rtis | 2 | — | — | — | — |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 0 | 10.08 | 7.19 | 1668.62 | 11.83 |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | cityscapes_to_railsem19_to_rtis | 1 | — | — | — | — |
