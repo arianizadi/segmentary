@@ -6,10 +6,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| segformer_b2 | rtis_only | 0 | training | 599 | — | — | — | — | — | — | — |
-| segformer_b2 | rtis_only | 1 | training | 549 | — | — | — | — | — | — | — |
-| segformer_b2 | rtis_only | 2 | training | 399 | — | — | — | — | — | — | — |
-| segformer_b2 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| segformer_b2 | rtis_only | 0 | training | 649 | — | — | — | — | — | — | — |
+| segformer_b2 | rtis_only | 1 | training | 649 | — | — | — | — | — | — | — |
+| segformer_b2 | rtis_only | 2 | training | 508 | — | — | — | — | — | — | — |
+| segformer_b2 | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | segformer_b2 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | segformer_b2 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | segformer_b2 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
@@ -564,6 +564,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 25.58 | 0.22 |
+| 508 | 32.98 | 0.90 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -726,7 +727,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T01:50:21.772584+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b2`.
 
