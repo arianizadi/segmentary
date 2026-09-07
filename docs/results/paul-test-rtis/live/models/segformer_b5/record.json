@@ -623,6 +623,10 @@
           {
             "step": 299,
             "value": 0.3442632257938385
+          },
+          {
+            "step": 349,
+            "value": 0.7063336968421936
           }
         ],
         "val/miou": [
@@ -1238,7 +1242,7 @@
           }
         ]
       },
-      "observed_step": 299,
+      "observed_step": 349,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1412,6 +1416,10 @@
           {
             "step": 299,
             "value": 0.3274603486061096
+          },
+          {
+            "step": 349,
+            "value": 0.3170523941516876
           }
         ],
         "val/miou": [
@@ -2063,7 +2071,7 @@
           }
         ]
       },
-      "observed_step": 299,
+      "observed_step": 349,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -2077,7 +2085,10 @@
       "config_sha256": "e93dba2af46fc23b92d734f377700183a9db146915ef203995d52bde1a949c0a",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 5,
+      "started_at": "2026-09-07T02:58:17.820220+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "segformer_b5--rtis_only--seed-2",
         "model": {
