@@ -130,8 +130,11 @@ class SegmentationModel(nn.Module, ABC):
         task: str = "multiclass",
     ) -> None:
         super().__init__()
-        if num_classes < 2:
-            raise ValueError(f"num_classes must be at least 2, got {num_classes}")
+        # Query models also serve one-category instance tasks; their extra
+        # no-object column supplies the background classification target.
+        minimum_classes = 1 if self.supports_query_objective else 2
+        if num_classes < minimum_classes:
+            raise ValueError(f"num_classes must be at least {minimum_classes}, got {num_classes}")
         if task not in ("multiclass", "binary"):
             raise ValueError(f"unsupported segmentation task {task!r}")
         resolved_channels = num_classes if output_channels is None else output_channels

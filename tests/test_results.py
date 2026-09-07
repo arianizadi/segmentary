@@ -488,28 +488,31 @@ print("ok")
     assert "ok" in proc.stdout
 
 
+class _AugmentationToy(torch.utils.data.Dataset):
+    """Module scope keeps the fixture picklable for macOS/spawn workers."""
+
+    def __init__(self) -> None:
+        from segmentary.data.transforms import AugConfig, build_train_transform
+
+        self.image = np.arange(128 * 128 * 3, dtype=np.uint8).reshape(128, 128, 3)
+        self.mask = np.zeros((128, 128), np.uint8)
+        self.transform = build_train_transform(AugConfig(crop=(64, 64)))
+
+    def __len__(self) -> int:
+        return 8
+
+    def __getitem__(self, index: int):
+        return self.transform(image=self.image, mask=self.mask)["image"].sum()
+
+
 def _augmentation_stream(seed: int, epochs: int) -> list[list[float]]:
     """Sums of augmented crops, per epoch, through a real 2-worker DataLoader."""
-    from torch.utils.data import DataLoader, Dataset
+    from torch.utils.data import DataLoader
 
-    from segmentary.data.transforms import AugConfig, build_train_transform
     from segmentary.utils.seed import worker_init_fn as init_fn
 
-    image = np.arange(128 * 128 * 3, dtype=np.uint8).reshape(128, 128, 3)
-    mask = np.zeros((128, 128), np.uint8)
-
-    class _Toy(Dataset):
-        def __init__(self) -> None:
-            self.transform = build_train_transform(AugConfig(crop=(64, 64)))
-
-        def __len__(self) -> int:
-            return 8
-
-        def __getitem__(self, index: int):
-            return self.transform(image=image, mask=mask)["image"].sum()
-
     seed_everything(seed)
-    dataset = _Toy()
+    dataset = _AugmentationToy()
     generator = torch.Generator()
     generator.manual_seed(seed)
     loader = DataLoader(

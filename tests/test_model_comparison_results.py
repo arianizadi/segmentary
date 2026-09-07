@@ -2,6 +2,7 @@
 
 import csv
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,11 +28,33 @@ def test_results_tree_is_either_clean_start_or_complete_live_bundle() -> None:
 
 def test_markdown_never_uses_plus_minus_result_formatting() -> None:
     offenders = []
-    for path in ROOT.rglob("*.md"):
-        if any(part in {".git", ".venv", "build", "dist"} for part in path.parts):
-            continue
-        if "±" in path.read_text(encoding="utf-8"):
-            offenders.append(str(path.relative_to(ROOT)))
+    # Match the documentation checks' repository boundary. Pruning before the
+    # walk avoids reading bundled-viewer dependencies and local result artifacts.
+    ignored = {
+        ".git",
+        ".venv",
+        "venv",
+        "node_modules",
+        ".next",
+        "build",
+        "dist",
+        "runs",
+        "artifacts",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".mypy_cache",
+        "__pycache__",
+    }
+    for root, directories, files in os.walk(ROOT):
+        directories[:] = [
+            name for name in directories if name not in ignored and not name.endswith(".egg-info")
+        ]
+        for name in files:
+            if not name.endswith(".md"):
+                continue
+            path = Path(root) / name
+            if "±" in path.read_text(encoding="utf-8"):
+                offenders.append(str(path.relative_to(ROOT)))
     assert offenders == []
 
 

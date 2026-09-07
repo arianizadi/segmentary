@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
+import sysconfig
 from pathlib import Path
 
 import pytest
@@ -64,7 +66,7 @@ def installed_wheel_bin(tmp_path_factory: pytest.TempPathFactory, built_distribu
     """Install the wheel without editable/source-path help for CLI smoke tests."""
     root = tmp_path_factory.mktemp("wheel-venv")
     completed = subprocess.run(
-        [sys.executable, "-m", "venv", "--system-site-packages", str(root)],
+        [sys.executable, "-m", "venv", str(root)],
         check=False,
         capture_output=True,
         text=True,
@@ -88,6 +90,46 @@ def installed_wheel_bin(tmp_path_factory: pytest.TempPathFactory, built_distribu
     )
     if completed.returncode != 0:
         pytest.fail(f"wheel install failed:\n{completed.stdout}\n{completed.stderr}")
+
+    # A nested --system-site-packages venv inherits the base interpreter's
+    # packages, not the active development venv's dependencies. Share those
+    # dependencies as plain paths: unlike site.addsitedir(), this does not run
+    # their editable-install .pth hooks or add the checkout's source directory.
+    completed = subprocess.run(
+        [
+            str(bin_dir / "python"),
+            "-I",
+            "-c",
+            "import sysconfig; print(sysconfig.get_path('purelib'))",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    wheel_site = Path(completed.stdout.strip())
+    dependency_paths = dict.fromkeys(sysconfig.get_path(name) for name in ("purelib", "platlib"))
+    (wheel_site / "segmentary-test-dependencies.pth").write_text(
+        "".join(f"{path}\n" for path in dependency_paths)
+    )
+
+    # Prove that sharing third-party dependencies did not make this a source
+    # checkout test in disguise. Wheel packages take precedence on sys.path.
+    completed = subprocess.run(
+        [
+            str(bin_dir / "python"),
+            "-I",
+            "-c",
+            "import json, segmentary, sys; "
+            "print(json.dumps({'module': segmentary.__file__, 'paths': sys.path}))",
+        ],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    imported = json.loads(completed.stdout)
+    assert Path(imported["module"]).resolve().is_relative_to(wheel_site.resolve()), imported
+    assert str(REPO_ROOT / "src") not in imported["paths"], imported
     return bin_dir
 
 

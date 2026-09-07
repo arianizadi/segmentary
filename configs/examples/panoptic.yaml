@@ -1,0 +1,21 @@
+# COCO panoptic JSON plus RGB segment-ID PNGs; isthing is required per category.
+task: panoptic
+model:
+  arch: eomt_large
+train:
+  images: ../../data/my-panoptic/train
+  annotations: ../../data/my-panoptic/panoptic_train.json
+  panoptic_masks: ../../data/my-panoptic/panoptic_train
+val:
+  images: ../../data/my-panoptic/val
+  annotations: ../../data/my-panoptic/panoptic_val.json
+  panoptic_masks: ../../data/my-panoptic/panoptic_val
+output: ../../runs/my-panoptic-run
+image_size: [640, 640]
+max_steps: 1000
+val_every: 100
+batch_size: 1
+lr: 0.0001
+seed: 0
+device: cpu
+score_threshold: 0.5

@@ -127,3 +127,8 @@ evaluation. They are not required for your own project.
 The [benchmark ledger](benchmarks/README.md) explains evidence levels and keeps
 compatibility checks separate from model-quality claims. No prior quality table
 is bundled; start new comparisons from a clean, fully specified campaign.
+
+## Instance and panoptic segmentation
+
+Use the [object segmentation guide](guides/instance-panoptic.md) for COCO data,
+query-model training, mask AP/PQ evaluation and object prediction export.

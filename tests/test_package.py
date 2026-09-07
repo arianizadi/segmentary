@@ -43,6 +43,8 @@ def _archive_text(path: Path, suffix: str) -> str:
         "share/segmentary/configs/models/smp_upernet_resnet101.yaml",
         "share/segmentary/configs/curricula/README.md",
         "share/segmentary/configs/examples/folder_dataset.yaml",
+        "share/segmentary/configs/examples/instance.yaml",
+        "share/segmentary/configs/examples/panoptic.yaml",
         "share/segmentary/taxonomy/README.md",
         "share/segmentary/taxonomy/cityscapes19/README.md",
         "share/segmentary/taxonomy/rail_union/README.md",
@@ -100,6 +102,7 @@ def test_packaged_indexes_do_not_link_to_an_unshipped_docs_tree(
         "segmentary-models",
         "segmentary-progress",
         "segmentary-scene",
+        "segmentary-objects",
     ],
 )
 def test_installed_wheel_console_help(

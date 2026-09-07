@@ -1,7 +1,7 @@
 <h1 align="center">Segmentary</h1>
 
 <p align="center">
-  <b>Train, evaluate, and compare semantic-segmentation models — reproducibly.</b><br>
+  <b>Train and evaluate semantic, instance, and panoptic segmentation models.</b><br>
   Config-driven. No hidden defaults. Fails loudly instead of quietly.
 </p>
 
@@ -27,6 +27,22 @@ segmentary-train base.yaml model.yaml experiment.yaml --seed 0
 
 That's the whole loop. Everything below is detail you can reach for when you
 need it.
+
+## Segmentation tasks
+
+Semantic segmentation uses the existing training, evaluation and comparison pipeline.
+Instance and panoptic segmentation use the opt-in `segmentary-objects` workflow:
+COCO annotations, query-based models, object-preserving predictions, mask AP and
+panoptic PQ. Existing semantic campaigns keep their current behavior.
+
+```bash
+pip install -e '.[objects]'
+segmentary-objects validate configs/examples/instance.yaml
+segmentary-objects train configs/examples/instance.yaml
+```
+
+Configure your own data paths first. For data formats, panoptic examples, prediction
+exports and current scope, see the [instance and panoptic guide](docs/guides/instance-panoptic.md).
 
 ## Quick start
 

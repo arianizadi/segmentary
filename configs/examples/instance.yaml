@@ -1,0 +1,20 @@
+# Independent object-task workflow: segmentary-objects train configs/examples/instance.yaml
+# Paths resolve relative to this YAML. Supply your own COCO instance annotations.
+task: instance
+model:
+  arch: eomt_large
+train:
+  images: ../../data/my-instances/train
+  annotations: ../../data/my-instances/instances_train.json
+val:
+  images: ../../data/my-instances/val
+  annotations: ../../data/my-instances/instances_val.json
+output: ../../runs/my-instance-run
+image_size: [640, 640]
+max_steps: 1000
+val_every: 100
+batch_size: 1
+lr: 0.0001
+seed: 0
+device: cpu
+score_threshold: 0.05
