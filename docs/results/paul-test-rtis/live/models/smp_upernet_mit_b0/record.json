@@ -639,6 +639,14 @@
           {
             "step": 499,
             "value": 0.13558997213840485
+          },
+          {
+            "step": 549,
+            "value": 0.47056305408477783
+          },
+          {
+            "step": 599,
+            "value": 0.22321367263793945
           }
         ],
         "val/miou": [
@@ -1722,7 +1730,7 @@
           }
         ]
       },
-      "observed_step": 508,
+      "observed_step": 599,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1736,7 +1744,10 @@
       "config_sha256": "c22c16cfa60513d06e570715f659031f798e408b49cbf4511085a0c5caf467da",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 1,
+      "started_at": "2026-09-07T10:39:06.825342+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_upernet_mit_b0--rtis_only--seed-1",
         "model": {
@@ -1868,6 +1879,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.12822425365448
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1881,7 +1901,10 @@
       "config_sha256": "9cc624f048d788dffe48050531b398fb6e286e3e0dedcace2567cf709dced107",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 3,
+      "started_at": "2026-09-07T10:39:37.185750+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_upernet_mit_b0--rtis_only--seed-2",
         "model": {
