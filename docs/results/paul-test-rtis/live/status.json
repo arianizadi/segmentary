@@ -3322,7 +3322,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 3849,
+      "observed_step": 3899,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -3362,7 +3362,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 2399,
+      "observed_step": 2449,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3382,7 +3382,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1549,
+      "observed_step": 1599,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3390,7 +3390,7 @@
       "model": "smp_deeplabv3_resnet50",
       "protocol": "cityscapes_to_rtis",
       "seed": 2,
-      "status": "evaluating",
+      "status": "collecting",
       "final_step": 1527,
       "observed_step": null,
       "record": "models/smp_deeplabv3_resnet50/record.json"
@@ -3402,7 +3402,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1449,
+      "observed_step": 1549,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3412,7 +3412,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 1149,
+      "observed_step": 1199,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3422,7 +3422,7 @@
       "seed": 2,
       "status": "training",
       "final_step": null,
-      "observed_step": 549,
+      "observed_step": 599,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3432,7 +3432,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 299,
+      "observed_step": 399,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
@@ -3442,7 +3442,7 @@
       "seed": 1,
       "status": "training",
       "final_step": null,
-      "observed_step": 199,
+      "observed_step": 254,
       "record": "models/smp_deeplabv3_resnet50/record.json"
     },
     {
