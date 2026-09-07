@@ -6,13 +6,13 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| upernet_convnext | rtis_only | 0 | training | 1699 | — | — | — | — | — | — | — |
-| upernet_convnext | rtis_only | 1 | training | 1399 | — | — | — | — | — | — | — |
-| upernet_convnext | rtis_only | 2 | training | 1299 | — | — | — | — | — | — | — |
-| upernet_convnext | cityscapes_to_rtis | 0 | training | 1049 | — | — | — | — | — | — | — |
-| upernet_convnext | cityscapes_to_rtis | 1 | training | 799 | — | — | — | — | — | — | — |
-| upernet_convnext | cityscapes_to_rtis | 2 | training | 763 | — | — | — | — | — | — | — |
-| upernet_convnext | railsem19_to_rtis | 0 | training | 599 | — | — | — | — | — | — | — |
+| upernet_convnext | rtis_only | 0 | training | 1749 | — | — | — | — | — | — | — |
+| upernet_convnext | rtis_only | 1 | training | 1449 | — | — | — | — | — | — | — |
+| upernet_convnext | rtis_only | 2 | training | 1349 | — | — | — | — | — | — | — |
+| upernet_convnext | cityscapes_to_rtis | 0 | training | 1099 | — | — | — | — | — | — | — |
+| upernet_convnext | cityscapes_to_rtis | 1 | training | 849 | — | — | — | — | — | — | — |
+| upernet_convnext | cityscapes_to_rtis | 2 | training | 849 | — | — | — | — | — | — | — |
+| upernet_convnext | railsem19_to_rtis | 0 | training | 649 | — | — | — | — | — | — | — |
 | upernet_convnext | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | upernet_convnext | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | upernet_convnext | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
