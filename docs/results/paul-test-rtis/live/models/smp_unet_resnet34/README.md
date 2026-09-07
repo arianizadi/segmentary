@@ -6,15 +6,15 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_unet_resnet34 | rtis_only | 0 | training | 1399 | — | — | — | — | — | — | — |
-| smp_unet_resnet34 | rtis_only | 1 | training | 1272 | — | — | — | — | — | — | — |
-| smp_unet_resnet34 | rtis_only | 2 | training | 999 | — | — | — | — | — | — | — |
-| smp_unet_resnet34 | cityscapes_to_rtis | 0 | training | 763 | — | — | — | — | — | — | — |
-| smp_unet_resnet34 | cityscapes_to_rtis | 1 | training | 649 | — | — | — | — | — | — | — |
-| smp_unet_resnet34 | cityscapes_to_rtis | 2 | training | 599 | — | — | — | — | — | — | — |
-| smp_unet_resnet34 | railsem19_to_rtis | 0 | training | 499 | — | — | — | — | — | — | — |
-| smp_unet_resnet34 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
-| smp_unet_resnet34 | railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
+| smp_unet_resnet34 | rtis_only | 0 | training | 1527 | — | — | — | — | — | — | — |
+| smp_unet_resnet34 | rtis_only | 1 | training | 1399 | — | — | — | — | — | — | — |
+| smp_unet_resnet34 | rtis_only | 2 | training | 1149 | — | — | — | — | — | — | — |
+| smp_unet_resnet34 | cityscapes_to_rtis | 0 | training | 899 | — | — | — | — | — | — | — |
+| smp_unet_resnet34 | cityscapes_to_rtis | 1 | training | 799 | — | — | — | — | — | — | — |
+| smp_unet_resnet34 | cityscapes_to_rtis | 2 | training | 699 | — | — | — | — | — | — | — |
+| smp_unet_resnet34 | railsem19_to_rtis | 0 | training | 649 | — | — | — | — | — | — | — |
+| smp_unet_resnet34 | railsem19_to_rtis | 1 | training | 49 | — | — | — | — | — | — | — |
+| smp_unet_resnet34 | railsem19_to_rtis | 2 | training | — | — | — | — | — | — | — | — |
 | smp_unet_resnet34 | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | smp_unet_resnet34 | cityscapes_to_railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | smp_unet_resnet34 | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -100,6 +100,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 763 | 23.08 | 2.80 |
 | 1017 | 21.10 | 5.41 |
 | 1272 | 25.11 | 3.04 |
+| 1527 | 25.15 | 0.92 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -572,6 +573,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 21.79 | 1.71 |
 | 508 | 23.75 | 1.04 |
 | 763 | 24.35 | 0.60 |
+| 1017 | 25.16 | 1.69 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1041,6 +1043,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 19.63 | 8.38 |
 | 508 | 20.62 | 12.11 |
+| 763 | 23.47 | 1.73 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1508,6 +1511,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
 | 254 | 26.57 | 3.46 |
+| 508 | 25.75 | 3.12 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1670,7 +1674,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 1
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T09:37:15.942389+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "smp", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": "resnet34", "encoder_weights": "imagenet", "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": null, "revision": null, "smp_arch": "Unet", "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -1902,7 +1906,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T09:38:32.742802+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "smp", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": "resnet34", "encoder_weights": "imagenet", "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": null, "revision": null, "smp_arch": "Unet", "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
