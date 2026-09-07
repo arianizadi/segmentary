@@ -650,6 +650,14 @@
           {
             "step": 599,
             "value": 0.6119291186332703
+          },
+          {
+            "step": 649,
+            "value": 1.0042411088943481
+          },
+          {
+            "step": 699,
+            "value": 0.2970688045024872
           }
         ],
         "val/miou": [
@@ -1643,7 +1651,7 @@
           }
         ]
       },
-      "observed_step": 599,
+      "observed_step": 699,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -1836,6 +1844,14 @@
           {
             "step": 499,
             "value": 1.5027767419815063
+          },
+          {
+            "step": 549,
+            "value": 0.5860454440116882
+          },
+          {
+            "step": 599,
+            "value": 1.3959672451019287
           }
         ],
         "val/miou": [
@@ -2829,7 +2845,7 @@
           }
         ]
       },
-      "observed_step": 508,
+      "observed_step": 599,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -3014,6 +3030,14 @@
           {
             "step": 399,
             "value": 0.7674274444580078
+          },
+          {
+            "step": 449,
+            "value": 0.6038224697113037
+          },
+          {
+            "step": 499,
+            "value": 1.3635551929473877
           }
         ],
         "val/miou": [
@@ -3611,7 +3635,7 @@
           }
         ]
       },
-      "observed_step": 399,
+      "observed_step": 499,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -3771,6 +3795,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.557954788208008
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"

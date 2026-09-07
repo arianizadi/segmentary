@@ -6,10 +6,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_unetplusplus_efficientnet_b0 | rtis_only | 0 | training | 599 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | rtis_only | 1 | training | 508 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | rtis_only | 2 | training | 399 | — | — | — | — | — | — | — |
-| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | rtis_only | 0 | training | 699 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | rtis_only | 1 | training | 599 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | rtis_only | 2 | training | 499 | — | — | — | — | — | — | — |
+| smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 0 | training | 49 | — | — | — | — | — | — | — |
 | smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | smp_unetplusplus_efficientnet_b0 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | smp_unetplusplus_efficientnet_b0 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
