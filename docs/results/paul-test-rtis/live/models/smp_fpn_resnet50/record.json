@@ -463,7 +463,10 @@
       "config_sha256": "25e17476f56cea4c4cbcc444ac84543b53fb214f12faa296d58fb1b679af46c8",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 6,
+      "started_at": "2026-09-07T06:28:07.806388+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_fpn_resnet50--rtis_only--seed-0",
         "model": {
@@ -595,6 +598,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 1.6306411027908325
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -608,7 +620,10 @@
       "config_sha256": "4b53581a7437f72aeb509664959fec291e2cf16b39ec00f0752120d20e4a35bb",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 3,
+      "started_at": "2026-09-07T06:28:52.975057+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_fpn_resnet50--rtis_only--seed-1",
         "model": {
