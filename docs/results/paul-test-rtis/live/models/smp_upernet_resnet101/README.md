@@ -6,11 +6,11 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_upernet_resnet101 | rtis_only | 0 | training | 1649 | — | — | — | — | — | — | — |
-| smp_upernet_resnet101 | rtis_only | 1 | training | 1149 | — | — | — | — | — | — | — |
-| smp_upernet_resnet101 | rtis_only | 2 | training | 549 | — | — | — | — | — | — | — |
-| smp_upernet_resnet101 | cityscapes_to_rtis | 0 | training | 99 | — | — | — | — | — | — | — |
-| smp_upernet_resnet101 | cityscapes_to_rtis | 1 | training | — | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | rtis_only | 0 | training | 2099 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | rtis_only | 1 | training | 1649 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | rtis_only | 2 | training | 1017 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | cityscapes_to_rtis | 0 | training | 549 | — | — | — | — | — | — | — |
+| smp_upernet_resnet101 | cityscapes_to_rtis | 1 | training | 499 | — | — | — | — | — | — | — |
 | smp_upernet_resnet101 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 | smp_upernet_resnet101 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | smp_upernet_resnet101 | railsem19_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
@@ -101,6 +101,8 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 1017 | 26.91 | 1.65 |
 | 1272 | 25.61 | 1.36 |
 | 1527 | 27.93 | 2.77 |
+| 1781 | 27.27 | 5.66 |
+| 2036 | 28.19 | 2.71 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -337,6 +339,8 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 508 | 22.51 | 0.10 |
 | 763 | 23.64 | 3.77 |
 | 1017 | 28.50 | 2.98 |
+| 1272 | 28.27 | 6.67 |
+| 1527 | 29.10 | 2.28 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -571,6 +575,8 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 19.65 | 0.00 |
 | 508 | 21.63 | 0.07 |
+| 763 | 25.84 | 0.28 |
+| 1017 | 27.99 | 1.13 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -803,6 +809,8 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 23.54 | 12.05 |
+| 508 | 22.18 | 4.70 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -1035,6 +1043,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 22.50 | 12.64 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
