@@ -9,14 +9,14 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 | smp_deeplabv3plus_resnet101 | rtis_only | 0 | completed | 2036 | 763 | 7.11 | 8.64 | 28.75 | 1.08 | 24.85 | 29.00 |
 | smp_deeplabv3plus_resnet101 | rtis_only | 1 | completed | 1527 | 254 | 2.70 | 4.43 | 6.45 | 0.35 | 23.64 | 24.96 |
 | smp_deeplabv3plus_resnet101 | rtis_only | 2 | completed | 2290 | 1018 | 3.45 | 3.83 | 25.72 | 1.28 | 25.15 | 27.94 |
-| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 0 | training | 2749 | — | — | — | — | — | — | — |
-| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 1 | training | 2099 | — | — | — | — | — | — | — |
-| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 2 | training | 2099 | — | — | — | — | — | — | — |
-| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 0 | training | 1549 | — | — | — | — | — | — | — |
-| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 1 | training | 1349 | — | — | — | — | — | — | — |
-| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 2 | training | 899 | — | — | — | — | — | — | — |
-| smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 0 | training | 549 | — | — | — | — | — | — | — |
-| smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 1 | training | 549 | — | — | — | — | — | — | — |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 0 | training | 2849 | — | — | — | — | — | — | — |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 1 | training | 2199 | — | — | — | — | — | — | — |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 2 | training | 2199 | — | — | — | — | — | — | — |
+| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 0 | training | 1649 | — | — | — | — | — | — | — |
+| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 1 | training | 1449 | — | — | — | — | — | — | — |
+| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 2 | training | 1017 | — | — | — | — | — | — | — |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 0 | training | 699 | — | — | — | — | — | — | — |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 1 | training | 649 | — | — | — | — | — | — | — |
 | smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
 
 Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: [0, 1, 2]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
@@ -1973,6 +1973,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 2036 | 30.58 | 0.55 |
 | 2290 | 30.84 | 3.20 |
 | 2545 | 32.10 | 1.57 |
+| 2799 | 31.71 | 0.66 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -3163,6 +3164,7 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 27.87 | 0.11 |
 | 508 | 30.62 | 0.25 |
 | 763 | 41.94 | 1.18 |
+| 1017 | 43.98 | 1.78 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
