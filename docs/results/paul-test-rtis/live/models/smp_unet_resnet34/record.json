@@ -603,10 +603,22 @@
           {
             "step": 49,
             "value": 2.7498514652252197
+          },
+          {
+            "step": 99,
+            "value": 1.6339354515075684
+          },
+          {
+            "step": 149,
+            "value": 1.341752052307129
+          },
+          {
+            "step": 199,
+            "value": 1.753334403038025
           }
         ]
       },
-      "observed_step": 49,
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -620,7 +632,10 @@
       "config_sha256": "d184801ca13d7f7c931ed6326a8f5d832d1cf230abe160ef4de4008ddfc4d9a5",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-07T09:23:41.396535+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "smp_unet_resnet34--rtis_only--seed-1",
         "model": {
@@ -752,6 +767,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.9083330631256104
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
