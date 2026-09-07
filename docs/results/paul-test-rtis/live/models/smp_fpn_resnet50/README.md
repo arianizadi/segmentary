@@ -6,9 +6,9 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_fpn_resnet50 | rtis_only | 0 | training | 49 | — | — | — | — | — | — | — |
-| smp_fpn_resnet50 | rtis_only | 1 | training | — | — | — | — | — | — | — | — |
-| smp_fpn_resnet50 | rtis_only | 2 | queued | — | — | — | — | — | — | — | — |
+| smp_fpn_resnet50 | rtis_only | 0 | training | 149 | — | — | — | — | — | — | — |
+| smp_fpn_resnet50 | rtis_only | 1 | training | 99 | — | — | — | — | — | — | — |
+| smp_fpn_resnet50 | rtis_only | 2 | training | 49 | — | — | — | — | — | — | — |
 | smp_fpn_resnet50 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | smp_fpn_resnet50 | cityscapes_to_rtis | 1 | queued | — | — | — | — | — | — | — | — |
 | smp_fpn_resnet50 | cityscapes_to_rtis | 2 | queued | — | — | — | — | — | — | — | — |
@@ -489,7 +489,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## rtis_only — seed 2
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-07T06:29:26.932395+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "smp", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": "resnet50", "encoder_weights": "imagenet", "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": null, "revision": null, "smp_arch": "FPN", "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
