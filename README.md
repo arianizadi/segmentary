@@ -47,7 +47,6 @@ exports and current scope, see the [instance and panoptic guide](docs/guides/ins
 
 - [Audit original annotations](docs/guides/annotation-audit.md): inspect polygon/mask
   overlaps and overwritten pixels, export a review list, and create reviewed dataset versions.
-- [Audit validation results](docs/results/annotation-audit-validation/README.md): real RTIS findings, controlled faults, and Cityscapes/RailSem19 baselines.
 - [Object reports](docs/guides/object-reports.md): per-model AP/PQ pages, per-class
   results, VRAM, timing, checkpoint provenance, and linked comparison tables.
 - [Real benchmark validation](docs/guides/object-benchmark-validation.md):

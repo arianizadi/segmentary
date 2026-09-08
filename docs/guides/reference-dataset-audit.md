@@ -48,5 +48,3 @@ python -m scripts.summarize_rtis_masks --dataset data/paul-test-rtis \
   --out artifacts/rtis-mask-summary.json \
   --audit-report artifacts/rtis-audit-review-v3/report.json
 ```
-
-See the [measured comparison and validation findings](../results/annotation-audit-validation/README.md).

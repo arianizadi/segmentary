@@ -76,7 +76,7 @@ Tests use independently specified pixels to check cross-class overlap, same-clas
 
 ## Audit validation and reference datasets
 
-See the [empirical validation report](../results/annotation-audit-validation/README.md) and [Cityscapes/RailSem19 recipes](reference-dataset-audit.md). Run controlled integrity faults against disposable copies of a real RTIS sample:
+See the [Cityscapes/RailSem19 recipes](reference-dataset-audit.md). Run controlled integrity faults against disposable copies of a real RTIS sample:
 
 ```bash
 python -m scripts.validate_annotation_audit --dataset data/paul-test-rtis \
