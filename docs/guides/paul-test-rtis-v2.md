@@ -88,3 +88,28 @@ for loss components, learning rate, memory, validation scores, and per-class IoU
 each with its own recorded step and sample age. Missing metrics show as waiting.
 Charts retain up to 256 recorded samples per scalar and stack on narrow terminals.
 `Ctrl+b`, then `d` detaches from either view; neither `q` nor `Ctrl+q` quits it.
+
+## Collection coverage correction
+
+The original statistics collector expected 220 training images even when v2 had
+205. This caused an error after training, standalone validation, and diagnostic
+inference. The corrected collector derives coverage from the hash-verified split
+manifest and checks all four diagnostic passes. Before training or collection,
+preflight checks exact file membership, split/sample agreement, duplicates,
+image/mask hashes, dimensions, and mask class IDs. A mismatch blocks the job with
+specific expected/actual values or missing/extra filenames.
+
+For the already-running frozen campaign, `scripts/run_rtis_collection_worker.py`
+loads training/evaluation/profiling from the unchanged training checkout and uses
+a separately versioned collector. Legacy workers drain via `STOP`. Replacement
+workers wait for the same GPU and job locks and honor `STOP_COLLECTION_WORKERS`;
+an integrity failure creates that marker and blocks further work.
+
+Only the recognized post-training coverage failure can reuse completed training.
+Recovery checks checkpoint hashes, final step, recorded stopping evidence,
+config hash, saved training/evaluation metadata, and training revision. It archives
+the failed state and diagnostic directory, preserves prior timing records, and
+reruns collection/profiling. The state records the collection tool hashes and
+whether training was reused. Other failures stay failed for review. A completed
+result still requires exact standalone validation confusion, full diagnostics,
+performance evidence, and resolved resource accounting.

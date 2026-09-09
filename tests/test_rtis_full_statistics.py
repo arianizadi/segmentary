@@ -90,3 +90,81 @@ def test_partial_diagnostics_cannot_be_called_complete():
             {},
             [],
         )
+
+
+@pytest.mark.parametrize("train_count", [205, 220, 7])
+def test_collection_coverage_uses_manifest_counts(train_count):
+    from scripts.collect_rtis_statistics import validate_split_coverage
+
+    splits = {"train": list(range(train_count)), "val": list(range(37))}
+    results = {
+        key: {"images": train_count if key.endswith("train") else 37}
+        for key in ("best-auto-train", "best-auto-val", "best-alternate-val", "final-auto-val")
+    }
+    validate_split_coverage(results, splits)
+    results["best-auto-train"]["images"] -= 1
+    with pytest.raises(RuntimeError, match=f"expected {train_count} images, got {train_count - 1}"):
+        validate_split_coverage(results, splits)
+
+
+@pytest.mark.parametrize("damage", ["none", "missing", "extra", "hash", "count", "membership"])
+def test_preflight_fails_loudly_for_dataset_drift(tmp_path, monkeypatch, damage):
+    import hashlib
+    import json
+    from types import SimpleNamespace
+
+    from PIL import Image
+    from scripts import collect_rtis_statistics as collector
+
+    samples = []
+    splits = {}
+    for split in ("train", "val", "test"):
+        for kind in ("images", "masks"):
+            (tmp_path / kind / split).mkdir(parents=True)
+        image_path = tmp_path / "images" / split / (split + ".png")
+        Image.new("RGB", (2, 2)).save(image_path)
+        Image.new("L", (2, 2)).save(tmp_path / "masks" / split / (split + ".png"))
+        samples.append(
+            {
+                "key": split,
+                "split": split,
+                "image_extension": ".png",
+                "width": 2,
+                "height": 2,
+                "image_sha256": collector.runtime.digest(image_path),
+                "mask_sha256": hashlib.sha256(bytes(4)).hexdigest(),
+            }
+        )
+        splits[split] = [split]
+    if damage == "membership":
+        splits["train"] = ["wrong-key"]
+    (tmp_path / "audit").mkdir()
+    (tmp_path / "audit/samples.json").write_text(json.dumps(samples))
+    (tmp_path / "splits.json").write_text(json.dumps(splits))
+    config = tmp_path / "config.yaml"
+    config.write_text("test")
+    job = {"config": str(config), "config_sha256": collector.runtime.digest(config)}
+    campaign = {
+        "split_sha256": collector.runtime.digest(tmp_path / "splits.json"),
+        "dataset_audit_sha256": collector.runtime.digest(tmp_path / "audit/samples.json"),
+        "dataset_sizes": {"train": 1, "val": 1, "test": 1},
+    }
+    cfg = SimpleNamespace(
+        stages=[SimpleNamespace(data=[SimpleNamespace(root=tmp_path)])],
+        taxonomy_root="unused",
+        space="test",
+    )
+    monkeypatch.setattr(collector, "load_space", lambda *a: SimpleNamespace(num_classes=2))
+    if damage == "missing":
+        (tmp_path / "images/train/train.png").unlink()
+    elif damage == "extra":
+        (tmp_path / "images/train/extra.png").write_bytes(b"extra")
+    elif damage == "hash":
+        Image.new("RGB", (2, 2), "red").save(tmp_path / "images/train/train.png")
+    elif damage == "count":
+        campaign["dataset_sizes"]["train"] = 220
+    if damage == "none":
+        collector.validate_dataset(tmp_path, job, cfg, campaign)
+    else:
+        with pytest.raises(RuntimeError):
+            collector.validate_dataset(tmp_path, job, cfg, campaign)

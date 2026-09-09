@@ -235,6 +235,93 @@ def collect(model, cfg, samples, split, directory, names):
     }
 
 
+def validate_split_coverage(results, splits):
+    for variant, split in (
+        ("best-auto-train", "train"),
+        ("best-auto-val", "val"),
+        ("best-alternate-val", "val"),
+        ("final-auto-val", "val"),
+    ):
+        expected = len(splits[split])
+        actual = results.get(variant, {}).get("images")
+        if actual != expected:
+            raise RuntimeError(
+                f"Split coverage mismatch for {variant}: expected {expected} images, got {actual}"
+            )
+
+
+def validate_dataset(root, job, cfg, campaign):
+    """Fail before model loading if the frozen dataset contract no longer matches."""
+    data_root = Path(cfg.stages[0].data[0].root)
+    for path, expected in (
+        (Path(job["config"]), job["config_sha256"]),
+        (data_root / "splits.json", campaign["split_sha256"]),
+        (data_root / "audit/samples.json", campaign["dataset_audit_sha256"]),
+    ):
+        actual = runtime.digest(path)
+        if actual != expected:
+            raise RuntimeError(
+                f"Integrity mismatch {path}: expected SHA256 {expected}, got {actual}"
+            )
+    splits = runtime.read(data_root / "splits.json")
+    samples = runtime.read(data_root / "audit/samples.json")
+    seen = set()
+    for split in ("train", "val", "test"):
+        expected_keys = splits[split]
+        actual_keys = [s["key"] for s in samples if s["split"] == split]
+        if len(set(expected_keys)) != len(expected_keys) or len(set(actual_keys)) != len(
+            actual_keys
+        ):
+            raise RuntimeError(f"Duplicate image keys in {split}")
+        if set(expected_keys) != set(actual_keys):
+            raise RuntimeError(
+                f"Image membership mismatch in {split}: missing={sorted(set(expected_keys) - set(actual_keys))}, extra={sorted(set(actual_keys) - set(expected_keys))}"
+            )
+        if seen.intersection(actual_keys):
+            raise RuntimeError(
+                f"Images overlap dataset splits: {sorted(seen.intersection(actual_keys))}"
+            )
+        seen.update(actual_keys)
+        count = campaign.get("dataset_sizes", {}).get(split, len(expected_keys))
+        if len(actual_keys) != count:
+            raise RuntimeError(f"Dataset {split}: expected {count} images, got {len(actual_keys)}")
+        for kind in ("images", "masks"):
+            base = data_root / kind / split
+            expected_files = {
+                s["key"] + (s["image_extension"] if kind == "images" else ".png")
+                for s in samples
+                if s["split"] == split
+            }
+            actual_files = {str(p.relative_to(base)) for p in base.rglob("*") if p.is_file()}
+            if actual_files != expected_files:
+                raise RuntimeError(
+                    f"Dataset {kind}/{split}: missing={sorted(expected_files - actual_files)}, extra={sorted(actual_files - expected_files)}"
+                )
+    if len(seen) != len(samples):
+        raise RuntimeError("Sample manifest contains unknown splits or duplicate images")
+    runtime.verify_samples(data_root, samples)
+    num_classes = load_space(cfg.taxonomy_root, cfg.space).num_classes
+    for sample in samples:
+        mask = data_root / "masks" / sample["split"] / (sample["key"] + ".png")
+        with Image.open(mask) as image:
+            bad = [
+                int(v)
+                for v in np.unique(np.asarray(image))
+                if v != 255 and not 0 <= v < num_classes
+            ]
+        if bad:
+            raise RuntimeError(
+                f"Invalid class IDs in {mask}: {bad}; expected 0..{num_classes - 1} or 255"
+            )
+        image_path = (
+            data_root / "images" / sample["split"] / (sample["key"] + sample["image_extension"])
+        )
+        with Image.open(image_path) as image:
+            if image.size != (sample["width"], sample["height"]):
+                raise RuntimeError(f"Image dimensions mismatch: {image_path}, got {image.size}")
+    return splits, samples
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--campaign", type=Path, required=True)
@@ -247,7 +334,7 @@ def main():
     cfg = load_experiment([Path(job["config"])])
     space = load_space(cfg.taxonomy_root, cfg.space)
     names = list(space.names)
-    samples = runtime.read(Path(cfg.stages[0].data[0].root) / "audit/samples.json")
+    splits, samples = validate_dataset(root, job, cfg, runtime.read(root / "campaign.json"))
     if args.limit_per_split is not None:
         if args.limit_per_split < 1:
             raise ValueError("Limit must be positive")
@@ -291,10 +378,8 @@ def main():
         selected["confusion"], reference["confusion"], rtol=0, atol=0
     ):
         raise RuntimeError("Detailed validation does not reproduce standalone confusion matrix")
-    if args.limit_per_split is None and (
-        results["best-auto-train"]["images"] != 220 or results["best-auto-val"]["images"] != 37
-    ):
-        raise RuntimeError("Unexpected split coverage")
+    if args.limit_per_split is None:
+        validate_split_coverage(results, splits)
     runtime.write(
         out / "summary.json",
         {

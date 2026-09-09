@@ -48,7 +48,12 @@ def validate_collection(state, diagnostics, performance, attempts, smoke=False):
 
 
 def collect_job(root, repo, job, gpu, campaign):
+    from scripts.collect_rtis_statistics import validate_dataset
+
+    from segmentary.config import load_experiment
+
     started = time.monotonic()
+    validate_dataset(root, job, load_experiment([Path(job["config"])]), campaign)
     runtime.run_job(root, repo, job, gpu, campaign)
     state_path = root / "state" / (job["name"] + ".json")
     state = runtime.read(state_path)
