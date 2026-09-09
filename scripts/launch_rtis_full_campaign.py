@@ -57,6 +57,9 @@ def main():
     with runtime.lock(root / "locks/launcher.lock") as acquired:
         if not acquired:
             raise RuntimeError("Launcher already running")
+        from segmentary.rtis_progress import ensure_controller
+
+        ensure_controller(root, repo, sys.executable)
         while not (root / "STOP_LAUNCHER").exists():
             runtime.verify_frozen(root, repo)
             states = [runtime.read(p) for p in (root / "state").glob("*.json")]

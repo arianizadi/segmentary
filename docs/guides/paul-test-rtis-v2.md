@@ -54,3 +54,26 @@ The reporter publishes at startup, then attempts a batch at most once every
 30 minutes, including retries. Rapid training/status changes do not bypass the
 interval. `--once` explicitly requests one immediate publication. A
 `STOP_PUBLISHER` file stops the loop. Existing v1 reports are preserved.
+
+## Live training controller
+
+The full-statistics launcher starts the standard `rtis-fullstats-controller`
+Tmux session. Its `training` window uses Textual and Rich to show recorded
+optimizer iterations, progress, average optimizer steps/s, training ETA, loss,
+and sample age. Select a row for elapsed time, images/s, GPU utilization and
+memory, validation metrics, and a loss curve. The other window shows GPUs.
+
+```bash
+tmux attach -t rtis-fullstats-controller
+```
+
+Use arrow keys to select a run, `r` to refresh, and `Ctrl+b`, then `d` to detach.
+The screen polls every three seconds. Training currently emits telemetry every
+50 optimizer steps; the sample-age column identifies how fresh each value is.
+ETA is the trainer's estimate to its step limit, before final evaluation and
+profiling; early stopping can shorten training. Rates are averages since the
+training process started. Viewing or closing the display does not stop workers.
+
+The reusable entry point is `python -m segmentary.rtis_progress CAMPAIGN_DIR`.
+It reads campaign state and TensorBoard event files without loading models or
+checkpoints. Install the project's dependencies before launching the controller.
