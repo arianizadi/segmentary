@@ -583,7 +583,7 @@
       "model": "hf_auto_beit_base_ade",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 1784,
       "observed_step": null,
       "record": "models/hf_auto_beit_base_ade/record.json"
@@ -593,7 +593,7 @@
       "model": "hf_auto_beit_base_ade",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "collecting",
+      "status": "completed",
       "final_step": 1529,
       "observed_step": null,
       "record": "models/hf_auto_beit_base_ade/record.json"
@@ -633,9 +633,9 @@
       "model": "hf_auto_mobilenetv2_deeplabv3",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 3699,
+      "status": "completed",
+      "final_step": 3823,
+      "observed_step": null,
       "record": "models/hf_auto_mobilenetv2_deeplabv3/record.json"
     },
     {
@@ -645,7 +645,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1784,
+      "observed_step": 2849,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -655,7 +655,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1349,
+      "observed_step": 2449,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -665,7 +665,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1299,
+      "observed_step": 2399,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -675,7 +675,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 1449,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -683,9 +683,9 @@
       "model": "hf_auto_mobilevitv2_deeplabv3",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 599,
+      "status": "completed",
+      "final_step": 2039,
+      "observed_step": null,
       "record": "models/hf_auto_mobilevitv2_deeplabv3/record.json"
     },
     {
@@ -695,7 +695,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 149,
+      "observed_step": 2549,
       "record": "models/hf_auto_mobilevitv2_deeplabv3/record.json"
     },
     {
@@ -703,9 +703,9 @@
       "model": "hf_auto_mobilevitv2_deeplabv3",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 2049,
       "record": "models/hf_auto_mobilevitv2_deeplabv3/record.json"
     },
     {
@@ -713,9 +713,9 @@
       "model": "hf_auto_mobilevitv2_deeplabv3",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 1349,
       "record": "models/hf_auto_mobilevitv2_deeplabv3/record.json"
     },
     {
@@ -723,9 +723,9 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 1349,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -733,9 +733,9 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 899,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
