@@ -54,6 +54,10 @@ def test_controller_reads_iterations_and_refreshes(tmp_path, monkeypatch):
         async with app.run_test(size=(140, 40)) as pilot:
             await pilot.pause()
             assert app.query_one(DataTable).get_row_at(0)[3] == "50/4,000"
+            await pilot.press("enter")
+            assert app.detail_key == name
+            assert app.query_one("#focus-view").display
+            assert not app.query_one(DataTable).display
             writer.add_event(
                 Event(
                     wall_time=2,
@@ -70,6 +74,26 @@ def test_controller_reads_iterations_and_refreshes(tmp_path, monkeypatch):
             await app.action_refresh()
             await pilot.pause()
             assert app.query_one(DataTable).get_row_at(0)[3] == "100/4,000"
+            assert app.detail_key == name
+            from segmentary.training_curve import TrainingCurve
+
+            assert app.query_one(TrainingCurve).points[-1].value == 1.25
+            await pilot.resize_terminal(80, 30)
+            await pilot.pause()
+            assert app.query_one("#charts").styles.grid_size_columns == 1
+            await pilot.resize_terminal(140, 40)
+            await pilot.pause()
+            assert app.query_one("#charts").styles.grid_size_columns == 2
+            state_path = tmp_path / "state/job.json"
+            state = json.loads(state_path.read_text())
+            state["status"] = "completed"
+            state_path.write_text(json.dumps(state))
+            await app.action_refresh()
+            assert app.detail_key == name
+            assert app.query_one(TrainingCurve).points[-1].value == 1.25
+            await pilot.press("escape")
+            assert app.detail_key is None
+            assert app.query_one(DataTable).display
             await pilot.press("q")
             await pilot.pause()
             assert app.is_running

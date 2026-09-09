@@ -78,3 +78,13 @@ training process started. Viewing or closing the display does not stop workers.
 The reusable entry point is `python -m segmentary.rtis_progress CAMPAIGN_DIR`.
 It reads campaign state and TensorBoard event files without loading models or
 checkpoints. Install the project's dependencies before launching the controller.
+
+Press **Enter** on a selected run to open its live detail view; **Escape** returns
+to the overview. The detail view stays on that run as jobs advance. It includes
+larger loss, validation mIoU, mud-pumping IoU, and optimizer-throughput charts,
+with labeled optimizer-step axes and latest/minimum/maximum values. Dots are
+recorded samples, joined for readability; curves are not smoothed. Scroll down
+for loss components, learning rate, memory, validation scores, and per-class IoU,
+each with its own recorded step and sample age. Missing metrics show as waiting.
+Charts retain up to 256 recorded samples per scalar and stack on narrow terminals.
+`Ctrl+b`, then `d` detaches from either view; neither `q` nor `Ctrl+q` quits it.

@@ -12,11 +12,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import ClassVar
 
+from rich.table import Table
 from rich.text import Text
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal
+from textual.containers import Grid, Horizontal, VerticalScroll
 from textual.widgets import DataTable, Footer, Header, Sparkline, Static
+
+from segmentary.training_curve import TrainingCurve
 
 
 def duration(value):
@@ -37,14 +40,15 @@ class Telemetry:
         self.root = root
         self.readers = {}
 
-    def read(self):
+    def read(self, selected=None):
         rows, errors = [], []
         for path in sorted((self.root / "state").glob("*.json")):
             try:
                 state = json.loads(path.read_text())
                 state["scalars"] = {}
                 state["loss_history"] = []
-                if state["status"] not in ("queued", "completed"):
+                state["history"] = {}
+                if state["status"] not in ("queued", "completed") or state["name"] == selected:
                     run = (
                         self.root
                         / "future-runs"
@@ -69,6 +73,10 @@ class Telemetry:
                             points = acc.Scalars(tag)
                             if points:
                                 state["scalars"][tag] = points[-1]
+                                state["history"][tag] = sorted(
+                                    [p for p in points if math.isfinite(p.value)],
+                                    key=lambda p: p.step,
+                                )
                                 if tag == "train/loss":
                                     state["loss_history"] = [
                                         p.value for p in points if math.isfinite(p.value)
@@ -79,7 +87,7 @@ class Telemetry:
         active_names = {
             row["name"] + "_seed" + row["name"].rsplit("--seed-", 1)[-1]
             for row in rows
-            if row["status"] not in ("queued", "completed")
+            if row["status"] not in ("queued", "completed") or row["name"] == selected
         }
         self.readers = {k: v for k, v in self.readers.items() if any(n in k for n in active_names)}
         gpus = {}
@@ -108,7 +116,15 @@ def value(row, tag):
     return point.value if point is not None else None
 
 
-class RTISProgress(App, inherit_bindings=False):
+class CurveGrid(Grid):
+    def on_resize(self, event):
+        columns = 1 if event.size.width < 96 else 2
+        if self.styles.grid_size_columns != columns:
+            self.styles.grid_size_columns = columns
+            self.styles.height = 63 if columns == 1 else 31
+
+
+class RTISProgress(App, inherit_bindings=False):  # type: ignore[call-arg]
     TITLE = "SEGMENTARY  /  Training controller"
     CSS = """
     Screen { background: #0c1422; }
@@ -120,9 +136,14 @@ class RTISProgress(App, inherit_bindings=False):
     #curve-label { width: 18; content-align: left middle; color: #66e3c4; }
     Sparkline { width: 1fr; color: #66e3c4; }
     #note { height: 3; padding: 0 2; color: #97abc7; }
+    #focus-view { display: none; height: 1fr; padding: 1 2; }
+    #focus-summary { height: auto; min-height: 4; margin-bottom: 1; }
+    #charts { grid-size: 2; grid-rows: 15; height: 31; grid-gutter: 1; }
+    TrainingCurve { height: 15; border: round #294461; padding: 0 1; }
+    #all-metrics { height: auto; margin-top: 1; }
     Footer { background: #17263c; }
     """
-    BINDINGS: ClassVar = [("r", "refresh", "Refresh")]
+    BINDINGS: ClassVar = [("escape", "overview", "Overview"), ("r", "refresh", "Refresh")]
 
     def __init__(self, root):
         super().__init__()
@@ -130,6 +151,7 @@ class RTISProgress(App, inherit_bindings=False):
         self.telemetry = Telemetry(root)
         self.rows = {}
         self.busy = False
+        self.detail_key = None
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
@@ -139,6 +161,14 @@ class RTISProgress(App, inherit_bindings=False):
         with Horizontal(id="curve"):
             yield Static("TRAIN LOSS", id="curve-label")
             yield Sparkline([], id="loss")
+        with VerticalScroll(id="focus-view"):
+            yield Static("", id="focus-summary", markup=False)
+            with CurveGrid(id="charts"):
+                yield TrainingCurve("TRAINING LOSS", "train/loss")
+                yield TrainingCurve("VALIDATION mIoU", "val/miou", percent=True)
+                yield TrainingCurve("MUD-PUMPING IoU", "val_iou/mud-pumping", percent=True)
+                yield TrainingCurve("OPTIMIZER STEPS / SECOND", "train/optimizer_steps_per_sec")
+            yield Static("", id="all-metrics")
         yield Static("", id="note", markup=False)
         yield Footer()
 
@@ -166,7 +196,7 @@ class RTISProgress(App, inherit_bindings=False):
             return
         self.busy = True
         try:
-            rows, gpus, errors = await asyncio.to_thread(self.telemetry.read)
+            rows, gpus, errors = await asyncio.to_thread(self.telemetry.read, self.detail_key)
             self.rows = {r["name"]: r for r in rows}
             counts = Counter(r["status"] for r in rows)
             self.query_one("#summary", Static).update(
@@ -175,9 +205,29 @@ class RTISProgress(App, inherit_bindings=False):
             )
             table = self.query_one(DataTable)
             selected = table.cursor_row
+            selected_key = (
+                table.coordinate_to_cell_key(table.cursor_coordinate).row_key
+                if table.row_count
+                else None
+            )
             table.clear()
             now = time.time()
             for row in sorted(rows, key=lambda r: (r.get("gpu", 999), r["name"])):
+                try:
+                    end = (
+                        datetime.fromisoformat(row["finished_at"]).timestamp()
+                        if row.get("finished_at")
+                        else now
+                    )
+                    elapsed = end - datetime.fromisoformat(row["started_at"]).timestamp()
+                except (KeyError, ValueError):
+                    elapsed = None
+                row["elapsed"] = elapsed
+                row["gpu_text"] = (
+                    gpus.get(row.get("gpu"), "—")
+                    if row["status"] != "completed"
+                    else "run completed"
+                )
                 if row["status"] in ("queued", "completed"):
                     continue
                 scalar = row["scalars"].get("train/iteration")
@@ -192,13 +242,7 @@ class RTISProgress(App, inherit_bindings=False):
                     + f" {progress:.0%}"
                 )
                 age = now - scalar.wall_time if scalar else None
-                try:
-                    elapsed = now - datetime.fromisoformat(row["started_at"]).timestamp()
-                except (KeyError, ValueError):
-                    elapsed = None
                 training = row["status"] == "training"
-                row["elapsed"] = elapsed
-                row["gpu_text"] = gpus.get(row.get("gpu"), "—")
                 short = row["name"].split("--")
                 protocol = {
                     "rtis_only": "RTIS",
@@ -219,7 +263,13 @@ class RTISProgress(App, inherit_bindings=False):
                     key=row["name"],
                 )
             if table.row_count:
-                table.move_cursor(row=min(selected, table.row_count - 1))
+                table.move_cursor(
+                    row=(
+                        table.get_row_index(selected_key)
+                        if selected_key in table.rows
+                        else min(selected, table.row_count - 1)
+                    )
+                )
                 self.show_detail(
                     str(table.coordinate_to_cell_key(table.cursor_coordinate).row_key.value)
                 )
@@ -230,13 +280,63 @@ class RTISProgress(App, inherit_bindings=False):
                 " | ".join(errors)
                 if errors
                 else (
-                    "Ctrl+b, then d: detach · Refresh 3s · Metrics every 50 steps · Arrow keys select / scroll\n"
+                    "Ctrl+b, then d: detach · Enter: run details · Esc: overview · Metrics every 50 steps\n"
                     "*Training ETA to step limit; early stopping may shorten it. Final evaluation/profiling adds time. Rates are run averages."
                 )
             )
             self.query_one("#note", Static).update(note)
+            self.update_focus()
         finally:
             self.busy = False
+
+    def on_data_table_row_selected(self, event: DataTable.RowSelected):
+        self.detail_key = str(event.row_key.value)
+        for selector in ("#jobs", "#detail", "#curve", "#summary"):
+            self.query_one(selector).display = False
+        self.query_one("#focus-view").display = True
+        self.query_one("#focus-view").focus()
+        self.update_focus()
+
+    def action_overview(self):
+        self.detail_key = None
+        self.query_one("#focus-view").display = False
+        for selector in ("#jobs", "#detail", "#curve", "#summary"):
+            self.query_one(selector).display = True
+        self.query_one(DataTable).focus()
+
+    def update_focus(self):
+        row = self.rows.get(self.detail_key)
+        if row is None:
+            return
+        scalar = row["scalars"].get("train/iteration")
+        age = time.time() - scalar.wall_time if scalar else None
+        self.query_one("#focus-summary", Static).update(
+            row["name"]
+            + "\n"
+            + f"{row['status'].upper()}   Step {number(value(row, 'train/iteration'), '.0f')}   "
+            + f"Progress {number(value(row, 'train/progress'), '.1%')}   "
+            + f"Training ETA {duration(value(row, 'train/eta_seconds')) if row['status'] == 'training' else '—'}   Sample age {duration(age)}\n"
+            + f"Elapsed {duration(row.get('elapsed'))}   "
+            + f"Images/s {number(value(row, 'train/examples_per_sec'), '.1f')}   "
+            + f"GPU {row.get('gpu', '—')}: {row.get('gpu_text', '—')}"
+            + ("\n" + str(row["error"]) if row.get("error") else "")
+        )
+        for chart in self.query(TrainingCurve):
+            chart.points = row.get("history", {}).get(chart.tag, [])
+            chart.refresh()
+        table = Table(title="Recorded metrics · latest sample per metric", expand=True)
+        for title in ("Metric", "Value", "Step", "Age"):
+            table.add_column(title)
+        for tag, point in sorted(row["scalars"].items()):
+            if tag.startswith(("train/", "system/", "val/", "val_iou/")):
+                fmt = ".2%" if tag.startswith(("val/", "val_iou/")) else ".5g"
+                table.add_row(
+                    tag,
+                    number(point.value, fmt),
+                    str(point.step + 1),
+                    duration(time.time() - point.wall_time),
+                )
+        self.query_one("#all-metrics", Static).update(table)
 
     def on_data_table_row_highlighted(self, event: DataTable.RowHighlighted):
         self.show_detail(str(event.row_key.value))
