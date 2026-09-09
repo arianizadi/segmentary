@@ -643,9 +643,9 @@
       "model": "hf_auto_mobilevit_xxs_deeplabv3",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 3949,
+      "status": "completed",
+      "final_step": 4000,
+      "observed_step": null,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -673,9 +673,9 @@
       "model": "hf_auto_mobilevit_xxs_deeplabv3",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2549,
+      "status": "completed",
+      "final_step": 2803,
+      "observed_step": null,
       "record": "models/hf_auto_mobilevit_xxs_deeplabv3/record.json"
     },
     {
@@ -743,9 +743,9 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2749,
+      "status": "completed",
+      "final_step": 2803,
+      "observed_step": null,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -753,9 +753,9 @@
       "model": "hf_auto_segformer_b0",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2199,
+      "status": "completed",
+      "final_step": 4000,
+      "observed_step": null,
       "record": "models/hf_auto_segformer_b0/record.json"
     },
     {
@@ -765,7 +765,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 799,
+      "observed_step": 2149,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -775,7 +775,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 764,
+      "observed_step": 2099,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -783,9 +783,9 @@
       "model": "hf_auto_upernet_swin_tiny",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 699,
+      "status": "completed",
+      "final_step": 1529,
+      "observed_step": null,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -795,7 +795,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 99,
+      "observed_step": 1499,
       "record": "models/hf_auto_upernet_swin_tiny/record.json"
     },
     {
@@ -805,7 +805,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 1049,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -815,7 +815,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 1049,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -823,9 +823,9 @@
       "model": "hrnet_w48_ocr",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 899,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -833,9 +833,9 @@
       "model": "hrnet_w48_ocr",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 849,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {
@@ -843,9 +843,9 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 699,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -853,9 +853,9 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 349,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
@@ -863,9 +863,9 @@
       "model": "native_convnext_tiny_channelmapper_dpt",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 299,
       "record": "models/native_convnext_tiny_channelmapper_dpt/record.json"
     },
     {
