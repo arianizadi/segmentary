@@ -486,7 +486,10 @@
       "config_sha256": "b2ec3a0eb750694eece497d8ec61220d70525fcbe1818c46916f9ca7877ca7f0",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 3,
+      "started_at": "2026-09-09T20:53:49.103494+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hrnet_w48_ocr--rtis_only--seed-0",
         "model": {
@@ -639,7 +642,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 4,
+      "started_at": "2026-09-09T20:54:31.306081+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "hrnet_w48_ocr--cityscapes_to_rtis--seed-0",
         "model": {
