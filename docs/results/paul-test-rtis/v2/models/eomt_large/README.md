@@ -6,10 +6,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| eomt_large | rtis_only | 0 | training | — | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
+| eomt_large | rtis_only | 0 | training | 99 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_rtis | 0 | training | 99 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 0 | training | 99 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | training | 99 | — | — | — | — | — | — | — |
 
 Training: 205 images. Validation: 37 images. Test: 50 held out. Seeds: [0]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
