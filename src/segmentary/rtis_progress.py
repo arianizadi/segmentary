@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import json
 import math
-import os
 import subprocess
 import time
 from collections import Counter
@@ -109,7 +108,7 @@ def value(row, tag):
     return point.value if point is not None else None
 
 
-class RTISProgress(App):
+class RTISProgress(App, inherit_bindings=False):
     TITLE = "SEGMENTARY  /  Training controller"
     CSS = """
     Screen { background: #0c1422; }
@@ -123,12 +122,7 @@ class RTISProgress(App):
     #note { height: 3; padding: 0 2; color: #97abc7; }
     Footer { background: #17263c; }
     """
-    BINDINGS: ClassVar = [
-        ("d", "detach", "Detach"),
-        ("q", "detach", "Detach"),
-        ("ctrl+q", "detach", "Detach"),
-        ("r", "refresh", "Refresh"),
-    ]
+    BINDINGS: ClassVar = [("r", "refresh", "Refresh")]
 
     def __init__(self, root):
         super().__init__()
@@ -166,14 +160,6 @@ class RTISProgress(App):
         self.set_interval(3, self.action_refresh)
         await self.action_refresh()
         self.query_one(DataTable).focus()
-
-    def action_detach(self):
-        if not os.environ.get("TMUX"):
-            self.notify("This viewer is not inside tmux; there is no session to detach.")
-            return
-        result = subprocess.run(["tmux", "detach-client"], capture_output=True, text=True)
-        if result.returncode:
-            self.notify("Could not detach: " + result.stderr.strip(), severity="error")
 
     async def action_refresh(self):
         if self.busy:
@@ -244,7 +230,7 @@ class RTISProgress(App):
                 " | ".join(errors)
                 if errors
                 else (
-                    "Refresh 3s · Metrics emitted every 50 optimizer steps · Arrow keys select / scroll columns\n"
+                    "Ctrl+b, then d: detach · Refresh 3s · Metrics every 50 steps · Arrow keys select / scroll\n"
                     "*Training ETA to step limit; early stopping may shorten it. Final evaluation/profiling adds time. Rates are run averages."
                 )
             )

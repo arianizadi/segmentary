@@ -70,22 +70,10 @@ def test_controller_reads_iterations_and_refreshes(tmp_path, monkeypatch):
             await app.action_refresh()
             await pilot.pause()
             assert app.query_one(DataTable).get_row_at(0)[3] == "100/4,000"
-            from types import SimpleNamespace
-
-            detached = []
-            monkeypatch.setenv("TMUX", "test-session")
-            monkeypatch.setattr(
-                "segmentary.rtis_progress.subprocess.run",
-                lambda command, **kwargs: (
-                    detached.append(command) or SimpleNamespace(returncode=0, stderr="")
-                ),
-            )
             await pilot.press("q")
             await pilot.pause()
-            assert detached == [["tmux", "detach-client"]]
             assert app.is_running
-            await pilot.press("d")
-            assert len(detached) == 2
+            await pilot.press("ctrl+q")
             assert app.is_running
 
     try:
