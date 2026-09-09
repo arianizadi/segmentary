@@ -334,7 +334,7 @@ def main():
     cfg = load_experiment([Path(job["config"])])
     space = load_space(cfg.taxonomy_root, cfg.space)
     names = list(space.names)
-    splits, samples = validate_dataset(root, job, cfg, runtime.read(root / "campaign.json"))
+    dataset_splits, samples = validate_dataset(root, job, cfg, runtime.read(root / "campaign.json"))
     if args.limit_per_split is not None:
         if args.limit_per_split < 1:
             raise ValueError("Limit must be positive")
@@ -379,7 +379,7 @@ def main():
     ):
         raise RuntimeError("Detailed validation does not reproduce standalone confusion matrix")
     if args.limit_per_split is None:
-        validate_split_coverage(results, splits)
+        validate_split_coverage(results, dataset_splits)
     runtime.write(
         out / "summary.json",
         {

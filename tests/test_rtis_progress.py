@@ -104,3 +104,36 @@ def test_controller_reads_iterations_and_refreshes(tmp_path, monkeypatch):
         asyncio.run(exercise())
     finally:
         writer.close()
+
+
+def test_failure_overview_shows_actual_exception(tmp_path):
+    import json
+
+    from segmentary.rtis_progress import failure_detail
+
+    (tmp_path / "logs").mkdir()
+    state = {
+        "name": "model--rtis_only--seed-0",
+        "status": "failed",
+        "collection_phase": "diagnostics",
+        "error": "Process exited 1; see log",
+    }
+    (tmp_path / "logs" / (state["name"] + ".log")).write_text(
+        "Traceback...\nRuntimeError: Split coverage mismatch: expected 205 images, got 204\n"
+    )
+    assert "expected 205 images, got 204" in failure_detail(tmp_path, state)
+    (tmp_path / "state").mkdir()
+    (tmp_path / "state/job.json").write_text(json.dumps(state))
+
+    async def exercise():
+        app = RTISProgress(tmp_path)
+        async with app.run_test(size=(140, 40)) as pilot:
+            await pilot.pause()
+            assert app.query_one("#failures").display
+            assert "expected 205 images, got 204" in str(app.query_one("#failures").render())
+            await pilot.press("enter")
+            assert not app.query_one("#failures").display
+            await pilot.press("escape")
+            assert app.query_one("#failures").display
+
+    asyncio.run(exercise())

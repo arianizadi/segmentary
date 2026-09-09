@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import math
+import re
 import subprocess
 import time
 from collections import Counter
@@ -35,6 +36,24 @@ def number(value, fmt=".3f"):
     return format(value, fmt) if value is not None and math.isfinite(value) else "—"
 
 
+def failure_detail(root, state):
+    detail = str(state.get("error") or "No error message recorded")
+    path = root / "logs" / (state["name"] + ".log")
+    if path.is_file():
+        with path.open("rb") as stream:
+            stream.seek(max(0, path.stat().st_size - 16384))
+            tail = stream.read().decode("utf-8", errors="replace")
+        lines = [
+            line.strip()
+            for line in tail.splitlines()
+            if re.match(r"^[\w.]+(?:Error|Exception):", line.strip())
+        ]
+        if lines:
+            detail = lines[-1]
+    phase = state.get("collection_phase", "job")
+    return f"{phase}: {detail}"
+
+
 class Telemetry:
     def __init__(self, root):
         self.root = root
@@ -45,6 +64,8 @@ class Telemetry:
         for path in sorted((self.root / "state").glob("*.json")):
             try:
                 state = json.loads(path.read_text())
+                if state["status"] == "failed":
+                    state["failure_detail"] = failure_detail(self.root, state)
                 state["scalars"] = {}
                 state["loss_history"] = []
                 state["history"] = {}
@@ -130,6 +151,7 @@ class RTISProgress(App, inherit_bindings=False):  # type: ignore[call-arg]
     Screen { background: #0c1422; }
     Header { background: #17263c; }
     #summary { height: 3; padding: 1 2; background: #17263c; color: #66e3c4; }
+    #failures { height: auto; max-height: 7; overflow-y: auto; color: #ffb4b4; background: #351c2b; padding: 0 2; }
     #jobs { height: 1fr; min-height: 7; margin: 1 1 0 1; }
     #detail { height: 6; padding: 1 2; background: #17263c; }
     #curve { height: 4; padding: 0 2; }
@@ -156,6 +178,7 @@ class RTISProgress(App, inherit_bindings=False):  # type: ignore[call-arg]
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
         yield Static("Reading live telemetry…", id="summary")
+        yield Static("", id="failures", markup=False)
         yield DataTable(id="jobs", cursor_type="row", zebra_stripes=True)
         yield Static("Select a run for details", id="detail", markup=False)
         with Horizontal(id="curve"):
@@ -203,6 +226,13 @@ class RTISProgress(App, inherit_bindings=False):  # type: ignore[call-arg]
                 f"{counts['completed']}/{len(rows)} COMPLETE    "
                 + "    ".join(f"{v} {k.upper()}" for k, v in counts.items() if k != "completed")
             )
+            failures = [
+                f"FAILED · {row['name']}\n  {row.get('failure_detail', row.get('error', 'No error recorded'))}"
+                for row in rows
+                if row["status"] == "failed"
+            ]
+            self.query_one("#failures", Static).update("\n".join(failures))
+            self.query_one("#failures").display = bool(failures) and self.detail_key is None
             table = self.query_one(DataTable)
             selected = table.cursor_row
             selected_key = (
@@ -253,7 +283,14 @@ class RTISProgress(App, inherit_bindings=False):  # type: ignore[call-arg]
                 table.add_row(
                     str(row.get("gpu", "—")),
                     Text(short[0] + " / " + protocol, overflow="ellipsis", no_wrap=True),
-                    Text(row["status"], style="cyan" if training else "yellow"),
+                    Text(
+                        row["status"],
+                        style="red"
+                        if row["status"] == "failed"
+                        else "cyan"
+                        if training
+                        else "yellow",
+                    ),
                     f"{int(iteration):,}/{total:,}" if total else "—",
                     Text(bar, style="#66e3c4"),
                     number(value(row, "train/optimizer_steps_per_sec")) if training else "—",
@@ -291,7 +328,7 @@ class RTISProgress(App, inherit_bindings=False):  # type: ignore[call-arg]
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected):
         self.detail_key = str(event.row_key.value)
-        for selector in ("#jobs", "#detail", "#curve", "#summary"):
+        for selector in ("#jobs", "#detail", "#curve", "#summary", "#failures"):
             self.query_one(selector).display = False
         self.query_one("#focus-view").display = True
         self.query_one("#focus-view").focus()
@@ -300,8 +337,11 @@ class RTISProgress(App, inherit_bindings=False):  # type: ignore[call-arg]
     def action_overview(self):
         self.detail_key = None
         self.query_one("#focus-view").display = False
-        for selector in ("#jobs", "#detail", "#curve", "#summary"):
+        for selector in ("#jobs", "#detail", "#curve", "#summary", "#failures"):
             self.query_one(selector).display = True
+        self.query_one("#failures").display = any(
+            row["status"] == "failed" for row in self.rows.values()
+        )
         self.query_one(DataTable).focus()
 
     def update_focus(self):
@@ -319,7 +359,7 @@ class RTISProgress(App, inherit_bindings=False):  # type: ignore[call-arg]
             + f"Elapsed {duration(row.get('elapsed'))}   "
             + f"Images/s {number(value(row, 'train/examples_per_sec'), '.1f')}   "
             + f"GPU {row.get('gpu', '—')}: {row.get('gpu_text', '—')}"
-            + ("\n" + str(row["error"]) if row.get("error") else "")
+            + ("\n" + str(row.get("failure_detail", row["error"])) if row.get("error") else "")
         )
         for chart in self.query(TrainingCurve):
             chart.points = row.get("history", {}).get(chart.tag, [])
@@ -355,7 +395,7 @@ class RTISProgress(App, inherit_bindings=False):  # type: ignore[call-arg]
             + f"Last validation: step {val.step + 1 if val else '—'}   "
             + f"Pixel accuracy {number(value(row, 'val/pixel_acc'), '.2%')}   "
             + f"Boundary F1 {number(value(row, 'val/boundary_f1'), '.3f')}"
-            + ("\n" + str(row["error"]) if row.get("error") else "")
+            + ("\n" + str(row.get("failure_detail", row["error"])) if row.get("error") else "")
         )
         self.query_one(Sparkline).data = row["loss_history"]
 
