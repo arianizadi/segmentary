@@ -444,7 +444,6 @@
       }
     },
     "dataset_samples_verified": 292,
-    "dataset_manifest_sha256": "bc3594335798d57ae761652b64d6770286b1eb1cdfd9c32cdce5964fdbbe49ee",
     "target_steps": 4000,
     "selection": "best validation checkpoint; auto raw/EMA-safe weights; no TTA",
     "test": "held out; not evaluated",
@@ -475,7 +474,8 @@
       "no_anomalies_0264.png",
       "no_anomalies_0265.png"
     ],
-    "dataset_validation_sha256": "038b165aa6a5d6e70f52a7b596497f30112400381a05a869c905173c9bf1a39f"
+    "dataset_validation_sha256": "038b165aa6a5d6e70f52a7b596497f30112400381a05a869c905173c9bf1a39f",
+    "dataset_manifest_sha256": "bc3594335798d57ae761652b64d6770286b1eb1cdfd9c32cdce5964fdbbe49ee"
   },
   "jobs": [
     {
