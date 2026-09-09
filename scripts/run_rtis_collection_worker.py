@@ -21,6 +21,7 @@ def main():
     parser.add_argument("--campaign", type=Path, required=True)
     parser.add_argument("--training-repo", type=Path, required=True)
     parser.add_argument("--gpu", type=int)
+    parser.add_argument("--stop-file", default="STOP_COLLECTION_WORKERS")
     parser.add_argument("--collect-only")
     parser.add_argument("--verify-only", action="store_true")
     args = parser.parse_args()
@@ -72,7 +73,9 @@ def main():
         return
     if args.gpu is None:
         parser.error("--gpu is required for a worker")
-    stop = root / "STOP_COLLECTION_WORKERS"
+    if Path(args.stop_file).name != args.stop_file:
+        parser.error("--stop-file must be a filename within the campaign")
+    stop = root / args.stop_file
     original_train = runtime.run_job
     original_recorded = full.run_recorded
 
@@ -129,9 +132,12 @@ def main():
                     )
                     if recover:
                         log = root / "logs" / (job["name"] + ".log")
-                        recover = (
-                            "RuntimeError: Unexpected split coverage"
-                            in log.read_text(errors="replace")[-10000:]
+                        previous = state.get("collection_recovery", {})
+                        recover = "RuntimeError: Unexpected split coverage" in log.read_text(
+                            errors="replace"
+                        )[-10000:] or (
+                            bool(previous)
+                            and previous.get("collector_sha256") != provenance["collector_sha256"]
                         )
                     if state["status"] == "completed" or (
                         state["status"] == "failed" and not recover

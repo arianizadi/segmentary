@@ -168,3 +168,62 @@ def test_preflight_fails_loudly_for_dataset_drift(tmp_path, monkeypatch, damage)
     else:
         with pytest.raises(RuntimeError):
             collector.validate_dataset(tmp_path, job, cfg, campaign)
+
+
+def test_collection_main_preserves_manifest_across_all_passes(tmp_path, monkeypatch):
+    import sys
+    from types import SimpleNamespace
+
+    from scripts import collect_rtis_statistics as collector
+
+    anchor = {"path": str(tmp_path / "best.ckpt"), "sha256": "expected"}
+    state = {
+        "checkpoints": {"best": anchor, "final": anchor},
+        "evaluation": {"metrics": {"confusion": [[1]]}},
+    }
+    cfg = SimpleNamespace(model=None, train=SimpleNamespace(seed=0), taxonomy_root=None, space=None)
+    monkeypatch.setattr(sys, "argv", ["collector", "--campaign", str(tmp_path), "--job", "job"])
+    monkeypatch.setattr(
+        collector.runtime,
+        "read",
+        lambda path: (
+            {"jobs": [{"name": "job", "config": "unused"}]}
+            if str(path).endswith("plan.json")
+            else state
+        ),
+    )
+    monkeypatch.setattr(collector.runtime, "digest", lambda path: "expected")
+    writes = []
+    monkeypatch.setattr(collector.runtime, "write", lambda path, payload: writes.append(payload))
+    monkeypatch.setattr(collector, "load_experiment", lambda *a: cfg)
+    monkeypatch.setattr(
+        collector, "load_space", lambda *a: SimpleNamespace(names=["class"], num_classes=1)
+    )
+    monkeypatch.setattr(
+        collector,
+        "validate_dataset",
+        lambda *a: ({"train": list(range(205)), "val": list(range(37))}, []),
+    )
+
+    class Model:
+        def cuda(self):
+            return self
+
+        def eval(self):
+            return self
+
+    monkeypatch.setattr(collector, "build_model", lambda *a: Model())
+    monkeypatch.setattr(collector, "ema_evaluation_safe", lambda *a: True)
+    monkeypatch.setattr(collector, "load_configured_checkpoint", lambda model, *a: model)
+    monkeypatch.setattr(collector, "seed_everything", lambda *a, **k: None)
+    monkeypatch.setattr(
+        collector,
+        "collect",
+        lambda model, cfg, samples, split, *a: {
+            "images": 205 if split == "train" else 37,
+            "metrics": {"confusion": [[1]]},
+        },
+    )
+    collector.main()
+    assert writes[-1]["standalone_confusion_exact_match"] is True
+    assert len(writes[-1]["results"]) == 4
