@@ -1,6 +1,6 @@
 # RTIS v2: disputed CVAT import removed
 
-**0/144 completed · 0 failed**
+**4/144 completed · 0 failed**
 
 Overall segmentation quality and mud-pumping results across four initialization paths. Every completed job includes quality evaluation, training diagnostics and isolated performance profiling.
 
@@ -16,8 +16,8 @@ Validation **mIoU (%)** across classes. Cells show the mean over completed seeds
 
 | Model | Completed runs | RTIS only | City → RTIS | Rail → RTIS | City → Rail → RTIS |
 | --- | --- | --- | --- | --- | --- |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | 0/4 | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | 0/4 | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | 1/4 | — | — | — | 48.24 |
+| [eomt_large](models/eomt_large/README.md) | 3/4 | 46.33 | 50.22 | — | 56.12 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | 0/4 | — | — | — | — |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | 0/4 | — | — | — | — |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | 0/4 | — | — | — | — |
@@ -59,8 +59,8 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 
 | Model | Completed runs | RTIS only | City → RTIS | Rail → RTIS | City → Rail → RTIS |
 | --- | --- | --- | --- | --- | --- |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | 0/4 | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | 0/4 | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | 1/4 | — | — | — | 9.14 |
+| [eomt_large](models/eomt_large/README.md) | 3/4 | 10.56 | 9.23 | — | 18.16 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | 0/4 | — | — | — | — |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | 0/4 | — | — | — | — |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | 0/4 | — | — | — | — |
@@ -102,8 +102,8 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 
 | Model | Completed runs | RTIS only | City → RTIS | Rail → RTIS | City → Rail → RTIS |
 | --- | --- | --- | --- | --- | --- |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | 0/4 | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | 0/4 | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | 1/4 | — | — | — | 41.10 |
+| [eomt_large](models/eomt_large/README.md) | 3/4 | 45.40 | 45.33 | — | 45.89 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | 0/4 | — | — | — | — |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | 0/4 | — | — | — | — |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | 0/4 | — | — | — | — |
@@ -146,20 +146,20 @@ Click any model for all initialization paths, full class metrics, training/valid
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | 0 | training | 2349 | — | — | — | — | — | — | — |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | 0 | training | 2199 | — | — | — | — | — | — | — |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | 0 | training | 2293 | — | — | — | — | — | — | — |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 2249 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | rtis_only | 0 | collecting | 2294 | 1019 | 10.56 | 12.31 | 42.66 | 8.86 | 46.33 | 51.47 |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 0 | training | 2399 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 0 | training | 2449 | — | — | — | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 2399 | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 0 | training | 1549 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | 0 | training | 3549 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | 0 | collecting | 3313 | 2294 | 11.74 | 13.33 | 49.65 | 11.46 | 47.87 | 53.19 |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | 0 | training | 3449 | — | — | — | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 2803 | 2803 | 9.14 | 11.20 | 33.28 | 9.15 | 48.24 | 53.60 |
+| [eomt_large](models/eomt_large/README.md) | rtis_only | 0 | completed | 2294 | 1019 | 10.56 | 12.31 | 42.66 | 8.86 | 46.33 | 51.47 |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 0 | completed | 2803 | 1529 | 9.23 | 13.88 | 21.57 | 7.40 | 50.22 | 55.80 |
+| [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 0 | evaluating | 3568 | — | — | — | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 3313 | 2294 | 18.16 | 26.08 | 37.42 | 18.16 | 56.12 | 59.23 |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 0 | training | 2349 | — | — | — | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 0 | collecting | 1529 | 254 | 6.27 | 6.59 | 55.96 | 1.72 | 18.11 | 19.12 |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
-| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | 0 | training | 749 | — | — | — | — | — | — | — |
+| [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_railsem19_to_rtis | 0 | training | 199 | — | — | — | — | — | — | — |
+| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | rtis_only | 0 | training | 399 | — | — | — | — | — | — | — |
+| [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilenetv2_deeplabv3](models/hf_auto_mobilenetv2_deeplabv3/README.md) | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | [hf_auto_mobilevit_xxs_deeplabv3](models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
@@ -311,13 +311,13 @@ Frozen training code: `066afb2626398b7be59d4d19f5a0e4644fd59adc`. Split SHA-256:
 | Model | Initialization | Seed | Train peak GiB (retained invocation) | Eval peak GiB | Train seconds (retained invocation) | Eval seconds |
 | --- | --- | --- | --- | --- | --- | --- |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | rtis_only | 0 | — | — | — | — |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | 0 | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_rtis | 0 | 17.84 | 10.78 | 5475.59 | 21.95 |
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | railsem19_to_rtis | 0 | — | — | — | — |
-| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | — | — | — | — |
+| [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | 17.84 | 10.77 | 4692.51 | 22.39 |
 | [eomt_large](models/eomt_large/README.md) | rtis_only | 0 | 17.70 | 10.80 | 3701.92 | 22.04 |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 0 | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_rtis | 0 | 17.70 | 10.80 | 4368.38 | 21.65 |
 | [eomt_large](models/eomt_large/README.md) | railsem19_to_rtis | 0 | — | — | — | — |
-| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | — | — | — | — |
+| [eomt_large](models/eomt_large/README.md) | cityscapes_to_railsem19_to_rtis | 0 | 17.70 | 10.80 | 5046.25 | 21.34 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | rtis_only | 0 | — | — | — | — |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | cityscapes_to_rtis | 0 | 15.36 | 7.39 | 3629.22 | 120.44 |
 | [hf_auto_beit_base_ade](models/hf_auto_beit_base_ade/README.md) | railsem19_to_rtis | 0 | — | — | — | — |
