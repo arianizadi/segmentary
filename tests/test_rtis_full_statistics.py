@@ -107,7 +107,20 @@ def test_collection_coverage_uses_manifest_counts(train_count):
         validate_split_coverage(results, splits)
 
 
-@pytest.mark.parametrize("damage", ["none", "missing", "extra", "hash", "count", "membership"])
+@pytest.mark.parametrize(
+    "damage",
+    [
+        "none",
+        "missing",
+        "extra",
+        "hash",
+        "count",
+        "membership",
+        "class",
+        "image_dimensions",
+        "mask_dimensions",
+    ],
+)
 def test_preflight_fails_loudly_for_dataset_drift(tmp_path, monkeypatch, damage):
     import hashlib
     import json
@@ -138,6 +151,14 @@ def test_preflight_fails_loudly_for_dataset_drift(tmp_path, monkeypatch, damage)
         splits[split] = [split]
     if damage == "membership":
         splits["train"] = ["wrong-key"]
+    if damage == "class":
+        Image.new("L", (2, 2), 3).save(tmp_path / "masks/train/train.png")
+        samples[0]["mask_sha256"] = hashlib.sha256(bytes([3] * 4)).hexdigest()
+    if damage == "image_dimensions":
+        Image.new("RGB", (3, 2)).save(tmp_path / "images/train/train.png")
+        samples[0]["image_sha256"] = collector.runtime.digest(tmp_path / "images/train/train.png")
+    if damage == "mask_dimensions":
+        Image.new("L", (3, 2)).save(tmp_path / "masks/train/train.png")
     (tmp_path / "audit").mkdir()
     (tmp_path / "audit/samples.json").write_text(json.dumps(samples))
     (tmp_path / "splits.json").write_text(json.dumps(splits))
