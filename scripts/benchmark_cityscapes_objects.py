@@ -124,7 +124,7 @@ def benchmark(prepared: Path, output: Path, device: str, tasks: list[str], memor
                 "memory_fraction": memory_fraction,
                 "initialization_seed": 0,
                 "initialization": initialization,
-                "loading_audit": loading_audit,
+                "loading_verification": loading_audit,
                 "purpose": "held-out subset integration check"
                 if manifest["limit_per_split"]
                 else "full validation",

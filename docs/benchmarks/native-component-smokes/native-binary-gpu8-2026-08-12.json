@@ -190,7 +190,7 @@
   "kind": "railyard-native-binary-gpu-acceptance",
   "model": {
     "arch": "native",
-    "audited_inactive_parameter_paths": [],
+    "verified_inactive_parameter_paths": [],
     "changed_tracked_tensors": [
       "auxiliary_heads.aux_s16.classifier.bias",
       "auxiliary_heads.aux_s16.classifier.weight",

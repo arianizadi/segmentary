@@ -67,7 +67,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.59 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.53 |
+| Verified periodic checkpoints removed (GiB) | 0.53 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -694,7 +694,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.47 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.80 |
+| Verified periodic checkpoints removed (GiB) | 0.80 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -1324,7 +1324,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.43 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.53 |
+| Verified periodic checkpoints removed (GiB) | 0.53 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -1951,7 +1951,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.35 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.40 |
+| Verified periodic checkpoints removed (GiB) | 0.40 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -2576,7 +2576,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.30 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.80 |
+| Verified periodic checkpoints removed (GiB) | 0.80 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -3206,7 +3206,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.37 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.53 |
+| Verified periodic checkpoints removed (GiB) | 0.53 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -3833,7 +3833,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.52 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.67 |
+| Verified periodic checkpoints removed (GiB) | 0.67 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -4461,7 +4461,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.47 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.40 |
+| Verified periodic checkpoints removed (GiB) | 0.40 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -5085,7 +5085,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.37 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.80 |
+| Verified periodic checkpoints removed (GiB) | 0.80 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -5716,7 +5716,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.43 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.67 |
+| Verified periodic checkpoints removed (GiB) | 0.67 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -6344,7 +6344,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.38 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.40 |
+| Verified periodic checkpoints removed (GiB) | 0.40 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 
@@ -6968,7 +6968,7 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 | Full evaluation pipeline images/second | 3.31 |
 | Best full-state checkpoint (MiB) | 136.59 |
 | Final full-state checkpoint (MiB) | 136.57 |
-| Audited periodic checkpoints removed (GiB) | 0.40 |
+| Verified periodic checkpoints removed (GiB) | 0.40 |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
 

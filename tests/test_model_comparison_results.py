@@ -176,7 +176,7 @@ def test_missing_transfer_source_provenance_is_not_claimed_as_reused() -> None:
         record = json.loads((comparison / "records" / f"{model_id}.json").read_text())
         transfer = record["protocols"]["cityscapes_to_railsem19"]
         assert transfer["source_checkpoint"] is None
-        assert any("cannot be independently audited" in item for item in transfer["caveats"])
+        assert any("cannot be independently verified" in item for item in transfer["caveats"])
         row = by_model[model_id]
         assert "provenance not retained" in row["cityscapes_to_railsem19_training_cost_scope"]
         assert row["cityscapes_to_railsem19_cumulative_iterations"] == ""

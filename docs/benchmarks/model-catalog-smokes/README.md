@@ -22,13 +22,13 @@ batch, not to rank models. Machine-readable evidence is in
 - Six revision-pinned complete Hugging Face semantic checkpoints passed five
   steps. A separate pixel-level check matched every pinned upstream image
   processor, including MobileViT's BGR/no-normalization contract.
-- A stricter BF16 audit then required every loss-reachable trainable parameter
+- A stricter BF16 verification then required every loss-reachable trainable parameter
   to have a finite gradient and the classifier to update. Three pinned upstream
   implementations contained explicitly documented loss-unreachable modules;
   those exact paths are frozen in their recipe configs so ordinary DDP remains
   strict for every undeclared disconnection.
 - The original ten SMP recipes retain per-model parameter/VRAM records from
-  their first four-step run. A later strict GPU8 audit covers all eleven shipped
+  their first four-step run. A later strict GPU8 verification covers all eleven shipped
   recipes, including UPerNet/ResNet-101, at one common 128×128 shape and requires
   a finite gradient on every loss-reachable trainable tensor plus a changed
   segmentation head. Both protocols are recorded in `smp.json`.

@@ -158,7 +158,7 @@
     "physical_device_index": 8,
     "visible_device": "cuda:0"
   },
-  "interpretation": "Synthetic compatibility smoke only. It verifies the public Railyard EoMT-Large wrapper, native Hungarian query objective, complete trainable-gradient audit, and AdamW updates. The wrapper resized both non-square inputs to the checkpoint-native 640x640 grid and restored dense outputs, so this is not evidence of native arbitrary-grid EoMT support. It cannot measure mIoU, quality, learning, convergence, latency, throughput, calibration, or production memory.",
+  "interpretation": "Synthetic compatibility smoke only. It verifies the public Railyard EoMT-Large wrapper, native Hungarian query objective, complete trainable-gradient verification, and AdamW updates. The wrapper resized both non-square inputs to the checkpoint-native 640x640 grid and restored dense outputs, so this is not evidence of native arbitrary-grid EoMT support. It cannot measure mIoU, quality, learning, convergence, latency, throughput, calibration, or production memory.",
   "invocation": {
     "portable_arguments": [
       "configs/base.yaml",
@@ -192,7 +192,7 @@
   },
   "model": {
     "arch": "eomt_large",
-    "audited_inactive_parameter_paths": [],
+    "verified_inactive_parameter_paths": [],
     "changed_tracked_tensors": [
       "model.class_predictor.bias",
       "model.class_predictor.weight",

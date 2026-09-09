@@ -159,7 +159,7 @@
   "interpretation": "Compatibility smoke only: synthetic inputs and labels cannot measure mIoU, quality, convergence, latency, throughput, or production memory.",
   "model": {
     "arch": "native",
-    "audited_inactive_parameter_paths": [],
+    "verified_inactive_parameter_paths": [],
     "changed_tracked_tensors": [
       "head.classifier.bias",
       "head.classifier.weight",

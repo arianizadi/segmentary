@@ -16,5 +16,3 @@ Cityscapes/RailSem19 model leaderboard.
 
 - [Instance and panoptic validation](object-validation/README.md): real Cityscapes
   GPU execution, pretrained AP/PQ, official evaluator parity, and full resume checks.
-- [RTIS original-annotation audit](paul-test-rtis/annotation-audit-v1/README.md):
-  all 307 source/mask comparisons, overwritten pixels, and review queue.

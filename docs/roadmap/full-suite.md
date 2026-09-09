@@ -50,8 +50,8 @@ same class form one target mask. It is not an instance-segmentation objective.
 | source | current status | safety boundary |
 |---|---|---|
 | Segmentary-native composition | **available** | typed timm backbone, identity/FPN/ChannelMapper neck, typed dense head, optional auxiliary heads |
-| Segmentation Models PyTorch | **available** | eleven curated decoder/encoder recipes plus explicit dynamic choices with audited preprocessing |
-| Hugging Face semantic checkpoints | **available** | complete standard `AutoModelForSemanticSegmentation` models, remote code disabled, strict load/layout/processor audit |
+| Segmentation Models PyTorch | **available** | eleven curated decoder/encoder recipes plus explicit dynamic choices with verified preprocessing |
+| Hugging Face semantic checkpoints | **available** | complete standard `AutoModelForSemanticSegmentation` models, remote code disabled, strict load/layout/processor verification |
 | hand-integrated built-ins | **available or explicitly experimental** | SegFormer, UPerNet, HRNet/OCR, DeepLabV3+, EoMT, and local DINOv3 loading utilities |
 | arbitrary upstream code | **blocked by design** | no `trust_remote_code`, arbitrary constructor kwargs, Python config execution, or silent partial checkpoints |
 
@@ -69,7 +69,7 @@ status.
 | main or auxiliary dense head | FCN, SegFormer-MLP, PSP, ASPP, DeepLabV3+, LR-ASPP, UPer, DPT, OCR | all return input-resolution raw logits; OCR also returns an explicitly weighted named coarse output |
 | normalization | BatchNorm, GroupNorm, InstanceNorm, per-pixel LayerNorm2d, none | batch-one global-context branches omit only their invalid `1x1` BatchNorm |
 | block activation | ReLU, ReLU6, LeakyReLU, GELU, SiLU, ELU, Mish, Hardswish | prediction heads still return raw logits |
-| tuning | full, frozen backbone, LoRA where an audited linear target layout exists | convolution-only native backbones reject LoRA rather than training nothing |
+| tuning | full, frozen backbone, LoRA where an verified linear target layout exists | convolution-only native backbones reject LoRA rather than training nothing |
 
 Every component validates feature count, channel count, spatial reduction,
 selected indices, parameter ownership, output size, and classifier reset. A
@@ -159,7 +159,7 @@ we can place in a menu.
 A recipe is not “supported” until the applicable checks pass:
 
 1. typed config with no arbitrary kwargs and an immutable pretrained source;
-2. exact weight-load diagnostics and preprocessing audit;
+2. exact weight-load diagnostics and preprocessing verification;
 3. two distinct non-square shape checks, including an odd shape where the
    architecture claims variable resolution;
 4. finite production loss and several optimizer steps;

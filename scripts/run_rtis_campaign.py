@@ -437,7 +437,7 @@ def render(data):
         )
     lines += [
         "",
-        "After successful evaluation, periodic checkpoints are removed with a deletion audit. Best and final checkpoints, full metrics, configs and logs remain on HDRFS. Failed-run checkpoints remain available for recovery. Historical source checkpoints are preserved.",
+        "After successful evaluation, periodic checkpoints are removed with a deletion record. Best and final checkpoints, full metrics, configs and logs remain on HDRFS. Failed-run checkpoints remain available for recovery. Historical source checkpoints are preserved.",
         "",
     ]
     return "\n".join(lines)

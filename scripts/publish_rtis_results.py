@@ -10,6 +10,7 @@ import re
 import statistics
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -298,7 +299,7 @@ def model_report(model, rows, campaign):
                         number(row.get("checkpoints", {}).get("final", {}).get("bytes"), 2**20),
                     ],
                     [
-                        "Audited periodic checkpoints removed (GiB)",
+                        "Verified periodic checkpoints removed (GiB)",
                         number(row.get("checkpoint_bytes_removed"), 2**30),
                     ],
                 ],
@@ -525,6 +526,12 @@ def seed_summary(jobs):
 
 
 def artifacts(data):
+    # Keep internal preparation field names in the running campaign; expose the
+    # manifest hash under a descriptive public name in generated result records.
+    campaign = dict(data["campaign"])
+    if "dataset_audit_sha256" in campaign:
+        campaign["dataset_manifest_sha256"] = campaign.pop("dataset_audit_sha256")
+    data = {**data, "campaign": campaign}
     jobs = data["jobs"]
     full = bool(data["campaign"].get("collection_contract"))
     models = sorted({r["model"] for r in jobs})
@@ -590,7 +597,7 @@ def artifacts(data):
         "",
         "Validation approximately every 250 optimizer steps; stop after five checks without a 0.1 percentage-point mud-IoU improvement. At most 4,000 steps. Keep mud-selected and final full-state checkpoints; remove periodic snapshots only after complete verified collection."
         if full
-        else "Validation approximately every 250 optimizer steps; stop after three checks without 0.2 percentage-point mIoU improvement. At most 4,000 steps. Keep aggregate-best and final full-state checkpoints; periodic checkpoints are removed only after successful evaluation, with an audit.",
+        else "Validation approximately every 250 optimizer steps; stop after three checks without 0.2 percentage-point mIoU improvement. At most 4,000 steps. Keep aggregate-best and final full-state checkpoints; periodic checkpoints are removed only after successful evaluation, with a deletion record.",
         "",
         f"Frozen training code: `{data['campaign']['code_sha']}`. Split SHA-256: `{data['campaign']['split_sha256']}`.",
         "",
@@ -816,6 +823,17 @@ def publish_due(last_attempt, now, interval):
     return last_attempt is None or now - last_attempt >= interval
 
 
+def previous_publish_time(root, monotonic_now, wall_now):
+    status = root / "publisher-status.json"
+    if not status.exists():
+        return None
+    timestamp = runtime.read(status).get("last_success")
+    if not timestamp:
+        return None
+    elapsed = max(0, wall_now - datetime.fromisoformat(timestamp).timestamp())
+    return monotonic_now - elapsed
+
+
 def main():
     global REPORT
     ap = argparse.ArgumentParser(description=__doc__)
@@ -837,7 +855,7 @@ def main():
     with runtime.lock(args.campaign / "locks/publisher.lock") as acquired:
         if not acquired:
             raise RuntimeError("Publisher already running")
-        last_attempt = None
+        last_attempt = previous_publish_time(args.campaign, time.monotonic(), time.time())
         while True:
             if (args.campaign / "STOP_PUBLISHER").exists():
                 return

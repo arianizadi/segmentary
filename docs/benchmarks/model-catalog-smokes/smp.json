@@ -6,7 +6,7 @@
   "not_a_benchmark": true,
   "environment": {"gpu": "NVIDIA L40S", "torch": "2.11.0+cu128", "segmentation_models_pytorch": "0.5.0"},
   "protocol": {"steps": 4, "batch_size": 2, "precision": "bf16", "labels": 5},
-  "strict_gradient_audit": {
+  "strict_gradient_verification": {
     "date": "2026-08-12",
     "command": "CUDA_VISIBLE_DEVICES=8 RAILYARD_RUN_SMP_CATALOG=1 python -m pytest -q tests/test_smp_catalog.py -m 'slow and gpu'",
     "result": "11 passed",

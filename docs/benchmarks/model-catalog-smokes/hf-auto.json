@@ -6,7 +6,7 @@
   "not_a_benchmark": true,
   "environment": {"gpu": "NVIDIA L40S", "torch": "2.11.0+cu128"},
   "protocol": {"steps": 5, "batch_size": 2, "shape_nchw": [2, 3, 128, 128], "precision": "fp32", "labels": 19},
-  "strict_gradient_audit": {
+  "strict_gradient_verification": {
     "date": "2026-08-12",
     "precision": "bf16-mixed",
     "steps": 1,

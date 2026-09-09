@@ -141,7 +141,7 @@
       "error_msgs": []
     }
   },
-  "loading_audit": {
+  "loading_verification": {
     "missing_final_norm": "SwinBackbone returns normalized per-stage reshaped_hidden_states; the final SwinModel.layernorm output is unused. Perturbation and absent-gradient regression test verifies Mask2Former path.",
     "unexpected_relative_position_index": "Swin recomputes this deterministic non-persistent buffer from window_size; checkpoint copy is unused.",
     "source": "transformers/models/swin/modeling_swin.py: SwinBackbone.forward and SwinRelativePositionBias.__init__"

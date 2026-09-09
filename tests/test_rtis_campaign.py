@@ -333,3 +333,22 @@ def test_v2_comparison_uses_paired_seed_and_completed_jobs_only():
     assert "40.00,50.00,10.00,30.00,25.00,-5.00" in files["comparison.csv"]
     new["status"] = "collecting"
     assert "40.00,—,—,30.00,—,—" in artifacts(data)["comparison.csv"]
+
+
+def test_published_reports_do_not_restore_removed_audit_labels():
+    from scripts.publish_rtis_results import artifacts
+
+    campaign = {"code_sha": "frozen", "split_sha256": "split", "dataset_audit_sha256": "manifest"}
+    files = artifacts({"campaign": campaign, "jobs": []})
+    assert all("audit" not in value.lower() for value in files.values() if isinstance(value, str))
+    assert '"dataset_manifest_sha256": "manifest"' in files["status.json"]
+    assert campaign["dataset_audit_sha256"] == "manifest"
+
+
+def test_publisher_restart_preserves_thirty_minute_interval(tmp_path):
+    from scripts.publish_rtis_results import previous_publish_time, publish_due
+
+    rtis.write(tmp_path / "publisher-status.json", {"last_success": "2026-09-09T00:00:00+00:00"})
+    last = previous_publish_time(tmp_path, monotonic_now=1000, wall_now=1788912300)
+    assert not publish_due(last, 1000, 1800)  # Restart five minutes after the last upload.
+    assert publish_due(last, 2500, 1800)

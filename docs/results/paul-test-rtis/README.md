@@ -81,7 +81,7 @@ image/mask pairs passed preflight verification. Ten GPU workers share the queue.
 These adaptation results use native RTIS validation metrics and remain separate
 from the coarse source-only diagnostics above. Test remains held out; recording
 groups remain provisional. The best and final checkpoints are retained after
-successful evaluation; redundant periodic snapshots are removed with an audit.
+successful evaluation; redundant periodic snapshots are removed with a deletion record.
 Training uses a fixed checkout and publishing uses a separate worktree, so live
 report updates cannot alter running experiments or the Cityscapes/RailSem19 study.
 

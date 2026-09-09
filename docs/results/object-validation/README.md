@@ -32,7 +32,7 @@ The pretrained load recorded obsolete relative-position index buffers and a
 missing final Swin LayerNorm. Installed SwinBackbone uses separately normalized
 stage features; changing that unused final norm leaves predictions exactly
 unchanged and it receives no gradients in the regression test. The recipe
-records this audited exception and rejects other missing or mismatched active
+records this verified exception and rejects other missing or mismatched active
 weights. Both runs use initialization seed 0.
 
 ## Four-family CUDA training execution

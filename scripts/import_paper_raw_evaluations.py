@@ -179,7 +179,7 @@ def _apply_review_corrections(records: dict[str, dict[str, Any]]) -> dict[str, A
             _append_caveat(
                 protocol,
                 "The transfer endpoint is complete, but its City40 source-checkpoint hash was "
-                "not retained, so the warm-start link cannot be independently audited.",
+                "not retained, so the warm-start link cannot be independently verified.",
             )
         missing_transfer_sources.append(model_id)
     pan = records["smp_pan_resnext50"]
