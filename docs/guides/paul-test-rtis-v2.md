@@ -67,7 +67,8 @@ memory, validation metrics, and a loss curve. The other window shows GPUs.
 tmux attach -t rtis-fullstats-controller
 ```
 
-Use arrow keys to select a run, `r` to refresh, and `Ctrl+b`, then `d` to detach.
+Use arrow keys to select a run, `r` to refresh, and `d` or `q` to detach.
+Both keys leave the dashboard running in tmux; `Ctrl+b`, then `d` also detaches.
 The screen polls every three seconds. Training currently emits telemetry every
 50 optimizer steps; the sample-age column identifies how fresh each value is.
 ETA is the trainer's estimate to its step limit, before final evaluation and

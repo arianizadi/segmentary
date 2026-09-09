@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import math
+import os
 import subprocess
 import time
 from collections import Counter
@@ -122,7 +123,12 @@ class RTISProgress(App):
     #note { height: 3; padding: 0 2; color: #97abc7; }
     Footer { background: #17263c; }
     """
-    BINDINGS: ClassVar = [("q", "quit", "Close viewer"), ("r", "refresh", "Refresh")]
+    BINDINGS: ClassVar = [
+        ("d", "detach", "Detach"),
+        ("q", "detach", "Detach"),
+        ("ctrl+q", "detach", "Detach"),
+        ("r", "refresh", "Refresh"),
+    ]
 
     def __init__(self, root):
         super().__init__()
@@ -160,6 +166,14 @@ class RTISProgress(App):
         self.set_interval(3, self.action_refresh)
         await self.action_refresh()
         self.query_one(DataTable).focus()
+
+    def action_detach(self):
+        if not os.environ.get("TMUX"):
+            self.notify("This viewer is not inside tmux; there is no session to detach.")
+            return
+        result = subprocess.run(["tmux", "detach-client"], capture_output=True, text=True)
+        if result.returncode:
+            self.notify("Could not detach: " + result.stderr.strip(), severity="error")
 
     async def action_refresh(self):
         if self.busy:
