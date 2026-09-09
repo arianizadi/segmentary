@@ -486,7 +486,10 @@
       "config_sha256": "bad354141f223a90ade1b25b180c00ab6ccb5de2dc608176ab99b686b4d770e9",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 7,
+      "started_at": "2026-09-09T23:25:30.223331+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "native_resnet50_aspp--rtis_only--seed-0",
         "model": {
