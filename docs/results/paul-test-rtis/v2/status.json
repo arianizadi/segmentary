@@ -485,7 +485,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1299,
+      "observed_step": 2349,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -495,7 +495,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 2199,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -505,7 +505,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1149,
+      "observed_step": 2293,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -515,7 +515,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1099,
+      "observed_step": 2249,
       "record": "models/eomt_dinov3_large/record.json"
     },
     {
@@ -523,9 +523,9 @@
       "model": "eomt_large",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1049,
+      "status": "collecting",
+      "final_step": 2294,
+      "observed_step": null,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -535,7 +535,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1199,
+      "observed_step": 2399,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -545,7 +545,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1299,
+      "observed_step": 2449,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -555,7 +555,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 1274,
+      "observed_step": 2399,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -565,7 +565,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 799,
+      "observed_step": 1549,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {
@@ -573,9 +573,9 @@
       "model": "hf_auto_beit_base_ade",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 849,
+      "status": "collecting",
+      "final_step": 1529,
+      "observed_step": null,
       "record": "models/hf_auto_beit_base_ade/record.json"
     },
     {

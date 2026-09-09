@@ -1,14 +1,14 @@
 Model,Initialization path,Seed,Status,Steps,Best step,Mud IoU (%),Mud precision (%),Mud recall (%),"Final mud IoU (trainer val, %)",mIoU (%),Fixed GT-class mIoU (%)
-eomt_dinov3_large,rtis_only,0,training,1299,—,—,—,—,—,—,—
-eomt_dinov3_large,cityscapes_to_rtis,0,training,1099,—,—,—,—,—,—,—
-eomt_dinov3_large,railsem19_to_rtis,0,training,1149,—,—,—,—,—,—,—
-eomt_dinov3_large,cityscapes_to_railsem19_to_rtis,0,training,1099,—,—,—,—,—,—,—
-eomt_large,rtis_only,0,training,1049,—,—,—,—,—,—,—
-eomt_large,cityscapes_to_rtis,0,training,1199,—,—,—,—,—,—,—
-eomt_large,railsem19_to_rtis,0,training,1299,—,—,—,—,—,—,—
-eomt_large,cityscapes_to_railsem19_to_rtis,0,training,1274,—,—,—,—,—,—,—
-hf_auto_beit_base_ade,rtis_only,0,training,799,—,—,—,—,—,—,—
-hf_auto_beit_base_ade,cityscapes_to_rtis,0,training,849,—,—,—,—,—,—,—
+eomt_dinov3_large,rtis_only,0,training,2349,—,—,—,—,—,—,—
+eomt_dinov3_large,cityscapes_to_rtis,0,training,2199,—,—,—,—,—,—,—
+eomt_dinov3_large,railsem19_to_rtis,0,training,2293,—,—,—,—,—,—,—
+eomt_dinov3_large,cityscapes_to_railsem19_to_rtis,0,training,2249,—,—,—,—,—,—,—
+eomt_large,rtis_only,0,collecting,2294,1019,10.56,12.31,42.66,8.86,46.33,51.47
+eomt_large,cityscapes_to_rtis,0,training,2399,—,—,—,—,—,—,—
+eomt_large,railsem19_to_rtis,0,training,2449,—,—,—,—,—,—,—
+eomt_large,cityscapes_to_railsem19_to_rtis,0,training,2399,—,—,—,—,—,—,—
+hf_auto_beit_base_ade,rtis_only,0,training,1549,—,—,—,—,—,—,—
+hf_auto_beit_base_ade,cityscapes_to_rtis,0,collecting,1529,254,6.27,6.59,55.96,1.72,18.11,19.12
 hf_auto_beit_base_ade,railsem19_to_rtis,0,queued,—,—,—,—,—,—,—,—
 hf_auto_beit_base_ade,cityscapes_to_railsem19_to_rtis,0,queued,—,—,—,—,—,—,—,—
 hf_auto_mobilenetv2_deeplabv3,rtis_only,0,queued,—,—,—,—,—,—,—,—

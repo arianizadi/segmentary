@@ -6,8 +6,8 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_beit_base_ade | rtis_only | 0 | training | 799 | — | — | — | — | — | — | — |
-| hf_auto_beit_base_ade | cityscapes_to_rtis | 0 | training | 849 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | rtis_only | 0 | training | 1549 | — | — | — | — | — | — | — |
+| hf_auto_beit_base_ade | cityscapes_to_rtis | 0 | collecting | 1529 | 254 | 6.27 | 6.59 | 55.96 | 1.72 | 18.11 | 19.12 |
 | hf_auto_beit_base_ade | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 | hf_auto_beit_base_ade | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
 
@@ -90,6 +90,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 17.48 | 0.23 |
 | 509 | 21.96 | 0.00 |
 | 764 | 24.46 | 0.24 |
+| 1019 | 26.61 | 0.55 |
+| 1274 | 24.85 | 0.53 |
+| 1529 | 27.96 | 0.80 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -255,7 +258,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **training**. Started: 2026-09-09T17:21:39.057466+00:00. Finished: —.
+Status: **collecting**. Started: 2026-09-09T17:21:39.057466+00:00. Finished: —.
 
 Recipe pretrained initializer: `microsoft/beit-base-finetuned-ade-640-640`.
 
@@ -263,25 +266,25 @@ Recipe pretrained initializer: `microsoft/beit-base-finetuned-ade-640-640`.
 
 Source checkpoint: `{'name': 'hf_auto_beit_base_ade--cityscapes--seed-0', 'model': 'hf_auto_beit_base_ade', 'protocol': 'cityscapes', 'config': '/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/accepted/hf_auto_beit_base_ade--cityscapes--seed-0/resolved-config.yaml', 'checkpoint': '/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hf_auto_beit_base_ade--cityscapes--seed-0/attempt-001/train/hf_auto_beit_base_ade--cityscapes_seed0/cityscapes/last.ckpt', 'recorded_sha256': '0a7ecfaf15bb3636cd8873013bef29fa31037c57fb25731b6757caf0e9a42008', 'exists': True}`.
 
-Config SHA-256: `59f37dfb56ede61a9edfe106c3ae6a8ba976c596432f66abf8502b61ca039f1a`. Weights used for validation: `—`.
+Config SHA-256: `59f37dfb56ede61a9edfe106c3ae6a8ba976c596432f66abf8502b61ca039f1a`. Weights used for validation: `raw`.
 
 ### Mud-pumping and aggregate quality
 
 | Metric | Selected checkpoint | Final training validation |
 | --- | --- | --- |
-| Mud IoU | — | — |
-| Mud precision | — | — |
-| Mud recall | — | — |
-| Mud Dice/F1 | — | — |
-| mIoU | — | — |
-| Mean accuracy | — | — |
-| Mean precision | — | — |
-| Mean Dice | — | — |
-| Mean specificity | — | — |
-| Pixel accuracy | — | — |
-| Frequency-weighted IoU | — | — |
-| Fixed GT-present class mIoU | — | — |
-| Boundary F1 | — | — |
+| Mud IoU | 6.27 | 1.72 |
+| Mud precision | 6.59 | 1.99 |
+| Mud recall | 55.96 | 11.24 |
+| Mud Dice/F1 | 11.79 | 3.39 |
+| mIoU | 18.11 | 28.47 |
+| Mean accuracy | 24.46 | 40.95 |
+| Mean precision | 44.61 | 48.00 |
+| Mean Dice | 23.36 | 36.48 |
+| Mean specificity | 98.18 | 98.78 |
+| Pixel accuracy | 72.09 | 78.15 |
+| Frequency-weighted IoU | 60.77 | 70.61 |
+| Fixed GT-present class mIoU | 19.12 | 33.21 |
+| Boundary F1 | 19.79 | 35.50 |
 
 The selected checkpoint has independent evaluation evidence. Final values are the trainer's final validation record, not a new independent evaluation. mIoU averages classes with nonzero union, so false positives on absent classes can change its denominator. The fixed GT-class mean is supplementary and excludes absent classes; their false positives remain in the confusion matrix.
 
@@ -289,14 +292,14 @@ The selected checkpoint has independent evaluation evidence. Final values are th
 
 | Measurement | Value |
 | --- | --- |
-| Peak training VRAM, retained training invocation (GiB) | — |
-| Peak evaluation VRAM (GiB) | — |
-| Retained training invocation wall time (seconds) | — |
-| Retained training invocation GPU-hours (one GPU) | — |
-| Evaluation wall time (seconds) | — |
-| Full evaluation pipeline images/second | — |
-| Best full-state checkpoint (MiB) | — |
-| Final full-state checkpoint (MiB) | — |
+| Peak training VRAM, retained training invocation (GiB) | 15.36 |
+| Peak evaluation VRAM (GiB) | 7.39 |
+| Retained training invocation wall time (seconds) | 3629.22 |
+| Retained training invocation GPU-hours (one GPU) | 1.01 |
+| Evaluation wall time (seconds) | 120.44 |
+| Full evaluation pipeline images/second | 0.31 |
+| Best full-state checkpoint (MiB) | 2355.56 |
+| Final full-state checkpoint (MiB) | 2355.55 |
 | Verified periodic checkpoints removed (GiB) | — |
 
 VRAM uses the recorded allocator high-water mark; it is not total device usage including CUDA context. Resumed jobs' retained training invocation times and peaks are **not whole-campaign totals**. Earlier invocation resource records are not reconstructed here. Evaluation throughput includes loader, sliding-window inference and metrics; it is not model-only latency/FPS. Missing measurements are shown as —, never inferred from another dataset's run.
@@ -320,6 +323,27 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Class | GT pixels | IoU (%) | Precision (%) | Recall (%) | Dice (%) | Boundary F1 (%) |
 | --- | --- | --- | --- | --- | --- | --- |
+| car | 29664 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| construction | 311585 | 48.00 | 74.13 | 57.66 | 64.86 | 57.77 |
+| fence | 265137 | 0.18 | 75.76 | 0.18 | 0.36 | 1.00 |
+| mud-pumping | 1226250 | 6.27 | 6.59 | 55.96 | 11.79 | 15.24 |
+| on-rails | 0 | 0.00 | 0.00 | — | 0.00 | 0.00 |
+| person | 0 | — | — | — | — | — |
+| pole | 628038 | 42.16 | 81.36 | 46.66 | 59.31 | 59.86 |
+| rail-embedded | 16799 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| rail-raised | 2969797 | 10.99 | 96.38 | 11.04 | 19.81 | 36.79 |
+| rail-track | 6323197 | 12.97 | 87.57 | 13.22 | 22.97 | 16.29 |
+| road | 1048831 | 3.98 | 10.12 | 6.16 | 7.66 | 12.82 |
+| sidewalk | 1297367 | 12.92 | 86.52 | 13.18 | 22.88 | 5.72 |
+| sky | 19121606 | 97.83 | 99.29 | 98.52 | 98.90 | 93.23 |
+| standing-water | 95802 | 0.02 | 0.02 | 0.20 | 0.04 | 0.68 |
+| terrain | 39239306 | 77.22 | 77.87 | 98.92 | 87.14 | 42.68 |
+| trackbed | 10643081 | 31.51 | 63.72 | 38.41 | 47.93 | 32.64 |
+| traffic-light | 19510 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| traffic-sign | 13285 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| tram-track | 56179 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| truck | 0 | — | — | — | — | — |
+| vegetation-overgrowth | 5901821 | 0.10 | 88.31 | 0.10 | 0.20 | 1.35 |
 
 ### Validation tracking
 
@@ -328,6 +352,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | 254 | 18.11 | 6.27 |
 | 509 | 20.85 | 2.47 |
 | 764 | 20.02 | 1.36 |
+| 1019 | 26.51 | 3.55 |
+| 1274 | 29.67 | 1.55 |
+| 1529 | 28.47 | 1.72 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -335,8 +362,28 @@ All retained scalar curves, including training loss and per-class IoU, are in re
 
 ```json
 {
-  "stopping": null,
-  "checkpoints": null,
+  "stopping": {
+    "actual_steps": 1529,
+    "maximum_steps": 4000,
+    "min_delta": 0.001,
+    "monitor": "val_iou/mud-pumping",
+    "patience": 5,
+    "reason": "validation_plateau"
+  },
+  "checkpoints": {
+    "best": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis_v2/seed0-20260909/future-runs/hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0_seed0/rtis/best.ckpt",
+      "sha256": "0308330c8309a2b2368e5bbd2ec3430fae9eebfc60ac31f6a863bc437e3746c1",
+      "global_step": 254,
+      "bytes": 2469981509
+    },
+    "final": {
+      "path": "/data/izadia1/projects/segmentary-runs/paul-test-rtis_v2/seed0-20260909/future-runs/hf_auto_beit_base_ade--cityscapes_to_rtis--seed-0_seed0/rtis/last.ckpt",
+      "sha256": "b01f662d680d92adf04f6c1abe990b49e4e3d2e4915ce1f54b317f6c06bffc6c",
+      "global_step": 1529,
+      "bytes": 2469969541
+    }
+  },
   "cleanup_error": null
 }
 ```
@@ -486,8 +533,255 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ```json
 {
-  "training": null,
-  "evaluation": null
+  "training": {
+    "cuda_available": true,
+    "cuda_visible_devices": "9",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "source": "hf_image_processor",
+      "std": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "model_origins": [
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.0.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.0.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.1.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.1.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.2.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.2.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.3.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.3.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.4.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.4.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.5.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.5.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.6.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.6.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.7.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.7.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.8.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.8.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.9.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.9.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.10.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.10.mlp",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.11.attention",
+        "timm_pretrained": {}
+      },
+      {
+        "hf_commit": "a8b6f5ef4acb2ea55d882989deaa02d39401e2b2",
+        "hf_name_or_path": "microsoft/beit-base-finetuned-ade-640-640",
+        "module": "model.beit.layers.11.mlp",
+        "timm_pretrained": {}
+      }
+    ],
+    "model_parameter_count": 161500245,
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8",
+    "trainable_parameter_count": 147173109,
+    "training_stop": {
+      "actual_steps": 1529,
+      "maximum_steps": 4000,
+      "min_delta": 0.001,
+      "monitor": "val_iou/mud-pumping",
+      "patience": 5,
+      "reason": "validation_plateau"
+    },
+    "validation_weights": "raw"
+  },
+  "evaluation": {
+    "cuda_available": true,
+    "cuda_visible_devices": "9",
+    "cudnn": 91900,
+    "driver_version": "570.133.20",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA L40S"
+    ],
+    "hostname": "hdrfs-app-001",
+    "input_normalization": {
+      "channel_order": "rgb",
+      "mean": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "source": "hf_image_processor",
+      "std": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "packages": {
+      "albumentations": "2.0.8",
+      "lightning": "2.6.5",
+      "numpy": "2.4.4",
+      "segmentary": "0.1.0",
+      "segmentation-models-pytorch": "0.5.0",
+      "timm": "1.0.28",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.15.0"
+    },
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8"
+  }
 }
 ```
 
