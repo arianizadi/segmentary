@@ -85,7 +85,16 @@ def capture(root):
                 "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards",
             }
         )
+    baseline = root / "baseline-seed-0.json"
+    if baseline.exists():
+        if runtime.digest(baseline) != data["campaign"]["baseline_sha256"]:
+            raise RuntimeError("Baseline snapshot changed")
+        data["baseline"] = runtime.read(baseline)
     return data
+
+
+def split_sizes(campaign):
+    return campaign.get("dataset_sizes", {"train": 220, "val": 37, "test": 50})
 
 
 def initial_weights(cfg):
@@ -164,7 +173,7 @@ def performance_table(performance):
 
 def model_report(model, rows, campaign):
     lines = [
-        f"# {model} — paul-test-rtis",
+        f"# {model} — {campaign.get('dataset', 'paul-test-rtis')}",
         "",
         "[RTIS comparison](../../README.md) · [Full model records](record.json)",
         "",
@@ -174,7 +183,7 @@ def model_report(model, rows, campaign):
         "",
         table(HEADERS, [summary_row(r, False) for r in rows]),
         "",
-        f"Training: 220 images. Validation: 37 images. Test: 50 held out. Seeds: {sorted({r.get('seed', 0) for r in rows})}. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.",
+        f"Training: {split_sizes(campaign)['train']} images. Validation: {split_sizes(campaign)['val']} images. Test: {split_sizes(campaign)['test']} held out. Seeds: {sorted({r.get('seed', 0) for r in rows})}. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.",
         "",
         f"Training code: `{campaign['code_sha']}`. Split SHA-256: `{campaign['split_sha256']}`.",
     ]
@@ -531,9 +540,9 @@ def artifacts(data):
         if full
         else "Overall segmentation quality and mud-pumping results across four initialization paths. This pilot selects checkpoints by overall validation mIoU.",
         "",
-        "[Dataset and preparation](../README.md) · [Mathematical mud-pumping audit](../mud-pumping-audit/README.md) · [CSV results](results.csv) · [Full machine records](status.json)",
+        "[Dataset and preparation](../README.md) · [CSV results](results.csv) · [Full machine records](status.json)",
         "",
-        f"{len(models)} models; four initialization paths; seeds {sorted({r.get('seed', 0) for r in jobs})}. Train/val/test: 220/37/50 images. Test is held out. Validation groups are provisional and lack person, truck and on-rails ground truth. Seed variation does not establish independent-recording generalization.",
+        f"{len(models)} models; four initialization paths; seeds {sorted({r.get('seed', 0) for r in jobs})}. Train/val/test: {'/'.join(str(split_sizes(data['campaign'])[s]) for s in ('train', 'val', 'test'))} images. Test is held out. Validation groups are provisional and lack person, truck and on-rails ground truth. Seed variation does not establish independent-recording generalization.",
         "",
         "## Quality",
         "",
@@ -681,7 +690,77 @@ def artifacts(data):
                 files[f"models/{row['model']}/{artifact_prefix(row)}/{section}/{name}"] = (
                     path.read_bytes()
                 )
+    if "baseline" in data:
+        files.update(baseline_comparison(data))
+        files["README.md"] = (
+            files["README.md"]
+            .replace("# RTIS model comparison", "# RTIS v2: disputed CVAT import removed", 1)
+            .replace(
+                "[Dataset and preparation](../README.md)",
+                "[V2 dataset and experiment](../../../guides/paul-test-rtis-v2.md)",
+                1,
+            )
+            .replace(
+                "## Quality",
+                "[V1 versus V2: paired seed-0 comparison](comparison.md) · [Comparison CSV](comparison.csv)\n\n## Quality",
+                1,
+            )
+        )
     return files
+
+
+def baseline_comparison(data):
+    baseline = {r["name"]: r for r in data["baseline"]["jobs"]}
+    headers = [
+        "Model",
+        "Protocol",
+        "Seed",
+        "V2 status",
+        "V1 mIoU %",
+        "V2 mIoU %",
+        "Delta mIoU pp",
+        "V1 mud IoU %",
+        "V2 mud IoU %",
+        "Delta mud pp",
+    ]
+    rows = []
+    for row in data["jobs"]:
+        old = baseline[row["name"]]
+        a = old.get("evaluation", {}).get("metrics", {}) if old["status"] == "completed" else {}
+        b = row.get("evaluation", {}).get("metrics", {}) if row["status"] == "completed" else {}
+        am, bm = a.get("miou"), b.get("miou")
+        au, bu = a.get("per_class_iou", {}).get(MUD), b.get("per_class_iou", {}).get(MUD)
+        rows.append(
+            [
+                row["model"],
+                row["protocol"],
+                row["seed"],
+                row["status"],
+                pct(am),
+                pct(bm),
+                pct(bm - am) if am is not None and bm is not None else "—",
+                pct(au),
+                pct(bu),
+                pct(bu - au) if au is not None and bu is not None else "—",
+            ]
+        )
+    buf = io.StringIO()
+    writer = csv.writer(buf, lineterminator="\n")
+    writer.writerow(headers)
+    writer.writerows(rows)
+    return {
+        "comparison.csv": buf.getvalue(),
+        "comparison.md": (
+            "# V1 versus V2: paired seed-0 results\n\n"
+            "V2 removes no_anomalies_0251.png through no_anomalies_0265.png from training: 220 → 205 images. "
+            "The 37 validation and 50 held-out test images and masks are unchanged. "
+            "Training code, recipe settings, source checkpoints and seed 0 match the baseline. "
+            "Each result uses its own mud-IoU-selected checkpoint. Positive deltas favor v2; units are percentage points. "
+            "Only completed, fully collected jobs contribute v2 values. One seed is exploratory and cannot establish significance.\n\n"
+            + table(headers, rows)
+            + "\n"
+        ),
+    }
 
 
 def publish_once(root, checkout):
@@ -733,35 +812,40 @@ def publish_once(root, checkout):
     )
 
 
+def publish_due(last_attempt, now, interval):
+    return last_attempt is None or now - last_attempt >= interval
+
+
 def main():
+    global REPORT
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--campaign", type=Path, required=True)
     ap.add_argument("--checkout", type=Path, required=True)
     ap.add_argument("--once", action="store_true")
+    ap.add_argument("--interval-seconds", type=int, default=1800)
+    ap.add_argument("--report-dir", type=Path, default=REPORT)
     args = ap.parse_args()
+    if args.interval_seconds < 1:
+        ap.error("--interval-seconds must be positive")
+    if (
+        args.report_dir.is_absolute()
+        or ".." in args.report_dir.parts
+        or not args.report_dir.is_relative_to("docs/results/paul-test-rtis")
+    ):
+        ap.error("--report-dir must be inside docs/results/paul-test-rtis")
+    REPORT = args.report_dir
     with runtime.lock(args.campaign / "locks/publisher.lock") as acquired:
         if not acquired:
             raise RuntimeError("Publisher already running")
-        last_signature = None
-        last_publish = 0.0
+        last_attempt = None
         while True:
+            if (args.campaign / "STOP_PUBLISHER").exists():
+                return
             try:
-                signature = [
-                    (p.name, runtime.read(p).get("status"))
-                    for p in sorted((args.campaign / "state").glob("*.json"))
-                ]
-                signature += [
-                    (p.name, p.stat().st_mtime_ns)
-                    for p in sorted((args.campaign / "performance").glob("*.json"))
-                ]
-                if (
-                    args.once
-                    or signature != last_signature
-                    or time.monotonic() - last_publish >= 600
-                ):
+                if args.once or publish_due(last_attempt, time.monotonic(), args.interval_seconds):
+                    # Rate-limit attempts too, including partial pushes followed by an error.
+                    last_attempt = time.monotonic()
                     publish_once(args.campaign, args.checkout)
-                    last_signature = signature
-                    last_publish = time.monotonic()
             except Exception as error:
                 runtime.write(
                     args.campaign / "publisher-error.json",

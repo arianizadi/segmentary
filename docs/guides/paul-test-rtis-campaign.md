@@ -204,5 +204,3 @@ Training VRAM/time from a resumed invocation do not reconstruct whole-run cost.
 Reports preserve that limitation and the earlier attempt evidence. The fixed
 GT-present-class mIoU is supplementary: the canonical mIoU includes classes with
 nonzero union, so false positives on absent classes can change its denominator.
-See the [mathematical audit](../results/paul-test-rtis/mud-pumping-audit/README.md)
-for exact counts and the distinction between hypotheses and established findings.

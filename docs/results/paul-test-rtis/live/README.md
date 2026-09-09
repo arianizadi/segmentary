@@ -4,7 +4,7 @@
 
 Overall segmentation quality and mud-pumping results across four initialization paths. Every completed job includes quality evaluation, training diagnostics and isolated performance profiling.
 
-[Dataset and preparation](../README.md) · [Mathematical mud-pumping audit](../mud-pumping-audit/README.md) · [CSV results](results.csv) · [Full machine records](status.json)
+[Dataset and preparation](../README.md) · [CSV results](results.csv) · [Full machine records](status.json)
 
 36 models; four initialization paths; seeds [0, 1, 2]. Train/val/test: 220/37/50 images. Test is held out. Validation groups are provisional and lack person, truck and on-rails ground truth. Seed variation does not establish independent-recording generalization.
 

@@ -294,3 +294,42 @@ def test_comparison_table_averages_only_completed_seeds_and_keeps_zero():
     assert "(n=" not in summary
     assert "City → RTIS" in summary
     assert "| — | — | — |" in summary
+
+
+def test_publisher_interval_batches_rapid_status_changes():
+    from scripts.publish_rtis_results import publish_due
+
+    assert publish_due(None, 100, 1800)
+    assert not publish_due(100, 160, 1800)
+    assert not publish_due(100, 1899, 1800)
+    assert publish_due(100, 1900, 1800)
+
+
+def test_v2_comparison_uses_paired_seed_and_completed_jobs_only():
+    from scripts.publish_rtis_results import artifacts
+
+    old = {
+        "name": "example--rtis_only--seed-0",
+        "model": "example",
+        "protocol": "rtis_only",
+        "seed": 0,
+        "status": "completed",
+        "evaluation": {"metrics": {"miou": 0.4, "per_class_iou": {"mud-pumping": 0.3}}},
+    }
+    new = {**old, "evaluation": {"metrics": {"miou": 0.5, "per_class_iou": {"mud-pumping": 0.25}}}}
+    data = {
+        "campaign": {
+            "code_sha": "same",
+            "split_sha256": "v2",
+            "dataset": "paul-test-rtis_v2",
+            "dataset_sizes": {"train": 205, "val": 37, "test": 50},
+        },
+        "jobs": [new],
+        "baseline": {"jobs": [old]},
+    }
+    files = artifacts(data)
+    assert "205/37/50" in files["README.md"]
+    assert "Training: 205 images" in files["models/example/README.md"]
+    assert "40.00,50.00,10.00,30.00,25.00,-5.00" in files["comparison.csv"]
+    new["status"] = "collecting"
+    assert "40.00,—,—,30.00,—,—" in artifacts(data)["comparison.csv"]

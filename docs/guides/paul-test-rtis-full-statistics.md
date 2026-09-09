@@ -101,9 +101,8 @@ successful model with missing statistics.
 
 ## Interpretation limits
 
-The labels have not been re-adjudicated. The [mud-pumping audit](../results/paul-test-rtis/mud-pumping-audit/README.md)
-shows large differences in scene coverage and annotation extent. More telemetry
-cannot resolve the semantic definition of mud-pumping by itself. Three seeds and
+The labels have not been re-adjudicated. More telemetry cannot resolve the
+semantic definition of mud-pumping by itself. Three seeds and
 millions of correlated pixels do not justify a population confidence interval
 for unseen rail recordings. Pixel segmentation metrics are not event-level
 anomaly detection rates; event ground truth and an event definition would be
