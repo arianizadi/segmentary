@@ -147,4 +147,4 @@ V2 removes no_anomalies_0251.png through no_anomalies_0265.png from training: 22
 | upernet_convnext | rtis_only | 0 | completed | 35.24 | 35.00 | -0.24 | 9.36 | 2.03 | -7.33 |
 | upernet_convnext | cityscapes_to_rtis | 0 | completed | 25.93 | 32.13 | 6.21 | 6.69 | 13.37 | 6.68 |
 | upernet_convnext | railsem19_to_rtis | 0 | completed | 41.38 | 44.24 | 2.87 | 5.41 | 11.49 | 6.08 |
-| upernet_convnext | cityscapes_to_railsem19_to_rtis | 0 | training | 38.28 | — | — | 2.38 | — | — |
+| upernet_convnext | cityscapes_to_railsem19_to_rtis | 0 | completed | 38.28 | 41.10 | 2.82 | 2.38 | 7.09 | 4.70 |
