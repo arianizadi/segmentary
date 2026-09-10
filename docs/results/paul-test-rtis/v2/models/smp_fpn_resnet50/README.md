@@ -6,10 +6,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| smp_fpn_resnet50 | rtis_only | 0 | training | 699 | — | — | — | — | — | — | — |
-| smp_fpn_resnet50 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| smp_fpn_resnet50 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| smp_fpn_resnet50 | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| smp_fpn_resnet50 | rtis_only | 0 | training | 3749 | — | — | — | — | — | — | — |
+| smp_fpn_resnet50 | cityscapes_to_rtis | 0 | training | 1399 | — | — | — | — | — | — | — |
+| smp_fpn_resnet50 | railsem19_to_rtis | 0 | training | 1149 | — | — | — | — | — | — | — |
+| smp_fpn_resnet50 | cityscapes_to_railsem19_to_rtis | 0 | training | 764 | — | — | — | — | — | — | — |
 
 Training: 205 images. Validation: 37 images. Test: 50 held out. Seeds: [0]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -89,6 +89,18 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 | --- | --- | --- |
 | 254 | 20.00 | 0.88 |
 | 509 | 22.37 | 0.07 |
+| 764 | 25.35 | 0.34 |
+| 1019 | 23.63 | 0.64 |
+| 1274 | 25.46 | 0.69 |
+| 1529 | 25.11 | 0.99 |
+| 1784 | 25.33 | 0.81 |
+| 2038 | 29.17 | 1.24 |
+| 2293 | 28.63 | 1.27 |
+| 2548 | 28.74 | 0.79 |
+| 2803 | 27.73 | 2.07 |
+| 3058 | 27.17 | 0.50 |
+| 3313 | 28.82 | 0.36 |
+| 3568 | 27.03 | 0.92 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -251,7 +263,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-10T02:12:33.794546+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "smp", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": "resnet50", "encoder_weights": "imagenet", "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": null, "revision": null, "smp_arch": "FPN", "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -321,6 +333,11 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 20.34 | 0.13 |
+| 509 | 22.56 | 4.10 |
+| 764 | 24.58 | 3.85 |
+| 1019 | 27.10 | 0.89 |
+| 1274 | 29.80 | 10.96 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -483,7 +500,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-10T02:14:32.427459+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "smp", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": "resnet50", "encoder_weights": "imagenet", "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": null, "revision": null, "smp_arch": "FPN", "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -553,6 +570,10 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 29.20 | 0.41 |
+| 509 | 35.68 | 6.73 |
+| 764 | 40.81 | 1.33 |
+| 1019 | 39.86 | 1.24 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -715,7 +736,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-10T02:18:49.282585+00:00. Finished: —.
 
 Recipe pretrained initializer: `{"arch": "smp", "backbone_path": null, "batch_norm_momentum": null, "checkpoint": null, "classifier_path": null, "drop_path": null, "encoder_name": "resnet50", "encoder_weights": "imagenet", "head": "unified_head", "head_paths": [], "inactive_parameter_paths": [], "local_files_only": false, "lora_alpha": 32, "lora_dropout": 0.05, "lora_r": 16, "lora_targets": [], "native": null, "revision": null, "smp_arch": "FPN", "subfolder": null, "trust_remote_code": false, "tuning": "full"}`.
 
@@ -785,6 +806,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 26.59 | 0.89 |
+| 509 | 30.28 | 12.16 |
+| 764 | 36.77 | 11.03 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
