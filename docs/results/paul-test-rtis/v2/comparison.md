@@ -144,7 +144,7 @@ V2 removes no_anomalies_0251.png through no_anomalies_0265.png from training: 22
 | smp_upernet_resnet101 | cityscapes_to_rtis | 0 | completed | 23.54 | 32.57 | 9.03 | 12.05 | 15.21 | 3.16 |
 | smp_upernet_resnet101 | railsem19_to_rtis | 0 | completed | 43.17 | 43.35 | 0.19 | 9.78 | 5.78 | -4.00 |
 | smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 0 | completed | 39.54 | 37.06 | -2.48 | 10.57 | 7.63 | -2.95 |
-| upernet_convnext | rtis_only | 0 | training | 35.24 | — | — | 9.36 | — | — |
-| upernet_convnext | cityscapes_to_rtis | 0 | training | 25.93 | — | — | 6.69 | — | — |
-| upernet_convnext | railsem19_to_rtis | 0 | training | 41.38 | — | — | 5.41 | — | — |
+| upernet_convnext | rtis_only | 0 | completed | 35.24 | 35.00 | -0.24 | 9.36 | 2.03 | -7.33 |
+| upernet_convnext | cityscapes_to_rtis | 0 | completed | 25.93 | 32.13 | 6.21 | 6.69 | 13.37 | 6.68 |
+| upernet_convnext | railsem19_to_rtis | 0 | completed | 41.38 | 44.24 | 2.87 | 5.41 | 11.49 | 6.08 |
 | upernet_convnext | cityscapes_to_railsem19_to_rtis | 0 | training | 38.28 | — | — | 2.38 | — | — |
