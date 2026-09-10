@@ -1763,9 +1763,9 @@
       "model": "smp_unetplusplus_efficientnet_b0",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2649,
+      "status": "completed",
+      "final_step": 3313,
+      "observed_step": null,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -1773,9 +1773,9 @@
       "model": "smp_unetplusplus_efficientnet_b0",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2599,
+      "status": "completed",
+      "final_step": 2803,
+      "observed_step": null,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -1783,9 +1783,9 @@
       "model": "smp_unetplusplus_efficientnet_b0",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2499,
+      "status": "completed",
+      "final_step": 3313,
+      "observed_step": null,
       "record": "models/smp_unetplusplus_efficientnet_b0/record.json"
     },
     {
@@ -1803,9 +1803,9 @@
       "model": "smp_upernet_mit_b0",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1399,
+      "status": "completed",
+      "final_step": 1784,
+      "observed_step": null,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -1813,9 +1813,9 @@
       "model": "smp_upernet_mit_b0",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1149,
+      "status": "completed",
+      "final_step": 2803,
+      "observed_step": null,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -1823,9 +1823,9 @@
       "model": "smp_upernet_mit_b0",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1049,
+      "status": "completed",
+      "final_step": 2039,
+      "observed_step": null,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -1835,7 +1835,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 749,
+      "observed_step": 2549,
       "record": "models/smp_upernet_mit_b0/record.json"
     },
     {
@@ -1845,7 +1845,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 599,
+      "observed_step": 2803,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -1855,7 +1855,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": 349,
+      "observed_step": 2499,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -1865,7 +1865,7 @@
       "seed": 0,
       "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 2099,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -1873,9 +1873,9 @@
       "model": "smp_upernet_resnet101",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 1749,
       "record": "models/smp_upernet_resnet101/record.json"
     },
     {
@@ -1883,9 +1883,9 @@
       "model": "upernet_convnext",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 849,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -1893,9 +1893,9 @@
       "model": "upernet_convnext",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 764,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -1903,9 +1903,9 @@
       "model": "upernet_convnext",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 649,
       "record": "models/upernet_convnext/record.json"
     },
     {
@@ -1913,9 +1913,9 @@
       "model": "upernet_convnext",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 449,
       "record": "models/upernet_convnext/record.json"
     }
   ]
