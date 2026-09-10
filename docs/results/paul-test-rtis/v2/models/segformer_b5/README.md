@@ -6,10 +6,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| segformer_b5 | rtis_only | 0 | training | 49 | — | — | — | — | — | — | — |
-| segformer_b5 | cityscapes_to_rtis | 0 | training | — | — | — | — | — | — | — | — |
-| segformer_b5 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| segformer_b5 | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| segformer_b5 | rtis_only | 0 | training | 1199 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_rtis | 0 | training | 1149 | — | — | — | — | — | — | — |
+| segformer_b5 | railsem19_to_rtis | 0 | training | 1049 | — | — | — | — | — | — | — |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | 0 | training | 899 | — | — | — | — | — | — | — |
 
 Training: 205 images. Validation: 37 images. Test: 50 held out. Seeds: [0]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -87,6 +87,10 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 28.17 | 1.96 |
+| 509 | 31.30 | 4.07 |
+| 764 | 38.66 | 1.88 |
+| 1019 | 34.47 | 2.82 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -319,6 +323,10 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 23.24 | 0.10 |
+| 509 | 26.01 | 1.57 |
+| 764 | 35.85 | 1.00 |
+| 1019 | 35.78 | 2.04 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -481,7 +489,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-10T00:58:13.773654+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b5`.
 
@@ -551,6 +559,10 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 33.79 | 0.00 |
+| 509 | 44.26 | 0.67 |
+| 764 | 45.19 | 0.28 |
+| 1019 | 46.41 | 1.54 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -713,7 +725,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-09-10T01:02:11.088407+00:00. Finished: —.
 
 Recipe pretrained initializer: `nvidia/mit-b5`.
 
@@ -783,6 +795,9 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 254 | 29.43 | 0.13 |
+| 509 | 44.06 | 0.72 |
+| 764 | 44.36 | 0.57 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
