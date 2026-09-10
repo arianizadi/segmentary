@@ -139,11 +139,11 @@ V2 removes no_anomalies_0251.png through no_anomalies_0265.png from training: 22
 | smp_upernet_mit_b0 | rtis_only | 0 | completed | 22.21 | 23.79 | 1.57 | 3.13 | 2.78 | -0.36 |
 | smp_upernet_mit_b0 | cityscapes_to_rtis | 0 | completed | 24.50 | 29.62 | 5.11 | 17.28 | 11.82 | -5.46 |
 | smp_upernet_mit_b0 | railsem19_to_rtis | 0 | completed | 39.17 | 32.04 | -7.13 | 11.92 | 5.68 | -6.24 |
-| smp_upernet_mit_b0 | cityscapes_to_railsem19_to_rtis | 0 | training | 36.83 | — | — | 21.41 | — | — |
-| smp_upernet_resnet101 | rtis_only | 0 | training | 31.71 | — | — | 7.21 | — | — |
-| smp_upernet_resnet101 | cityscapes_to_rtis | 0 | training | 23.54 | — | — | 12.05 | — | — |
-| smp_upernet_resnet101 | railsem19_to_rtis | 0 | training | 43.17 | — | — | 9.78 | — | — |
-| smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 0 | training | 39.54 | — | — | 10.57 | — | — |
+| smp_upernet_mit_b0 | cityscapes_to_railsem19_to_rtis | 0 | completed | 36.83 | 37.61 | 0.78 | 21.41 | 13.03 | -8.38 |
+| smp_upernet_resnet101 | rtis_only | 0 | completed | 31.71 | 30.07 | -1.64 | 7.21 | 9.45 | 2.23 |
+| smp_upernet_resnet101 | cityscapes_to_rtis | 0 | completed | 23.54 | 32.57 | 9.03 | 12.05 | 15.21 | 3.16 |
+| smp_upernet_resnet101 | railsem19_to_rtis | 0 | completed | 43.17 | 43.35 | 0.19 | 9.78 | 5.78 | -4.00 |
+| smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 0 | completed | 39.54 | 37.06 | -2.48 | 10.57 | 7.63 | -2.95 |
 | upernet_convnext | rtis_only | 0 | training | 35.24 | — | — | 9.36 | — | — |
 | upernet_convnext | cityscapes_to_rtis | 0 | training | 25.93 | — | — | 6.69 | — | — |
 | upernet_convnext | railsem19_to_rtis | 0 | training | 41.38 | — | — | 5.41 | — | — |
