@@ -486,7 +486,10 @@
       "config_sha256": "5dc9849480141859248943aff69d75adcb7bf3a2cc84f774f0490cbe40cf5df0",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 9,
+      "started_at": "2026-09-10T00:53:58.956145+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "segformer_b5--rtis_only--seed-0",
         "model": {
@@ -618,6 +621,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 0.5456855297088623
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -639,7 +651,10 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 1,
+      "started_at": "2026-09-10T00:56:09.607685+00:00",
+      "code_sha": "066afb2626398b7be59d4d19f5a0e4644fd59adc",
       "resolved_config": {
         "name": "segformer_b5--cityscapes_to_rtis--seed-0",
         "model": {
