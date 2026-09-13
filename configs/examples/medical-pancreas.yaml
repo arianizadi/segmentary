@@ -1,0 +1,22 @@
+# Dedicated medical backend config, not a 2D ExperimentConfig.
+# Relative workspace paths resolve against this config file's directory.
+workspace: ../../runs/medical-pancreas-baseline
+# Use a separate workspace per split, seed, model, and smoke experiment.
+dataset_id: 707
+dataset_name: Pancreas
+resenc: L
+configuration: 3d_fullres
+fold: 0
+gpu: '0'
+# Set this to the dedicated nnU-Net environment, not the 2D runtime.
+backend_python: /path/to/nnunet-env/bin/python
+seed: 0
+workers: 2
+nnunet_version: 2.8.1
+# Seeds are recorded; CUDA training is not bitwise deterministic.
+# true requests strict deterministic kernels and may fail on unsupported operations.
+deterministic: false
+purpose: baseline
+save_probabilities: false
+use_mirroring: false
+tile_step_size: 0.5

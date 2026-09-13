@@ -52,6 +52,14 @@ exports and current scope, see the [instance and panoptic guide](docs/guides/ins
 - [Real benchmark validation](docs/guides/object-benchmark-validation.md):
   reproducible Cityscapes conversion and official evaluator parity checks.
 
+## Medical CT volumes
+
+The separate `segmentary-medical` workflow supports audited Task07 NIfTI volumes,
+patient/group splits, direct-GPU nnU-Net v2 training/resume, native-space prediction
+and per-volume evaluation. Install optional medical dependencies in a dedicated
+environment. Follow the [medical CT guide](docs/guides/medical-ct.md) for commands,
+label limitations, verification evidence and supported scope.
+
 ## Quick start
 
 **1. Install.** Requires Python 3.11 and a matching PyTorch build. Pick the

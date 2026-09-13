@@ -1,0 +1,7 @@
+# Install in a dedicated backend environment after the matching CUDA Torch build.
+# Do not install Segmentary base dependencies here: nnU-Net's timm range differs.
+nnunetv2==2.8.1
+nibabel==5.4.2
+pydicom==3.0.2
+surface-distance==0.1
+PyYAML==6.0.3

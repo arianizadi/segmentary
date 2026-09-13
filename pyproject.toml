@@ -50,6 +50,8 @@ Repository = "https://github.com/arianizadi/segmentary"
 
 [project.optional-dependencies]
 objects = ["pycocotools==2.0.11"]
+# Medical data/evaluation stays optional; the external trainer is isolated.
+medical = ["nibabel==5.4.2", "pydicom==3.0.2", "surface-distance==0.1"]
 dev = [
   "pytest==9.1.1",
   "pytest-cov==7.1.0",
@@ -82,6 +84,7 @@ segmentary-models = "segmentary.model_catalog:main"
 segmentary-progress = "segmentary.progress:main"
 segmentary-scene = "segmentary.scene:main"
 segmentary-objects = "segmentary.objects.cli:main"
+segmentary-medical = "segmentary.medical.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

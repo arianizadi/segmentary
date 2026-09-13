@@ -297,3 +297,7 @@ segmentary-table \
   --out reports/my_campaign_common \
   --stage eval:my_dataset:val
 ```
+
+## segmentary-medical
+
+Separate medical-volume workflow: `doctor`, `audit`, `subset`, `split`, `convert-dicom`, `prepare`, `preprocess`, `train`, `resume`, `predict`, `evaluate`, `compare`, `report`, and `cancel`. Run `segmentary-medical <command> --help` for exact arguments. The [medical CT guide](../guides/medical-ct.md) explains order, configuration and scope.

@@ -143,3 +143,7 @@ is bundled; start new comparisons from a clean, fully specified campaign.
 
 Use the [object segmentation guide](guides/instance-panoptic.md) for COCO data,
 query-model training, mask AP/PQ evaluation and object prediction export.
+
+## Medical CT volumes
+
+Use the [medical CT guide](guides/medical-ct.md) for the separate NIfTI/DICOM, nnU-Net and patient-level evaluation workflow.

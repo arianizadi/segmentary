@@ -18,6 +18,7 @@ src/segmentary/
   data/                    datasets, transforms, mixed sampling, loaders
   models/                  wrappers, factory, tuning, local DINO conversion
   engine/                  loss, metrics, boundary, EMA, inference, optimizer
+  medical/                 isolated 3D geometry, manifest, nnU-Net and evaluator
   curriculum.py           stage execution and checkpoint threading
   train.py / eval.py      reproducible CLIs
   init_project.py         packaged portable starter
@@ -110,3 +111,7 @@ Streaming metric state must define ignore behavior, active/absent classes,
 distributed reduction, reset, JSON-safe output, and a hand-computed independent
 test. New headline metrics require result-schema/table validation so a missing
 seed cannot silently produce a plausible aggregate.
+
+## Medical volume backend
+
+The `medical` namespace has a separate manifest and native-volume contract; it does not pretend that NIfTI volumes implement the raster `SegDataset` API. See the [medical CT guide](../guides/medical-ct.md).
