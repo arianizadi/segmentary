@@ -7,6 +7,7 @@ import importlib
 import socket
 import sys
 from collections.abc import Iterator
+from types import ModuleType
 from typing import Any
 from unittest.mock import patch
 
@@ -46,36 +47,70 @@ def scratch_only() -> Iterator[None]:
     not concurrently in another Python thread. Same-run resume happens outside it.
     """
 
-    def forbidden(*args: Any, **kwargs: Any) -> Any:
-        raise RuntimeError("Scratch-only construction forbids weight loading and network access")
-
     import safetensors.torch
 
+    targets = (
+        (torch, "load"),
+        (torch.hub, "load_state_dict_from_url"),
+        (torch.hub, "download_url_to_file"),
+        (nn.Module, "load_state_dict"),
+        (safetensors.torch, "load_file"),
+        (safetensors.torch, "load_model"),
+        (safetensors.torch, "load"),
+        (safetensors, "safe_open"),
+        (safetensors.torch, "safe_open"),
+        (socket.socket, "connect"),
+        (socket.socket, "connect_ex"),
+    )
+    # Each distinct original needs its own wrapper so aliases imported during
+    # lazy construction can later recover the correct callable by identity.
+    # Reusing one forbidden function loses that information for new modules.
+    originals: dict[int, tuple[Any, Any]] = {}
+    wrappers: dict[int, tuple[Any, Any]] = {}
+
+    def blocker() -> Any:
+        def forbidden(*args: Any, **kwargs: Any) -> Any:
+            raise RuntimeError(
+                "Scratch-only construction forbids weight loading and network access"
+            )
+
+        return forbidden
+
+    for owner, name in targets:
+        original = getattr(owner, name)
+        if id(original) not in originals:
+            replacement = blocker()
+            originals[id(original)] = (original, replacement)
+            wrappers[id(replacement)] = (replacement, original)
+
+    def module_attributes() -> Iterator[tuple[ModuleType, str, Any]]:
+        for module in list(sys.modules.values()):
+            if isinstance(module, ModuleType):
+                for name, value in list(vars(module).items()):
+                    yield module, name, value
+
     with contextlib.ExitStack() as stack:
-        for owner, name in (
-            (torch, "load"),
-            (torch.hub, "load_state_dict_from_url"),
-            (torch.hub, "download_url_to_file"),
-            (nn.Module, "load_state_dict"),
-            (safetensors.torch, "load_file"),
-            (safetensors.torch, "load_model"),
-            (safetensors.torch, "load"),
-            (safetensors, "safe_open"),
-            (safetensors.torch, "safe_open"),
-            (socket.socket, "connect"),
-            (socket.socket, "connect_ex"),
-        ):
-            stack.enter_context(patch.object(owner, name, forbidden))
-        for module_name, module in list(sys.modules.items()):
-            if (
-                module is not None
-                and module_name.startswith(
-                    ("transformers.", "timm.", "segmentation_models_pytorch.")
-                )
-                and "safe_open" in vars(module)
-            ):
-                stack.enter_context(patch.object(module, "safe_open", forbidden))
-        yield
+        try:
+            for owner, name in targets:
+                original = getattr(owner, name)
+                # Shared targets (the two safe_open exports) have independent
+                # owners but share the same replacement and original callable.
+                replacement = originals[id(original)][1]
+                stack.enter_context(patch.object(owner, name, replacement))
+            for module, name, value in module_attributes():
+                pair = originals.get(id(value))
+                if pair is not None and value is pair[0]:
+                    stack.enter_context(patch.object(module, name, pair[1]))
+            yield
+        finally:
+            # Imports performed inside the guard can retain replacements in
+            # module globals even after patch.object restores the source export.
+            # Restore only our exact wrapper objects, including new aliases and
+            # exception paths, before ExitStack restores pre-existing attributes.
+            for module, name, value in module_attributes():
+                pair = wrappers.get(id(value))
+                if pair is not None and value is pair[0]:
+                    setattr(module, name, pair[1])
 
 
 def build_model(

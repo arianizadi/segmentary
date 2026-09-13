@@ -3,6 +3,12 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+import sys
+import textwrap
+from pathlib import Path
+from types import ModuleType
 
 import nibabel as nib
 import numpy as np
@@ -273,3 +279,111 @@ def test_scratch_guard_blocks_cached_safetensors_deserialization(tmp_path, entry
             reader = safetensors.safe_open if entry == "safe_open" else safetensors.torch.safe_open
             with reader(str(checkpoint), framework="pt") as handle:
                 handle.get_tensor("pretrained_weight")
+
+
+@pytest.mark.parametrize("exception_path", (False, True))
+def test_fresh_real_model_construction_restores_lazily_imported_loader_aliases(
+    tmp_path, exception_path
+):
+    # A subprocess is essential: an earlier model test may have already imported
+    # Transformers/torchvision before the guard, hiding this cold-import defect.
+    program = textwrap.dedent(
+        """
+        import io
+        import sys
+        import torch
+        import safetensors
+        import safetensors.torch
+        from segmentary.medical.model_registry import build_model, scratch_only
+
+        assert 'transformers.modeling_utils' not in sys.modules
+        assert 'torchvision.models._api' not in sys.modules
+        original_safe_open = safetensors.safe_open
+        original_torch_load = torch.load
+        original_url_load = torch.hub.load_state_dict_from_url
+        interrupted = bool(int(sys.argv[1]))
+        try:
+            # The exception path also exercises nested guards: both levels must
+            # restore the previous scope's callable rather than disabling it.
+            with scratch_only():
+                model = build_model('segformer_b0', patch_size=(64, 64))
+                import transformers.modeling_utils as transformers_utils
+                import torchvision.models._api as torchvision_api
+                for loader in (transformers_utils.safe_open, torchvision_api.load_state_dict_from_url):
+                    try:
+                        loader('should-never-be-read')
+                    except RuntimeError as error:
+                        assert 'Scratch-only' in str(error)
+                    else:
+                        raise AssertionError('Imported alias bypassed the active guard')
+                if interrupted:
+                    raise ValueError('expected-construction-exception')
+        except ValueError as error:
+            assert interrupted and str(error) == 'expected-construction-exception'
+
+        assert safetensors.safe_open is original_safe_open
+        assert torch.load is original_torch_load
+        assert torch.hub.load_state_dict_from_url is original_url_load
+        assert transformers_utils.safe_open is original_safe_open
+        assert torchvision_api.load_state_dict_from_url is original_url_load
+
+        # Exercise actual post-guard deserialization as well as function identity.
+        path = sys.argv[2]
+        safetensors.torch.save_file({'value': torch.tensor([7.0])}, path)
+        with transformers_utils.safe_open(path, framework='pt') as checkpoint:
+            assert checkpoint.get_tensor('value').item() == 7
+        buffer = io.BytesIO()
+        torch.save({'value': torch.tensor([8.0])}, buffer)
+        buffer.seek(0)
+        assert torch.load(buffer, weights_only=True)['value'].item() == 8
+        print('cold-import-restoration-passed')
+        """
+    )
+    environment = dict(os.environ)
+    environment["PYTHONPATH"] = str(Path(__file__).resolve().parents[1] / "src")
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            program,
+            str(int(exception_path)),
+            str(tmp_path / "after-guard.safetensors"),
+        ],
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "cold-import-restoration-passed" in completed.stdout
+
+
+def test_guard_restores_distinct_new_aliases_without_touching_unrelated_functions(monkeypatch):
+    import safetensors
+
+    existing = ModuleType("segmentary_review_existing_aliases")
+    imported = ModuleType("segmentary_review_new_aliases")
+    original_torch_load = torch.load
+    original_safe_open = safetensors.safe_open
+
+    def unrelated(*args, **kwargs):
+        return "unrelated"
+
+    existing.safe_open = unrelated
+    existing.cached_loader = original_torch_load
+    monkeypatch.setitem(sys.modules, existing.__name__, existing)
+    with pytest.raises(ValueError, match="construction failed"):
+        with model_registry.scratch_only():
+            assert existing.safe_open is unrelated
+            with pytest.raises(RuntimeError, match="Scratch-only"):
+                existing.cached_loader("unused")
+            imported.cached_torch_load = torch.load
+            imported.cached_safe_open = safetensors.safe_open
+            imported.unrelated = unrelated
+            monkeypatch.setitem(sys.modules, imported.__name__, imported)
+            raise ValueError("construction failed")
+    assert existing.safe_open is unrelated
+    assert existing.cached_loader is original_torch_load
+    assert imported.cached_torch_load is original_torch_load
+    assert imported.cached_safe_open is original_safe_open
+    assert imported.unrelated is unrelated
