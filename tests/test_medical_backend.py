@@ -15,6 +15,14 @@ import pytest
 from segmentary.medical import backend as b
 
 
+@pytest.fixture(autouse=True)
+def simulated_gpu_allocation(monkeypatch):
+    # These orchestration tests mock subprocesses/runtime. Give them a declared
+    # allocation independent of the CPU CI runner's intentionally hidden CUDA.
+    # Individual restriction tests override this value to exercise rejection.
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
+
+
 @pytest.fixture
 def prepared(tmp_path, monkeypatch):
     source = tmp_path / "source"

@@ -1,0 +1,37 @@
+# Scratch CT architecture recipe; see README.md and docs/guides/medical-models.md.
+# These are declared starting budgets, not a reproduction of the paper training recipe.
+# Set workspace/GPU before prepare; later recipe changes require a fresh workspace.
+# spacing_mm is RAS x/y/z; patch_size is z/y/x for 3D or y/x for 2D.
+backend: torch
+workspace: ../../../runs/medical/lraspp-seed0
+model: lraspp
+initialization: scratch
+mode: 2d
+context_slices: 1
+patch_size:
+- 128
+- 128
+spacing_mm:
+- 1.5
+- 1.5
+- 2.5
+hu_window:
+- -100.0
+- 240.0
+model_options:
+  profile: standard
+gpu: '0'
+seed: 0
+workers: 2
+batch_size: 2
+epochs: 100
+steps_per_epoch: 100
+learning_rate: 0.0003
+weight_decay: 1.0e-05
+foreground_probability: 0.5
+overlap: 0.5
+precision: fp32
+deterministic: false
+augment: true
+gradient_clip: 12.0
+purpose: baseline

@@ -52,6 +52,7 @@ Repository = "https://github.com/arianizadi/segmentary"
 objects = ["pycocotools==2.0.11"]
 # Medical data/evaluation stays optional; the external trainer is isolated.
 medical = ["nibabel==5.4.2", "pydicom==3.0.2", "surface-distance==0.1"]
+medical-models = ["nibabel==5.4.2", "pydicom==3.0.2", "surface-distance==0.1", "monai==1.6.0", "einops==0.8.2", "ml-collections==1.1.0"]
 dev = [
   "pytest==9.1.1",
   "pytest-cov==7.1.0",
@@ -90,13 +91,14 @@ segmentary-medical = "segmentary.medical.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-segmentary = ["templates/**/*.yaml", "templates/**/*.md", "templates/**/.gitignore"]
+segmentary = ["templates/**/*.yaml", "templates/**/*.md", "templates/**/.gitignore", "medical/three_d_vendor/**/LICENSE", "medical/three_d_vendor/**/PROVENANCE.md", "medical/mamba_vendor/LICENSE-*", "medical/mamba_vendor/NOTICE.md"]
 
 [tool.setuptools.data-files]
 "share/segmentary/configs" = ["configs/base.yaml"]
 "share/segmentary/configs/models" = ["configs/models/*.yaml", "configs/models/README.md"]
 "share/segmentary/configs/curricula" = ["configs/curricula/*.yaml", "configs/curricula/README.md"]
 "share/segmentary/configs/examples" = ["configs/examples/*.yaml"]
+"share/segmentary/configs/medical/torch" = ["configs/medical/torch/*.yaml", "configs/medical/torch/README.md"]
 "share/segmentary/taxonomy" = ["taxonomy/README.md"]
 "share/segmentary/taxonomy/cityscapes19" = ["taxonomy/cityscapes19/*.yaml", "taxonomy/cityscapes19/README.md"]
 "share/segmentary/taxonomy/rail_union" = ["taxonomy/rail_union/*.yaml", "taxonomy/rail_union/README.md"]

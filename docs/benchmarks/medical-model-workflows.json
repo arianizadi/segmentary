@@ -1,0 +1,109 @@
+{
+  "purpose": "reduced_capacity_execution_checks_not_quality_validation",
+  "results": [
+    {
+      "model": "mask2former",
+      "passed": true,
+      "evidence_sha256": "a9bfc417489fe31edceab32c15aea8629a3612e44375e9104cdffde21930c834",
+      "epochs": 4,
+      "committed_steps": 16,
+      "resume_kind": "interrupted_training_continued",
+      "interruption_verified": true,
+      "native_evaluation_coverage": {
+        "annotated_cases": 1,
+        "eligible_cases": 1,
+        "prediction_coverage": 1.0,
+        "reference_coverage": 1.0,
+        "review_failures": 0,
+        "status_counts": {
+          "ok": 1
+        },
+        "valid_prediction_cases": 1,
+        "valid_reference_cases": 1
+      },
+      "wall_seconds": 66.11289935931563,
+      "peak_training_allocated_bytes": 96536576,
+      "spacing_mm_ras_xyz": [
+        4.0,
+        4.0,
+        5.0
+      ],
+      "patch_size": [
+        64,
+        64
+      ],
+      "initialization": "scratch",
+      "external_weight_loads": 0
+    },
+    {
+      "model": "swin_unetr",
+      "passed": true,
+      "evidence_sha256": "2fd694f8af0d270fdaf45ff92be8df266e6d8b50ab23946a9294d00b5521810b",
+      "epochs": 2,
+      "committed_steps": 4,
+      "resume_kind": "completed_checkpoint_state_restore_no_additional_steps",
+      "interruption_verified": false,
+      "native_evaluation_coverage": {
+        "annotated_cases": 1,
+        "eligible_cases": 1,
+        "prediction_coverage": 1.0,
+        "reference_coverage": 1.0,
+        "review_failures": 0,
+        "status_counts": {
+          "ok": 1
+        },
+        "valid_prediction_cases": 1,
+        "valid_reference_cases": 1
+      },
+      "wall_seconds": 46.289241038262844,
+      "peak_training_allocated_bytes": 751965184,
+      "spacing_mm_ras_xyz": [
+        4.0,
+        4.0,
+        5.0
+      ],
+      "patch_size": [
+        64,
+        64,
+        64
+      ],
+      "initialization": "scratch",
+      "external_weight_loads": 0
+    },
+    {
+      "model": "umamba_bot",
+      "passed": true,
+      "evidence_sha256": "5b559477b3a366a971986737070f939761455c66bf5a708b15fe0cb65bb551c3",
+      "epochs": 2,
+      "committed_steps": 4,
+      "resume_kind": "completed_checkpoint_state_restore_no_additional_steps",
+      "interruption_verified": false,
+      "native_evaluation_coverage": {
+        "annotated_cases": 1,
+        "eligible_cases": 1,
+        "prediction_coverage": 1.0,
+        "reference_coverage": 1.0,
+        "review_failures": 0,
+        "status_counts": {
+          "ok": 1
+        },
+        "valid_prediction_cases": 1,
+        "valid_reference_cases": 1
+      },
+      "wall_seconds": 58.80176982656121,
+      "peak_training_allocated_bytes": 74967552,
+      "spacing_mm_ras_xyz": [
+        4.0,
+        4.0,
+        5.0
+      ],
+      "patch_size": [
+        16,
+        16,
+        16
+      ],
+      "initialization": "scratch",
+      "external_weight_loads": 0
+    }
+  ]
+}

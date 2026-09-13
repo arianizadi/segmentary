@@ -59,6 +59,9 @@ patient/group splits, direct-GPU nnU-Net v2 training/resume, native-space predic
 and per-volume evaluation. Install optional medical dependencies in a dedicated
 environment. Follow the [medical CT guide](docs/guides/medical-ct.md) for commands,
 label limitations, verification evidence and supported scope.
+The [scratch CT model guide](docs/guides/medical-models.md) adds 27 architecture
+recipes spanning 2D, 2.5D, 3D CNNs, attention, query masks and state-space models,
+with random initialization throughout and a shared native-volume evaluator.
 
 ## Quick start
 

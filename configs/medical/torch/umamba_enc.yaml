@@ -1,0 +1,59 @@
+# Scratch CT architecture recipe; see README.md and docs/guides/medical-models.md.
+# These are declared starting budgets, not a reproduction of the paper training recipe.
+# Set workspace/GPU before prepare; later recipe changes require a fresh workspace.
+# spacing_mm is RAS x/y/z; patch_size is z/y/x for 3D or y/x for 2D.
+backend: torch
+workspace: ../../../runs/medical/umamba_enc-seed0
+model: umamba_enc
+initialization: scratch
+mode: 3d
+context_slices: 1
+patch_size:
+- 64
+- 64
+- 64
+spacing_mm:
+- 1.5
+- 1.5
+- 2.5
+hu_window:
+- -100.0
+- 240.0
+model_options:
+  features:
+  - 32
+  - 64
+  - 128
+  - 256
+  - 320
+  blocks:
+  - 2
+  - 2
+  - 2
+  - 2
+  - 2
+  decoder_blocks:
+  - 2
+  - 2
+  - 2
+  - 2
+  d_state: 16
+  d_conv: 4
+  expand: 2
+  scan_backend: torch
+  scan_chunk_size: 256
+gpu: '0'
+seed: 0
+workers: 2
+batch_size: 2
+epochs: 100
+steps_per_epoch: 100
+learning_rate: 0.0003
+weight_decay: 1.0e-05
+foreground_probability: 0.5
+overlap: 0.5
+precision: fp32
+deterministic: false
+augment: true
+gradient_clip: 12.0
+purpose: baseline

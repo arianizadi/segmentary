@@ -7,6 +7,29 @@ tests, or another training service.
 Segmentary 0.1 does not yet promise long-term semantic-version compatibility for
 every internal helper. The objects below are the clearest integration points.
 
+## Scratch CT architectures
+
+Medical models use a separate registry so CT channels and normalization do not
+inherit the RGB workflow. Install `.[medical-models]`, then:
+
+```python
+import torch
+from segmentary.medical.model_registry import build_model, catalog
+
+print([entry["name"] for entry in catalog()])
+torch.manual_seed(0)
+model = build_model("segformer_b0", in_channels=5, patch_size=(128, 128))
+```
+
+Construction blocks external weights. The forward contract is dense three-class
+logits at input resolution. Models with query/auxiliary objectives additionally
+expose `training_loss(images, integer_targets)`; the medical trainer uses that
+objective instead of applying a dense loss to query scores. Use
+`segmentary.medical.torch_config.TorchConfig` and the `segmentary-medical` stage
+commands for bound data, checkpoint, native-inference and resume records. The
+[medical model guide](../guides/medical-models.md) documents all 27 recipes,
+architecture adaptations, dimensions and scientific limits.
+
 ## Load and inspect a config
 
 ```python

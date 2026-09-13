@@ -13,6 +13,7 @@ from typing import Any
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
+    commands.add_parser("models", help="List scratch CT architectures, options, and provenance")
     p = commands.add_parser("doctor", help="Check optional packages and GPU visibility")
     p.add_argument("--require-training", action="store_true")
     p.add_argument("--backend-python", help="Dedicated nnU-Net environment interpreter")
@@ -35,7 +36,7 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--mask", type=Path)
     for stage in ("prepare", "preprocess", "train", "resume", "predict", "cancel"):
-        p = commands.add_parser(stage, help=f"nnU-Net {stage} stage")
+        p = commands.add_parser(stage, help=f"Medical backend {stage} stage")
         p.add_argument("--config", type=Path, required=True)
         if stage != "cancel":
             p.add_argument("--dry-run", action="store_true")
@@ -86,11 +87,24 @@ def _config(path: Path) -> Any:
     import yaml
 
     from .backend import NNUNetConfig
+    from .torch_config import TorchConfig
 
-    raw = yaml.safe_load(path.read_text())
+    # PyYAML's YAML 1.1 resolver treats valid JSON exponent numbers such as
+    # 1e-05 as strings. JSON run records must retain their numeric types.
+    raw = (
+        json.loads(path.read_text())
+        if path.suffix.lower() == ".json"
+        else yaml.safe_load(path.read_text())
+    )
     if not isinstance(raw, dict):
         raise ValueError("Medical configuration must be a mapping")
-    allowed = {field.name for field in dataclasses.fields(NNUNetConfig)}
+    backend = raw.get("backend", "nnunet")
+    if backend not in {"nnunet", "torch"}:
+        raise ValueError("backend must be nnunet or torch")
+    config_type = TorchConfig if backend == "torch" else NNUNetConfig
+    if backend == "nnunet":
+        raw.pop("backend", None)
+    allowed = {field.name for field in dataclasses.fields(config_type)}
     unknown = set(raw) - allowed
     if unknown:
         raise ValueError(f"Unknown medical configuration keys: {sorted(unknown)}")
@@ -98,11 +112,20 @@ def _config(path: Path) -> Any:
         raise ValueError("workspace must be an explicit path string")
     workspace = Path(raw["workspace"]).expanduser()
     raw["workspace"] = workspace if workspace.is_absolute() else (path.parent / workspace).resolve()
-    return NNUNetConfig(**raw)
+    return config_type(**raw)
 
 
 def dispatch(args: argparse.Namespace) -> Any:
     command = args.command
+    if command == "models":
+        from .model_registry import catalog
+
+        return {
+            "backend": "torch",
+            "initialization": "scratch",
+            "models": catalog(),
+            "nnunet": "Official ResEnc M/L/XL remain available through backend: nnunet",
+        }
     if command == "doctor":
         from .runtime import doctor
 
@@ -173,22 +196,26 @@ def dispatch(args: argparse.Namespace) -> Any:
             review_overlays=args.review_overlays,
             lesion_iou_threshold=args.lesion_iou_threshold,
         )
-    from . import backend
+    from . import backend, torch_backend
+    from .torch_config import TorchConfig
 
     config = _config(args.config)
+    implementation: Any = torch_backend if isinstance(config, TorchConfig) else backend
     if command == "prepare":
-        return backend.prepare_dataset(args.manifest, args.splits, config, dry_run=args.dry_run)
+        return implementation.prepare_dataset(
+            args.manifest, args.splits, config, dry_run=args.dry_run
+        )
     if command == "preprocess":
-        return backend.plan_and_preprocess(config, dry_run=args.dry_run)
+        return implementation.plan_and_preprocess(config, dry_run=args.dry_run)
     if command in ("train", "resume"):
-        return backend.train(
+        return implementation.train(
             config,
             resume=command == "resume",
             resume_checkpoint=getattr(args, "checkpoint", None),
             dry_run=args.dry_run,
         )
     if command == "predict":
-        return backend.predict(
+        return implementation.predict(
             config,
             partition=args.partition,
             final_test=args.final_test,
@@ -196,7 +223,7 @@ def dispatch(args: argparse.Namespace) -> Any:
             dry_run=args.dry_run,
         )
     if command == "cancel":
-        return backend.cancel(config)
+        return implementation.cancel(config)
     raise ValueError(f"Unknown command: {command}")
 
 
