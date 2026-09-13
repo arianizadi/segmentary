@@ -207,8 +207,10 @@ def test_real_subprocess_prepare_train_resume_native_predict(experiment):
         backend.train(config, resume=True)
 
 
-def test_resumed_epoch_matches_uninterrupted_optimizer_and_rng(experiment, monkeypatch):
+@pytest.mark.parametrize("prefetch", [False, True])
+def test_resumed_epoch_matches_uninterrupted_optimizer_and_rng(experiment, monkeypatch, prefetch):
     config, _, _, manifest_path, splits_path = experiment
+    config = dataclasses.replace(config, prefetch_batches=prefetch)
     # In-process interruption injection exercises the exact worker's checkpoint,
     # AdamW moments, schedule, and all sampling/augmentation RNG state.
     backend.prepare_dataset(manifest_path, splits_path, config)
@@ -254,3 +256,35 @@ def test_preprocessing_uses_nearest_neighbor_labels_and_fixed_ct_window(tmp_path
     assert data["image"].shape == (9, 7, 5)
     assert set(np.unique(data["label"])) == {0, 2}
     assert set(np.unique(data["image"])) == {0, 0.5, 1}
+
+
+def test_validation_cadence_keeps_last_checkpoint_and_forces_final(experiment, monkeypatch):
+    config, _, _, manifest_path, splits_path = experiment
+    config = dataclasses.replace(
+        config, epochs=5, validation_interval=3, cache_root=str(config.root.parent / "shared")
+    )
+    backend.prepare_dataset(manifest_path, splits_path, config)
+    backend.plan_and_preprocess(config)
+    validated = []
+
+    def validate(model, cases, cfg, device):
+        validated.append(len(validated) + 1)
+        return {"mean_mass_dice": len(validated) / 10, "cases": [], "space": "native_full_volume"}
+
+    monkeypatch.setattr(backend, "_validation", validate)
+    backend._train_worker(config, {"resume": False}, backend._binding(config))
+    records = [
+        json.loads(p.read_text()) for p in sorted((config.root / "metrics").glob("epoch-*.json"))
+    ]
+    assert [r["epoch"] for r in records if r["validation"] is not None] == [1, 3, 5]
+    assert [r["step"] for r in records] == [1, 2, 3, 4, 5]
+    state = torch.load(backend._checkpoint(config, "checkpoint_final.pth"), weights_only=False)
+    assert state["step"] == 5
+    assert state["best"] == 0.3
+    plan = backend._plan(config)
+    assert plan["cache_format"] == "shared_npy"
+    path = Path(next(iter(plan["cases"].values()))["path"]) / "label.npy"
+    path.chmod(0o644)
+    path.write_bytes(b"tampered")
+    with pytest.raises(ValueError, match="cache content"):
+        backend.train(config, resume=True)

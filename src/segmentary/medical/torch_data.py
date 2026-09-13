@@ -60,35 +60,55 @@ def sample_patch(
     image, label = data["image"], data["label"]
     center = [int(rng.integers(size)) for size in label.shape]
     if rng.random() < config.foreground_probability:
-        classes = [c for c in (1, 2) if np.any(label == c)]
+        coordinates = data.get("foreground_coordinates")
+        classes = [
+            c
+            for c in (1, 2)
+            if (len(coordinates[c]) if coordinates is not None else np.any(label == c))
+        ]
         if classes:
-            locations = np.argwhere(label == rng.choice(classes))
+            chosen = rng.choice(classes)
+            locations = (
+                coordinates[chosen] if coordinates is not None else np.argwhere(label == chosen)
+            )
             center = locations[int(rng.integers(len(locations)))].tolist()
-    if config.mode == "3d":
-        image = image[None]
-    else:
-        image = context_image(image, center[0], config.context_slices)
-        label = label[center[0]]
+    z = center[0]
+    if config.mode != "3d":
+        label = label[z]
         center = center[1:]
     padding = [
         (max(0, (p - n) // 2), max(0, p - n - (p - n) // 2))
         for n, p in zip(label.shape, config.patch_size, strict=True)
     ]
-    image = np.pad(image, [(0, 0), *padding], constant_values=0)
-    label = np.pad(label, padding, constant_values=0)
+    # Compute the original padded-volume crop, then intersect it with the
+    # unpadded volume. Only a patch is copied/padded, including for 2.5D context.
+    # This keeps both the sample distribution and every RNG draw unchanged.
     starts = [
-        max(0, min(c + pad[0] - p // 2, n - p))
+        max(0, min(c + pad[0] - p // 2, n + sum(pad) - p))
         for c, pad, p, n in zip(center, padding, config.patch_size, label.shape, strict=True)
     ]
+    source_starts = [start - pad[0] for start, pad in zip(starts, padding, strict=True)]
     crop = tuple(
-        slice(start, start + p) for start, p in zip(starts, config.patch_size, strict=True)
+        slice(max(0, start), min(n, start + p))
+        for start, p, n in zip(source_starts, config.patch_size, label.shape, strict=True)
     )
-    image, label = image[(slice(None), *crop)], label[crop]
+    crop_padding = [
+        (max(0, -start), max(0, start + p - n))
+        for start, p, n in zip(source_starts, config.patch_size, label.shape, strict=True)
+    ]
+    if config.mode == "3d":
+        image = image[crop][None]
+    else:
+        image = context_image(image[(slice(None), *crop)], z, config.context_slices)
+    label = label[crop]
+    if any(before or after for before, after in crop_padding):
+        image = np.pad(image, [(0, 0), *crop_padding], constant_values=0)
+        label = np.pad(label, crop_padding, constant_values=0)
     if config.augment:
         for axis in range(label.ndim):
             if rng.random() < 0.5:
                 image, label = np.flip(image, axis + 1), np.flip(label, axis)
-    return image.copy(), label.astype(np.int64).copy()
+    return image.copy(), np.array(label, dtype=np.int64, order="C", copy=True)
 
 
 def _starts(size: int, patch_size: int, overlap: float) -> list[int]:
@@ -102,25 +122,37 @@ def tiled_probabilities(
     """Blend probabilities with uniform weights and cover every voxel exactly."""
     original = image.shape[1:]
     padding = [(0, max(0, p - n)) for p, n in zip(config.patch_size, original, strict=True)]
-    padded = np.pad(image, [(0, 0), *padding])
+    padded = np.pad(image, [(0, 0), *padding]) if any(after for _, after in padding) else image
     shape = padded.shape[1:]
     total = np.zeros((3, *shape), dtype=np.float32)
     count = np.zeros(shape, dtype=np.float32)
     dtype = torch.bfloat16 if config.precision == "bf16" else torch.float16
+    origins = itertools.product(
+        *[_starts(n, p, config.overlap) for n, p in zip(shape, config.patch_size, strict=True)]
+    )
     with torch.inference_mode():
-        for origin in itertools.product(
-            *[_starts(n, p, config.overlap) for n, p in zip(shape, config.patch_size, strict=True)]
-        ):
-            region = tuple(slice(x, x + p) for x, p in zip(origin, config.patch_size, strict=True))
-            tensor = torch.from_numpy(padded[(slice(None), *region)][None].copy()).to(device)
+        while batch := list(itertools.islice(origins, config.inference_batch_size)):
+            regions = [
+                tuple(slice(x, x + p) for x, p in zip(origin, config.patch_size, strict=True))
+                for origin in batch
+            ]
+            tensor = torch.from_numpy(
+                np.stack([padded[(slice(None), *region)] for region in regions])
+            ).to(device)
             with torch.autocast(
                 device_type=device.type, dtype=dtype, enabled=config.precision != "fp32"
             ):
                 logits = model(tensor)
-            if logits.shape != (1, 3, *config.patch_size) or not torch.isfinite(logits).all():
+            if (
+                logits.shape != (len(batch), 3, *config.patch_size)
+                or not torch.isfinite(logits).all()
+            ):
                 raise ValueError("Model returned invalid dense logits")
-            total[(slice(None), *region)] += logits.float().softmax(1)[0].cpu().numpy()
-            count[region] += 1
+            probabilities = logits.float().softmax(1).cpu().numpy()
+            # Preserve the original lexicographic window accumulation order.
+            for region, probability in zip(regions, probabilities, strict=True):
+                total[(slice(None), *region)] += probability
+                count[region] += 1
     crop = tuple(slice(0, n) for n in original)
     return (total / count[None])[(slice(None), *crop)]
 
@@ -134,9 +166,9 @@ def predict_case(
     output: Path | None = None,
 ) -> np.ndarray:
     import nibabel as nib
-    from nibabel.processing import resample_from_to
 
     from .geometry import export_native_prediction
+    from .torch_geometry import native_probabilities
 
     # No access to case['label'], including during validation inference.
     data = preprocess_case(case, config, with_label=False)
@@ -159,16 +191,9 @@ def predict_case(
     finally:
         model.train(was_training)
     reference: Any = nib.load(case["image"])
-    native = []
-    for channel in probabilities:
-        volume = nib.Nifti1Image(channel.transpose(2, 1, 0), data["affine"])
-        native.append(
-            np.asarray(
-                resample_from_to(
-                    volume, (reference.shape, reference.affine), order=1, cval=0
-                ).dataobj
-            )
-        )
+    native = native_probabilities(
+        probabilities, data["affine"], reference.shape, reference.affine, workers=config.workers
+    )
     prediction = np.stack(native).argmax(0).astype(np.uint8)
     if output is not None:
         export_native_prediction(case["image"], prediction, output)

@@ -1,0 +1,10 @@
+# Optional HDRFS native selective-scan runtime. Install into a separate environment
+# with the verified CUDA PyTorch build already present. No pretrained weights.
+# CUDA_HOME=/usr/local/cuda MAMBA_KEEP_CUDA_BUILD=TRUE MAX_JOBS=8 \
+#   python -m pip install --no-build-isolation -r requirements/medical-mamba-cuda.txt
+# Verified build: Python 3.11, Torch 2.11.0+cu128, CUDA toolkit 12.9, Linux, L40S.
+mamba-ssm==2.3.2.post1
+apache-tvm-ffi==0.1.9
+ninja==1.13.2
+quack-kernels==0.6.5
+tilelang==0.1.8

@@ -29,6 +29,11 @@ class TorchConfig:
     batch_size: int = 2
     epochs: int = 100
     steps_per_epoch: int = 100
+    validation_interval: int = 1
+    progress_interval: int = 10
+    inference_batch_size: int = 1
+    cache_root: str | None = None
+    prefetch_batches: bool = False
     learning_rate: float = 0.0003
     weight_decay: float = 0.00001
     foreground_probability: float = 0.5
@@ -46,6 +51,9 @@ class TorchConfig:
             "batch_size",
             "epochs",
             "steps_per_epoch",
+            "validation_interval",
+            "progress_interval",
+            "inference_batch_size",
             "context_slices",
         ):
             value = getattr(self, name)
@@ -53,7 +61,7 @@ class TorchConfig:
                 raise ValueError(f"{name} must be an integer in range")
         if self.seed >= 2**32:
             raise ValueError("seed must be a uint32")
-        for name in ("deterministic", "augment"):
+        for name in ("deterministic", "augment", "prefetch_batches"):
             if type(getattr(self, name)) is not bool:
                 raise ValueError(f"{name} must be boolean")
         if self.backend != "torch" or self.initialization != "scratch":
@@ -121,6 +129,12 @@ class TorchConfig:
         if not isinstance(self.workspace, (str, Path)) or not isinstance(self.backend_python, str):
             raise ValueError("workspace and backend_python must be paths")
         object.__setattr__(self, "workspace", str(Path(self.workspace).expanduser().resolve()))
+        if self.cache_root is not None:
+            if not isinstance(self.cache_root, (str, Path)):
+                raise ValueError("cache_root must be a path or null")
+            object.__setattr__(
+                self, "cache_root", str(Path(self.cache_root).expanduser().resolve())
+            )
         object.__setattr__(
             self, "backend_python", str(Path(self.backend_python).expanduser().absolute())
         )

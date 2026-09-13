@@ -62,6 +62,8 @@ label limitations, verification evidence and supported scope.
 The [scratch CT model guide](docs/guides/medical-models.md) adds 27 architecture
 recipes spanning 2D, 2.5D, 3D CNNs, attention, query masks and state-space models,
 with random initialization throughout and a shared native-volume evaluator.
+Use the [medical campaign guide](docs/guides/medical-campaigns.md) to queue those
+models across GPUs and generate readable comparison pages from actual run records.
 
 ## Quick start
 

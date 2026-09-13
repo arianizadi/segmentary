@@ -149,3 +149,5 @@ query-model training, mask AP/PQ evaluation and object prediction export.
 Use the [medical CT guide](guides/medical-ct.md) for the separate NIfTI/DICOM, nnU-Net and patient-level evaluation workflow.
 Use the [scratch CT model guide](guides/medical-models.md) for the 27 additional
 Torch architecture recipes, adjacent-slice context, training and provenance.
+Use the [medical campaign guide](guides/medical-campaigns.md) for an explicit
+all-model GPU queue, native validation, restart handling and generated comparisons.

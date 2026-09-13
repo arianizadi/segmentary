@@ -273,6 +273,16 @@ def _plan(config: TorchConfig) -> dict:
     plan = _json(config.root / "plan-binding.json")
     if plan["identity"] != _digest(binding):
         raise ValueError("Preprocessing identity changed")
+    if plan.get("cache_format") == "shared_npy":
+        from .torch_cache import cache_file_records
+
+        _, splits = _documents(binding["manifest_path"], binding["splits_path"])
+        if set(plan["cases"]) != set(splits["train"]):
+            raise ValueError("Training cache membership changed")
+        for record in plan["cases"].values():
+            if cache_file_records(record) != record["files"]:
+                raise ValueError("Training cache content changed")
+        return plan
     files = {p.name: _sha(p) for p in (config.root / "cache").iterdir() if p.is_file()}
     if plan["files"] != files:
         raise ValueError("Training cache content or membership changed")
@@ -409,10 +419,20 @@ def _save_checkpoint(config: TorchConfig, state: dict, names: list[str]) -> None
         stream.flush()
         os.fsync(stream.fileno())
     item = {"path": generation.name, "sha256": _sha(generation)}
+    fd = os.open(directory, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
     for name in names:
         index["files"][name] = item
     # Until this pointer commits, every previously indexed generation remains intact.
     _atomic_json(indexpath, index)
+    fd = os.open(config.root, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
     keep = {record["path"] for record in index["files"].values()}
     for old in directory.glob("generation-*.pth"):
         if old.name not in keep:
@@ -425,21 +445,38 @@ def _validation(model: Any, cases: list[dict], config: TorchConfig, device: Any)
 
     from .torch_data import predict_case
 
-    scores = []
+    scores: list[dict[str, Any]] = []
     for case in cases:
+        _atomic_json(
+            config.root / "progress.json",
+            {
+                "phase": "validation",
+                "updated_at": time.time(),
+                "completed_cases": len(scores),
+                "total_cases": len(cases),
+            },
+        )
         prediction = predict_case(model, case, config, device)
         label_image: Any = nib.load(case["label"])
         truth = np.asarray(label_image.dataobj)
         pred, target = prediction == 2, truth == 2
         denominator = int(pred.sum()) + int(target.sum())
+        organ_pred, organ_target = prediction > 0, truth > 0
+        organ_denominator = int(organ_pred.sum()) + int(organ_target.sum())
         scores.append(
             {
                 "case_id": case["case_id"],
                 "mass_dice": 2 * int((pred & target).sum()) / denominator if denominator else 1.0,
+                "pancreas_dice": 2 * int((organ_pred & organ_target).sum()) / organ_denominator
+                if organ_denominator
+                else 1.0,
+                "mass_present": bool(target.any()),
+                "predicted_mass_voxels": int(pred.sum()),
             }
         )
     return {
         "mean_mass_dice": float(np.mean([x["mass_dice"] for x in scores])),
+        "mean_pancreas_dice": float(np.mean([x["pancreas_dice"] for x in scores])),
         "cases": scores,
         "space": "native_full_volume",
     }
@@ -450,7 +487,9 @@ def _train_worker(config: TorchConfig, payload: dict, binding: dict) -> None:
     import torch
 
     from .model_registry import build_model
-    from .torch_data import sample_patch, training_loss
+    from .torch_batches import BatchStream
+    from .torch_data import training_loss
+    from .torch_numerics import clip_grad_norm_
 
     _seed(config)
     device = torch.device("cpu" if config.gpu == "cpu" else "cuda:0")
@@ -520,8 +559,16 @@ def _train_worker(config: TorchConfig, payload: dict, binding: dict) -> None:
     manifest, splits = _documents(binding["manifest_path"], binding["splits_path"])
     lookup = {c["case_id"]: c for c in manifest["cases"]}
 
-    @functools.lru_cache(maxsize=2)
+    plan = _json(config.root / "plan-binding.json") if config.cache_root is not None else {}
+
+    # Five mmap files per case must fit hosts with a 1024 descriptor soft limit.
+    # The OS page cache still shares volume pages between independent workers.
+    @functools.lru_cache(maxsize=64 if config.cache_root else 2)
     def cached(case_id: str) -> dict:
+        if plan.get("cache_format") == "shared_npy":
+            from .torch_cache import load_cached_case
+
+            return load_cached_case(plan["cases"][case_id], verify=False)
         with np.load(config.root / "cache" / f"{case_id}.npz", allow_pickle=False) as file:
             return {name: file[name] for name in file.files}
 
@@ -547,60 +594,85 @@ def _train_worker(config: TorchConfig, payload: dict, binding: dict) -> None:
         _save_checkpoint(config, checkpoint_state(), ["checkpoint_latest.pth"])
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats()
-    started = time.monotonic()
-    for current in range(epoch, config.epochs):
-        model.train()
-        losses = []
-        for _ in range(config.steps_per_epoch):
-            patches = [
-                sample_patch(cached(str(rng.choice(splits["train"]))), config, rng)
-                for _ in range(config.batch_size)
-            ]
-            images = torch.from_numpy(np.stack([p[0] for p in patches])).to(device)
-            labels = torch.from_numpy(np.stack([p[1] for p in patches])).to(device)
-            optimizer.zero_grad(set_to_none=True)
-            dtype = torch.bfloat16 if config.precision == "bf16" else torch.float16
-            with torch.autocast(
-                device_type=device.type, dtype=dtype, enabled=config.precision != "fp32"
-            ):
-                loss = training_loss(model, images, labels)
-            if not torch.isfinite(loss):
-                raise ValueError("Non-finite training loss")
-            scaler.scale(loss).backward()
-            scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(
-                model.parameters(), config.gradient_clip, error_if_nonfinite=True
+    with BatchStream(config, splits["train"], cached, rng, device) as batches:
+        started = time.monotonic()
+        for current in range(epoch, config.epochs):
+            epoch_started = time.monotonic()
+            model.train()
+            losses = []
+            for _ in range(config.steps_per_epoch):
+                images, labels = next(batches)
+                optimizer.zero_grad(set_to_none=True)
+                dtype = torch.bfloat16 if config.precision == "bf16" else torch.float16
+                with torch.autocast(
+                    device_type=device.type, dtype=dtype, enabled=config.precision != "fp32"
+                ):
+                    loss = training_loss(model, images, labels)
+                if not torch.isfinite(loss):
+                    raise ValueError("Non-finite training loss")
+                scaler.scale(loss).backward()
+                scaler.unscale_(optimizer)
+                clip_grad_norm_(model.parameters(), config.gradient_clip)
+                scaler.step(optimizer)
+                scaler.update()
+                scheduler.step()
+                step += 1
+                losses.append(float(loss.detach()))
+                if step % config.progress_interval == 0 or len(losses) == 1:
+                    _atomic_json(
+                        config.root / "progress.json",
+                        {
+                            "phase": "train",
+                            "updated_at": time.time(),
+                            "epoch": current + 1,
+                            "step": step,
+                            "target_steps": config.epochs * config.steps_per_epoch,
+                            "loss": losses[-1],
+                            "epoch_mean_loss": float(np.mean(losses)),
+                            "learning_rate": scheduler.get_last_lr()[0],
+                            "optimizer_steps_per_second": len(losses)
+                            / (time.monotonic() - epoch_started),
+                        },
+                    )
+            epoch = current + 1
+            train_seconds = time.monotonic() - epoch_started
+            validate = (
+                epoch == 1 or epoch % config.validation_interval == 0 or epoch == config.epochs
             )
-            scaler.step(optimizer)
-            scaler.update()
-            scheduler.step()
-            step += 1
-            losses.append(float(loss.detach()))
-        validation = _validation(model, [lookup[c] for c in splits["val"]], config, device)
-        improved = validation["mean_mass_dice"] > best
-        best = max(best, validation["mean_mass_dice"])
-        epoch = current + 1
-        metrics = {
-            "epoch": epoch,
-            "step": step,
-            "loss": float(np.mean(losses)),
-            "learning_rate": scheduler.get_last_lr()[0],
-            "validation": validation,
-            "best_mass_dice": best,
-            "wall_seconds": time.monotonic() - started,
-            "peak_allocated_bytes": torch.cuda.max_memory_allocated()
-            if device.type == "cuda"
-            else 0,
-            "peak_reserved_bytes": torch.cuda.max_memory_reserved() if device.type == "cuda" else 0,
-        }
-        _atomic_json(config.root / "metrics" / f"epoch-{epoch:05d}.json", metrics)
-        names = ["checkpoint_latest.pth"]
-        if improved:
-            names.append("checkpoint_best.pth")
-        if epoch == config.epochs:
-            names.append("checkpoint_final.pth")
-        _save_checkpoint(config, checkpoint_state(), names)
-        print(json.dumps(metrics), flush=True)
+            validation = (
+                _validation(model, [lookup[c] for c in splits["val"]], config, device)
+                if validate
+                else None
+            )
+            validation_seconds = time.monotonic() - epoch_started - train_seconds
+            improved = validation is not None and validation["mean_mass_dice"] > best
+            if validation is not None:
+                best = max(best, validation["mean_mass_dice"])
+            metrics = {
+                "epoch": epoch,
+                "step": step,
+                "loss": float(np.mean(losses)),
+                "learning_rate": scheduler.get_last_lr()[0],
+                "validation": validation,
+                "best_mass_dice": best,
+                "wall_seconds": time.monotonic() - started,
+                "epoch_training_seconds": train_seconds,
+                "epoch_validation_seconds": validation_seconds,
+                "peak_allocated_bytes": torch.cuda.max_memory_allocated()
+                if device.type == "cuda"
+                else 0,
+                "peak_reserved_bytes": torch.cuda.max_memory_reserved()
+                if device.type == "cuda"
+                else 0,
+            }
+            _atomic_json(config.root / "metrics" / f"epoch-{epoch:05d}.json", metrics)
+            names = ["checkpoint_latest.pth"]
+            if improved:
+                names.append("checkpoint_best.pth")
+            if epoch == config.epochs:
+                names.append("checkpoint_final.pth")
+            _save_checkpoint(config, checkpoint_state(), names)
+            print(json.dumps(metrics), flush=True)
     _atomic_json(
         config.root / "training-result.json",
         {
@@ -632,17 +704,33 @@ def _worker(request_path: Path) -> None:
     if request["action"] == "preprocess":
         directory = config.root / "cache"
         directory.mkdir()
+        records = {}
         for case_id in splits["train"]:
             case = lookup[case_id]
             for key in ("image", "label"):
                 _check_hash(case[key], case[f"{key}_sha256"])
-            data = preprocess_case(case, config, with_label=True)
-            np.savez_compressed(directory / f"{case_id}.npz", **data)
+            if config.cache_root is not None:
+                from .torch_cache import build_cached_case
+
+                records[case_id] = build_cached_case(case, config, config.cache_root)
+            else:
+                data = preprocess_case(case, config, with_label=True)
+                np.savez_compressed(directory / f"{case_id}.npz", **data)
+            _atomic_json(
+                config.root / "progress.json",
+                {
+                    "phase": "preprocess",
+                    "updated_at": time.time(),
+                    "completed_cases": splits["train"].index(case_id) + 1,
+                    "total_cases": len(splits["train"]),
+                },
+            )
         _atomic_json(
             config.root / "plan-binding.json",
             {
                 "identity": _digest(binding),
                 "files": {p.name: _sha(p) for p in directory.iterdir()},
+                **({"cache_format": "shared_npy", "cases": records} if config.cache_root else {}),
                 "preprocessing": "fixed HU window and RAS spacing; train cache only",
             },
         )

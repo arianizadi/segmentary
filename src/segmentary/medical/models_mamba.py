@@ -34,6 +34,7 @@ def model_metadata(name: str) -> dict[str, Any]:
         "expand": 2,
         "scan_backend": "torch",
         "scan_chunk_size": 256,
+        "checkpoint_mamba": False,
     }
     defaults = (
         {
@@ -66,6 +67,7 @@ def model_metadata(name: str) -> dict[str, Any]:
         "license": "Apache-2.0",
         "default_scan_backend": "torch",
         "scan_backend_notes": "Exact chunked selective recurrence; slower than fused CUDA. Native scan is explicit and requires mamba-ssm.",
+        "checkpoint_mamba_notes": "Optional non-reentrant activation recomputation of the pure SSM mixer; no change to weights, widths, spatial normalization or effective batch. Trades additional compute for lower training memory.",
         "objective": "dense_ce_dice",
         "deep_supervision": False,
         "default_options": {**defaults, **shared_defaults},
@@ -413,7 +415,8 @@ def build_model(
     U-Mamba options: features (default 32/64/128/256/320), blocks and
     decoder_blocks. SegMamba: features (48/96/192/384), depths (2/2/2/2),
     hidden_size (768), num_slices (64/32/16/8). Shared options: d_state,
-    d_conv, expand, scan_backend ('torch' or explicit 'native'), scan_chunk_size.
+    d_conv, expand, scan_backend ('torch' or explicit 'native'), scan_chunk_size,
+    checkpoint_mamba (False; optionally recompute pure mixer activations).
     Small configurable widths/depths are ablations, not paper-sized replicas.
     """
     model_metadata(name)
@@ -421,7 +424,7 @@ def build_model(
     _positive_int("num_classes", num_classes)
     patch = _integer_list("patch_size", list(patch_size), length=3)
     options = dict(model_options or {})
-    common = {"d_state", "d_conv", "expand", "scan_backend", "scan_chunk_size"}
+    common = {"d_state", "d_conv", "expand", "scan_backend", "scan_chunk_size", "checkpoint_mamba"}
     allowed = common | (
         {"features", "depths", "hidden_size", "num_slices"}
         if name == "segmamba"
@@ -436,6 +439,9 @@ def build_model(
     }
     mixer["chunk_size"] = _positive_int("scan_chunk_size", options.get("scan_chunk_size", 256))
     mixer_options: dict[str, Any] = {**mixer, "scan_backend": options.get("scan_backend", "torch")}
+    if type(options.get("checkpoint_mamba", False)) is not bool:
+        raise ValueError("checkpoint_mamba must be boolean")
+    mixer_options["checkpoint_mamba"] = options.get("checkpoint_mamba", False)
     if mixer_options["scan_backend"] not in {"torch", "native"}:
         raise ValueError("scan_backend must be torch or native")
     if name == "segmamba":

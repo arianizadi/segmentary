@@ -180,10 +180,13 @@ class Mamba(nn.Module):
         nslices: int = 1,
         scan_backend: str = "torch",
         chunk_size: int = 256,
+        checkpoint_mamba: bool = False,
     ) -> None:
         super().__init__()
         if scan_backend not in {"torch", "native"}:
             raise ValueError("scan_backend must be torch or native; no automatic fallback is used")
+        if type(checkpoint_mamba) is not bool:
+            raise ValueError("checkpoint_mamba must be boolean")
         for name, value in {
             "d_model": d_model,
             "d_state": d_state,
@@ -198,6 +201,7 @@ class Mamba(nn.Module):
         self.d_inner = d_model * expand
         self.nslices = nslices
         self.three_direction = three_direction
+        self.checkpoint_mamba = checkpoint_mamba
         self.in_proj = nn.Linear(d_model, self.d_inner * 2, bias=False)
         branch_options: dict[str, Any] = {
             "channels": self.d_inner,
@@ -218,6 +222,14 @@ class Mamba(nn.Module):
     def forward(self, x: Tensor) -> Tensor:
         if x.ndim != 3 or x.shape[-1] != self.d_model:
             raise ValueError("Mamba expects B,L,d_model")
+        # Recompute only the pure SSM mixer. Spatial normalization/residual
+        # stages stay outside this boundary, so no running statistics or other
+        # stateful encoder operations are executed twice during backward.
+        if self.checkpoint_mamba and self.training and torch.is_grad_enabled():
+            return checkpoint(self._forward, x, use_reentrant=False, preserve_rng_state=True)
+        return self._forward(x)
+
+    def _forward(self, x: Tensor) -> Tensor:
         xz = self.in_proj(x).transpose(1, 2)
         output = self.forward_branch(xz)
         if self.three_direction:

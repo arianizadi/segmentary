@@ -40,6 +40,7 @@ from segmentary.medical.data import atomic_write_json, load_manifest, validate_s
 from segmentary.medical.model_registry import build_model, catalog
 from segmentary.medical.torch_config import TorchConfig
 from segmentary.medical.torch_data import preprocess_case, sample_patch, training_loss
+from segmentary.medical.torch_numerics import clip_grad_norm_
 
 
 def _sha256(path: Path) -> str:
@@ -244,9 +245,7 @@ def _verify_one(
     # an unconstrained diagnostic SGD step can overflow subsequent activations.
     # Keep all existing finite/coverage checks, reject nonfinite aggregate norms,
     # and record the actual clipping rather than silently changing the data.
-    gradient_norm_before = torch.nn.utils.clip_grad_norm_(
-        model.parameters(), config.gradient_clip, error_if_nonfinite=True
-    )
+    gradient_norm_before = clip_grad_norm_(model.parameters(), config.gradient_clip)
     gradient_norm_after = torch.linalg.vector_norm(
         torch.stack(
             [

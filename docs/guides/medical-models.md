@@ -162,8 +162,24 @@ parameters and gating; it is not a convolutional substitute. Its checkpointed
 chunked scan trades speed for portability and can be much slower than fused
 CUDA. The explicit `scan_backend: native` option requires compatible separately
 installed kernels and fails if unavailable. No automatic native fallback or
-unverified native installation is part of these recipes. See the
+automatic native installation is part of these recipes. Use a dedicated CUDA
+environment and validate both the selective scan and the complete chosen model
+at the intended batch and patch size before selecting native execution. The
+[official Mamba repository](https://github.com/state-spaces/mamba) documents its
+kernel build requirements. See the
 [Mamba source notice](../../src/segmentary/medical/mamba_vendor/NOTICE.md).
+Mamba's `model_options.checkpoint_mamba` defaults to `false`. Setting it to `true`
+recomputes the pure SSM mixer activations during backward to reduce memory,
+without shrinking model widths, changing normalization or changing effective
+batch size. It costs additional compute and must be disclosed with the selected
+scan backend. Validate the intended combination at the full training patch size.
+
+Mamba models also accept `model_options.checkpoint_mamba: true` (default `false`).
+This recomputes the pure SSM mixer during backward to reduce saved activation
+memory. It preserves model width, initialization and effective batch size, and
+leaves spatial normalization outside the recomputation boundary. The cost is
+additional computation; evaluation does not use activation checkpointing. The
+all-model campaign enables it explicitly for all three Mamba architectures.
 
 ## Run one experiment
 
@@ -194,10 +210,44 @@ stage commands used by the separate nnU-Net backend.
 
 Training uses AdamW with declared weight decay, a polynomial learning-rate
 schedule of power 0.9, clipping and the requested precision. A configured epoch
-means `steps_per_epoch` random patch batches followed by a complete validation
-pass. It is not necessarily one pass through the training patients. Each
+means `steps_per_epoch` random patch batches. Complete validation runs after the
+first epoch, every `validation_interval` epochs, and the final epoch. Its default
+interval is one. It is not necessarily one pass through the training patients. Each
 validation volume is reconstructed before scoring; patch Dice does not select
 the checkpoint.
+
+## Throughput and progress settings
+
+Keep these settings in the immutable recipe before launch; changing them during
+a bound experiment is rejected. The campaign planner records the selected values.
+
+| Setting | Default | Purpose and limits |
+|---|---|---|
+| `cache_root` | `null` | With a path, share immutable NPY image/label/foreground-coordinate caches across compatible runs. Only training cases enter this cache; source and preprocessing hashes bind each entry. Mapping defers page reads rather than loading a CT instantly. |
+| `prefetch_batches` | `false` | Prepare one CPU batch ahead using a single producer. CUDA runs pin images and transfer compact uint8 labels before restoring int64 targets on the GPU. Extra host buffers trade memory for overlap. |
+| `validation_interval` | `1` | Full native validation every configured number of epochs, plus the first and final epochs. A larger value saves compute but changes checkpoint-selection opportunities. |
+| `progress_interval` | `10` | Publish live training progress every this many optimizer updates; completed epoch metrics remain separate. |
+| `inference_batch_size` | `1` | Batch sliding-window tiles during image-only inference. Larger batches preserve coverage but can change BF16 rounding and final argmax labels. Freeze this choice across the comparison. |
+
+The prefetch worker owns a cloned sampling generator. If `R_k` is the generator
+state after consumed batch `k`, only consuming batch `k+1` commits `R_(k+1)` to
+the main thread. Discarding a future batch at an epoch checkpoint or shutdown
+does not advance that checkpoint's RNG. Tests compare synchronous and prefetched
+samples, labels, RNG states, and interrupted dropout/AdamW training weights.
+The worker does not use global Torch or Python random generators.
+
+Gradient clipping follows the ordinary Torch L2 rule. A finite gradient vector
+can overflow a float32 norm reduction during scratch initialization; in that
+case the harness retries the norm in float64. Actual nonfinite gradients still
+raise before mutation. This handles numerical clipping, not model convergence.
+
+Use `scripts/profile_medical_pipeline.py` for a bounded training-partition
+investigation with optional [PyTorch profiler](https://docs.pytorch.org/docs/2.11/profiler.html)
+traces. Its explicit CUDA stage barriers and five measured updates diagnose
+bottlenecks; use a separate warmed whole-step measurement to estimate throughput.
+The [campaign guide](medical-campaigns.md) explains generated optimization tables,
+source hashes and the distinctions between warm mapping, training, validation
+and checkpoint cost.
 
 Checkpoint selection maximizes mean validation case mass Dice; the current
 selection rule assigns one to an empty prediction/reference pair. This internal
@@ -300,5 +350,7 @@ CPU tests cover actual architecture mechanisms, every trainable gradient,
 scratch initialization, physical CT geometry, integer-HU interpolation,
 checkpoint publication failure and exact optimizer/RNG continuation. These
 checks establish execution, not convergence, pancreatic-cancer detection
-accuracy or comparative superiority. Native fused Mamba kernels remain
-unverified; the portable recurrence is the tested default.
+accuracy or comparative superiority. The portable recurrence remains the recipe
+default. Native-kernel and full-capacity execution evidence is recorded separately
+for the exact environment and configured model; a successful kernel test alone
+does not prove all three native Mamba models fit the intended training recipe.
