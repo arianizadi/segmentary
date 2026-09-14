@@ -1,14 +1,16 @@
 # Pancreas Task07: training every scratch model
 
-Generated: 2026-09-14T04:23:34.902604+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T04:42:32.304732+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-**23 completed, 5 running.** GPU queue: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9.
+**27 completed, 1 running.** GPU queue: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9.
 
 1. Open [comparison.md](comparison.md) for model status and comparable validation results.
 2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.
 3. Follow a model link for its recipe, objective, timing, memory, coverage, and evaluation interval.
 4. Read [optimization.md](optimization.md) for the throughput investigation and measurement limits.
-5. Use [results.csv](results.csv) for a spreadsheet or [status.json](status.json) for aggregate machine records.
+5. Open [training-cost.md](training-cost.md) and [inference.md](inference.md) for separate training, validation, checkpoint, full-CT and model-only measurements.
+6. Use [results.csv](results.csv), [epochs.csv](epochs.csv), [validation-cases.csv](validation-cases.csv), [inference-cases.csv](inference-cases.csv), and [stage-invocations.csv](stage-invocations.csv) for spreadsheets. [status.json](status.json) and [records/](records/) retain numerical evidence and provenance.
+7. Read [clinical-metrics.md](clinical-metrics.md) for P-Sen, T-Sen, specificity, AUC and DSC, including why some metrics cannot be estimated on Task07.
 
 ```text
 scratch-screen-20260913/
@@ -16,7 +18,15 @@ scratch-screen-20260913/
   comparison.md          all models, status, validation, ranking gates
   learning-curves.md     recorded epochs; no interpolated values
   optimization.md        throughput changes and measured evidence
+  training-cost.md       retained epoch phases and allocation cost
+  inference.md           native CT and model-only speed/memory
+  clinical-metrics.md    detection/DSC metrics and unavailable reasons
   models/<run>.md        per-model recipe, resources and evaluation
+  records/<run>.json     full numerical model record and lineage
+  epochs.csv             training/validation/checkpoint timings
+  validation-cases.csv   per-epoch native Dice by case ordinal
+  inference-cases.csv    native prediction phase timings
+  stage-invocations.csv  completed/failed/cancelled stage costs
   results.csv            one aggregate row per run
   status.json            aggregate evidence and comparison gates
 ```
@@ -46,3 +56,36 @@ GPU-hours, voxels seen, or an architecture-specific tuning budget. Loss magnitud
 are useful within a run; they are not an accuracy ranking across objectives.
 
 [Medical model guide](../../../../guides/medical-models.md) · [Results by dataset](../../../README.md)
+
+## All models at a glance
+
+| Model | Status | Steps / budget | Native mass Dice | Native pancreas Dice | Score scope | Cases |
+| --- | --- | --- | --- | --- | --- | --- |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | 28750/250000 | — | — | in-training step — | 0/42 |
+| [umamba_enc](models/umamba_enc-seed0.md) | completed | 10000/10000 | 0.3571 | 0.7541 | final reference-positive mean | 42/42 |
+| [segmamba](models/segmamba-seed0.md) | completed | 10000/10000 | 0.3212 | 0.7355 | final reference-positive mean | 42/42 |
+| [umamba_bot](models/umamba_bot-seed0.md) | completed | 10000/10000 | 0.3216 | 0.7276 | final reference-positive mean | 42/42 |
+| [swin_unetr](models/swin_unetr-seed0.md) | completed | 10000/10000 | 0.2446 | 0.7045 | final reference-positive mean | 42/42 |
+| [unetr](models/unetr-seed0.md) | completed | 10000/10000 | 0.1116 | 0.4810 | final reference-positive mean | 42/42 |
+| [transunet_3d](models/transunet_3d-seed0.md) | completed | 10000/10000 | 0.3101 | 0.7354 | final reference-positive mean | 42/42 |
+| [medformer](models/medformer-seed0.md) | completed | 10000/10000 | 0.3272 | 0.7187 | final reference-positive mean | 42/42 |
+| [mednext_v1](models/mednext_v1-seed0.md) | completed | 10000/10000 | 0.2845 | 0.6888 | final reference-positive mean | 42/42 |
+| [dynunet](models/dynunet-seed0.md) | completed | 10000/10000 | 0.3298 | 0.7559 | final reference-positive mean | 42/42 |
+| [segresnet](models/segresnet-seed0.md) | completed | 10000/10000 | 0.3090 | 0.6610 | final reference-positive mean | 42/42 |
+| [unet_3d](models/unet_3d-seed0.md) | completed | 10000/10000 | 0.1833 | 0.6084 | final reference-positive mean | 42/42 |
+| [mask2former](models/mask2former-seed0.md) | completed | 10000/10000 | 0.1490 | 0.5844 | final reference-positive mean | 42/42 |
+| [maskformer](models/maskformer-seed0.md) | completed | 10000/10000 | 0.0005 | 0.0044 | final reference-positive mean | 42/42 |
+| [dpt](models/dpt-seed0.md) | completed | 10000/10000 | 0.0637 | 0.3644 | final reference-positive mean | 42/42 |
+| [swin_upernet](models/swin_upernet-seed0.md) | completed | 10000/10000 | 0.1391 | 0.5348 | final reference-positive mean | 42/42 |
+| [convnext_upernet](models/convnext_upernet-seed0.md) | completed | 10000/10000 | 0.1278 | 0.6405 | final reference-positive mean | 42/42 |
+| [segformer_b2](models/segformer_b2-seed0.md) | completed | 10000/10000 | 0.1218 | 0.3313 | final reference-positive mean | 42/42 |
+| [hrnet_ocr](models/hrnet_ocr-seed0.md) | completed | 10000/10000 | 0.1701 | 0.6618 | final reference-positive mean | 42/42 |
+| [unet_plus_plus](models/unet_plus_plus-seed0.md) | completed | 10000/10000 | 0.2601 | 0.6722 | final reference-positive mean | 42/42 |
+| [deeplabv3_plus](models/deeplabv3_plus-seed0.md) | completed | 10000/10000 | 0.2598 | 0.6229 | final reference-positive mean | 42/42 |
+| [fpn](models/fpn-seed0.md) | completed | 10000/10000 | 0.2399 | 0.6382 | final reference-positive mean | 42/42 |
+| [unet_2d](models/unet_2d-seed0.md) | completed | 10000/10000 | 0.2555 | 0.6631 | final reference-positive mean | 42/42 |
+| [segformer_b0](models/segformer_b0-seed0.md) | completed | 10000/10000 | 0.1156 | 0.4408 | final reference-positive mean | 42/42 |
+| [pidnet](models/pidnet-seed0.md) | completed | 10000/10000 | 0.0324 | 0.5757 | final reference-positive mean | 42/42 |
+| [ddrnet](models/ddrnet-seed0.md) | completed | 10000/10000 | 0.0806 | 0.5269 | final reference-positive mean | 42/42 |
+| [bisenetv2](models/bisenetv2-seed0.md) | completed | 10000/10000 | 0.1464 | 0.5664 | final reference-positive mean | 42/42 |
+| [lraspp](models/lraspp-seed0.md) | completed | 10000/10000 | 0.1463 | 0.5191 | final reference-positive mean | 42/42 |
