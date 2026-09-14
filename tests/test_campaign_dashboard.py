@@ -33,8 +33,12 @@ class Tmux:
             name = arguments[arguments.index("-s") + 1]
             root = arguments[arguments.index("-e") + 1].split("=", 1)[1]
             self.sessions[name] = {"root": root, "windows": ["training"]}
+            output = "%10\n"
         elif action == "new-window":
             session["windows"].append(arguments[arguments.index("-n") + 1])
+            output = "%11\n"
+        elif action == "display-message":
+            output = "original command\n"
         elif action == "respawn-pane":
             assert target == "%10"
             assert "-k" not in arguments
@@ -74,6 +78,12 @@ def test_dashboard_is_idempotent_uses_shared_entrypoint_and_quotes_paths(tmp_pat
     assert f"'{root}'" in starts[0][-1]
     assert not [call for call in tmux.calls if "kill" in call[0] or call[0] == "respawn-pane"]
     assert tmux.sessions[session]["windows"] == ["training", "gpu-monitor"]
+    registered = [
+        call[3]
+        for call in tmux.calls
+        if call[0] == "set-option" and call[-2] == "@segmentary_cleanup_root"
+    ]
+    assert registered == ["%10", "%11"]
 
 
 def test_existing_foreign_session_is_untouched_and_collision_name_is_stable(tmp_path, tmux):

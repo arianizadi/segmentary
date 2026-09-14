@@ -89,7 +89,7 @@ def ensure_dashboard(
                 pane, dead = panes[0].split("\t")
                 if dead == "1":
                     dead_pane = pane
-        created_windows = []
+        created_panes = []
         if "training" not in windows or dead_pane is not None:
             environment = dict(os.environ)
             source_path = str(repo / "src")
@@ -129,6 +129,9 @@ def ensure_dashboard(
             if not exists:
                 created = _tmux(
                     "new-session",
+                    "-P",
+                    "-F",
+                    "#{pane_id}",
                     "-d",
                     "-s",
                     name,
@@ -144,27 +147,42 @@ def ensure_dashboard(
                     if not (_exists(name) and _owns(name, root)):
                         raise RuntimeError(created.stderr.strip() or "tmux session creation failed")
                     return name
+                created_panes.append(created.stdout.strip())
             elif dead_pane is not None:
                 _tmux("respawn-pane", "-t", dead_pane, command)
+                created_panes.append(dead_pane)
             else:
-                _tmux("new-window", "-d", "-t", f"={name}", "-n", "training", command)
-            created_windows.append("training")
+                created_panes.append(
+                    _tmux(
+                        "new-window",
+                        "-P",
+                        "-F",
+                        "#{pane_id}",
+                        "-d",
+                        "-t",
+                        f"={name}",
+                        "-n",
+                        "training",
+                        command,
+                    ).stdout.strip()
+                )
             _tmux("set-window-option", "-t", f"={name}:training", "remain-on-exit", "on")
         if "gpu-monitor" not in windows:
-            _tmux(
-                "new-window",
-                "-d",
-                "-t",
-                f"={name}",
-                "-n",
-                "gpu-monitor",
-                "watch -n 2 nvidia-smi",
+            created_panes.append(
+                _tmux(
+                    "new-window",
+                    "-P",
+                    "-F",
+                    "#{pane_id}",
+                    "-d",
+                    "-t",
+                    f"={name}",
+                    "-n",
+                    "gpu-monitor",
+                    "watch -n 2 nvidia-smi",
+                ).stdout.strip()
             )
-            created_windows.append("gpu-monitor")
-        for window in created_windows:
-            pane = _tmux(
-                "display-message", "-p", "-t", f"={name}:{window}", "#{pane_id}"
-            ).stdout.strip()
+        for pane in created_panes:
             if pane:
                 register_cleanup_pane(name, root, pane)
         start_cleanup(root, repo, python, name)
