@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "source_commit": "9714becaed028d7f0b03e1cf1782f68eb8c52853",
+  "partition": "val",
+  "comparisons": [
+    {
+      "candidate": "dynunet-mass50-seed0",
+      "control": "dynunet-control-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "mean_difference": -0.0268665533507385,
+      "ci95": [
+        -0.07566023247754908,
+        0.019249963350884077
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-mass50-seed0",
+      "control": "dynunet-control-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "mean_difference": -0.020540313367007693,
+      "ci95": [
+        -0.03482626121148048,
+        -0.007579269796067359
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-class111-seed0",
+      "control": "dynunet-control-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "mean_difference": -0.027522590850297634,
+      "ci95": [
+        -0.08099994492589829,
+        0.020074803083945478
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-class111-seed0",
+      "control": "dynunet-control-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "mean_difference": 0.0014031604356441714,
+      "ci95": [
+        -0.014740804676506907,
+        0.017138979579203576
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-class115-seed0",
+      "control": "dynunet-control-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "mean_difference": -0.022731531388482534,
+      "ci95": [
+        -0.07342529928930723,
+        0.0223541088511968
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-class115-seed0",
+      "control": "dynunet-control-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "mean_difference": -0.04347343168394698,
+      "ci95": [
+        -0.06575972960169169,
+        -0.02468795030516566
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-rotation-seed0",
+      "control": "dynunet-control-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "mean_difference": -0.021439869968683353,
+      "ci95": [
+        -0.07445827494090979,
+        0.026267138825960604
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-rotation-seed0",
+      "control": "dynunet-control-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "mean_difference": 0.003865591966417039,
+      "ci95": [
+        -0.01047118342383835,
+        0.018650610054961565
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-intensity-seed0",
+      "control": "dynunet-control-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "mean_difference": -0.03257264274039201,
+      "ci95": [
+        -0.08138986464466705,
+        0.015713342728441933
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-intensity-seed0",
+      "control": "dynunet-control-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "mean_difference": -0.04284801132913989,
+      "ci95": [
+        -0.06787404734089655,
+        -0.020854232410742222
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    }
+  ],
+  "grouping": "provided dataset-case groups; independent patient linkage remains unverified",
+  "limitations": [
+    "Exploratory same-seed validation comparisons, not held-out or external confirmation.",
+    "Validation selected the checkpoints and may select an arm; intervals do not correct selection optimism.",
+    "Ten pointwise 95% bootstrap intervals are not adjusted for multiple comparisons.",
+    "Intervals resample provided case/patient groups and do not include training-seed uncertainty.",
+    "Mass labels do not establish pancreatic cancer diagnosis."
+  ],
+  "primary_report_sha256": {
+    "dynunet-control-seed0": "085e30d619cc9bc504c0d6223ec039336d06df20c1a40f2b139e67dabf8c5980",
+    "dynunet-mass50-seed0": "6b580d72412bcea6ffef4342f5ee7737133ca33adee7b9d8864715b99441e9a0",
+    "dynunet-class111-seed0": "342e836d70c7e9772fd3996ff34befbd9c07615f325f3646efad13157cf423b8",
+    "dynunet-class115-seed0": "1f6960c1d114751cf861ebe76c57661cb20c3aa53fd98e9fed92b1a247456226",
+    "dynunet-rotation-seed0": "2ff287549ea087560ae9aca52665907d7730266a80013b1ceda23e08c92f3536",
+    "dynunet-intensity-seed0": "f31f0656c5c022e58dcf9ae667f3deb88b99d3a238db07021a007c5577aa808b"
+  }
+}
