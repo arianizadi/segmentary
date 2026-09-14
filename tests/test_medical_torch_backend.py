@@ -208,9 +208,20 @@ def test_real_subprocess_prepare_train_resume_native_predict(experiment):
 
 
 @pytest.mark.parametrize("prefetch", [False, True])
-def test_resumed_epoch_matches_uninterrupted_optimizer_and_rng(experiment, monkeypatch, prefetch):
+@pytest.mark.parametrize("recipe", ["legacy", "class_center_and_augmentation"])
+def test_resumed_epoch_matches_uninterrupted_optimizer_and_rng(
+    experiment, monkeypatch, prefetch, recipe
+):
     config, _, _, manifest_path, splits_path = experiment
     config = dataclasses.replace(config, prefetch_batches=prefetch)
+    if recipe == "class_center_and_augmentation":
+        config = dataclasses.replace(
+            config,
+            foreground_probability=None,
+            class_center_weights=(1, 1, 5),
+            rotation_probability=1,
+            intensity_scale_probability=1,
+        )
     # In-process interruption injection exercises the exact worker's checkpoint,
     # AdamW moments, schedule, and all sampling/augmentation RNG state.
     backend.prepare_dataset(manifest_path, splits_path, config)
@@ -239,8 +250,27 @@ def test_resumed_epoch_matches_uninterrupted_optimizer_and_rng(experiment, monke
     assert resumed["step"] == uninterrupted["step"] == 2
     for name, tensor in resumed["model"].items():
         torch.testing.assert_close(tensor, uninterrupted["model"][name], rtol=0, atol=0)
+    expected_optimizer, actual_optimizer = uninterrupted["optimizer"], resumed["optimizer"]
+    assert actual_optimizer["param_groups"] == expected_optimizer["param_groups"]
+    assert actual_optimizer["state"].keys() == expected_optimizer["state"].keys()
+    assert actual_optimizer["state"]
+    assert any(
+        torch.count_nonzero(state["exp_avg"]) for state in actual_optimizer["state"].values()
+    )
+    for parameter, actual_state in actual_optimizer["state"].items():
+        expected_state = expected_optimizer["state"][parameter]
+        assert actual_state.keys() == expected_state.keys()
+        for name, value in actual_state.items():
+            torch.testing.assert_close(value, expected_state[name], rtol=0, atol=0)
     assert resumed["scheduler"] == uninterrupted["scheduler"]
+    assert resumed["scaler"] == uninterrupted["scaler"]
+    assert resumed["epoch"] == uninterrupted["epoch"] == 2
+    assert resumed["best"] == uninterrupted["best"]
     assert resumed["sampling_rng"] == uninterrupted["sampling_rng"]
+    assert resumed["python_rng"] == uninterrupted["python_rng"]
+    np.testing.assert_equal(resumed["numpy_rng"], uninterrupted["numpy_rng"])
+    torch.testing.assert_close(resumed["torch_rng"], uninterrupted["torch_rng"], rtol=0, atol=0)
+    assert resumed["cuda_rng"] == uninterrupted["cuda_rng"] == []  # This is a CPU worker test.
 
 
 def test_prediction_status_records_loaded_checkpoint_bytes_without_per_case_rehash(

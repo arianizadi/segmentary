@@ -1,6 +1,6 @@
 # Transferable recipe experiments
 
-These are proposed experiments, not implemented features or launched runs. Read the [verified recipe comparison](README.md) first.
+The first six-arm DynUNet screen is **implemented and not yet launched at this planning checkpoint**: fresh control, greater mass-centered sampling, exact class-center weights 1:1:1 and 1:1:5, rotation alone, and intensity scaling alone. The training-only input audit and explicit recipe/RNG checks are also implemented. See the [operator guide](../../../../guides/medical-recipe-ablation.md) for exact settings and commands, and the [verified recipe comparison](README.md) for the evidence behind these choices. Later stages below remain proposals; implementation is not evidence of an accuracy improvement.
 
 ## First: measure the input our models actually see
 
@@ -17,12 +17,12 @@ Use DynUNet for the first diagnostic comparisons because its completed run is re
 
 | Arm | Change from its declared control | Question | Applicability / readiness |
 | --- | --- | --- | --- |
-| A0 | Exact existing scratch recipe | Can the baseline be reproduced? | Existing recipe supported; retain existing seed-0 result as historical control |
-| S1 | Make center selection explicit: uniform-volume / pancreas / tumor = 0.50 / 0.25 / 0.25 | Does the refactor preserve the existing distribution? | Needs sampler implementation and deterministic equivalence checks |
-| S2 | Change only those probabilities to 0.25 / 0.25 / 0.50 | Does more tumor-centered training help? | General 2.5D and 3D applicability; track false positive burden |
-| S3 | Exact class-center sampling, background/pancreas/tumor = 1:1:1 versus 1:1:5 | Does the Universal Model's stronger class weighting help? | Two-arm comparison isolates weights; background-class sampling differs from uniform-volume sampling, so S3 is not a one-variable comparison to A0 |
-| A1 | Add bounded in-plane rotation to the control; transform image and label together | Does spatial variety reduce overfitting? | Needs medical augmentation support; define angle/interpolation/padding and respect anisotropy |
-| A2 | Add bounded intensity perturbation alone | Does plausible contrast variation help? | Needs exact HU/normalized-space definition and recorded magnitude; no generic RGB color jitter |
+| A0 | Exact existing scientific recipe with a fresh scratch origin under the new source | Can the baseline be reproduced? | Implemented as `dynunet-control-seed0`; historical source differs and its result stays contextual |
+| S1 | Make center selection explicit: uniform-volume / pancreas / tumor = 0.50 / 0.25 / 0.25 | Does the refactor preserve the existing distribution? | Explicit mode implemented; legacy output/RNG preservation tested. Not a separate run in the initial six-arm screen |
+| S2 | Change only those probabilities to 0.25 / 0.25 / 0.50 | Does more tumor-centered training help? | Implemented as `dynunet-mass50-seed0`; track actual crop content and false positive burden |
+| S3 | Exact class-center sampling, background/pancreas/tumor = 1:1:1 versus 1:1:5 | Does the Universal Model's stronger class weighting help? | Implemented as `dynunet-class111-seed0` and `dynunet-class115-seed0`; their pair isolates weights. Exact-background sampling also differs from A0 |
+| A1 | Add bounded in-plane rotation to the control; transform image and label together | Does spatial variety reduce overfitting? | Implemented as `dynunet-rotation-seed0`: probability 0.25, angles ±15°, linear image/nearest mask, constant normalized-zero/background padding |
+| A2 | Add bounded intensity perturbation alone | Does plausible contrast variation help? | Implemented as `dynunet-intensity-seed0`: probability 0.5, normalized-image scale 0.9–1.1, no additional clipping |
 | R1 | Test 1.0/1.0/2.5 mm spacing with 96/144/144 z/y/x patches on DynUNet | Does finer in-plane detail help at approximately the same 144/144/240 mm field of view? | Geometry knobs exist; memory smoke needed; 2.25× input voxels, so report extra compute |
 | D1 | Add weighted auxiliary decoder losses to the same model | Does supervision at several scales improve optimization? | Appropriate for DynUNet/U-Mamba/MedNeXt after adapter work; keep a full-resolution loss because small masses may disappear at coarse scales |
 | L1 | Replace no-warmup polynomial schedule with declared warmup + cosine at the same update budget | Does schedule shape help, particularly for attention models? | New medical schedule option needed; test independently of width/LR changes |
@@ -59,4 +59,4 @@ Record native mean per-case mass Dice and pancreas-union Dice, per-case changes 
 
 Our 42 validation scans are all mass-positive; specificity and patient-level ROC AUC remain unavailable. A clean-CT or PanTS addition is a separate study stage. A recipe improvement on this repeatedly inspected validation set needs final confirmation on the reserved test only after the protocol is fixed and patient/source grouping is audited.
 
-This plan creates no monitoring schedule and launches no jobs.
+Planning creates no monitoring schedule and launches no jobs. Launch status and measurements belong in the generated campaign report, separate from this implementation/proposal checklist.

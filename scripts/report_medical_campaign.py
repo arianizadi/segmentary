@@ -22,6 +22,7 @@ from typing import Any
 
 import yaml
 
+from segmentary.medical.recipe_ablation import recipe_fingerprint, validate_declared_recipes
 from segmentary.medical_reporting import (
     clinical_metrics,
     collect_performance,
@@ -503,6 +504,7 @@ def _collect_run(
     result: dict[str, Any] = {
         "id": run["id"],
         "model": config.get("model", run.get("model", run["id"])),
+        "scientific_recipe_sha256": recipe_fingerprint(config),
         "backend": backend,
         "comparison_group": run.get("comparison_group", backend),
         "status": state.get("status", "queued"),
@@ -543,6 +545,13 @@ def _collect_run(
                 "learning_rate",
                 "weight_decay",
                 "foreground_probability",
+                "center_probabilities",
+                "class_center_weights",
+                "rotation_probability",
+                "rotation_degrees",
+                "rotation_padding_value",
+                "intensity_scale_probability",
+                "intensity_scale_range",
                 "overlap",
                 "precision",
                 "deterministic",
@@ -616,6 +625,9 @@ def _rank_groups(rows: list[dict]) -> dict:
     conclusions = {}
     for name, members in groups.items():
         reasons = []
+        recipe_ablation = any(row.get("recipe_ablation") for row in members)
+        if recipe_ablation and any(not row.get("runtime_fingerprint") for row in members):
+            reasons.append("Recipe ablation runtime provenance is unavailable")
         if any(row["status"] != "completed" for row in members):
             reasons.append("Not all planned runs have completed")
         if any(row.get("report_issues") for row in members):
@@ -665,12 +677,15 @@ def _rank_groups(rows: list[dict]) -> dict:
                         "inference_batch_size": row.get("recipe", {}).get("inference_batch_size"),
                         "precision": row.get("recipe", {}).get("precision"),
                         "overlap": row.get("recipe", {}).get("overlap"),
+                        **({"runtime": row.get("runtime_fingerprint")} if recipe_ablation else {}),
                     }
                 )
             )
         if len(signatures) != 1:
             reasons.append(
-                "Cohort, protocol, source, split, seed, budget, batch, or selection differs"
+                "Cohort, protocol, source, split, seed, budget, batch, selection, or runtime differs"
+                if recipe_ablation
+                else "Cohort, protocol, source, split, seed, budget, batch, or selection differs"
             )
         if any(row.get("evaluation", {}).get("mass", {}).get("dice") is None for row in members):
             reasons.append("Mass Dice is unavailable")
@@ -707,11 +722,34 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
     expected_ids = splits["val"]
     if len(set(expected_ids)) != len(expected_ids):
         raise ValueError("Validation partition contains duplicate cases")
+    ablation = spec.get("protocol", {}).get("recipe_ablation")
+    if (
+        ablation is not None
+        or spec.get("protocol", {}).get("preset") == "task07_dynunet_recipe_ablation_v1"
+    ):
+        validate_declared_recipes(
+            spec, {run["id"]: _recipe(Path(run["config"])) for run in spec["runs"]}
+        )
     rows = []
     for run in spec["runs"]:
         try:
             state = _read(state_dir / "runs" / f"{run['id']}.json")
             row = _collect_run(run, state, state_dir, expected_ids, now)
+            if ablation is not None:
+                declaration = ablation["arms"][run["id"]]
+                if row["scientific_recipe_sha256"] != declaration["scientific_recipe_sha256"]:
+                    raise ValueError("Bound run recipe differs from declared ablation")
+                row["recipe_ablation"] = {
+                    "arm": declaration["arm"],
+                    "control_run_id": declaration.get(
+                        "control_run_id", ablation.get("control_run_id")
+                    ),
+                    "changes_from_control": declaration["changes_from_control"],
+                    "reference_source_commit": ablation["reference_source_commit"],
+                    "reference_recipe_sha256": ablation["reference_recipe_sha256"],
+                    "reference_binding_sha256": ablation["reference_binding_sha256"],
+                    "reference_campaign_sha256": ablation["reference_campaign_sha256"],
+                }
             row["expected_validation_cases"] = len(expected_ids)
             if not row["clinical_metrics"].get("available"):
                 row["clinical_metrics"] = clinical_metrics(
@@ -745,6 +783,9 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
                 "resources": {},
             }
         rows.append(row)
+    model_counts = Counter(row["model"] for row in rows)
+    for row in rows:
+        row["display_name"] = row["id"] if model_counts[row["model"]] > 1 else row["model"]
     optimization = _read(state_dir / "optimization.json")
     return {
         "schema_version": 1,
@@ -834,7 +875,7 @@ def render(snapshot: dict) -> dict[str, str]:
         evaluation = row.get("evaluation", {})
         comparison_rows.append(
             [
-                f"[{row['model']}](models/{row['id']}.md)",
+                f"[{row.get('display_name', row['model'])}](models/{row['id']}.md)",
                 row["status"],
                 row.get("stage") or "—",
                 f"{row.get('completed_steps', 0)}/{row.get('budget_steps') or '—'}",
@@ -875,10 +916,10 @@ def render(snapshot: dict) -> dict[str, str]:
                 for curve in row["curves"]
             ],
         )
-        curve_sections += [f"## {row['model']}", "", curve_table, ""]
+        curve_sections += [f"## {row.get('display_name', row['model'])}", "", curve_table, ""]
         resources = row["resources"]
         per_run = [
-            f"# {row['model']}",
+            f"# {row.get('display_name', row['model'])}",
             "",
             "[All models](../comparison.md) · [Reading guide](../README.md)",
             "",
@@ -887,6 +928,17 @@ def render(snapshot: dict) -> dict[str, str]:
             f"Status: **{row['status']}**. Stage: **{row.get('stage') or '—'}**. GPU: **{row.get('gpu', '—')}**.",
             "",
         ]
+        if row.get("recipe_ablation"):
+            per_run += [
+                f"Architecture: **{row['model']}**. This is a fresh recipe arm, not another architecture or a resumed historical run.",
+                "",
+                "Declared ingredient changes and reference provenance:",
+                "",
+                "```json",
+                json.dumps(row["recipe_ablation"], indent=2),
+                "```",
+                "",
+            ]
         if row.get("failure_recorded") or row["report_issues"]:
             per_run += [
                 "**Needs investigation.** A worker failure or invalid result record was recorded. Its full diagnostic log remains on the training server; this page does not expose scan names or server paths.",
@@ -1270,7 +1322,7 @@ def render(snapshot: dict) -> dict[str, str]:
         complete = final.get("complete_coverage", False)
         overview.append(
             [
-                f"[{row['model']}](models/{row['id']}.md)",
+                f"[{row.get('display_name', row['model'])}](models/{row['id']}.md)",
                 row["status"],
                 f"{row.get('live_step') or row.get('completed_steps', 0)}/{row.get('budget_steps') or '—'}",
                 _number(final.get("mass", {}).get("dice") if complete else latest.get("mass_dice")),
@@ -1301,6 +1353,20 @@ def render(snapshot: dict) -> dict[str, str]:
         )
         + "\n"
     )
+    if any(row.get("recipe_ablation") for row in rows):
+        notice = (
+            "**Recipe experiment:** the named arms use the same DynUNet architecture, loss, "
+            "split, inference protocol and fixed 10,000-update budget. Run IDs identify "
+            "separate scratch initializations under declared ingredient changes; they are "
+            "not different architectures. Rankings stay within each seed and require all "
+            "planned arms to finish. The class111/class115 pair changes class weights; "
+            "both also change background-center semantics relative to the uniform-volume "
+            "control. Historical results used a different source snapshot and are not "
+            "included as same-source replicates.\n\n"
+        )
+        for name in ("README.md", "comparison.md", "learning-curves.md"):
+            title, rest = files[name].split("\n", 1)
+            files[name] = title + "\n\n" + notice + rest.lstrip("\n")
     return files
 
 

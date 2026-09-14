@@ -36,11 +36,20 @@ class TorchConfig:
     prefetch_batches: bool = False
     learning_rate: float = 0.0003
     weight_decay: float = 0.00001
-    foreground_probability: float = 0.5
+    foreground_probability: float | None = 0.5
+    # Explicit center modes replace (never supplement) the legacy foreground coin.
+    # The first mode starts with uniform-volume probability, not background-only.
+    center_probabilities: tuple[float, float, float] | None = None
+    class_center_weights: tuple[float, float, float] | None = None
     overlap: float = 0.5
     precision: str = "fp32"
     deterministic: bool = False
     augment: bool = True
+    rotation_probability: float = 0.0
+    rotation_degrees: tuple[float, float] = (-15.0, 15.0)
+    rotation_padding_value: float = 0.0
+    intensity_scale_probability: float = 0.0
+    intensity_scale_range: tuple[float, float] = (0.9, 1.1)
     gradient_clip: float = 12.0
     purpose: str = "baseline"
 
@@ -90,12 +99,56 @@ class TorchConfig:
             object.__setattr__(self, name, value)
         if self.hu_window[0] >= self.hu_window[1]:
             raise ValueError("hu_window must be increasing")
+        explicit_centers = sum(
+            value is not None for value in (self.center_probabilities, self.class_center_weights)
+        )
+        if explicit_centers > 1 or (explicit_centers and self.foreground_probability is not None):
+            raise ValueError(
+                "Use one center mode; explicit centers require foreground_probability: null"
+            )
+        if not explicit_centers and self.foreground_probability is None:
+            raise ValueError("foreground_probability is required for legacy center sampling")
+        for name, length in (
+            ("center_probabilities", 3),
+            ("class_center_weights", 3),
+            ("rotation_degrees", 2),
+            ("intensity_scale_range", 2),
+        ):
+            value = getattr(self, name)
+            if value is None and name in {"center_probabilities", "class_center_weights"}:
+                continue
+            if (
+                not isinstance(value, (list, tuple))
+                or len(value) != length
+                or any(
+                    isinstance(x, bool) or not isinstance(x, (float, int)) or not math.isfinite(x)
+                    for x in value
+                )
+            ):
+                raise ValueError(f"Invalid {name}")
+            value = tuple(value)
+            if name in {"center_probabilities", "class_center_weights"}:
+                if any(x < 0 for x in value) or not math.isfinite(sum(value)) or sum(value) <= 0:
+                    raise ValueError(f"{name} must contain nonnegative weights with positive sum")
+                if name == "center_probabilities" and not math.isclose(
+                    sum(value), 1.0, rel_tol=0, abs_tol=1e-9
+                ):
+                    raise ValueError("center_probabilities must sum to one")
+            elif name == "rotation_degrees":
+                if not -180 <= value[0] <= value[1] <= 180:
+                    raise ValueError("rotation_degrees must be ordered and within [-180,180]")
+            elif not 0 < value[0] <= value[1]:
+                raise ValueError("intensity_scale_range must be positive and ordered")
+            object.__setattr__(self, name, value)
         for name in (
             "learning_rate",
             "weight_decay",
-            "foreground_probability",
             "overlap",
             "gradient_clip",
+            "rotation_probability",
+            "rotation_padding_value",
+            "intensity_scale_probability",
+            *(("foreground_probability",) if self.foreground_probability is not None else ()),
         ):
             value = getattr(self, name)
             if (
@@ -108,8 +161,23 @@ class TorchConfig:
             raise ValueError(
                 "Use positive learning rate/gradient clip and nonnegative weight decay"
             )
-        if not 0 <= self.foreground_probability <= 1 or not 0 <= self.overlap < 1:
+        if (
+            self.foreground_probability is not None and not 0 <= self.foreground_probability <= 1
+        ) or not 0 <= self.overlap < 1:
             raise ValueError("foreground_probability must be [0,1], overlap [0,1)")
+        if any(
+            not 0 <= value <= 1
+            for value in (self.rotation_probability, self.intensity_scale_probability)
+        ):
+            raise ValueError("Augmentation probabilities must be [0,1]")
+        if not 0 <= self.rotation_padding_value <= 1:
+            raise ValueError("rotation_padding_value must use normalized CT intensities in [0,1]")
+        if self.rotation_probability and not math.isclose(
+            self.spacing_mm[0], self.spacing_mm[1], rel_tol=0, abs_tol=1e-9
+        ):
+            raise ValueError("Axial rotation requires equal in-plane x/y spacing_mm")
+        if not self.augment and (self.rotation_probability or self.intensity_scale_probability):
+            raise ValueError("Optional augmentations require augment: true")
         if self.precision not in {"fp32", "bf16", "fp16"} or self.purpose not in {
             "baseline",
             "smoke",

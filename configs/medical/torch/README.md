@@ -5,6 +5,11 @@ These **27 recipes** run the actual named architectures through the shared
 without learned weights. See the [model guide](../../../docs/guides/medical-models.md)
 for installation, commands, objectives and comparison limits.
 
+For the implemented six-arm DynUNet sampling/augmentation experiment, read the
+[controlled recipe guide](../../../docs/guides/medical-recipe-ablation.md). It
+explains the planner, training-only input audit, fresh run identities and shared
+dashboard; creating a plan does not start training.
+
 | Group | Recipes |
 |---|---|
 | General 2D CNNs | [U-Net](unet_2d.yaml), [U-Net++](unet_plus_plus.yaml), [FPN](fpn.yaml), [DeepLabV3+](deeplabv3_plus.yaml), [HRNet+OCR](hrnet_ocr.yaml) |

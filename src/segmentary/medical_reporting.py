@@ -678,7 +678,7 @@ def performance_assets(rows: list[dict], metadata: str) -> dict[str, str]:
     for row in rows:
         prefix = {"run_id": row["id"], "model": row["model"]}
         perf = row.get("performance", {})
-        link = f"[{row['model']}](models/{row['id']}.md)"
+        link = f"[{row.get('display_name', row['model'])}](models/{row['id']}.md)"
         segments = perf.get("training_segments", [])
         for segment in segments or [{"segment": "current", "totals": {}, "epochs": 0}]:
             totals = segment["totals"]

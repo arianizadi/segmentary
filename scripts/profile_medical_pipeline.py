@@ -127,6 +127,9 @@ def _select_cases(manifest: dict, splits: dict) -> list[dict]:
 
 def _legacy_sample(data: dict, config: TorchConfig, rng: np.random.Generator) -> tuple:
     """Frozen previous algorithm for measured whole-volume-copy comparison."""
+    if _legacy_sampler_inapplicable_reason(config) is not None:
+        raise ValueError("Historical sampler comparison is not applicable to this recipe")
+    assert config.foreground_probability is not None
     image, label = data["image"], data["label"]
     center = [int(rng.integers(size)) for size in label.shape]
     if rng.random() < config.foreground_probability:
@@ -162,6 +165,14 @@ def _legacy_sample(data: dict, config: TorchConfig, rng: np.random.Generator) ->
     return image.copy(), label.astype(np.int64).copy()
 
 
+def _legacy_sampler_inapplicable_reason(config: TorchConfig) -> str | None:
+    if config.foreground_probability is None:
+        return "Explicit center distribution differs from the historical foreground sampler"
+    if config.rotation_probability or config.intensity_scale_probability:
+        return "Enabled rotation/intensity augmentation is absent from the historical sampler"
+    return None
+
+
 def _data_profile(
     case: dict, config: TorchConfig, root: Path, iterations: int
 ) -> tuple[dict, dict]:
@@ -172,7 +183,10 @@ def _data_profile(
     record, shared_seconds = _timed(lambda: build_cached_case(case, config, root / "shared"))
     mapped, verified_load_seconds = _timed(lambda: load_cached_case(record))
     load_timings: dict[str, list[float]] = {"legacy_npz": [], "mapped_npy": []}
-    sample_timings: dict[str, list[float]] = {"legacy": [], "optimized": []}
+    legacy_reason = _legacy_sampler_inapplicable_reason(config)
+    sample_timings: dict[str, list[float]] = {"current_raw": [], "optimized": []}
+    if legacy_reason is None:
+        sample_timings["legacy"] = []
     for iteration in range(iterations):
         started = time.perf_counter()
         with np.load(legacy_path, allow_pickle=False) as archive:
@@ -184,14 +198,22 @@ def _data_profile(
         del loaded
         expected_rng = np.random.default_rng(config.seed + iteration)
         actual_rng = np.random.default_rng(config.seed + iteration)
-        expected, elapsed = _timed(functools.partial(_legacy_sample, raw, config, expected_rng))
-        sample_timings["legacy"].append(elapsed)
+        expected, elapsed = _timed(functools.partial(sample_patch, raw, config, expected_rng))
+        sample_timings["current_raw"].append(elapsed)
         actual, elapsed = _timed(functools.partial(sample_patch, mapped, config, actual_rng))
         sample_timings["optimized"].append(elapsed)
         for left, right in zip(expected, actual, strict=True):
             np.testing.assert_array_equal(left, right)
         if expected_rng.bit_generator.state != actual_rng.bit_generator.state:
-            raise ValueError("Optimized sampling changed random-state consumption")
+            raise ValueError("Cached current-recipe sampling changed random-state consumption")
+        if legacy_reason is None:
+            legacy_rng = np.random.default_rng(config.seed + iteration)
+            historical, elapsed = _timed(functools.partial(_legacy_sample, raw, config, legacy_rng))
+            sample_timings["legacy"].append(elapsed)
+            for left, right in zip(historical, actual, strict=True):
+                np.testing.assert_array_equal(left, right)
+            if legacy_rng.bit_generator.state != actual_rng.bit_generator.state:
+                raise ValueError("Current recipe changed historical sampling RNG consumption")
     legacy_path.unlink()
     return {
         "case_id": case["case_id"],
@@ -208,6 +230,13 @@ def _data_profile(
         "load": {key: _statistics(value) for key, value in load_timings.items()},
         "sample": {key: _statistics(value) for key, value in sample_timings.items()},
         "bitwise_samples_and_rng_equal": True,
+        "sample_parity_reference": "current recipe on raw arrays versus mapped NPY arrays",
+        "legacy_sampler_comparison": {
+            "applicable": legacy_reason is None,
+            "reason": legacy_reason,
+            "bitwise_samples_and_rng_equal": True if legacy_reason is None else None,
+        },
+        "raw_sampling_policy": "Current sampler may retain foreground coordinates in the case dictionary after its first sample",
         "disk_cache_policy": "OS page cache was not dropped; no sudo; repeated warm reads",
         "mmap_policy": "mapping time excludes lazy page faults; sampled patch time includes access",
     }, mapped

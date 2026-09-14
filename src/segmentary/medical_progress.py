@@ -232,7 +232,7 @@ class MedicalTelemetry:
             )
             if row["status"] == "running" and row["health"] != "alive":
                 errors.append(
-                    f"{row['model']}: recorded worker PID is absent; controller may be changing stages"
+                    f"{row.get('display_name', row['model'])}: recorded worker PID is absent; controller may be changing stages"
                 )
             for curve in row.get("curves", []):
                 step = curve["step"]
@@ -387,7 +387,7 @@ class MedicalProfile:
     refresh_seconds = 10
     columns: ClassVar = [
         ("GPU", 3),
-        ("Model", 21),
+        ("Model / recipe arm", 30),
         ("Phase", 11),
         ("Updates / phase", 14),
         ("Mass Dice", 9),
@@ -421,7 +421,7 @@ class MedicalProfile:
         age = now - row["sample_time"] if row.get("sample_time") and status == "running" else None
         return (
             str(row["gpu"]) if row.get("gpu") is not None and status == "running" else "—",
-            Text(row["model"], overflow="ellipsis", no_wrap=True),
+            Text(row.get("display_name", row["model"]), overflow="ellipsis", no_wrap=True),
             Text(
                 phase,
                 style="red"
@@ -447,7 +447,7 @@ class MedicalProfile:
 
     def detail(self, row, *, focus=False):
         mass, pancreas, kind, step, coverage = score_display(row)
-        result = f"{row['model']} · {row['status'].upper()} · {row.get('progress_text', '—')} · worker {row.get('health', '—')}\nGPU {row.get('gpu', '—')}: {row.get('gpu_text', '—')} · Loss {number(value(row, 'train/loss'))} · LR {number(value(row, 'train/lr'), '.3g')}\n{kind.upper()} mass Dice {number(mass)} / pancreas Dice {number(pancreas)} · validation step {step if step is not None else 'selected best' if kind == 'final' else '—'} · coverage {coverage} scans"
+        result = f"{row.get('display_name', row['model'])} · {row['status'].upper()} · {row.get('progress_text', '—')} · worker {row.get('health', '—')}\nGPU {row.get('gpu', '—')}: {row.get('gpu_text', '—')} · Loss {number(value(row, 'train/loss'))} · LR {number(value(row, 'train/lr'), '.3g')}\n{kind.upper()} mass Dice {number(mass)} / pancreas Dice {number(pancreas)} · validation step {step if step is not None else 'selected best' if kind == 'final' else '—'} · coverage {coverage} scans"
         if row.get("backend") == "nnunet":
             result += f"\nPATCH PSEUDO only: mass {number(value(row, 'pseudo/mass_dice'))} / pancreas CLASS {number(value(row, 'pseudo/pancreas_class_dice'))}. Patch scores stay outside native Dice charts; final checkpoint scores appear in the table."
         if kind == "final":

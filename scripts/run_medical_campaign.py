@@ -143,6 +143,7 @@ def load_spec(path: Path) -> dict[str, Any]:
         raise ValueError("runs must be a nonempty explicit list")
     ids: set[str] = set()
     workspaces: set[Path] = set()
+    recipes: dict[str, dict[str, Any]] = {}
     for run in spec["runs"]:
         if not isinstance(run, dict) or set(run) - {
             "id",
@@ -159,6 +160,7 @@ def load_spec(path: Path) -> dict[str, Any]:
             raise ValueError("Run ids must be unique filesystem-safe names")
         ids.add(name)
         recipe = load_recipe(absolute_path(run.get("config"), "run config"))
+        recipes[name] = recipe
         workspace = absolute_path(recipe["workspace"], "workspace")
         if workspace in workspaces:
             raise ValueError("Each run must own a distinct immutable workspace")
@@ -182,6 +184,18 @@ def load_spec(path: Path) -> dict[str, Any]:
         "review_overlays",
     }:
         raise ValueError("Unknown evaluation option; campaign scoring supports validation only")
+    protocol = spec.get("protocol", {})
+    if (
+        protocol.get("recipe_ablation") is not None
+        or protocol.get("preset") == "task07_dynunet_recipe_ablation_v1"
+    ):
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+        from segmentary.medical.recipe_ablation import validate_declared_recipes
+
+        validate_declared_recipes(spec, recipes)
+        for key in ("manifest", "splits"):
+            if protocol.get(f"{key}_sha256") != sha256(Path(spec[key])):
+                raise ValueError("Recipe ablation manifest or splits changed after planning")
     return spec
 
 

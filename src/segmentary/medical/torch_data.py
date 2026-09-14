@@ -58,11 +58,37 @@ def context_image(image: np.ndarray, z: int, slices: int) -> np.ndarray:
 
 
 def sample_patch(
-    data: dict, config: TorchConfig, rng: np.random.Generator
+    data: dict,
+    config: TorchConfig,
+    rng: np.random.Generator,
+    *,
+    diagnostics: dict[str, Any] | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
+    """Sample one paired patch; optional audit diagnostics do not advance the RNG.
+
+    The legacy branch retains its original draws and crop/flip sequence exactly.
+    Explicit center modes and optional augmentation require a new run identity.
+    """
     image, label = data["image"], data["label"]
     center = [int(rng.integers(size)) for size in label.shape]
-    if rng.random() < config.foreground_probability:
+    if diagnostics is not None:
+        diagnostics.update(
+            center_mode="legacy_foreground",
+            requested_center_branch="uniform_volume",
+            selected_center_branch="uniform_volume",
+            selected_center_class=None,
+            center_fallback=False,
+            missing_center_classes=[],
+            rotation_applied=False,
+            rotation_angle_degrees=0.0,
+            intensity_scale_applied=False,
+            intensity_scale_factor=1.0,
+        )
+    if config.foreground_probability is None:
+        from .torch_sampling import explicit_center
+
+        center = explicit_center(data, config, rng, center, diagnostics)
+    elif rng.random() < config.foreground_probability:
         coordinates = data.get("foreground_coordinates")
         classes = [
             c
@@ -75,6 +101,18 @@ def sample_patch(
                 coordinates[chosen] if coordinates is not None else np.argwhere(label == chosen)
             )
             center = locations[int(rng.integers(len(locations)))].tolist()
+        if diagnostics is not None:
+            diagnostics.update(
+                requested_center_branch="foreground",
+                selected_center_branch={1: "pancreas", 2: "mass"}[int(chosen)]
+                if classes
+                else "uniform_volume",
+                selected_center_class=int(chosen) if classes else None,
+                center_fallback=not bool(classes),
+                missing_center_classes=[c for c in (1, 2) if c not in classes],
+            )
+    if diagnostics is not None:
+        diagnostics["center_zyx"] = center.copy()
     z = center[0]
     if config.mode != "3d":
         label = label[z]
@@ -104,13 +142,30 @@ def sample_patch(
     else:
         image = context_image(image[(slice(None), *crop)], z, config.context_slices)
     label = label[crop]
+    if diagnostics is not None:
+        diagnostics.update(
+            crop_padding_voxels=int(np.prod(config.patch_size)) - label.size,
+            patch_voxels=int(np.prod(config.patch_size)),
+        )
     if any(before or after for before, after in crop_padding):
         image = np.pad(image, [(0, 0), *crop_padding], constant_values=0)
         label = np.pad(label, crop_padding, constant_values=0)
+    if diagnostics is not None:
+        diagnostics["label_voxels_before_augmentation"] = {
+            str(c): int(np.count_nonzero(label == c)) for c in (0, 1, 2)
+        }
     if config.augment:
         for axis in range(label.ndim):
             if rng.random() < 0.5:
                 image, label = np.flip(image, axis + 1), np.flip(label, axis)
+        if config.rotation_probability or config.intensity_scale_probability:
+            from .torch_augmentation import augment_patch
+
+            image, label = augment_patch(image, label, config, rng, diagnostics)
+    if diagnostics is not None:
+        diagnostics["final_label_voxels"] = {
+            str(c): int(np.count_nonzero(label == c)) for c in (0, 1, 2)
+        }
     return image.copy(), np.array(label, dtype=np.int64, order="C", copy=True)
 
 

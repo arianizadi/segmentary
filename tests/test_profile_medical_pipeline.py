@@ -52,7 +52,7 @@ def test_profile_selects_only_train_extremes_and_median_without_opening_evaluati
     assert len(accesses) == 6
 
 
-def test_real_nifti_data_profile_checks_identical_samples_and_cleans_legacy_artifact(tmp_path):
+def _training_case(tmp_path):
     image = np.arange(9 * 8 * 7, dtype=np.float32).reshape(9, 8, 7)
     label = np.zeros(image.shape, np.uint8)
     label[2:7, 2:6, 1:5] = 1
@@ -67,13 +67,77 @@ def test_real_nifti_data_profile_checks_identical_samples_and_cleans_legacy_arti
         nib.save(volume, path)
         case[key] = str(path)
         case[f"{key}_sha256"] = sha256_file(path)
-    config = TorchConfig(str(tmp_path), gpu="cpu", patch_size=(4, 4, 4))
+    return case
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        {},
+        {"foreground_probability": None, "center_probabilities": (0.25, 0.25, 0.5)},
+        {"foreground_probability": None, "class_center_weights": (1, 1, 5)},
+        {"rotation_probability": 1},
+        {"intensity_scale_probability": 1},
+    ],
+)
+def test_real_nifti_data_profile_checks_current_recipe_and_only_applicable_legacy_parity(
+    tmp_path, monkeypatch, options
+):
+    case = _training_case(tmp_path)
+    config = TorchConfig(str(tmp_path), gpu="cpu", patch_size=(4, 4, 4), **options)
+    if options:
+
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Historical sampler must not run with a different recipe")
+
+        monkeypatch.setattr(profiler, "_legacy_sample", forbidden)
     result, mapped = profiler._data_profile(case, config, tmp_path, iterations=2)
     assert result["bitwise_samples_and_rng_equal"]
     assert result["sample"]["optimized"]["count"] == 2
+    assert result["sample"]["current_raw"]["count"] == 2
+    assert (
+        result["sample_parity_reference"] == "current recipe on raw arrays versus mapped NPY arrays"
+    )
+    comparison = result["legacy_sampler_comparison"]
+    assert comparison["applicable"] == (not options)
+    if options:
+        assert comparison["reason"]
+        assert comparison["bitwise_samples_and_rng_equal"] is None
+        assert "legacy" not in result["sample"]
+    else:
+        assert comparison["bitwise_samples_and_rng_equal"]
+        assert result["sample"]["legacy"]["count"] == 2
     assert result["load"]["legacy_npz"]["p50_seconds"] > 0
     assert not (tmp_path / "train.npz").exists()
     assert isinstance(mapped["image"], np.memmap)
+
+
+@pytest.mark.parametrize("mutation", ["array", "rng"])
+def test_new_recipe_data_profile_rejects_cached_output_or_rng_disagreement(
+    tmp_path, monkeypatch, mutation
+):
+    case = _training_case(tmp_path)
+    config = TorchConfig(
+        str(tmp_path),
+        gpu="cpu",
+        patch_size=(4, 4, 4),
+        foreground_probability=None,
+        class_center_weights=(1, 1, 5),
+    )
+    original = profiler.sample_patch
+
+    def corrupted(data, config, rng):
+        image, label = original(data, config, rng)
+        if isinstance(data["image"], np.memmap):
+            if mutation == "array":
+                image[0, 0, 0, 0] += 1
+            else:
+                rng.random()
+        return image, label
+
+    monkeypatch.setattr(profiler, "sample_patch", corrupted)
+    with pytest.raises(AssertionError if mutation == "array" else ValueError):
+        profiler._data_profile(case, config, tmp_path, iterations=1)
 
 
 def test_model_profile_records_real_updates_trace_and_native_batch_disagreement(
