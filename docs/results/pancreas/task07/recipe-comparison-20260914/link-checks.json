@@ -1,0 +1,129 @@
+{
+  "checked_at_utc": "2026-09-14T16:28:37.891523+00:00",
+  "scope": "External source links in the recipe audit and experiment plan. Private source files checked through authenticated API. Code links pin inspected commits; documentation links may track upstream main.",
+  "links": [
+    {
+      "url": "https://github.com/MIC-DKFZ/MedNeXt/blob/0b78ed869fbd1cc2fd38754d2f8519f1b72d43ba/nnunet_mednext/training/network_training/MedNeXt/nnUNetTrainerV2_MedNeXt.py",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/MIC-DKFZ/MedNeXt/blob/0b78ed869fbd1cc2fd38754d2f8519f1b72d43ba/nnunet_mednext/training/network_training/MedNeXt/nnUNetTrainerV2_MedNeXt.py",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/MIC-DKFZ/MedNeXt/blob/0b78ed869fbd1cc2fd38754d2f8519f1b72d43ba/nnunet_mednext/training/network_training/nnUNetTrainer.py",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/MIC-DKFZ/MedNeXt/blob/0b78ed869fbd1cc2fd38754d2f8519f1b72d43ba/nnunet_mednext/training/network_training/nnUNetTrainer.py",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/MIC-DKFZ/nnUNet/blob/db16c6cef5fdd5a180159184e46b58bcca670446/nnunet/training/network_training/nnUNetTrainerV2.py",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/MIC-DKFZ/nnUNet/blob/db16c6cef5fdd5a180159184e46b58bcca670446/nnunet/training/network_training/nnUNetTrainerV2.py",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/MIC-DKFZ/nnUNet/blob/master/documentation/resenc_presets.md",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/MIC-DKFZ/nnUNet/blob/master/documentation/resenc_presets.md",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/Project-MONAI/research-contributions/blob/21ed8e57c7256834d4fbaf19579ca25ad3d135ee/SwinUNETR/BTCV/main.py",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/Project-MONAI/research-contributions/blob/21ed8e57c7256834d4fbaf19579ca25ad3d135ee/SwinUNETR/BTCV/main.py",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/Project-MONAI/research-contributions/blob/21ed8e57c7256834d4fbaf19579ca25ad3d135ee/SwinUNETR/BTCV/utils/data_utils.py",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/Project-MONAI/research-contributions/blob/21ed8e57c7256834d4fbaf19579ca25ad3d135ee/SwinUNETR/BTCV/utils/data_utils.py",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/arianizadi/segmentary/blob/9f7615bd1f6035d65aca3f848a263b67c49f531f/src/segmentary/medical/backend.py",
+      "ok": true,
+      "method": "authenticated GitHub contents API",
+      "error": null
+    },
+    {
+      "url": "https://github.com/arianizadi/segmentary/blob/9f7615bd1f6035d65aca3f848a263b67c49f531f/src/segmentary/medical/torch_backend.py",
+      "ok": true,
+      "method": "authenticated GitHub contents API",
+      "error": null
+    },
+    {
+      "url": "https://github.com/arianizadi/segmentary/blob/9f7615bd1f6035d65aca3f848a263b67c49f531f/src/segmentary/medical/torch_data.py",
+      "ok": true,
+      "method": "authenticated GitHub contents API",
+      "error": null
+    },
+    {
+      "url": "https://github.com/bowang-lab/U-Mamba/blob/28459e33ca03769800dd35e23c6e62491d1925b5/README.md",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/bowang-lab/U-Mamba/blob/28459e33ca03769800dd35e23c6e62491d1925b5/README.md",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/bowang-lab/U-Mamba/blob/28459e33ca03769800dd35e23c6e62491d1925b5/umamba/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/bowang-lab/U-Mamba/blob/28459e33ca03769800dd35e23c6e62491d1925b5/umamba/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/bowang-lab/U-Mamba/blob/28459e33ca03769800dd35e23c6e62491d1925b5/umamba/nnunetv2/training/nnUNetTrainer/nnUNetTrainerUMambaEnc.py",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/bowang-lab/U-Mamba/blob/28459e33ca03769800dd35e23c6e62491d1925b5/umamba/nnunetv2/training/nnUNetTrainer/nnUNetTrainerUMambaEnc.py",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/ljwztc/CLIP-Driven-Universal-Model/blob/43c12399cc98a40f447342a8dc2cecae5edae84c/dataset/dataloader.py",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/ljwztc/CLIP-Driven-Universal-Model/blob/43c12399cc98a40f447342a8dc2cecae5edae84c/dataset/dataloader.py",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/ljwztc/CLIP-Driven-Universal-Model/blob/43c12399cc98a40f447342a8dc2cecae5edae84c/train.py",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/ljwztc/CLIP-Driven-Universal-Model/blob/43c12399cc98a40f447342a8dc2cecae5edae84c/train.py",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://github.com/ljwztc/CLIP-Driven-Universal-Model/blob/43c12399cc98a40f447342a8dc2cecae5edae84c/utils/loss.py",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://github.com/ljwztc/CLIP-Driven-Universal-Model/blob/43c12399cc98a40f447342a8dc2cecae5edae84c/utils/loss.py",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://openaccess.thecvf.com/content/CVPR2022/papers/Tang_Self-Supervised_Pre-Training_of_Swin_Transformers_for_3D_Medical_Image_Analysis_CVPR_2022_paper.pdf",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://openaccess.thecvf.com/content/CVPR2022/papers/Tang_Self-Supervised_Pre-Training_of_Swin_Transformers_for_3D_Medical_Image_Analysis_CVPR_2022_paper.pdf",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://openaccess.thecvf.com/content/CVPR2022/supplemental/Tang_Self-Supervised_Pre-Training_of_CVPR_2022_supplemental.pdf",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://openaccess.thecvf.com/content/CVPR2022/supplemental/Tang_Self-Supervised_Pre-Training_of_CVPR_2022_supplemental.pdf",
+      "method": "HTTP GET"
+    },
+    {
+      "url": "https://www.cs.jhu.edu/~zongwei/publication/liu2024universal.pdf",
+      "ok": true,
+      "http_status": 200,
+      "final_url": "https://www.cs.jhu.edu/~zongwei/publication/liu2024universal.pdf",
+      "method": "HTTP GET"
+    }
+  ]
+}

@@ -1,0 +1,625 @@
+{
+  "nnunet_live_recipe": {
+    "observed_at_utc": "2026-09-14T16:23:29.653609+00:00",
+    "campaign_id": "task07-scratch-screen-20260913",
+    "source_commit": "9f7615bd1f6035d65aca3f848a263b67c49f531f",
+    "partition_counts": {
+      "test": 42,
+      "train": 197,
+      "val": 42
+    },
+    "nnunet_version": "2.8.1",
+    "configuration": "3d_fullres",
+    "fold": 0,
+    "use_mirroring": false,
+    "tile_step_size": 0.5,
+    "planning_scope": "train and validation; reserved test excluded",
+    "plan_sha256": "466d8a391aa63e2f866fcf0cc09c92fc131e9dc5f2897c1a3b64ec52df24625c",
+    "plan_3d_fullres": {
+      "data_identifier": "nnUNetPlans_3d_fullres",
+      "preprocessor_name": "DefaultPreprocessor",
+      "batch_size": 2,
+      "patch_size": [
+        56,
+        320,
+        256
+      ],
+      "median_image_size_in_voxels": [
+        95.0,
+        512.0,
+        512.0
+      ],
+      "spacing": [
+        2.5,
+        0.8125,
+        0.8125
+      ],
+      "normalization_schemes": [
+        "CTNormalization"
+      ],
+      "use_mask_for_norm": [
+        false
+      ],
+      "resampling_fn_data": "resample_data_or_seg_to_shape",
+      "resampling_fn_seg": "resample_data_or_seg_to_shape",
+      "resampling_fn_data_kwargs": {
+        "is_seg": false,
+        "order": 3,
+        "order_z": 0,
+        "force_separate_z": null
+      },
+      "resampling_fn_seg_kwargs": {
+        "is_seg": true,
+        "order": 1,
+        "order_z": 0,
+        "force_separate_z": null
+      },
+      "resampling_fn_probabilities": "resample_data_or_seg_to_shape",
+      "resampling_fn_probabilities_kwargs": {
+        "is_seg": false,
+        "order": 1,
+        "order_z": 0,
+        "force_separate_z": null
+      },
+      "architecture": {
+        "network_class_name": "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet",
+        "arch_kwargs": {
+          "n_stages": 7,
+          "features_per_stage": [
+            32,
+            64,
+            128,
+            256,
+            320,
+            320,
+            320
+          ],
+          "conv_op": "torch.nn.modules.conv.Conv3d",
+          "kernel_sizes": [
+            [
+              1,
+              3,
+              3
+            ],
+            [
+              3,
+              3,
+              3
+            ],
+            [
+              3,
+              3,
+              3
+            ],
+            [
+              3,
+              3,
+              3
+            ],
+            [
+              3,
+              3,
+              3
+            ],
+            [
+              3,
+              3,
+              3
+            ],
+            [
+              3,
+              3,
+              3
+            ]
+          ],
+          "strides": [
+            [
+              1,
+              1,
+              1
+            ],
+            [
+              1,
+              2,
+              2
+            ],
+            [
+              2,
+              2,
+              2
+            ],
+            [
+              2,
+              2,
+              2
+            ],
+            [
+              2,
+              2,
+              2
+            ],
+            [
+              1,
+              2,
+              2
+            ],
+            [
+              1,
+              2,
+              2
+            ]
+          ],
+          "n_blocks_per_stage": [
+            1,
+            3,
+            4,
+            6,
+            6,
+            6,
+            6
+          ],
+          "n_conv_per_stage_decoder": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "conv_bias": true,
+          "norm_op": "torch.nn.modules.instancenorm.InstanceNorm3d",
+          "norm_op_kwargs": {
+            "eps": 1e-05,
+            "affine": true
+          },
+          "dropout_op": null,
+          "dropout_op_kwargs": null,
+          "nonlin": "torch.nn.LeakyReLU",
+          "nonlin_kwargs": {
+            "inplace": true
+          }
+        },
+        "_kw_requires_import": [
+          "conv_op",
+          "norm_op",
+          "dropout_op",
+          "nonlin"
+        ]
+      },
+      "batch_dice": false
+    },
+    "transpose_forward": [
+      0,
+      1,
+      2
+    ],
+    "intensity_statistics": {
+      "0": {
+        "max": 3071.0,
+        "mean": 79.77403259277344,
+        "median": 85.0,
+        "min": -998.0,
+        "percentile_00_5": -92.0,
+        "percentile_99_5": 215.0,
+        "std": 71.16236877441406
+      }
+    },
+    "trainer_settings": {
+      "checkpoint_selection": "official_ema_foreground_dice",
+      "initial_lr": 0.01,
+      "num_epochs": 1000,
+      "num_iterations_per_epoch": 250,
+      "num_val_iterations_per_epoch": 50,
+      "oversample_foreground_percent": 0.33,
+      "weight_decay": 3e-05
+    },
+    "installed_source_sha256": {
+      "training/nnUNetTrainer/nnUNetTrainer.py": "7096efb2040135eb60df3c8bf39cdbcc373e299671fcee365b3aff2f4da4dfbd",
+      "training/dataloading/data_loader.py": "03e07ba75daa520f14943364a04e6e359f60dc317310f64a9904010f499f6445",
+      "preprocessing/normalization/default_normalization_schemes.py": "e260a437360df5b64f2279c283c12b255abc75927d52546fc7fb90987a1745e5"
+    }
+  },
+  "our_torch_recipes": {
+    "swin_unetr": {
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "swin_unetr",
+        "model_options": {
+          "depths": [
+            2,
+            2,
+            2,
+            2
+          ],
+          "feature_size": 24,
+          "num_heads": [
+            3,
+            6,
+            12,
+            24
+          ],
+          "use_checkpoint": false,
+          "window_size": 7
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "completed_steps": 10000,
+      "budget_steps": 10000,
+      "parameters": 15703029,
+      "code_fingerprint": "b47f6e6f9c026ffdba8f5a5aa33a6508c45a155ff1bab363be998a5a34a86756",
+      "objective": "dense_ce_dice_no_auxiliary_heads",
+      "checkpoint_selection": "maximum validation mean per-case mass Dice; empty/empty=1",
+      "record_sha256": "1de388770335d104d0acef221511f7e73a51599dd6e240a8b349d12da1e4cdc5",
+      "record_path": "docs/results/pancreas/task07/scratch-screen-20260913/records/swin_unetr-seed0.json"
+    },
+    "dynunet": {
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "dynunet",
+        "model_options": {
+          "filters": [
+            32,
+            64,
+            128,
+            256,
+            320
+          ],
+          "res_block": false
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "completed_steps": 10000,
+      "budget_steps": 10000,
+      "parameters": 16543683,
+      "code_fingerprint": "b47f6e6f9c026ffdba8f5a5aa33a6508c45a155ff1bab363be998a5a34a86756",
+      "objective": "dense_ce_dice_no_auxiliary_heads",
+      "checkpoint_selection": "maximum validation mean per-case mass Dice; empty/empty=1",
+      "record_sha256": "0921b18c83256e457c4b37aefa2a66a70911a7abbe5148b3cbff9dfe5bffdf91",
+      "record_path": "docs/results/pancreas/task07/scratch-screen-20260913/records/dynunet-seed0.json"
+    },
+    "umamba_enc": {
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "umamba_enc",
+        "model_options": {
+          "blocks": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "checkpoint_mamba": true,
+          "d_conv": 4,
+          "d_state": 16,
+          "decoder_blocks": [
+            2,
+            2,
+            2,
+            2
+          ],
+          "expand": 2,
+          "features": [
+            32,
+            64,
+            128,
+            256,
+            320
+          ],
+          "scan_backend": "native",
+          "scan_chunk_size": 256
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "completed_steps": 10000,
+      "budget_steps": 10000,
+      "parameters": 22808675,
+      "code_fingerprint": "b47f6e6f9c026ffdba8f5a5aa33a6508c45a155ff1bab363be998a5a34a86756",
+      "objective": "dense_ce_dice",
+      "checkpoint_selection": "maximum validation mean per-case mass Dice; empty/empty=1",
+      "record_sha256": "191ec095d398c8762e6023a17c459120059cde0f055aa63c43370d2baa0ff4c3",
+      "record_path": "docs/results/pancreas/task07/scratch-screen-20260913/records/umamba_enc-seed0.json"
+    },
+    "medformer": {
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "medformer",
+        "model_options": {
+          "base_chan": 32,
+          "chan_num": [
+            64,
+            128,
+            256,
+            320,
+            256,
+            128,
+            64,
+            32
+          ],
+          "conv_num": [
+            2,
+            1,
+            0,
+            0,
+            0,
+            1,
+            2,
+            2
+          ],
+          "expansion": 4,
+          "fusion_depth": 2,
+          "fusion_dim": 320,
+          "fusion_heads": 10,
+          "map_size": [
+            4,
+            4,
+            4
+          ],
+          "num_heads": [
+            1,
+            4,
+            8,
+            10,
+            8,
+            4,
+            1,
+            1
+          ],
+          "trans_num": [
+            0,
+            1,
+            4,
+            6,
+            4,
+            1,
+            0,
+            0
+          ]
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "completed_steps": 10000,
+      "budget_steps": 10000,
+      "parameters": 39591555,
+      "code_fingerprint": "b47f6e6f9c026ffdba8f5a5aa33a6508c45a155ff1bab363be998a5a34a86756",
+      "objective": "dense_ce_dice_no_auxiliary_heads",
+      "checkpoint_selection": "maximum validation mean per-case mass Dice; empty/empty=1",
+      "record_sha256": "3c8020d71f4a29facbf7b33548c52c7a72b9ef81027a0f3afb8d896505734e4e",
+      "record_path": "docs/results/pancreas/task07/scratch-screen-20260913/records/medformer-seed0.json"
+    },
+    "mednext_v1": {
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "mednext_v1",
+        "model_options": {
+          "kernel_size": 3,
+          "model_id": "S"
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "completed_steps": 10000,
+      "budget_steps": 10000,
+      "parameters": 5550947,
+      "code_fingerprint": "b47f6e6f9c026ffdba8f5a5aa33a6508c45a155ff1bab363be998a5a34a86756",
+      "objective": "dense_ce_dice_no_auxiliary_heads",
+      "checkpoint_selection": "maximum validation mean per-case mass Dice; empty/empty=1",
+      "record_sha256": "196bd66372f08b0af36790bee7623844f533875905b1e5ad63a58b67087a931a",
+      "record_path": "docs/results/pancreas/task07/scratch-screen-20260913/records/mednext_v1-seed0.json"
+    }
+  },
+  "upstream_snapshots": {
+    "nnunet-v1": {
+      "commit": "db16c6cef5fdd5a180159184e46b58bcca670446",
+      "remote": "https://github.com/MIC-DKFZ/nnUNet.git"
+    },
+    "monai-research": {
+      "commit": "21ed8e57c7256834d4fbaf19579ca25ad3d135ee",
+      "remote": "https://github.com/Project-MONAI/research-contributions.git"
+    },
+    "universal-model": {
+      "commit": "43c12399cc98a40f447342a8dc2cecae5edae84c",
+      "remote": "https://github.com/ljwztc/CLIP-Driven-Universal-Model.git"
+    },
+    "umamba": {
+      "commit": "28459e33ca03769800dd35e23c6e62491d1925b5",
+      "remote": "https://github.com/bowang-lab/U-Mamba.git"
+    },
+    "mednext": {
+      "commit": "0b78ed869fbd1cc2fd38754d2f8519f1b72d43ba",
+      "remote": "https://github.com/MIC-DKFZ/MedNeXt.git"
+    }
+  },
+  "papers": {
+    "swin-cvpr2022.pdf": "33a285310d832e28d2eed55a45cfd7a8503634e643dcc65610d38d52a85a5c13",
+    "swin-supplement.pdf": "2a4bff5b8b7a0cbe0957b42c0346bb2a1e4af5d538ba4b3ad976e0b7424f0279"
+  },
+  "note": "Read-only recipe audit. No new training or inference. Published code defaults are not proof of a historical leaderboard submission recipe.",
+  "calculations": {
+    "sweep_patch_voxels": 884736,
+    "nnunet_patch_voxels": 4587520,
+    "patch_voxel_ratio": 5.185185185185185,
+    "total_sweep_patches": 80000,
+    "total_nnunet_patches": 500000,
+    "patch_exposure_ratio": 6.25,
+    "input_voxel_exposure_ratio": 32.407407407407405,
+    "fov_convention": "patch_size times voxel spacing; approximate coverage rather than distance between extreme voxel centers",
+    "sweep_approximate_fov_xyz_mm": [
+      144,
+      144,
+      240
+    ],
+    "nnunet_approximate_fov_xyz_mm": [
+      208,
+      260,
+      140
+    ],
+    "uniform_class_sampler_tumor_probability_when_both_foreground_classes_present": 0.25,
+    "universal_class_sampler_nominal_tumor_probability_when_all_classes_available": 0.7142857142857143
+  },
+  "audit_segmentary_commit": "013ba34f8ed577060f548700f540cdbcfac0613c"
+}
