@@ -63,6 +63,9 @@ Complete timings, measured losses, package/GPU metadata and parity flags are in 
 
 Full CI passed **2,336 tests**, with 4 skipped and 41 excluded by the GPU/slow test markers. Local targeted verification passed 148 tests with one GPU-specific skip, plus the campaign/report/dashboard suites. Interrupted-versus-uninterrupted CPU worker tests cover legacy and combined class sampling/rotation/intensity with prefetch on/off, comparing exact weights, AdamW moments, scheduler/scaler and recorded RNG state. The server GPU checks above are separate evidence.
 
+
+At the 2026-09-14T17:31:45.911930+00:00 [startup snapshot](startup-status.json), all six runs had passed 200 updates with finite losses, zero external weight loads and one shared initial-weight hash. Epoch-2 training throughput was about 4.4 updates/second for every arm, including rotation, with prefetch enabled. Each retained two checkpoint generations. These early observations are not final accuracy or runtime estimates.
+
 ## Checkpoints, dashboard and reports
 
 The ordinary campaign runner creates the shared training dashboard. Its owned panes close after successful completion; failure evidence and user-added panes are retained. Each run retains its latest and selected best checkpoint generations. A same-recipe interruption resumes full state from latest; this new recipe round imports no historical checkpoint.

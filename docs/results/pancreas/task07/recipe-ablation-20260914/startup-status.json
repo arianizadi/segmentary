@@ -1,0 +1,189 @@
+{
+  "snapshot_epoch": 1789407105.9119296,
+  "unique_initial_weight_hashes": 1,
+  "initial_weight_sha256": [
+    "b5446a4e8b6991826fb215f12c897e369c8b9a22800156981fe56dcb619aa9a0"
+  ],
+  "runs": [
+    {
+      "id": "dynunet-control-seed0",
+      "progress": {
+        "epoch": 3,
+        "epoch_mean_loss": 1.052537966626031,
+        "learning_rate": 0.00029270005966451325,
+        "loss": 1.0163474082946777,
+        "optimizer_steps_per_second": 4.427079039164039,
+        "phase": "train",
+        "step": 270,
+        "target_steps": 10000,
+        "updated_at": 1789407103.9141943
+      },
+      "external_weight_loads": 0,
+      "epoch_metrics": {
+        "best_mass_dice": 0.0,
+        "epoch": 2,
+        "epoch_checkpoint_seconds": 0.493173785507679,
+        "epoch_training_seconds": 22.555917851626873,
+        "epoch_validation_seconds": 6.902962923049927e-06,
+        "learning_rate": 0.00029459455997897255,
+        "loss": 1.142088394165039,
+        "peak_allocated_bytes": 8171400704,
+        "peak_reserved_bytes": 11270094848,
+        "step": 200,
+        "wall_seconds": 140.95686370879412
+      },
+      "validation": {},
+      "retained_generations": 2
+    },
+    {
+      "id": "dynunet-mass50-seed0",
+      "progress": {
+        "epoch": 3,
+        "epoch_mean_loss": 0.9948583245277405,
+        "learning_rate": 0.00029270005966451325,
+        "loss": 0.9515161514282227,
+        "optimizer_steps_per_second": 4.423565787086028,
+        "phase": "train",
+        "step": 270,
+        "target_steps": 10000,
+        "updated_at": 1789407103.7898283
+      },
+      "external_weight_loads": 0,
+      "epoch_metrics": {
+        "best_mass_dice": 0.0,
+        "epoch": 2,
+        "epoch_checkpoint_seconds": 0.4736302047967911,
+        "epoch_training_seconds": 22.543910689651966,
+        "epoch_validation_seconds": 9.641051292419434e-06,
+        "learning_rate": 0.00029459455997897255,
+        "loss": 1.1108274364471435,
+        "peak_allocated_bytes": 8171400704,
+        "peak_reserved_bytes": 11270094848,
+        "step": 200,
+        "wall_seconds": 141.448116581887
+      },
+      "validation": {},
+      "retained_generations": 2
+    },
+    {
+      "id": "dynunet-class111-seed0",
+      "progress": {
+        "epoch": 3,
+        "epoch_mean_loss": 1.0055281065404416,
+        "learning_rate": 0.0002924293057119913,
+        "loss": 0.956520140171051,
+        "optimizer_steps_per_second": 4.414621919253578,
+        "phase": "train",
+        "step": 280,
+        "target_steps": 10000,
+        "updated_at": 1789407105.7746322
+      },
+      "external_weight_loads": 0,
+      "epoch_metrics": {
+        "best_mass_dice": 0.0,
+        "epoch": 2,
+        "epoch_checkpoint_seconds": 0.4389766491949558,
+        "epoch_training_seconds": 22.62339510396123,
+        "epoch_validation_seconds": 1.0319054126739502e-05,
+        "learning_rate": 0.00029459455997897255,
+        "loss": 1.118460818529129,
+        "peak_allocated_bytes": 8171400704,
+        "peak_reserved_bytes": 11270094848,
+        "step": 200,
+        "wall_seconds": 141.74971026182175
+      },
+      "validation": {},
+      "retained_generations": 2
+    },
+    {
+      "id": "dynunet-class115-seed0",
+      "progress": {
+        "epoch": 3,
+        "epoch_mean_loss": 0.9791104563644955,
+        "learning_rate": 0.00029270005966451325,
+        "loss": 0.9606963992118835,
+        "optimizer_steps_per_second": 4.405764036071625,
+        "phase": "train",
+        "step": 270,
+        "target_steps": 10000,
+        "updated_at": 1789407104.044271
+      },
+      "external_weight_loads": 0,
+      "epoch_metrics": {
+        "best_mass_dice": 0.0,
+        "epoch": 2,
+        "epoch_checkpoint_seconds": 0.4686635546386242,
+        "epoch_training_seconds": 22.61321609467268,
+        "epoch_validation_seconds": 5.010515451431274e-06,
+        "learning_rate": 0.00029459455997897255,
+        "loss": 1.0915878969430923,
+        "peak_allocated_bytes": 8171400704,
+        "peak_reserved_bytes": 11270094848,
+        "step": 200,
+        "wall_seconds": 140.92277835309505
+      },
+      "validation": {},
+      "retained_generations": 2
+    },
+    {
+      "id": "dynunet-rotation-seed0",
+      "progress": {
+        "epoch": 3,
+        "epoch_mean_loss": 1.0373070580618722,
+        "learning_rate": 0.00029270005966451325,
+        "loss": 1.0257335901260376,
+        "optimizer_steps_per_second": 4.390166778146746,
+        "phase": "train",
+        "step": 270,
+        "target_steps": 10000,
+        "updated_at": 1789407103.8856921
+      },
+      "external_weight_loads": 0,
+      "epoch_metrics": {
+        "best_mass_dice": 0.0,
+        "epoch": 2,
+        "epoch_checkpoint_seconds": 0.5072431974112988,
+        "epoch_training_seconds": 22.71171209588647,
+        "epoch_validation_seconds": 5.319714546203613e-06,
+        "learning_rate": 0.00029459455997897255,
+        "loss": 1.1316541373729705,
+        "peak_allocated_bytes": 8171400704,
+        "peak_reserved_bytes": 11270094848,
+        "step": 200,
+        "wall_seconds": 141.402758538723
+      },
+      "validation": {},
+      "retained_generations": 2
+    },
+    {
+      "id": "dynunet-intensity-seed0",
+      "progress": {
+        "epoch": 3,
+        "epoch_mean_loss": 1.0467237676892962,
+        "learning_rate": 0.00029270005966451325,
+        "loss": 1.0088318586349487,
+        "optimizer_steps_per_second": 4.377560369450786,
+        "phase": "train",
+        "step": 270,
+        "target_steps": 10000,
+        "updated_at": 1789407103.955103
+      },
+      "external_weight_loads": 0,
+      "epoch_metrics": {
+        "best_mass_dice": 0.0,
+        "epoch": 2,
+        "epoch_checkpoint_seconds": 0.5177668817341328,
+        "epoch_training_seconds": 22.83459736406803,
+        "epoch_validation_seconds": 1.7583370208740234e-06,
+        "learning_rate": 0.00029459455997897255,
+        "loss": 1.139417210817337,
+        "peak_allocated_bytes": 8171400704,
+        "peak_reserved_bytes": 11270094848,
+        "step": 200,
+        "wall_seconds": 140.54323882982135
+      },
+      "validation": {},
+      "retained_generations": 2
+    }
+  ]
+}
