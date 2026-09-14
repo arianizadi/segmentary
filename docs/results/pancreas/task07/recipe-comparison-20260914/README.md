@@ -1,5 +1,7 @@
 # Task07: what we can learn from stronger training recipes
 
+The first six-arm DynUNet recipe round is now running: [protocol and verified input/GPU checks](../recipe-ablation-20260914/launch.md) · [live comparison](../recipe-ablation-20260914/README.md).
+
 Reviewed September 14, 2026. This is a source and configuration audit, not a new training result.
 
 **The first sweep measures architectures under a small common starting recipe. It does not reproduce the papers' complete systems.** Differences in preprocessing, sampling, augmentation, model capacity, supervision, training budget and inference are large enough that the score gap cannot be assigned to architecture alone. These are hypotheses to test, not proven causes of our lower Dice.

@@ -1,0 +1,687 @@
+{
+  "source_commit": "9714becaed028d7f0b03e1cf1782f68eb8c52853",
+  "campaign_id": "task07-recipe-ablation-20260914",
+  "partition": "train",
+  "not_model_quality_evidence": true,
+  "profiles": {
+    "dynunet-control-seed0": {
+      "status": "completed",
+      "git_commit": "9714becaed028d7f0b03e1cf1782f68eb8c52853",
+      "git_dirty": false,
+      "data_cases_checked": 3,
+      "raw_cache_samples_and_rng_equal": true,
+      "legacy_comparison_applicable": true,
+      "model": {
+        "checkpoint_serialization": {
+          "bytes": 198618177,
+          "retained": false,
+          "seconds": 0.22189992293715477,
+          "storage": "temporary directory; serialization only, no fsync/atomic-index cost"
+        },
+        "cuda_synchronized_per_stage": true,
+        "initialization": "scratch; no external weights",
+        "learning_rate_policy": "diagnostic constant AdamW learning rate; not a resumable campaign run",
+        "losses": [
+          1.710309624671936,
+          1.6835013628005981,
+          1.6793298721313477,
+          1.645780324935913,
+          1.6308311223983765
+        ],
+        "measured_steps": 5,
+        "parameters": 16543683,
+        "peak_allocated_cuda_bytes": 8171400704,
+        "peak_reserved_cuda_bytes": 11270094848,
+        "profiler_enabled": false,
+        "timings": {
+          "backward": {
+            "count": 5,
+            "max_seconds": 0.15517069026827812,
+            "mean_seconds": 0.15496073439717292,
+            "min_seconds": 0.15474417060613632,
+            "p50_seconds": 0.1549680046737194,
+            "p95_seconds": 0.1551571197807789
+          },
+          "forward": {
+            "count": 5,
+            "max_seconds": 0.06570253521203995,
+            "mean_seconds": 0.0656124472618103,
+            "min_seconds": 0.06544328480958939,
+            "p50_seconds": 0.06561242789030075,
+            "p95_seconds": 0.06570106968283654
+          },
+          "host_to_device": {
+            "count": 5,
+            "max_seconds": 0.011671699583530426,
+            "mean_seconds": 0.01161181777715683,
+            "min_seconds": 0.011498626321554184,
+            "p50_seconds": 0.011636782437562943,
+            "p95_seconds": 0.01167091578245163
+          },
+          "optimizer": {
+            "count": 5,
+            "max_seconds": 0.0031783580780029297,
+            "mean_seconds": 0.0031133487820625303,
+            "min_seconds": 0.00306006520986557,
+            "p50_seconds": 0.003109123557806015,
+            "p95_seconds": 0.0031651251018047334
+          },
+          "sample": {
+            "count": 5,
+            "max_seconds": 0.009125582873821259,
+            "mean_seconds": 0.008524458855390549,
+            "min_seconds": 0.008060704916715622,
+            "p50_seconds": 0.008407525718212128,
+            "p95_seconds": 0.009036435186862946
+          },
+          "whole_step": {
+            "count": 5,
+            "max_seconds": 0.24459412321448326,
+            "mean_seconds": 0.2440903976559639,
+            "min_seconds": 0.2436075136065483,
+            "p50_seconds": 0.24407336115837097,
+            "p95_seconds": 0.2445000611245632
+          }
+        },
+        "warmup_steps": 3
+      },
+      "native_inference": {
+        "argmax_disagreement_voxels": 1202,
+        "batch_1_seconds": 1.5377138257026672,
+        "configured_batch_seconds": 1.6571883782744408,
+        "configured_batch_size": 8,
+        "labels_opened_for_inference": false,
+        "native_voxels": 9699328,
+        "note": "Argmax differences may expose batch-dependent floating-point behavior; no quality score is computed",
+        "partition": "train"
+      },
+      "environment": {
+        "packages": {
+          "einops": "0.8.2",
+          "mamba-ssm": "2.3.2.post1",
+          "ml-collections": "1.1.0",
+          "monai": "1.6.0",
+          "nibabel": "5.4.2",
+          "numpy": "2.4.4",
+          "scipy": "1.17.1",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "torch_cuda_build": "12.8",
+        "cpu_threads": 4,
+        "torch_threads": 4,
+        "gpu": {
+          "capability": [
+            8,
+            9
+          ],
+          "name": "NVIDIA L40S",
+          "total_memory_bytes": 47677177856
+        }
+      }
+    },
+    "dynunet-mass50-seed0": {
+      "status": "completed",
+      "git_commit": "9714becaed028d7f0b03e1cf1782f68eb8c52853",
+      "git_dirty": false,
+      "data_cases_checked": 3,
+      "raw_cache_samples_and_rng_equal": true,
+      "legacy_comparison_applicable": false,
+      "model": {
+        "checkpoint_serialization": {
+          "bytes": 198618177,
+          "retained": false,
+          "seconds": 0.229488555341959,
+          "storage": "temporary directory; serialization only, no fsync/atomic-index cost"
+        },
+        "cuda_synchronized_per_stage": true,
+        "initialization": "scratch; no external weights",
+        "learning_rate_policy": "diagnostic constant AdamW learning rate; not a resumable campaign run",
+        "losses": [
+          1.6914361715316772,
+          1.6959549188613892,
+          1.6602190732955933,
+          1.6349730491638184,
+          1.6240195035934448
+        ],
+        "measured_steps": 5,
+        "parameters": 16543683,
+        "peak_allocated_cuda_bytes": 8171400704,
+        "peak_reserved_cuda_bytes": 11270094848,
+        "profiler_enabled": false,
+        "timings": {
+          "backward": {
+            "count": 5,
+            "max_seconds": 0.15517093986272812,
+            "mean_seconds": 0.15499145537614822,
+            "min_seconds": 0.1548476777970791,
+            "p50_seconds": 0.15502560511231422,
+            "p95_seconds": 0.15514236316084862
+          },
+          "forward": {
+            "count": 5,
+            "max_seconds": 0.06571339070796967,
+            "mean_seconds": 0.06563246622681618,
+            "min_seconds": 0.06558659672737122,
+            "p50_seconds": 0.06561789661645889,
+            "p95_seconds": 0.06570181399583816
+          },
+          "host_to_device": {
+            "count": 5,
+            "max_seconds": 0.01238531619310379,
+            "mean_seconds": 0.011910173296928405,
+            "min_seconds": 0.011611834168434143,
+            "p50_seconds": 0.011648885905742645,
+            "p95_seconds": 0.012360262125730515
+          },
+          "optimizer": {
+            "count": 5,
+            "max_seconds": 0.0031400099396705627,
+            "mean_seconds": 0.003106480836868286,
+            "min_seconds": 0.0030645132064819336,
+            "p50_seconds": 0.003107260912656784,
+            "p95_seconds": 0.0031395711004734038
+          },
+          "sample": {
+            "count": 5,
+            "max_seconds": 0.008897949010133743,
+            "mean_seconds": 0.008362293243408203,
+            "min_seconds": 0.007894076406955719,
+            "p50_seconds": 0.008176229894161224,
+            "p95_seconds": 0.008883116394281387
+          },
+          "whole_step": {
+            "count": 5,
+            "max_seconds": 0.24530189484357834,
+            "mean_seconds": 0.24428391829133034,
+            "min_seconds": 0.24356499686837196,
+            "p50_seconds": 0.24440213665366173,
+            "p95_seconds": 0.24513383731245994
+          }
+        },
+        "warmup_steps": 3
+      },
+      "native_inference": {
+        "status": "explicitly_skipped"
+      },
+      "environment": {
+        "packages": {
+          "einops": "0.8.2",
+          "mamba-ssm": "2.3.2.post1",
+          "ml-collections": "1.1.0",
+          "monai": "1.6.0",
+          "nibabel": "5.4.2",
+          "numpy": "2.4.4",
+          "scipy": "1.17.1",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "torch_cuda_build": "12.8",
+        "cpu_threads": 4,
+        "torch_threads": 4,
+        "gpu": {
+          "capability": [
+            8,
+            9
+          ],
+          "name": "NVIDIA L40S",
+          "total_memory_bytes": 47677177856
+        }
+      }
+    },
+    "dynunet-class111-seed0": {
+      "status": "completed",
+      "git_commit": "9714becaed028d7f0b03e1cf1782f68eb8c52853",
+      "git_dirty": false,
+      "data_cases_checked": 3,
+      "raw_cache_samples_and_rng_equal": true,
+      "legacy_comparison_applicable": false,
+      "model": {
+        "checkpoint_serialization": {
+          "bytes": 198618177,
+          "retained": false,
+          "seconds": 0.22168398648500443,
+          "storage": "temporary directory; serialization only, no fsync/atomic-index cost"
+        },
+        "cuda_synchronized_per_stage": true,
+        "initialization": "scratch; no external weights",
+        "learning_rate_policy": "diagnostic constant AdamW learning rate; not a resumable campaign run",
+        "losses": [
+          1.7065274715423584,
+          1.6935383081436157,
+          1.6631685495376587,
+          1.6543173789978027,
+          1.6299097537994385
+        ],
+        "measured_steps": 5,
+        "parameters": 16543683,
+        "peak_allocated_cuda_bytes": 8171400704,
+        "peak_reserved_cuda_bytes": 11270094848,
+        "profiler_enabled": false,
+        "timings": {
+          "backward": {
+            "count": 5,
+            "max_seconds": 0.1550719328224659,
+            "mean_seconds": 0.15487076416611673,
+            "min_seconds": 0.1547517031431198,
+            "p50_seconds": 0.1548088602721691,
+            "p95_seconds": 0.15504631251096726
+          },
+          "forward": {
+            "count": 5,
+            "max_seconds": 0.06571254134178162,
+            "mean_seconds": 0.06556526571512222,
+            "min_seconds": 0.06539563089609146,
+            "p50_seconds": 0.06557387858629227,
+            "p95_seconds": 0.06570228412747384
+          },
+          "host_to_device": {
+            "count": 5,
+            "max_seconds": 0.019648682326078415,
+            "mean_seconds": 0.013285766541957855,
+            "min_seconds": 0.011582259088754654,
+            "p50_seconds": 0.011744514107704163,
+            "p95_seconds": 0.01808623671531677
+          },
+          "optimizer": {
+            "count": 5,
+            "max_seconds": 0.0031439773738384247,
+            "mean_seconds": 0.003095342963933945,
+            "min_seconds": 0.003051944077014923,
+            "p50_seconds": 0.0030927322804927826,
+            "p95_seconds": 0.0031353749334812166
+          },
+          "sample": {
+            "count": 5,
+            "max_seconds": 0.009197641164064407,
+            "mean_seconds": 0.008763159811496734,
+            "min_seconds": 0.008252482861280441,
+            "p50_seconds": 0.008767765015363693,
+            "p95_seconds": 0.009176691621541977
+          },
+          "whole_step": {
+            "count": 5,
+            "max_seconds": 0.25144819915294647,
+            "mean_seconds": 0.24583250060677528,
+            "min_seconds": 0.2439424805343151,
+            "p50_seconds": 0.2446756362915039,
+            "p95_seconds": 0.2501422494649887
+          }
+        },
+        "warmup_steps": 3
+      },
+      "native_inference": {
+        "status": "explicitly_skipped"
+      },
+      "environment": {
+        "packages": {
+          "einops": "0.8.2",
+          "mamba-ssm": "2.3.2.post1",
+          "ml-collections": "1.1.0",
+          "monai": "1.6.0",
+          "nibabel": "5.4.2",
+          "numpy": "2.4.4",
+          "scipy": "1.17.1",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "torch_cuda_build": "12.8",
+        "cpu_threads": 4,
+        "torch_threads": 4,
+        "gpu": {
+          "capability": [
+            8,
+            9
+          ],
+          "name": "NVIDIA L40S",
+          "total_memory_bytes": 47677177856
+        }
+      }
+    },
+    "dynunet-class115-seed0": {
+      "status": "completed",
+      "git_commit": "9714becaed028d7f0b03e1cf1782f68eb8c52853",
+      "git_dirty": false,
+      "data_cases_checked": 3,
+      "raw_cache_samples_and_rng_equal": true,
+      "legacy_comparison_applicable": false,
+      "model": {
+        "checkpoint_serialization": {
+          "bytes": 198618177,
+          "retained": false,
+          "seconds": 0.22128623351454735,
+          "storage": "temporary directory; serialization only, no fsync/atomic-index cost"
+        },
+        "cuda_synchronized_per_stage": true,
+        "initialization": "scratch; no external weights",
+        "learning_rate_policy": "diagnostic constant AdamW learning rate; not a resumable campaign run",
+        "losses": [
+          1.7065924406051636,
+          1.6722909212112427,
+          1.6629281044006348,
+          1.6450763940811157,
+          1.6216468811035156
+        ],
+        "measured_steps": 5,
+        "parameters": 16543683,
+        "peak_allocated_cuda_bytes": 8171400704,
+        "peak_reserved_cuda_bytes": 11270094848,
+        "profiler_enabled": false,
+        "timings": {
+          "backward": {
+            "count": 5,
+            "max_seconds": 0.15502124279737473,
+            "mean_seconds": 0.15497344583272935,
+            "min_seconds": 0.15489858388900757,
+            "p50_seconds": 0.15498758479952812,
+            "p95_seconds": 0.15502039343118668
+          },
+          "forward": {
+            "count": 5,
+            "max_seconds": 0.06575891003012657,
+            "mean_seconds": 0.06563896536827088,
+            "min_seconds": 0.06551503390073776,
+            "p50_seconds": 0.06561655551195145,
+            "p95_seconds": 0.06575726717710495
+          },
+          "host_to_device": {
+            "count": 5,
+            "max_seconds": 0.011940848082304,
+            "mean_seconds": 0.011772605776786804,
+            "min_seconds": 0.011604346334934235,
+            "p50_seconds": 0.011730358004570007,
+            "p95_seconds": 0.011927631497383118
+          },
+          "optimizer": {
+            "count": 5,
+            "max_seconds": 0.003139924257993698,
+            "mean_seconds": 0.0030938804149627684,
+            "min_seconds": 0.003074195235967636,
+            "p50_seconds": 0.0030844807624816895,
+            "p95_seconds": 0.0031305216252803802
+          },
+          "sample": {
+            "count": 5,
+            "max_seconds": 0.008827362209558487,
+            "mean_seconds": 0.008467593044042588,
+            "min_seconds": 0.008151300251483917,
+            "p50_seconds": 0.008411135524511337,
+            "p95_seconds": 0.00877230241894722
+          },
+          "whole_step": {
+            "count": 5,
+            "max_seconds": 0.2444346770644188,
+            "mean_seconds": 0.24422061815857887,
+            "min_seconds": 0.2438768520951271,
+            "p50_seconds": 0.24424442648887634,
+            "p95_seconds": 0.244427153468132
+          }
+        },
+        "warmup_steps": 3
+      },
+      "native_inference": {
+        "status": "explicitly_skipped"
+      },
+      "environment": {
+        "packages": {
+          "einops": "0.8.2",
+          "mamba-ssm": "2.3.2.post1",
+          "ml-collections": "1.1.0",
+          "monai": "1.6.0",
+          "nibabel": "5.4.2",
+          "numpy": "2.4.4",
+          "scipy": "1.17.1",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "torch_cuda_build": "12.8",
+        "cpu_threads": 4,
+        "torch_threads": 4,
+        "gpu": {
+          "capability": [
+            8,
+            9
+          ],
+          "name": "NVIDIA L40S",
+          "total_memory_bytes": 47677177856
+        }
+      }
+    },
+    "dynunet-rotation-seed0": {
+      "status": "completed",
+      "git_commit": "9714becaed028d7f0b03e1cf1782f68eb8c52853",
+      "git_dirty": false,
+      "data_cases_checked": 3,
+      "raw_cache_samples_and_rng_equal": true,
+      "legacy_comparison_applicable": false,
+      "model": {
+        "checkpoint_serialization": {
+          "bytes": 198618177,
+          "retained": false,
+          "seconds": 0.23775789886713028,
+          "storage": "temporary directory; serialization only, no fsync/atomic-index cost"
+        },
+        "cuda_synchronized_per_stage": true,
+        "initialization": "scratch; no external weights",
+        "learning_rate_policy": "diagnostic constant AdamW learning rate; not a resumable campaign run",
+        "losses": [
+          1.7187657356262207,
+          1.7037984132766724,
+          1.6688250303268433,
+          1.6550211906433105,
+          1.646609902381897
+        ],
+        "measured_steps": 5,
+        "parameters": 16543683,
+        "peak_allocated_cuda_bytes": 8171400704,
+        "peak_reserved_cuda_bytes": 11270094848,
+        "profiler_enabled": false,
+        "timings": {
+          "backward": {
+            "count": 5,
+            "max_seconds": 0.15507057681679726,
+            "mean_seconds": 0.15495840236544609,
+            "min_seconds": 0.15479399263858795,
+            "p50_seconds": 0.15498580038547516,
+            "p95_seconds": 0.15506393760442733
+          },
+          "forward": {
+            "count": 5,
+            "max_seconds": 0.06579243019223213,
+            "mean_seconds": 0.06568761616945266,
+            "min_seconds": 0.06553752720355988,
+            "p50_seconds": 0.06573474034667015,
+            "p95_seconds": 0.06578474566340446
+          },
+          "host_to_device": {
+            "count": 5,
+            "max_seconds": 0.01484556496143341,
+            "mean_seconds": 0.012716222554445267,
+            "min_seconds": 0.012000929564237595,
+            "p50_seconds": 0.0122641921043396,
+            "p95_seconds": 0.014336426556110381
+          },
+          "optimizer": {
+            "count": 5,
+            "max_seconds": 0.0036555975675582886,
+            "mean_seconds": 0.0032634228467941285,
+            "min_seconds": 0.003083042800426483,
+            "p50_seconds": 0.0031926222145557404,
+            "p95_seconds": 0.0035730756819248198
+          },
+          "sample": {
+            "count": 5,
+            "max_seconds": 0.17008443549275398,
+            "mean_seconds": 0.08158546537160874,
+            "min_seconds": 0.04685259982943535,
+            "p50_seconds": 0.049571577459573746,
+            "p95_seconds": 0.15450264066457747
+          },
+          "whole_step": {
+            "count": 5,
+            "max_seconds": 0.4064948670566082,
+            "mean_seconds": 0.31858455538749697,
+            "min_seconds": 0.2833445109426975,
+            "p50_seconds": 0.28596558049321175,
+            "p95_seconds": 0.3914551503956318
+          }
+        },
+        "warmup_steps": 3
+      },
+      "native_inference": {
+        "status": "explicitly_skipped"
+      },
+      "environment": {
+        "packages": {
+          "einops": "0.8.2",
+          "mamba-ssm": "2.3.2.post1",
+          "ml-collections": "1.1.0",
+          "monai": "1.6.0",
+          "nibabel": "5.4.2",
+          "numpy": "2.4.4",
+          "scipy": "1.17.1",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "torch_cuda_build": "12.8",
+        "cpu_threads": 4,
+        "torch_threads": 4,
+        "gpu": {
+          "capability": [
+            8,
+            9
+          ],
+          "name": "NVIDIA L40S",
+          "total_memory_bytes": 47677177856
+        }
+      }
+    },
+    "dynunet-intensity-seed0": {
+      "status": "completed",
+      "git_commit": "9714becaed028d7f0b03e1cf1782f68eb8c52853",
+      "git_dirty": false,
+      "data_cases_checked": 3,
+      "raw_cache_samples_and_rng_equal": true,
+      "legacy_comparison_applicable": false,
+      "model": {
+        "checkpoint_serialization": {
+          "bytes": 198618177,
+          "retained": false,
+          "seconds": 0.22293125465512276,
+          "storage": "temporary directory; serialization only, no fsync/atomic-index cost"
+        },
+        "cuda_synchronized_per_stage": true,
+        "initialization": "scratch; no external weights",
+        "learning_rate_policy": "diagnostic constant AdamW learning rate; not a resumable campaign run",
+        "losses": [
+          1.708319902420044,
+          1.7015068531036377,
+          1.6732673645019531,
+          1.6680355072021484,
+          1.635831594467163
+        ],
+        "measured_steps": 5,
+        "parameters": 16543683,
+        "peak_allocated_cuda_bytes": 8171400704,
+        "peak_reserved_cuda_bytes": 11270094848,
+        "profiler_enabled": false,
+        "timings": {
+          "backward": {
+            "count": 5,
+            "max_seconds": 0.15507234632968903,
+            "mean_seconds": 0.15488004609942435,
+            "min_seconds": 0.15468968451023102,
+            "p50_seconds": 0.15483221039175987,
+            "p95_seconds": 0.15506140813231467
+          },
+          "forward": {
+            "count": 5,
+            "max_seconds": 0.06568824127316475,
+            "mean_seconds": 0.06564393416047096,
+            "min_seconds": 0.06558680906891823,
+            "p50_seconds": 0.06563394516706467,
+            "p95_seconds": 0.0656870424747467
+          },
+          "host_to_device": {
+            "count": 5,
+            "max_seconds": 0.011919833719730377,
+            "mean_seconds": 0.011819108575582504,
+            "min_seconds": 0.011731084436178207,
+            "p50_seconds": 0.011821944266557693,
+            "p95_seconds": 0.011905202269554138
+          },
+          "optimizer": {
+            "count": 5,
+            "max_seconds": 0.003153722733259201,
+            "mean_seconds": 0.003114303946495056,
+            "min_seconds": 0.003080323338508606,
+            "p50_seconds": 0.0031115561723709106,
+            "p95_seconds": 0.0031463928520679475
+          },
+          "sample": {
+            "count": 5,
+            "max_seconds": 0.010016664862632751,
+            "mean_seconds": 0.009317834675312043,
+            "min_seconds": 0.008561719208955765,
+            "p50_seconds": 0.009330693632364273,
+            "p95_seconds": 0.00989549234509468
+          },
+          "whole_step": {
+            "count": 5,
+            "max_seconds": 0.2458830177783966,
+            "mean_seconds": 0.24505335167050363,
+            "min_seconds": 0.24443863704800606,
+            "p50_seconds": 0.24497893825173378,
+            "p95_seconds": 0.245726977288723
+          }
+        },
+        "warmup_steps": 3
+      },
+      "native_inference": {
+        "status": "explicitly_skipped"
+      },
+      "environment": {
+        "packages": {
+          "einops": "0.8.2",
+          "mamba-ssm": "2.3.2.post1",
+          "ml-collections": "1.1.0",
+          "monai": "1.6.0",
+          "nibabel": "5.4.2",
+          "numpy": "2.4.4",
+          "scipy": "1.17.1",
+          "segmentation-models-pytorch": "0.5.0",
+          "timm": "1.0.28",
+          "torch": "2.11.0+cu128",
+          "torchvision": "0.26.0+cu128",
+          "transformers": "5.15.0"
+        },
+        "torch_cuda_build": "12.8",
+        "cpu_threads": 4,
+        "torch_threads": 4,
+        "gpu": {
+          "capability": [
+            8,
+            9
+          ],
+          "name": "NVIDIA L40S",
+          "total_memory_bytes": 47677177856
+        }
+      }
+    }
+  }
+}

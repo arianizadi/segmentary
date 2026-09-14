@@ -1,6 +1,6 @@
 # Transferable recipe experiments
 
-The first six-arm DynUNet screen is **implemented and not yet launched at this planning checkpoint**: fresh control, greater mass-centered sampling, exact class-center weights 1:1:1 and 1:1:5, rotation alone, and intensity scaling alone. The training-only input audit and explicit recipe/RNG checks are also implemented. See the [operator guide](../../../../guides/medical-recipe-ablation.md) for exact settings and commands, and the [verified recipe comparison](README.md) for the evidence behind these choices. Later stages below remain proposals; implementation is not evidence of an accuracy improvement.
+The first six-arm DynUNet screen is **implemented and launched on September 14, 2026**: fresh control, greater mass-centered sampling, exact class-center weights 1:1:1 and 1:1:5, rotation alone, and intensity scaling alone. The training-only input audit and explicit recipe/RNG checks are also implemented. See the [operator guide](../../../../guides/medical-recipe-ablation.md) for exact settings and commands, and the [verified recipe comparison](README.md) for the evidence behind these choices. The [launch evidence](../recipe-ablation-20260914/launch.md) and [live comparison](../recipe-ablation-20260914/README.md) record the actual first round. Later stages below remain proposals; implementation is not evidence of an accuracy improvement.
 
 ## First: measure the input our models actually see
 
