@@ -505,11 +505,9 @@ def collect_performance(
     perf = status.get("performance", {})
     wall = number(perf.get("wall_seconds"))
     known_scope = perf.get("scope") == "model_ready_to_last_case_including_cache_export"
-    full = (
-        bool(expected_ids)
-        and completed == len(expected_ids)
-        and not failures
-        and perf.get("completed") is True
+    full = bool(expected_ids) and completed == len(expected_ids) and not failures
+    pipeline_complete = (
+        perf.get("completed") is True and known_scope and wall is not None and wall > 0
     )
     latency = _summary(
         [
@@ -572,6 +570,7 @@ def collect_performance(
             "completed_cases": completed,
             "failed_cases": failures,
             "complete_cohort": full,
+            "pipeline_measurement_complete": pipeline_complete,
             "cases": samples,
             "case_latency_seconds": latency,
             "case_latency_scope": "overlapped admission-to-export including queue time"
@@ -582,7 +581,7 @@ def collect_performance(
             if known_scope
             else "not_recorded",
             "scans_per_second": completed / wall
-            if full and known_scope and wall and wall > 0
+            if full and pipeline_complete and wall is not None
             else None,
             "peak_allocated_bytes": number(perf.get("peak_allocated_bytes")),
             "peak_reserved_bytes": number(perf.get("peak_reserved_bytes")),

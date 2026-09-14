@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import copy
+import csv
 import importlib.util
+import io
 import json
 from pathlib import Path
 
@@ -340,6 +342,8 @@ def test_reports_retain_epoch_and_prediction_components_without_false_throughput
     snapshot = reporter.collect(spec, state)
     perf = snapshot["runs"][0]["performance"]
     assert perf["prediction"]["scans_per_second"] == 0.125
+    assert perf["prediction"]["complete_cohort"] is True
+    assert perf["prediction"]["pipeline_measurement_complete"] is True
     assert perf["prediction"]["case_latency_seconds"]["p50"] == 20
     assert perf["training_segments"][0]["totals"]["epoch_checkpoint_seconds"]["seconds"] is None
     files = reporter.render(snapshot)
@@ -353,6 +357,20 @@ def test_reports_retain_epoch_and_prediction_components_without_false_throughput
         reporter.collect(spec, state)["runs"][0]["performance"]["prediction"]["scans_per_second"]
         is None
     )
+    prediction["performance"].update(completed=True, scope="unknown")
+    write(workspace / "predictions/val/prediction-status.json", prediction)
+    unknown = reporter.collect(spec, state)["runs"][0]["performance"]["prediction"]
+    assert unknown["pipeline_measurement_complete"] is False
+    assert unknown["scans_per_second"] is None
+    prediction.pop("performance")
+    write(workspace / "predictions/val/prediction-status.json", prediction)
+    snapshot = reporter.collect(spec, state)
+    legacy = snapshot["runs"][0]["performance"]["prediction"]
+    assert legacy["complete_cohort"] is True
+    assert legacy["pipeline_measurement_complete"] is False
+    assert legacy["scans_per_second"] is None
+    summary = list(csv.DictReader(io.StringIO(reporter.render(snapshot)["results.csv"])))
+    assert summary[0]["prediction_complete"] == "True"
 
 
 @pytest.mark.parametrize(
