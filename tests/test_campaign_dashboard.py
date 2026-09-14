@@ -45,6 +45,7 @@ class Tmux:
 
 @pytest.fixture
 def tmux(monkeypatch):
+    monkeypatch.setattr(dashboard, "start_cleanup", lambda *args: None)
     fake = Tmux()
     monkeypatch.setattr(dashboard, "_tmux", fake)
     monkeypatch.setattr(

@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import argparse
+import fcntl
 import hashlib
+import json
 import os
 import re
 import shlex
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 _ROOT_ENV = "SEGMENTARY_DASHBOARD_ROOT"
@@ -85,6 +89,7 @@ def ensure_dashboard(
                 pane, dead = panes[0].split("\t")
                 if dead == "1":
                     dead_pane = pane
+        created_windows = []
         if "training" not in windows or dead_pane is not None:
             environment = dict(os.environ)
             source_path = str(repo / "src")
@@ -143,6 +148,7 @@ def ensure_dashboard(
                 _tmux("respawn-pane", "-t", dead_pane, command)
             else:
                 _tmux("new-window", "-d", "-t", f"={name}", "-n", "training", command)
+            created_windows.append("training")
             _tmux("set-window-option", "-t", f"={name}:training", "remain-on-exit", "on")
         if "gpu-monitor" not in windows:
             _tmux(
@@ -154,6 +160,14 @@ def ensure_dashboard(
                 "gpu-monitor",
                 "watch -n 2 nvidia-smi",
             )
+            created_windows.append("gpu-monitor")
+        for window in created_windows:
+            pane = _tmux(
+                "display-message", "-p", "-t", f"={name}:{window}", "#{pane_id}"
+            ).stdout.strip()
+            if pane:
+                register_cleanup_pane(name, root, pane)
+        start_cleanup(root, repo, python, name)
         print(
             f"Campaign dashboard: tmux attach -t {shlex.quote(name)}; errors: {log}",
             file=sys.stderr,
@@ -174,3 +188,118 @@ def ensure_dashboard(
             f"Campaign dashboard unavailable; training continues: {detail.strip()}", file=sys.stderr
         )
         return None
+
+
+def campaign_completed(root: Path) -> bool:
+    """Fail closed on missing, partial, failed, or still-collecting evidence."""
+    try:
+        state = root if (root / "campaign-binding.json").is_file() else root / "state"
+        if (state / "campaign-binding.json").is_file():
+            status = json.loads((state / "status.json").read_text())
+            binding = json.loads((state / "campaign-binding.json").read_text())
+            # The status is published only after prediction/evaluation finishes.
+            runs = status["runs"]
+            return (
+                bool(runs)
+                and status["status"] == "completed"
+                and all(run["status"] == "completed" for run in runs)
+                and {run["id"] for run in runs} == {run["id"] for run in binding["spec"]["runs"]}
+                and status["campaign_id"] == binding["spec"]["campaign_id"]
+            )
+        plan = json.loads((root / "plan.json").read_text())
+        jobs = plan["jobs"]
+        return bool(jobs) and all(
+            json.loads((root / "state" / f"{job['name']}.json").read_text())["status"]
+            == "completed"
+            for job in jobs
+        )
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+
+
+def register_cleanup_pane(session: str, root: Path, pane: str) -> None:
+    """Tag only a pane we created, recording its command to detect repurposing."""
+    if not _owns(session, root):
+        raise RuntimeError("Cannot register a pane in an unrelated dashboard")
+    command = _tmux("display-message", "-p", "-t", pane, "#{pane_start_command}").stdout.strip()
+    _tmux("set-option", "-p", "-t", pane, "@segmentary_cleanup_root", str(root))
+    _tmux("set-option", "-p", "-t", pane, "@segmentary_cleanup_command", command)
+
+
+def cleanup_dashboard(root: Path, session: str) -> list[str]:
+    """Remove registered view panes only; user-added windows/splits survive."""
+    if not campaign_completed(root) or not _owns(session, root):
+        return []
+    panes = _tmux("list-panes", "-s", "-t", f"={session}", "-F", "#{pane_id}").stdout.splitlines()
+    removed = []
+    for pane in panes:
+        owner = _tmux(
+            "show-options", "-p", "-v", "-t", pane, "@segmentary_cleanup_root", check=False
+        )
+        saved = _tmux(
+            "show-options", "-p", "-v", "-t", pane, "@segmentary_cleanup_command", check=False
+        )
+        current = _tmux("display-message", "-p", "-t", pane, "#{pane_start_command}", check=False)
+        if (
+            owner.returncode
+            or saved.returncode
+            or current.returncode
+            or owner.stdout.strip() != str(root)
+            or not saved.stdout.strip()
+            or saved.stdout.strip() != current.stdout.strip()
+        ):
+            continue
+        # Never kill the session: it may contain user-added windows or panes.
+        if not campaign_completed(root):
+            break
+        if _tmux("kill-pane", "-t", pane, check=False).returncode == 0:
+            removed.append(pane)
+    return removed
+
+
+def start_cleanup(root: Path, repo: Path, python: str | Path, session: str) -> None:
+    log = root / "service-logs" / "dashboard-cleanup.log"
+    log.parent.mkdir(parents=True, exist_ok=True)
+    environment = dict(os.environ, PYTHONPATH=str(repo / "src"))
+    with log.open("a") as stream:
+        subprocess.Popen(
+            [str(python), "-m", "segmentary.campaign_dashboard", str(root), session],
+            cwd=repo,
+            env=environment,
+            stdin=subprocess.DEVNULL,
+            stdout=stream,
+            stderr=stream,
+            start_new_session=True,
+        )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Clean up owned dashboard panes after successful completion"
+    )
+    parser.add_argument("root", type=Path)
+    parser.add_argument("session")
+    args = parser.parse_args()
+    root = args.root.resolve()
+    lock = root / "service-logs" / f"dashboard-cleanup-{_safe_name(args.session)}.lock"
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    with lock.open("a") as stream:
+        try:
+            fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return
+        while _exists(args.session) and _owns(args.session, root):
+            try:
+                if campaign_completed(root):
+                    print(
+                        f"Campaign completed; removed dashboard panes: {cleanup_dashboard(root, args.session)}",
+                        flush=True,
+                    )
+                    return
+            except (OSError, subprocess.SubprocessError) as error:
+                print(f"Cleanup deferred: {error}", flush=True)
+            time.sleep(30)
+
+
+if __name__ == "__main__":
+    main()

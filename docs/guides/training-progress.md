@@ -96,3 +96,18 @@ Implementation:
   metric profile; no torch/model/checkpoint loading.
 - `src/segmentary/campaign_dashboard.py`: shared automatic tmux launcher.
 - `src/segmentary/progress.py`: common command and adapter detection.
+
+### Automatic cleanup after completion
+
+Campaign launchers automatically start a lightweight cleanup watcher alongside
+both RTIS and medical dashboards. Within 30 seconds after every planned job
+successfully finishes (including prediction, evaluation, and RTIS collection),
+it closes the generated training view and GPU-monitor panes. An empty tmux
+session then disappears automatically. Logs, reports, and checkpoints stay on disk.
+
+Failed, interrupted, queued, or unreadable campaign states keep their views.
+The watcher targets individually registered panes and checks their original
+commands; user-added panes/windows and unrelated sessions survive. Existing
+untagged legacy panes are not automatically adopted. Manually opening
+`segmentary-progress` does not enable cleanup, so you can review finished results.
+Cleanup events are recorded in `service-logs/dashboard-cleanup.log`.
