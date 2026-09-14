@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T02:23:20.851368+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T02:53:25.170579+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **1**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **1**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.233346+00:00 / — |
 | Last worker update | 2026-09-13T23:18:17.236892+00:00 |
-| Completed / budget steps | 6200 / 10000 |
-| Live step / phase | 6290 / train |
+| Completed / budget steps | 7200 / 10000 |
+| Live step / phase | 7250 / train |
 | Parameters | 22808675 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 3.0808 |
+| Active-stage allocated hours (estimate) | 3.5820 |
 | Peak allocated / reserved GiB | 33.55 / 38.72 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -159,6 +159,16 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 60 | 6000 | 0.3385 | 0.000131515 | 0.6974 | 0.3329 |
 | 61 | 6100 | 0.3552 | 0.0001285522 | — | — |
 | 62 | 6200 | 0.3112 | 0.0001255817 | — | — |
+| 63 | 6300 | 0.3196 | 0.0001226035 | — | — |
+| 64 | 6400 | 0.3278 | 0.0001196172 | — | — |
+| 65 | 6500 | 0.3180 | 0.0001166225 | — | — |
+| 66 | 6600 | 0.3217 | 0.0001136193 | — | — |
+| 67 | 6700 | 0.3249 | 0.0001106073 | — | — |
+| 68 | 6800 | 0.3224 | 0.0001075861 | — | — |
+| 69 | 6900 | 0.2979 | 0.0001045555 | — | — |
+| 70 | 7000 | 0.3140 | 0.000101515 | 0.7381 | 0.3440 |
+| 71 | 7100 | 0.2867 | 9.846445e-05 | — | — |
+| 72 | 7200 | 0.2970 | 9.540332e-05 | — | — |
 
 ## Final validation evaluation
 
