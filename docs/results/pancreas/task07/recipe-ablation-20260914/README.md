@@ -2,9 +2,9 @@
 
 **Recipe experiment:** the named arms use the same DynUNet architecture, loss, split, inference protocol and fixed 10,000-update budget. Run IDs identify separate scratch initializations under declared ingredient changes; they are not different architectures. Rankings stay within each seed and require all planned arms to finish. The class111/class115 pair changes class weights; both also change background-center semantics relative to the uniform-volume control. Historical results used a different source snapshot and are not included as same-source replicates.
 
-Generated: 2026-09-14T17:58:31.426550+00:00. Source: `9714becaed028d7f0b03e1cf1782f68eb8c52853`.
+Generated: 2026-09-14T18:25:34.599148+00:00. Source: `9714becaed028d7f0b03e1cf1782f68eb8c52853`.
 
-**6 running.** GPU queue: 1, 2, 3, 4, 5, 6.
+**6 completed.** GPU queue: 1, 2, 3, 4, 5, 6.
 
 1. Open [comparison.md](comparison.md) for model status and comparable validation results.
 2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.
@@ -63,9 +63,9 @@ are useful within a run; they are not an accuracy ranking across objectives.
 
 | Model | Status | Steps / budget | Native mass Dice | Native pancreas Dice | Score scope | Cases |
 | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control-seed0](models/dynunet-control-seed0.md) | running | 5670/10000 | 0.2729 | 0.7198 | in-training step 5000 | 42/42 |
-| [dynunet-mass50-seed0](models/dynunet-mass50-seed0.md) | running | 5680/10000 | 0.2736 | 0.7167 | in-training step 5000 | 42/42 |
-| [dynunet-class111-seed0](models/dynunet-class111-seed0.md) | running | 5650/10000 | 0.2786 | 0.7275 | in-training step 5000 | 42/42 |
-| [dynunet-class115-seed0](models/dynunet-class115-seed0.md) | running | 5660/10000 | 0.2714 | 0.6682 | in-training step 5000 | 42/42 |
-| [dynunet-rotation-seed0](models/dynunet-rotation-seed0.md) | running | 5640/10000 | 0.2783 | 0.6704 | in-training step 5000 | 42/42 |
-| [dynunet-intensity-seed0](models/dynunet-intensity-seed0.md) | running | 5580/10000 | 0.2607 | 0.7193 | in-training step 5000 | 42/42 |
+| [dynunet-control-seed0](models/dynunet-control-seed0.md) | completed | 10000/10000 | 0.3298 | 0.7559 | final reference-positive mean | 42/42 |
+| [dynunet-mass50-seed0](models/dynunet-mass50-seed0.md) | completed | 10000/10000 | 0.3030 | 0.7354 | final reference-positive mean | 42/42 |
+| [dynunet-class111-seed0](models/dynunet-class111-seed0.md) | completed | 10000/10000 | 0.3023 | 0.7573 | final reference-positive mean | 42/42 |
+| [dynunet-class115-seed0](models/dynunet-class115-seed0.md) | completed | 10000/10000 | 0.3071 | 0.7124 | final reference-positive mean | 42/42 |
+| [dynunet-rotation-seed0](models/dynunet-rotation-seed0.md) | completed | 10000/10000 | 0.3084 | 0.7598 | final reference-positive mean | 42/42 |
+| [dynunet-intensity-seed0](models/dynunet-intensity-seed0.md) | completed | 10000/10000 | 0.2973 | 0.7130 | final reference-positive mean | 42/42 |
