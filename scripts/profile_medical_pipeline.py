@@ -327,7 +327,7 @@ def _model_profile(
             with torch.autocast(
                 device_type=device.type, dtype=dtype, enabled=config.precision != "fp32"
             ):
-                loss = training_loss(model, images, labels)
+                loss = training_loss(model, images, labels, config)
             if not torch.isfinite(loss):
                 raise ValueError("Non-finite diagnostic training loss")
             return loss

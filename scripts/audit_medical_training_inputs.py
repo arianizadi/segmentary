@@ -147,6 +147,7 @@ def crop_summary(data: dict, config: TorchConfig, samples: int, seed: int) -> di
     composition: Counter[str] = Counter()
     counts = np.zeros(3, dtype=np.int64)
     padding = fallbacks = rotations = intensity_scales = 0
+    auxiliary_mass_losses: Counter[str] = Counter()
     fractions = []
     started = time.perf_counter()
     for _ in range(samples):
@@ -154,6 +155,14 @@ def crop_summary(data: dict, config: TorchConfig, samples: int, seed: int) -> di
         images, labels = sample_patch(data, config, rng, diagnostics=diagnostic)
         if not np.isfinite(images).all() or not set(np.unique(labels)) <= {0, 1, 2}:
             raise ValueError("Sampling produced nonfinite images or invalid target classes")
+        if config.model_options.get("deep_supervision", False):
+            for scale in (2, 4):
+                # Aligned 2x/4x nearest-neighbor target reduction used by the model.
+                coarse = labels[::scale, ::scale, ::scale]
+                auxiliary_mass_losses[f"scale_{scale}_positive_patches"] += int(np.any(labels == 2))
+                auxiliary_mass_losses[f"scale_{scale}_mass_vanished_patches"] += int(
+                    np.any(labels == 2) and not np.any(coarse == 2)
+                )
         voxels = np.bincount(labels.ravel(), minlength=3)
         counts += voxels
         composition["mass_present" if voxels[2] else "pancreas_only" if voxels[1] else "empty"] += 1
@@ -165,6 +174,7 @@ def crop_summary(data: dict, config: TorchConfig, samples: int, seed: int) -> di
         intensity_scales += int(diagnostic["intensity_scale_applied"])
         fractions.append(float(voxels[2] / labels.size))
     return {
+        "auxiliary_target_audit": dict(auxiliary_mass_losses),
         "samples": samples,
         "seed": seed,
         "requested_centers": dict(requested),
@@ -182,10 +192,16 @@ def crop_summary(data: dict, config: TorchConfig, samples: int, seed: int) -> di
 
 def _aggregate_crops(rows: list[dict], patch_voxels: int) -> dict:
     result: dict[str, Any] = {}
-    for key in ("requested_centers", "selected_centers", "crop_composition", "final_label_voxels"):
+    for key in (
+        "requested_centers",
+        "selected_centers",
+        "crop_composition",
+        "final_label_voxels",
+        "auxiliary_target_audit",
+    ):
         counter: Counter[str] = Counter()
         for row in rows:
-            counter.update(row[key])
+            counter.update(row.get(key, {}))
         result[key] = dict(counter)
     for key in (
         "samples",
@@ -226,7 +242,13 @@ def audit(
         protocol.get("recipe_ablation") is not None
         or protocol.get("followup_experiments") is not None
         or protocol.get("preset")
-        in {"task07_dynunet_recipe_ablation_v1", "task07_dynunet_followup_v1"}
+        in {
+            "task07_dynunet_recipe_ablation_v1",
+            "task07_dynunet_followup_v1",
+            "task07_dynunet_deep_supervision_v1",
+            "task07_recipe_explorations_v1",
+            "task07_predicted_roi_cascade_v1",
+        }
     ):
         for key, path in (("manifest", manifest_path), ("splits", splits_path)):
             if protocol.get(f"{key}_sha256") != sha256_file(path):
@@ -252,6 +274,8 @@ def audit(
         return (
             c.spacing_mm,
             c.hu_window,
+            c.normalization,
+            c.roi_manifest_sha256,
             c.patch_size,
             c.mode,
             c.context_slices,

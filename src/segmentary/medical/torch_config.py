@@ -22,6 +22,12 @@ class TorchConfig:
     patch_size: tuple[int, ...] = (64, 128, 128)
     spacing_mm: tuple[float, float, float] = (1.5, 1.5, 2.5)
     hu_window: tuple[float, float] = (-100.0, 240.0)
+    normalization: str = "fixed_window"
+    loss: str = "dice_ce"
+    focal_coefficient: float = 1.0
+    focal_gamma: float = 2.0
+    roi_manifest: str | None = None
+    roi_manifest_sha256: str | None = None
     model_options: dict[str, Any] = field(default_factory=dict)
     gpu: str = "0"
     seed: int = 0
@@ -99,6 +105,35 @@ class TorchConfig:
             object.__setattr__(self, name, value)
         if self.hu_window[0] >= self.hu_window[1]:
             raise ValueError("hu_window must be increasing")
+        if self.normalization not in {"fixed_window", "volume_minmax"}:
+            raise ValueError("normalization must be fixed_window or volume_minmax")
+        if self.loss not in {"dice_ce", "dice_focal"}:
+            raise ValueError("loss must be dice_ce or dice_focal")
+        for name in ("focal_coefficient", "focal_gamma"):
+            value = getattr(self, name)
+            if (
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not math.isfinite(value)
+                or value < 0
+            ):
+                raise ValueError(f"{name} must be finite and nonnegative")
+        if self.loss == "dice_ce" and (self.focal_coefficient != 1 or self.focal_gamma != 2):
+            raise ValueError("Focal settings require dice_focal loss")
+        if self.loss == "dice_focal" and (
+            self.model != "dynunet" or self.model_options.get("deep_supervision", False)
+        ):
+            raise ValueError("This focal ablation supports only DynUNet without deep supervision")
+        if (self.roi_manifest is None) != (self.roi_manifest_sha256 is None):
+            raise ValueError("ROI manifest and SHA256 must be supplied together")
+        if self.roi_manifest is not None:
+            if not isinstance(self.roi_manifest, str) or not re.fullmatch(
+                r"[a-f0-9]{64}", str(self.roi_manifest_sha256)
+            ):
+                raise ValueError("Invalid ROI manifest path or SHA256")
+            object.__setattr__(
+                self, "roi_manifest", str(Path(self.roi_manifest).expanduser().resolve())
+            )
         explicit_centers = sum(
             value is not None for value in (self.center_probabilities, self.class_center_weights)
         )

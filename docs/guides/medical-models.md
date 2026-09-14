@@ -354,3 +354,5 @@ accuracy or comparative superiority. The portable recurrence remains the recipe
 default. Native-kernel and full-capacity execution evidence is recorded separately
 for the exact environment and configured model; a successful kernel test alone
 does not prove all three native Mamba models fit the intended training recipe.
+
+For controlled Task07 loss, preprocessing, deep-supervision and predicted-ROI cascade studies, see [the experiment guide](medical-recipe-experiments.md).

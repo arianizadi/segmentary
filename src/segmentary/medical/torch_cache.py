@@ -48,12 +48,18 @@ def _sources(case: dict) -> dict[str, str]:
 
 
 def _identity(case: dict, config: TorchConfig) -> dict[str, Any]:
+    from .torch_roi import roi_document
+
+    roi_document(config)
     directory = Path(__file__).parent
     return {
         "schema": _SCHEMA,
         "sources": _sources(case),
         "spacing_mm": list(config.spacing_mm),
         "hu_window": list(config.hu_window),
+        "normalization": config.normalization,
+        "roi_manifest_sha256": config.roi_manifest_sha256,
+        "roi_source_sha256": sha256_file(directory / "torch_roi.py"),
         "source_code": {
             name: sha256_file(directory / name)
             for name in ("torch_cache.py", "torch_data.py", "geometry.py")

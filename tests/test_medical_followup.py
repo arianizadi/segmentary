@@ -327,3 +327,73 @@ def test_cache_identity_reuses_coarse_grid_but_separates_fine_spacing(monkeypatc
     fine = dataclasses.replace(coarse, spacing_mm=(1.0, 1.0, 2.5), patch_size=(96, 144, 144))
     assert torch_cache._identity({}, coarse) == torch_cache._identity({}, longer)
     assert torch_cache._identity({}, coarse) != torch_cache._identity({}, fine)
+
+
+@pytest.mark.parametrize("experiment,count", [("deep-supervision", 2), ("recipe-explorations", 9)])
+def test_requested_experiments_are_frozen_separately(inputs, experiment, count):
+    spec = planner.plan_followup(**inputs, experiment=experiment)
+    recipes = configs(spec)
+    assert len(recipes) == count
+    declaration = spec["protocol"]["followup_experiments"]
+    assert len(declaration["planned_contrasts"]) == count - 1
+    assert all(c["epochs"] * c["steps_per_epoch"] == 10000 for c in recipes.values())
+    assert all(c["initialization"] == "scratch" and c["batch_size"] == 8 for c in recipes.values())
+    assert recipes["dynunet-deep10k-seed0"]["model_options"]["deep_supervision"] is True
+    assert not recipes["dynunet-control10k-seed0"]["model_options"].get("deep_supervision", False)
+    if count == 9:
+        assert recipes["swin_unetr-swin48-seed0"]["model"] == "swin_unetr"
+        assert declaration["arms"]["dynunet-isotropic-seed0"]["nominal_crop_extent_mm_xyz"] == [
+            144,
+            144,
+            240,
+        ]
+    assert runner.load_spec(inputs["campaign_dir"] / "campaign.json") == spec
+    snapshot = reporter.collect(
+        inputs["campaign_dir"] / "campaign.json", inputs["campaign_dir"] / "state"
+    )
+    assert all(row["screening_rank"] is None for row in snapshot["runs"])
+    files = reporter.render(snapshot)
+    assert (
+        "Controlled recipe explorations" if count == 9 else "Deep supervision experiment"
+    ) in files["README.md"]
+    recipes["dynunet-deep10k-seed0"]["learning_rate"] *= 2
+    declaration["arms"]["dynunet-deep10k-seed0"]["scientific_recipe_sha256"] = recipe_fingerprint(
+        recipes["dynunet-deep10k-seed0"]
+    )
+    with pytest.raises(ValueError, match="differs"):
+        validate_declared_followup(spec, recipes)
+
+
+def test_cascade_requires_exact_development_roi_manifests(inputs):
+    reference = json.loads(inputs["reference_campaign"].read_text())
+    splits = json.loads(Path(reference["splits"]).read_text())
+    mapping = {}
+    for margin in (20, 40):
+        path = inputs["campaign_dir"].parent / f"roi{margin}.json"
+        write(
+            path,
+            {
+                "schema_version": 1,
+                "kind": "predicted_pancreas_native_bbox",
+                "reference_labels_used": False,
+                "empty_prediction_policy": "full_ct",
+                "margin_mm": margin,
+                "manifest_sha256": planner.sha256_file(Path(reference["manifest"])),
+                "splits_sha256": planner.sha256_file(Path(reference["splits"])),
+                "cases": {key: {} for key in splits["train"] + splits["val"]},
+            },
+        )
+        mapping[str(margin)] = {"path": str(path), "sha256": planner.sha256_file(path)}
+    spec = planner.plan_followup(**inputs, experiment="cascade", roi_manifests=mapping)
+    recipes = configs(spec)
+    assert set(recipes) == {
+        "dynunet-control10k-seed0",
+        "dynunet-roi20-seed0",
+        "dynunet-roi40-seed0",
+    }
+    assert runner.load_spec(inputs["campaign_dir"] / "campaign.json") == spec
+    assert recipes["dynunet-roi20-seed0"]["roi_manifest_sha256"] == mapping["20"]["sha256"]
+    with Path(mapping["20"]["path"]).open("a") as stream:
+        stream.write(" ")
+    with pytest.raises(ValueError, match="changed"):
+        validate_declared_followup(spec, recipes)

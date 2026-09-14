@@ -79,7 +79,15 @@ def prepare_dataset(
 ) -> dict:
     from .model_registry import model_metadata
 
-    metadata = model_metadata(config.model)
+    metadata = model_metadata(config.model, model_options=config.model_options)
+    if config.loss == "dice_focal":
+        metadata["objective"] = "batch_foreground_dice_plus_multiclass_focal"
+        metadata["focal_loss"] = {
+            "coefficient": config.focal_coefficient,
+            "gamma": config.focal_gamma,
+            "class_weights": None,
+            "reduction": "mean including background",
+        }
     expected = 3 if config.mode == "3d" else 2
     if metadata["dimensions"] != expected:
         raise ValueError("Architecture dimensionality and CT mode differ")
@@ -141,6 +149,9 @@ def prepare_dataset(
 
 
 def _binding(config: TorchConfig, *, verify_development: bool = False) -> dict:
+    from .torch_roi import roi_document
+
+    roi_document(config)
     record = _json(config.root / "binding.json")
     if record["config"] != _config_record(config) or record["code"] != _code():
         raise ValueError("Configuration or source changed; create a new experiment")
@@ -701,7 +712,7 @@ def _train_worker(config: TorchConfig, payload: dict, binding: dict) -> None:
                 with torch.autocast(
                     device_type=device.type, dtype=dtype, enabled=config.precision != "fp32"
                 ):
-                    loss = training_loss(model, images, labels)
+                    loss = training_loss(model, images, labels, config)
                 if not torch.isfinite(loss):
                     raise ValueError("Non-finite training loss")
                 scaler.scale(loss).backward()
@@ -828,7 +839,7 @@ def _worker(request_path: Path) -> None:
                 "identity": _digest(binding),
                 "files": {p.name: _sha(p) for p in directory.iterdir()},
                 **({"cache_format": "shared_npy", "cases": records} if config.cache_root else {}),
-                "preprocessing": "fixed HU window and RAS spacing; train cache only",
+                "preprocessing": f"{config.normalization} and declared RAS spacing; train cache only",
             },
         )
     elif request["action"] == "train":

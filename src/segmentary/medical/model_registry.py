@@ -30,10 +30,19 @@ def catalog() -> list[dict[str, Any]]:
     ]
 
 
-def model_metadata(name: str) -> dict[str, Any]:
+def model_metadata(name: str, *, model_options: dict[str, Any] | None = None) -> dict[str, Any]:
     for module in _providers():
         if name in module.MODEL_NAMES:
-            return dict(module.model_metadata(name), name=name)
+            metadata = dict(module.model_metadata(name), name=name)
+            if name == "dynunet" and model_options is not None:
+                options = module._options(name, model_options)
+                if options["deep_supervision"]:
+                    from .torch_deep_supervision import supervision_metadata
+
+                    if len(options["filters"]) < 4:
+                        raise ValueError("Deep supervision requires at least four DynUNet levels")
+                    metadata.update(supervision_metadata())
+            return metadata
     raise ValueError(f"Unknown medical model: {name}")
 
 

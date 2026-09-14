@@ -32,13 +32,23 @@ def preprocess_case(case: dict, config: TorchConfig, *, with_label: bool) -> dic
     original: Any = nib.load(case["image"])
     # scipy preserves the input dtype by default. Promote integer HU payloads
     # before interpolation so half-voxel intensities are not rounded to integers.
-    continuous = nib.Nifti1Image(np.asarray(original.dataobj, dtype=np.float32), original.affine)
-    ct = resample_to_output(
-        continuous, voxel_sizes=config.spacing_mm, order=1, cval=config.hu_window[0]
+    native_values = np.asarray(original.dataobj, dtype=np.float32)
+    # Adaptive normalization is image-only and uses the full examination, before
+    # any ROI crop or resampling padding; labels never determine intensity bounds.
+    bounds = (
+        (float(native_values.min()), float(native_values.max()))
+        if config.normalization == "volume_minmax"
+        else config.hu_window
     )
+    continuous = nib.Nifti1Image(native_values, original.affine)
+    if config.roi_manifest is not None:
+        from .torch_roi import crop_image
+
+        continuous = crop_image(continuous, case, config)
+    ct = resample_to_output(continuous, voxel_sizes=config.spacing_mm, order=1, cval=bounds[0])
     values = np.asarray(ct.dataobj, dtype=np.float32)
-    lo, hi = config.hu_window
-    values = (np.clip(values, lo, hi) - lo) / (hi - lo)
+    lo, hi = config.hu_window if config.normalization == "fixed_window" else bounds
+    values = (np.clip(values, lo, hi) - lo) / (hi - lo) if hi > lo else np.zeros_like(values)
     result: dict[str, Any] = {"image": values.transpose(2, 1, 0).copy(), "affine": ct.affine}
     if with_label:
         validate_nifti(case["label"], is_label=True, allowed_labels=(0, 1, 2))
@@ -494,6 +504,37 @@ def dice_ce(logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
     return torch.nn.functional.cross_entropy(logits.float(), targets) + 1 - dice.mean()
 
 
-def training_loss(model: nn.Module, images: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+def dice_focal(
+    logits: torch.Tensor, targets: torch.Tensor, *, coefficient: float, gamma: float
+) -> torch.Tensor:
+    """Batch foreground soft Dice + coefficient * unweighted multiclass focal.
+
+    Coefficient is the user's alpha multiplying the whole focal term, not a
+    per-class alpha. Mean reduction includes background. Gamma=0 and coefficient=1
+    recover CE + Dice. Log-softmax/cross-entropy keep extreme logits finite.
+    """
+    ce = torch.nn.functional.cross_entropy(logits.float(), targets, reduction="none")
+    probabilities = logits.float().softmax(1)
+    truth = torch.nn.functional.one_hot(targets, 3).movedim(-1, 1).float()
+    axes = (0, *range(2, logits.ndim))
+    intersection = (probabilities * truth).sum(axes)
+    denominator = (probabilities + truth).sum(axes)
+    dice = (2 * intersection[1:] + 1e-5) / (denominator[1:] + 1e-5)
+    focal = ((1 - torch.exp(-ce)).pow(gamma) * ce).mean()
+    return coefficient * focal + 1 - dice.mean()
+
+
+def training_loss(
+    model: nn.Module,
+    images: torch.Tensor,
+    labels: torch.Tensor,
+    config: TorchConfig | None = None,
+) -> torch.Tensor:
     native: Callable[..., torch.Tensor] | None = getattr(model, "training_loss", None)
+    if config is not None and config.loss == "dice_focal":
+        if native is not None:
+            raise ValueError("Focal objective cannot replace a model-native training loss")
+        return dice_focal(
+            model(images), labels, coefficient=config.focal_coefficient, gamma=config.focal_gamma
+        )
     return native(images, labels) if native is not None else dice_ce(model(images), labels)

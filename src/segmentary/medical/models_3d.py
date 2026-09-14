@@ -37,7 +37,11 @@ _SOURCES = {
 
 _DEFAULTS: dict[str, dict[str, Any]] = {
     "unet_3d": {"channels": [32, 64, 128, 256, 512], "num_res_units": 0},
-    "dynunet": {"filters": [32, 64, 128, 256, 320], "res_block": False},
+    "dynunet": {
+        "filters": [32, 64, 128, 256, 320],
+        "res_block": False,
+        "deep_supervision": False,
+    },
     "segresnet": {
         "init_filters": 32,
         "blocks_down": [1, 2, 2, 4],
@@ -163,7 +167,7 @@ def _options(name: str, supplied: dict[str, Any] | None) -> dict[str, Any]:
             raise ValueError(f"Unsupported {name} model_options: {sorted(unknown)}")
         result.update(deepcopy(supplied))
     for key, value in result.items():
-        if key in {"use_checkpoint", "res_block", "vit_layer_scale"}:
+        if key in {"use_checkpoint", "res_block", "vit_layer_scale", "deep_supervision"}:
             if type(value) is not bool:
                 raise ValueError(f"{key} must be boolean")
         elif key == "model_id":
@@ -403,7 +407,7 @@ def build_model(
         for index in range(len(network.seg_outputs) - 1):
             network.seg_outputs[index] = nn.Identity()
 
-    return VolumeLogits(
+    primary = VolumeLogits(
         network,
         name=name,
         in_channels=in_channels,
@@ -413,3 +417,8 @@ def build_model(
         fixed_size=fixed,
         options=opt,
     )
+    if name == "dynunet" and opt["deep_supervision"]:
+        from .torch_deep_supervision import DeepSupervisedDynUNet
+
+        return DeepSupervisedDynUNet(primary, opt["filters"], num_classes)
+    return primary

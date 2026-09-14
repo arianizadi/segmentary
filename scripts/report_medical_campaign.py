@@ -629,7 +629,7 @@ def _rank_groups(rows: list[dict]) -> dict:
         reasons = []
         if any(row.get("followup_experiment") for row in members):
             reasons.append(
-                "Declared budget/resolution experiments are reported as planned contrasts, not a ranked architecture group"
+                "Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group"
             )
         recipe_ablation = any(row.get("recipe_ablation") for row in members)
         if recipe_ablation and any(not row.get("runtime_fingerprint") for row in members):
@@ -730,10 +730,12 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
         raise ValueError("Validation partition contains duplicate cases")
     ablation = spec.get("protocol", {}).get("recipe_ablation")
     followup = spec.get("protocol", {}).get("followup_experiments")
-    if (
-        followup is not None
-        or spec.get("protocol", {}).get("preset") == "task07_dynunet_followup_v1"
-    ):
+    if followup is not None or spec.get("protocol", {}).get("preset") in {
+        "task07_dynunet_followup_v1",
+        "task07_dynunet_deep_supervision_v1",
+        "task07_recipe_explorations_v1",
+        "task07_predicted_roi_cascade_v1",
+    }:
         validate_declared_followup(
             spec, {run["id"]: _recipe(Path(run["config"])) for run in spec["runs"]}
         )
@@ -1399,6 +1401,27 @@ def render(snapshot: dict) -> dict[str, str]:
             "dimensions to preserve physical context, with more voxels per update. These "
             "are planned recipe contrasts, not equal-compute architecture rankings.\n\n"
         )
+        if any(row.get("followup_experiment", {}).get("arm") == "deep10k" for row in rows):
+            notice = (
+                "**Deep supervision experiment:** fresh scratch DynUNet control versus two "
+                "auxiliary decoder losses at half and quarter resolution. Data, sampling, "
+                "10,000-update schedule and primary inference are matched. Normalized loss "
+                "weights are 4/7, 2/7 and 1/7; coarse categorical targets use nearest-neighbor "
+                "resampling. Auxiliary heads add training compute, not inference outputs. "
+                "Report the paired contrast and best versus final checkpoints, not an "
+                "architecture leaderboard or independent test result.\n\n"
+            )
+        if any(
+            row.get("followup_experiment", {}).get("arm") in {"focal05", "roi20"} for row in rows
+        ):
+            notice = (
+                "**Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, "
+                "using the same development partition. The frozen campaign lists exact changes "
+                "in loss, normalization, spacing, architecture or predicted-organ cropping. "
+                "Compare each candidate with its control using full-native per-patient metrics. "
+                "These are one-seed validation experiments, not equal-compute architecture rankings "
+                "or independent test results. Cascade misses outside the crop still count.\n\n"
+            )
         for name in ("README.md", "comparison.md", "learning-curves.md"):
             title, rest = files[name].split("\n", 1)
             files[name] = title + "\n\n" + notice + rest.lstrip("\n")

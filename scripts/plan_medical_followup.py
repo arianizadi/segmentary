@@ -30,7 +30,15 @@ from scripts.run_medical_campaign import absolute_path, load_recipe, read_json
 
 from segmentary.medical.backend import _lock
 from segmentary.medical.data import atomic_write_json, load_manifest, validate_splits
-from segmentary.medical.followup import ARMS, PRESET, validate_declared_followup
+from segmentary.medical.followup import (
+    CASCADE_PRESET,
+    DEEP_PRESET,
+    PRESET,
+    RECIPE_PRESET,
+    arm_id,
+    arms_for,
+    validate_declared_followup,
+)
 from segmentary.medical.geometry import sha256_file
 from segmentary.medical.recipe_ablation import recipe_fingerprint
 
@@ -80,7 +88,24 @@ def plan_followup(
     cache_root: Path,
     gpus: list[str],
     reference_run_id: str = "dynunet-control-seed0",
+    experiment: str = "budget-resolution",
+    roi_manifests: dict | None = None,
 ) -> dict:
+    if experiment not in {
+        "budget-resolution",
+        "deep-supervision",
+        "recipe-explorations",
+        "cascade",
+    }:
+        raise ValueError("Unknown follow-up experiment")
+    deep_supervision = experiment == "deep-supervision"
+    preset = {
+        "budget-resolution": PRESET,
+        "deep-supervision": DEEP_PRESET,
+        "recipe-explorations": RECIPE_PRESET,
+        "cascade": CASCADE_PRESET,
+    }[experiment]
+    selected_arms = arms_for(preset, roi_manifests)
     source_root = source_root.expanduser().resolve()
     campaign_dir = campaign_dir.expanduser().resolve()
     reference_campaign = reference_campaign.expanduser().resolve()
@@ -183,8 +208,8 @@ def plan_followup(
 
     recipes, runs, declarations = {}, [], {}
     control_id = "dynunet-control10k-seed0"
-    for name, arm in ARMS.items():
-        identifier = f"dynunet-{name}-seed0"
+    for name, arm in selected_arms.items():
+        identifier = arm_id(name, arm)
         recipe = _json_config(
             {
                 **baseline,
@@ -200,7 +225,7 @@ def plan_followup(
             {
                 "id": identifier,
                 "config": str(campaign_dir / "recipes" / f"{identifier}.json"),
-                "model": "dynunet",
+                "model": recipe["model"],
                 "backend": "torch",
                 "workspace": recipe["workspace"],
                 "comparison_group": arm["group"],
@@ -233,7 +258,7 @@ def plan_followup(
         "created_at_utc": datetime.now(UTC).isoformat(),
         "description": "Fresh scratch DynUNet control, longer schedule, and finer in-plane grid; validation only.",
         "protocol": {
-            "preset": PRESET,
+            "preset": preset,
             "manifest_sha256": hashes["manifest"],
             "splits_sha256": hashes["splits"],
             "manifest_fingerprint": metadata["fingerprint"],
@@ -285,6 +310,67 @@ def plan_followup(
         "runs": runs,
         "evaluation": dict(reference.get("evaluation", {})),
     }
+    if deep_supervision:
+        from segmentary.medical.torch_deep_supervision import supervision_metadata
+
+        spec["description"] = (
+            "Fresh scratch DynUNet control versus two native decoder auxiliary losses; "
+            "matched 10,000-update schedule, sampling, geometry and primary inference."
+        )
+        spec["protocol"]["followup_experiments"]["planned_contrasts"] = [
+            {
+                "candidate": "dynunet-deep10k-seed0",
+                "control": control_id,
+                "factor": "two auxiliary decoder heads and normalized multi-scale training loss",
+            }
+        ]
+        spec["protocol"]["deep_supervision"] = supervision_metadata()["deep_supervision"]
+        spec["protocol"]["limitations"] = [
+            "One exploratory seed; validation selects checkpoints and is not independent testing",
+            "Auxiliary heads add training parameters and compute; equal steps are not equal GPU-hours",
+            "Primary initialization and post-construction RNG are matched; full state hashes differ because auxiliary heads exist only in the candidate",
+            "Each scale uses existing CE plus batch foreground Dice; weights are 4/7, 2/7 and 1/7",
+            "Nearest-neighbor coarse targets can lose tiny mass components; audit auxiliary target coverage before launch",
+            "Only primary logits run at inference; no Gaussian blending, mirroring or other inference change",
+            "This controlled auxiliary-loss implementation does not reproduce the full nnU-Net recipe",
+            "No external weights; reserved test payloads remain untouched",
+            "All-positive validation cannot estimate patient specificity or ROC AUC",
+        ]
+    if experiment in {"recipe-explorations", "cascade"}:
+        spec["description"] = (
+            "Fresh controlled Task07 recipe experiments; full-native validation only"
+        )
+        declaration = spec["protocol"]["followup_experiments"]
+        declaration["planned_contrasts"] = [
+            {"candidate": arm_id(name, arm), "control": control_id, "factor": arm["description"]}
+            for name, arm in selected_arms.items()
+            if name != "control10k"
+        ]
+        if roi_manifests is not None:
+            declaration["roi_manifests"] = roi_manifests
+            for roi in roi_manifests.values():
+                document = read_json(Path(roi["path"]))
+                if (
+                    document.get("manifest_sha256") != hashes["manifest"]
+                    or document.get("splits_sha256") != hashes["splits"]
+                    or set(document["cases"]) != set(partition["train"] + partition["val"])
+                ):
+                    raise ValueError(
+                        "ROI cohort must match exactly this training and validation partition"
+                    )
+        spec["protocol"]["limitations"] = [
+            "One seed and multiple exploratory comparisons; no independent test or architecture-winner claim",
+            "All arms use 10,000 updates, 80,000 patches; compute and voxel exposure differ",
+            "Isotropic arm preserves nominal physical crop extent, not physical receptive field; interpolated slices add no acquired information",
+            "Focal alpha is a global coefficient, not class weights; gamma=2; Dice definition unchanged",
+            "Raw per-volume min-max is image-only and can be distorted by extreme intensities; fixed HU min-max is already the control",
+            "Swin24 repeats the architecture already screened; Swin48 adds capacity and activation checkpointing; no pretrained weights",
+            "Deep supervision has auxiliary heads at half/quarter resolution weighted 4/7,2/7,1/7; tiny labels can disappear at coarse scales",
+            "Cascade uses frozen own-scratch stage-one predictions, in-sample for training patients; out-of-fold training crops remain a future confirmation",
+            "Cascade evaluates the entire native CT, counting outside-ROI mass as missed; empty localization falls back to full CT",
+            "No early stopping; record endpoint and selected-best validation results; keep latest/best only",
+            "Reserved test remains untouched; all-positive validation cannot estimate patient specificity or AUC",
+        ]
     validate_declared_followup(spec, recipes)
     campaign_dir.parent.mkdir(parents=True, exist_ok=True)
     with _lock(campaign_dir.parent / f".{campaign_dir.name}.planning.lock"):
@@ -356,8 +442,16 @@ def main() -> int:
         parser.add_argument(f"--{name}", type=Path, required=True)
     parser.add_argument("--reference-run-id", default="dynunet-control-seed0")
     parser.add_argument("--gpus", nargs="+", required=True)
+    parser.add_argument(
+        "--experiment",
+        choices=("budget-resolution", "deep-supervision", "recipe-explorations", "cascade"),
+        default="budget-resolution",
+    )
+    parser.add_argument("--roi-manifests", type=Path)
     args = parser.parse_args()
-    spec = plan_followup(**vars(args))
+    options = vars(args).copy()
+    options["roi_manifests"] = read_json(args.roi_manifests) if args.roi_manifests else None
+    spec = plan_followup(**options)
     print(
         json.dumps(
             {
