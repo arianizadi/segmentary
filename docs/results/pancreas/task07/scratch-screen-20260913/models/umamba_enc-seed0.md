@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T00:23:08.775704+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T00:53:11.494509+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **1**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **1**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.233346+00:00 / — |
 | Last worker update | 2026-09-13T23:18:17.236892+00:00 |
-| Completed / budget steps | 2000 / 10000 |
-| Live step / phase | 2090 / train |
+| Completed / budget steps | 3100 / 10000 |
+| Live step / phase | 3140 / train |
 | Parameters | 22808675 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 1.0774 |
+| Active-stage allocated hours (estimate) | 1.5782 |
 | Peak allocated / reserved GiB | 33.55 / 38.72 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -117,6 +117,17 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 18 | 1800 | 0.5247 | 0.0002509307 | — | — |
 | 19 | 1900 | 0.5540 | 0.0002481749 | — | — |
 | 20 | 2000 | 0.4810 | 0.0002454156 | 0.4053 | 0.1731 |
+| 21 | 2100 | 0.4697 | 0.000242653 | — | — |
+| 22 | 2200 | 0.4831 | 0.0002398868 | — | — |
+| 23 | 2300 | 0.4930 | 0.0002371171 | — | — |
+| 24 | 2400 | 0.4904 | 0.0002343438 | — | — |
+| 25 | 2500 | 0.4301 | 0.0002315669 | — | — |
+| 26 | 2600 | 0.4643 | 0.0002287862 | — | — |
+| 27 | 2700 | 0.4371 | 0.0002260018 | — | — |
+| 28 | 2800 | 0.4395 | 0.0002232135 | — | — |
+| 29 | 2900 | 0.4400 | 0.0002204214 | — | — |
+| 30 | 3000 | 0.4188 | 0.0002176254 | 0.6516 | 0.2359 |
+| 31 | 3100 | 0.4199 | 0.0002148253 | — | — |
 
 ## Final validation evaluation
 

@@ -1,26 +1,26 @@
 # Task07 model comparison
 
-Generated: 2026-09-14T00:23:08.775704+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T00:53:11.494509+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-**18 queued, 10 running.**
+**3 completed, 15 queued, 10 running.**
 
 Interim values are shown in campaign order, not sorted by apparent accuracy. Different validated step counts cannot establish a winner.
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim mass Dice | Final mass Dice | Final pancreas Dice | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | train | 0/— | — | — | — | — | — |
-| [umamba_enc](models/umamba_enc-seed0.md) | running | train | 2000/10000 | 2000 | 0.1731 | — | — | — |
-| [segmamba](models/segmamba-seed0.md) | running | train | 2300/10000 | 2000 | 0.2232 | — | — | — |
-| [umamba_bot](models/umamba_bot-seed0.md) | running | train | 4900/10000 | 4000 | 0.2560 | — | — | — |
-| [swin_unetr](models/swin_unetr-seed0.md) | running | train | 4400/10000 | 4000 | 0.2011 | — | — | — |
-| [unetr](models/unetr-seed0.md) | running | train | 9700/10000 | 9000 | 0.1094 | — | — | — |
-| [transunet_3d](models/transunet_3d-seed0.md) | running | train | 7800/10000 | 7000 | 0.3091 | — | — | — |
-| [medformer](models/medformer-seed0.md) | running | train | 3600/10000 | 3000 | 0.2261 | — | — | — |
-| [mednext_v1](models/mednext_v1-seed0.md) | running | train | 4000/10000 | 4000 | 0.2295 | — | — | — |
-| [dynunet](models/dynunet-seed0.md) | running | train | 8900/10000 | 8000 | 0.3298 | — | — | — |
-| [segresnet](models/segresnet-seed0.md) | queued | — | 0/10000 | — | — | — | — | — |
-| [unet_3d](models/unet_3d-seed0.md) | queued | — | 0/10000 | — | — | — | — | — |
-| [mask2former](models/mask2former-seed0.md) | queued | — | 0/10000 | — | — | — | — | — |
+| [umamba_enc](models/umamba_enc-seed0.md) | running | train | 3100/10000 | 3000 | 0.2359 | — | — | — |
+| [segmamba](models/segmamba-seed0.md) | running | train | 3400/10000 | 3000 | 0.2188 | — | — | — |
+| [umamba_bot](models/umamba_bot-seed0.md) | running | train | 6900/10000 | 6000 | 0.3216 | — | — | — |
+| [swin_unetr](models/swin_unetr-seed0.md) | running | train | 6600/10000 | 6000 | 0.2437 | — | — | — |
+| [unetr](models/unetr-seed0.md) | completed | — | 10000/10000 | 10000 | 0.0965 | 0.1116 | 0.4810 | — |
+| [transunet_3d](models/transunet_3d-seed0.md) | completed | — | 10000/10000 | 10000 | 0.3041 | 0.3101 | 0.7354 | — |
+| [medformer](models/medformer-seed0.md) | running | train | 5300/10000 | 5000 | 0.2702 | — | — | — |
+| [mednext_v1](models/mednext_v1-seed0.md) | running | train | 6000/10000 | 6000 | 0.2845 | — | — | — |
+| [dynunet](models/dynunet-seed0.md) | completed | — | 10000/10000 | 10000 | 0.2986 | 0.3298 | 0.7559 | — |
+| [segresnet](models/segresnet-seed0.md) | running | train | 1900/10000 | 1000 | 0.0000 | — | — | — |
+| [unet_3d](models/unet_3d-seed0.md) | running | train | 2900/10000 | 2000 | 0.0754 | — | — | — |
+| [mask2former](models/mask2former-seed0.md) | running | train | 0/10000 | — | — | — | — | — |
 | [maskformer](models/maskformer-seed0.md) | queued | — | 0/10000 | — | — | — | — | — |
 | [dpt](models/dpt-seed0.md) | queued | — | 0/10000 | — | — | — | — | — |
 | [swin_upernet](models/swin_upernet-seed0.md) | queued | — | 0/10000 | — | — | — | — | — |

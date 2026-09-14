@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T00:23:08.775704+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T00:53:11.494509+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **2**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **2**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.235345+00:00 / — |
 | Last worker update | 2026-09-13T23:18:14.903773+00:00 |
-| Completed / budget steps | 2300 / 10000 |
-| Live step / phase | 2300 / train |
+| Completed / budget steps | 3400 / 10000 |
+| Live step / phase | 3440 / train |
 | Parameters | 67362723 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 1.0781 |
+| Active-stage allocated hours (estimate) | 1.5789 |
 | Peak allocated / reserved GiB | 19.29 / 22.59 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -119,6 +119,17 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 21 | 2100 | 0.4886 | 0.000242653 | — | — |
 | 22 | 2200 | 0.4950 | 0.0002398868 | — | — |
 | 23 | 2300 | 0.4913 | 0.0002371171 | — | — |
+| 24 | 2400 | 0.4890 | 0.0002343438 | — | — |
+| 25 | 2500 | 0.4284 | 0.0002315669 | — | — |
+| 26 | 2600 | 0.4810 | 0.0002287862 | — | — |
+| 27 | 2700 | 0.4466 | 0.0002260018 | — | — |
+| 28 | 2800 | 0.4286 | 0.0002232135 | — | — |
+| 29 | 2900 | 0.4427 | 0.0002204214 | — | — |
+| 30 | 3000 | 0.4291 | 0.0002176254 | 0.6318 | 0.2188 |
+| 31 | 3100 | 0.4335 | 0.0002148253 | — | — |
+| 32 | 3200 | 0.4182 | 0.0002120212 | — | — |
+| 33 | 3300 | 0.4400 | 0.000209213 | — | — |
+| 34 | 3400 | 0.4451 | 0.0002064005 | — | — |
 
 ## Final validation evaluation
 

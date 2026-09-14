@@ -2,24 +2,24 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T00:23:08.775704+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T00:53:11.494509+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-Status: **queued**. Stage: **—**. GPU: **None**.
+Status: **running**. Stage: **train**. GPU: **6**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | — / — |
-| Last worker update | — |
+| Started / finished | 2026-09-14T00:49:14.285261+00:00 / — |
+| Last worker update | 2026-09-14T00:49:55.059620+00:00 |
 | Completed / budget steps | 0 / 10000 |
-| Live step / phase | — / — |
-| Parameters | — |
-| Objective | — |
-| Checkpoint selection | — |
+| Live step / phase | — / validation |
+| Parameters | 47404926 |
+| Objective | native_hungarian_query_loss |
+| Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | — |
-| Active-stage allocated hours (estimate) | — |
+| Finished-stage allocated GPU-hours | 0.0000 |
+| Active-stage allocated hours (estimate) | 0.0511 |
 | Peak allocated / reserved GiB | — / — |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.

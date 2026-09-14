@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T00:23:08.775704+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T00:53:11.494509+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **7**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **7**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.246489+00:00 / — |
 | Last worker update | 2026-09-13T23:18:15.484897+00:00 |
-| Completed / budget steps | 3600 / 10000 |
-| Live step / phase | 3680 / train |
+| Completed / budget steps | 5300 / 10000 |
+| Live step / phase | 5350 / train |
 | Parameters | 39591555 |
 | Objective | dense_ce_dice_no_auxiliary_heads |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 1.0779 |
+| Active-stage allocated hours (estimate) | 1.5786 |
 | Peak allocated / reserved GiB | 29.95 / 33.89 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -157,6 +157,23 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 34 | 3400 | 0.4559 | 0.0002064005 | — | — |
 | 35 | 3500 | 0.4403 | 0.0002035838 | — | — |
 | 36 | 3600 | 0.4232 | 0.0002007628 | — | — |
+| 37 | 3700 | 0.4144 | 0.0001979373 | — | — |
+| 38 | 3800 | 0.4086 | 0.0001951074 | — | — |
+| 39 | 3900 | 0.4038 | 0.0001922729 | — | — |
+| 40 | 4000 | 0.3858 | 0.0001894338 | 0.6181 | 0.2196 |
+| 41 | 4100 | 0.4510 | 0.0001865899 | — | — |
+| 42 | 4200 | 0.4076 | 0.0001837412 | — | — |
+| 43 | 4300 | 0.4150 | 0.0001808875 | — | — |
+| 44 | 4400 | 0.3927 | 0.0001780289 | — | — |
+| 45 | 4500 | 0.3861 | 0.0001751651 | — | — |
+| 46 | 4600 | 0.3879 | 0.0001722962 | — | — |
+| 47 | 4700 | 0.3724 | 0.0001694219 | — | — |
+| 48 | 4800 | 0.3937 | 0.0001665422 | — | — |
+| 49 | 4900 | 0.3612 | 0.0001636569 | — | — |
+| 50 | 5000 | 0.3647 | 0.000160766 | 0.6647 | 0.2702 |
+| 51 | 5100 | 0.3977 | 0.0001578693 | — | — |
+| 52 | 5200 | 0.3884 | 0.0001549667 | — | — |
+| 53 | 5300 | 0.3751 | 0.000152058 | — | — |
 
 ## Final validation evaluation
 
