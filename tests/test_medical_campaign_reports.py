@@ -427,6 +427,23 @@ def test_prediction_continuation_keeps_parent_training_after_best_checkpoint(cam
     assert metric_history(child, {"continuation_lineage": [record["parent"]]}) == []
 
 
+def test_readme_distinguishes_prediction_continuation_from_new_training(campaign):
+    spec, state = campaign
+    snapshot = reporter.collect(spec, state)
+    original = reporter.render(snapshot)["README.md"]
+    assert original.startswith("# Pancreas Task07: model comparison\n")
+    assert "report-directory/" in original
+    assert "scratch-screen-20260913/" not in original
+    assert "Prediction continuation:" not in original
+    for row in snapshot["runs"]:
+        row.setdefault("performance", {}).setdefault("lineage", {})["action"] = "predict"
+    continued = reporter.render(snapshot)["README.md"]
+    assert "retains its parent training and selected scratch-origin checkpoint" in continued
+    assert "adds no training steps or independent seeds" in continued
+    snapshot["runs"][0]["performance"]["lineage"]["action"] = "resume"
+    assert "Prediction continuation:" not in reporter.render(snapshot)["README.md"]
+
+
 def test_standardized_inference_requires_matching_provenance_and_measured_samples(tmp_path):
     from segmentary.medical_reporting import _digest, standardized_inference
 

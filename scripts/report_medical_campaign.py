@@ -1054,12 +1054,24 @@ def render(snapshot: dict) -> dict[str, str]:
     files["README.md"] = (
         "\n".join(
             [
-                "# Pancreas Task07: training every scratch model",
+                "# Pancreas Task07: model comparison",
                 "",
                 metadata,
                 "",
                 f"**{counts}.** GPU queue: {', '.join(str(gpu) for gpu in snapshot['gpus']) or 'not recorded'}.",
                 "",
+                *(
+                    [
+                        "Prediction continuation: every model retains its parent training and selected scratch-origin checkpoint. This campaign reruns prediction and evaluation; it adds no training steps or independent seeds.",
+                        "",
+                    ]
+                    if rows
+                    and all(
+                        row.get("performance", {}).get("lineage", {}).get("action") == "predict"
+                        for row in rows
+                    )
+                    else []
+                ),
                 "1. Open [comparison.md](comparison.md) for model status and comparable validation results.",
                 "2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.",
                 "3. Follow a model link for its recipe, objective, timing, memory, coverage, and evaluation interval.",
@@ -1069,7 +1081,7 @@ def render(snapshot: dict) -> dict[str, str]:
                 "7. Read [clinical-metrics.md](clinical-metrics.md) for P-Sen, T-Sen, specificity, AUC and DSC, including why some metrics cannot be estimated on Task07.",
                 "",
                 "```text",
-                "scratch-screen-20260913/",
+                "report-directory/        this report's folder",
                 "  README.md              reading guide and interpretation",
                 "  comparison.md          all models, status, validation, ranking gates",
                 "  learning-curves.md     recorded epochs; no interpolated values",
