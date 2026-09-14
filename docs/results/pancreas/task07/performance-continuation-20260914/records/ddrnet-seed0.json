@@ -8588,58 +8588,96 @@
   "peak_allocated_bytes": 250054656,
   "peak_reserved_bytes": 264241152,
   "clinical_metrics": {
-    "available": false,
-    "cohort_complete": false,
+    "available": true,
+    "cohort_complete": true,
     "metrics": {
       "patient_sensitivity": {
-        "value": null,
-        "status": "unavailable",
-        "reason_code": "not_run",
-        "reason": "Diagnostic has not run yet.",
-        "numerator": null,
-        "denominator": null
+        "value": 0.8333333333333334,
+        "status": "available",
+        "reason_code": null,
+        "reason": null,
+        "numerator": 35.0,
+        "denominator": 42.0
       },
       "tumor_sensitivity": {
-        "value": null,
-        "status": "unavailable",
-        "reason_code": "not_run",
-        "reason": "Diagnostic has not run yet.",
-        "numerator": null,
-        "denominator": null
+        "value": 0.16666666666666666,
+        "status": "available",
+        "reason_code": null,
+        "reason": null,
+        "numerator": 7.0,
+        "denominator": 42.0
       },
       "specificity": {
         "value": null,
         "status": "unavailable",
-        "reason_code": "not_run",
-        "reason": "Diagnostic has not run yet.",
-        "numerator": null,
-        "denominator": null
+        "reason_code": "no_reference_negatives",
+        "reason": "No fully annotated reference-negative groups.",
+        "numerator": 0.0,
+        "denominator": 0.0
       },
       "auc": {
         "value": null,
         "status": "unavailable",
-        "reason_code": "not_run",
-        "reason": "Diagnostic has not run yet.",
+        "reason_code": "auc_requires_both_classes",
+        "reason": "ROC AUC requires positive and negative reference groups.",
         "numerator": null,
-        "denominator": null
+        "denominator": 42.0
       },
       "mass_dsc": {
-        "value": null,
-        "status": "unavailable",
-        "reason_code": "not_run",
-        "reason": "Diagnostic has not run yet.",
-        "numerator": null,
-        "denominator": null
+        "value": 0.08060022974869845,
+        "status": "available",
+        "reason_code": null,
+        "reason": null,
+        "numerator": 3.3852096494453345,
+        "denominator": 42.0
       },
       "pancreas_dsc": {
-        "value": null,
-        "status": "unavailable",
-        "reason_code": "not_run",
-        "reason": "Diagnostic has not run yet.",
-        "numerator": null,
-        "denominator": null
+        "value": 0.5268995421122662,
+        "status": "available",
+        "reason_code": null,
+        "reason": null,
+        "numerator": 22.12978076871518,
+        "denominator": 42.0
       }
-    }
+    },
+    "counts": {
+      "eligible_cases": 42.0,
+      "valid_cases": 42.0,
+      "patient_groups": 42.0,
+      "complete_patient_groups": 42.0,
+      "reference_positive_groups": 42.0,
+      "reference_negative_groups": 0.0,
+      "patient_true_positives": 35.0,
+      "patient_false_negatives": 7.0,
+      "patient_true_negatives": 0.0,
+      "patient_false_positives": 0.0,
+      "reference_components": 42.0,
+      "matched_components": 7.0,
+      "prediction_components": 87.0,
+      "lesion_false_positives": 80.0,
+      "lesion_false_negatives": 35.0
+    },
+    "provenance": {
+      "prediction_binding_identity": "6d2a96312edd0b87f0166e367dd6965415e4a1903da2e828d8b85ccb9fad758d",
+      "binding_sha256": "4d9cc4f645cc01e8d73b0bc0561b1285ccc0d3b6fb58a3aeadf02d68c8431f77",
+      "checkpoint_index_sha256": "8de6735d561962a66005d5af78160e78052046a9ee3d915d9f4f6d10700bc7b0",
+      "manifest_sha256": "9e6c363908beffe4e2feb9544f99552e06220d03af289b6913557870e28931a2",
+      "splits_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
+      "manifest_fingerprint": "fe4e840c2686df58c5d025dd0b7af8f0f78858cb65fc9429197df0ab85deaf85",
+      "split_fingerprint": "46183f9f5d14f3974d276bbfa7b3820f3572fae4897b17c1551b91b34765abfb",
+      "evaluation_report_sha256": "7b6aeee642e4ee9478f0aa10128a1f8142fda0a1e21ec74f8c039b09aab044bd",
+      "prediction_status_sha256": "53d282d73d7afe9efa338da3791e7bbd79b1d3fd6ead4dfcaf02f7fd21ad9a32",
+      "prediction_checkpoint_sha256": "431069d9adee952026a584a90da1be6ff451c3422cc8c9e881dfe4a25ba955e4",
+      "script_sha256": "f77413deb3721e00cd64e59d0f30a7459ff33d519ecf3dab1a4e94e6115f02a4",
+      "evaluation_module_sha256": "e60506135015707706a016c2310a04d1240db5045b24f08541c60b65091ff925"
+    },
+    "protocol": {
+      "connectivity": 26.0,
+      "iou_threshold": 0.1,
+      "minimum_prediction_volume_mm3": 10.0
+    },
+    "protocol_sha256": "01643644e1f516f949a6f57b2c2dd53e900374eb0779562dd0c6c75b65f99c9c",
+    "grouping_status": "unverified_case_groups"
   },
   "expected_validation_cases": 42
 }
