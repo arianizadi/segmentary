@@ -1,6 +1,6 @@
 # Pancreas Task07: model comparison
 
-Generated: 2026-09-14T07:56:17.059001+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T08:26:21.712130+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 **27 completed, 1 running.** GPU queue: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9.
 
@@ -61,7 +61,7 @@ are useful within a run; they are not an accuracy ranking across objectives.
 
 | Model | Status | Steps / budget | Native mass Dice | Native pancreas Dice | Score scope | Cases |
 | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | 46750/250000 | — | — | in-training step — | 0/42 |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | 49500/250000 | — | — | in-training step — | 0/42 |
 | [umamba_enc](models/umamba_enc-seed0.md) | completed | 10000/10000 | 0.3571 | 0.7541 | final reference-positive mean | 42/42 |
 | [segmamba](models/segmamba-seed0.md) | completed | 10000/10000 | 0.3212 | 0.7355 | final reference-positive mean | 42/42 |
 | [umamba_bot](models/umamba_bot-seed0.md) | completed | 10000/10000 | 0.3216 | 0.7276 | final reference-positive mean | 42/42 |
