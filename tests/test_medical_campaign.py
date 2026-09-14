@@ -143,6 +143,39 @@ def test_queue_uses_each_gpu_without_double_assigning_and_never_scores_test(spec
     assert campaign.read_json(tmp_path / "state/status.json")["status"] == "completed"
 
 
+def test_dashboard_starts_after_validated_state_and_failure_does_not_stop_training(
+    spec_path, tmp_path, monkeypatch
+):
+    calls = []
+
+    def ensure(root, repo, python):
+        assert (root / "campaign-binding.json").is_file()
+        assert len(campaign.read_json(root / "status.json")["runs"]) == 7
+        calls.append(root)
+        return None  # A missing tmux/UI does not change the campaign result.
+
+    monkeypatch.setattr("segmentary.campaign_dashboard.ensure_dashboard", ensure)
+    runner = FakeCampaign(spec_path, tmp_path / "state")
+    assert runner.run(dashboard=True) == 0
+    assert calls == [tmp_path / "state"]
+
+
+@pytest.mark.parametrize("opt_out", [False, True])
+def test_cli_auto_dashboard_and_explicit_opt_out(spec_path, tmp_path, monkeypatch, opt_out):
+    flags = []
+
+    def run(self, *, dashboard=False):
+        flags.append(dashboard)
+        return 0
+
+    monkeypatch.setattr(campaign.Campaign, "run", run)
+    arguments = ["--spec", str(spec_path), "--state-dir", str(tmp_path / "state")]
+    if opt_out:
+        arguments.append("--no-dashboard")
+    assert campaign.main(arguments) == 0
+    assert flags == [not opt_out]
+
+
 def test_failure_does_not_cancel_other_models_or_retry_without_explicit_flag(spec_path, tmp_path):
     first = FakeCampaign(spec_path, tmp_path / "state", fail=("run-0", "train"))
     assert first.run() == 1

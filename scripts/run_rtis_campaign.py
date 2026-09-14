@@ -506,7 +506,7 @@ def publisher(root, checkout, once=False):
             time.sleep(30)
 
 
-def launch(root, repo, checkout, gpus):
+def launch(root, repo, checkout, gpus, *, dashboard=True):
     verify_frozen(root, repo)
     processes = subprocess.check_output(
         ["nvidia-smi", "--query-compute-apps=pid", "--format=csv,noheader"], text=True
@@ -517,6 +517,11 @@ def launch(root, repo, checkout, gpus):
         raise RuntimeError("A separate publisher checkout is required")
     logdir = root / "service-logs"
     logdir.mkdir(exist_ok=True)
+    if dashboard:
+        sys.path.insert(0, str(repo / "src"))
+        from segmentary.campaign_dashboard import ensure_dashboard
+
+        ensure_dashboard(root, repo, sys.executable)
     sessions = []
     commands = [("publisher", ["publish", "--checkout", str(checkout)])]
     commands += [(f"gpu-{gpu}", ["worker", "--gpu", str(gpu)]) for gpu in gpus]
@@ -556,13 +561,24 @@ def main():
     ap.add_argument("--gpus", default="0,1,2,3,4,5,6,7,8,9")
     ap.add_argument("--checkout", type=Path)
     ap.add_argument("--once", action="store_true")
+    ap.add_argument(
+        "--no-dashboard",
+        action="store_true",
+        help="Do not start the shared tmux progress dashboard",
+    )
     args = ap.parse_args()
     root = args.campaign.resolve()
     repo = Path(__file__).resolve().parents[1]
     if args.action == "init":
         initialize(root, repo)
     elif args.action == "launch":
-        launch(root, repo, args.checkout, [int(gpu) for gpu in args.gpus.split(",")])
+        launch(
+            root,
+            repo,
+            args.checkout,
+            [int(gpu) for gpu in args.gpus.split(",")],
+            dashboard=not args.no_dashboard,
+        )
     elif args.action == "worker":
         if args.gpu is None:
             ap.error("worker requires --gpu")

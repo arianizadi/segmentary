@@ -41,6 +41,43 @@ stages; `--retry-failed` explicitly requests another attempt at failed work.
 Do not change recipes or source inside an active campaign. A changed scientific
 recipe needs a new run identity and workspace.
 
+## Live dashboard
+
+The medical runner and both RTIS campaign launchers automatically open the same
+Textual dashboard in a detached tmux session. The shared UI provides a model
+table, a focused model view, learning curves, GPU telemetry, and visible failures;
+each data adapter supplies the metrics appropriate to its task. Medical views
+show pancreas and mass Dice with their measurement scope instead of substituting
+RTIS IoU values. This shares monitoring infrastructure without changing either
+dataset's training recipe or evaluation protocol.
+
+The launcher prints the exact `tmux attach -t ...` command. Default session names
+include the state directory name and a hash of its full path, so two directories
+with the same name do not collide. The session contains `training` and
+`gpu-monitor` windows. Startup failures and nonzero dashboard exit status are
+appended to `<state-dir>/service-logs/dashboard.log`; interactive output and
+runtime traceback details stay in the tmux `training` pane. Re-running the launcher reuses its own
+live dashboard and can revive its dead dashboard pane without signaling workers.
+An unrelated or old untagged session is preserved under its existing name.
+
+Use `--no-dashboard` on the campaign launcher to disable automatic startup.
+Missing tmux or UI dependencies produce a diagnostic while training continues.
+The dashboard needs Segmentary's ordinary `textual` and `tensorboard` dependencies
+in the launcher interpreter; model backend interpreters remain isolated.
+
+For a foreground dashboard, run:
+
+```bash
+python -m segmentary.progress /data/project/campaign-state
+```
+
+The same entrypoint accepts an RTIS campaign root and the older lane campaign
+layout. For medical runs it accepts the actual `--state-dir` even when the spec
+file lives elsewhere, using the embedded frozen specification in
+`campaign-binding.json`. Launching a dashboard does not start training. Already
+running campaigns retain their pinned source and continue unchanged; their
+dashboard can be launched separately from a newer monitoring checkout.
+
 ## Generate the comparison pages
 
 ```bash

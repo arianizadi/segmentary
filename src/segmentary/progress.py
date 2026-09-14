@@ -1026,13 +1026,20 @@ MINIMUM_REFRESH = 0.25
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Open a read-only Rich dashboard over a queued Segmentary campaign. "
-            "Every lane is one row, so the whole campaign fits in one window. "
+            "Open Segmentary's shared read-only campaign dashboard. "
+            "Medical and RTIS campaigns share the interactive table and curves; "
+            "older lane campaigns retain their compact monitor. "
             "It observes status and TensorBoard files without loading models or "
             "affecting training."
         )
     )
-    parser.add_argument("campaign", type=Path, help="campaign directory with lane_*_status.json")
+    parser.add_argument("campaign", type=Path, help="campaign root or medical state directory")
+    parser.add_argument(
+        "--backend",
+        choices=("auto", "medical", "rtis", "lanes"),
+        default="auto",
+        help="telemetry adapter (default: detect from existing campaign files)",
+    )
     parser.add_argument("--once", action="store_true", help="print one snapshot and exit")
     parser.add_argument(
         "--refresh", type=float, default=1.0, help="live refresh interval in seconds (default: 1)"
@@ -1053,6 +1060,25 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def detect_backend(campaign: Path) -> str:
+    if (campaign / "campaign-binding.json").is_file() or (
+        campaign / "state/campaign-binding.json"
+    ).is_file():
+        return "medical"
+    spec = campaign / "campaign.json"
+    if spec.is_file():
+        document, _ = _read_json(spec)
+        if document and "manifest" in document and "splits" in document and "runs" in document:
+            return "medical"
+    if (campaign / "future-runs").is_dir():
+        return "rtis"
+    for path in sorted((campaign / "state").glob("*.json")):
+        record, _ = _read_json(path)
+        if record and "name" in record and "status" in record:
+            return "rtis"
+    return "lanes"
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     campaign = args.campaign.expanduser().resolve()
@@ -1066,6 +1092,33 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 2
     console = Console()
+    backend = detect_backend(campaign) if args.backend == "auto" else args.backend
+    if backend in ("medical", "rtis"):
+        from segmentary.campaign_progress import CampaignProgress, render_once
+
+        app: CampaignProgress
+
+        if backend == "medical":
+            from segmentary.medical_progress import MedicalProgress
+
+            app = MedicalProgress(campaign, refresh=args.refresh, show_gpus=not args.no_gpus)
+        else:
+            from segmentary.rtis_progress import RTISProgress
+
+            app = RTISProgress(campaign, refresh=args.refresh, show_gpus=not args.no_gpus)
+        if args.once:
+            rows, gpus, errors = app.telemetry.read()
+            table, note = render_once(
+                rows, gpus, errors, app.profile, getattr(app.telemetry, "summary", "")
+            )
+            snapshot_console = Console(
+                width=max(console.width, sum(width + 3 for _, width in app.profile.columns) + 1)
+            )
+            snapshot_console.print(table)
+            snapshot_console.print(note, markup=False)
+        else:
+            app.run()
+        return 0
 
     def snapshot(tick: int, *, limit_height: bool) -> Dashboard:
         return render_dashboard(

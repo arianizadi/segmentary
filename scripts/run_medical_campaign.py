@@ -622,9 +622,16 @@ class Campaign:
                     with contextlib.suppress(ProcessLookupError):
                         os.killpg(process.pid, signal.SIGTERM)
 
-    def run(self) -> int:
+    def run(self, *, dashboard: bool = False) -> int:
         with singleton(self.root / ".campaign.lock"):
             self.initialize()
+            if dashboard:
+                # The driver can use stdlib Python while backends are isolated;
+                # load monitoring code from this launcher checkout explicitly.
+                sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+                from segmentary.campaign_dashboard import ensure_dashboard
+
+                ensure_dashboard(self.root, Path(__file__).resolve().parents[1], sys.executable)
             self.claimed: set[str] = set()
             self.worker_errors: list[str] = []
             previous: dict[int, Any] = {}
@@ -681,6 +688,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--state-dir", type=Path, required=True)
     parser.add_argument("--prepare-only", action="store_true")
     parser.add_argument("--retry-failed", action="store_true")
+    parser.add_argument(
+        "--no-dashboard",
+        action="store_true",
+        help="Do not start the shared tmux progress dashboard",
+    )
     args = parser.parse_args(argv)
     try:
         return Campaign(
@@ -688,7 +700,7 @@ def main(argv: list[str] | None = None) -> int:
             args.state_dir,
             prepare_only=args.prepare_only,
             retry_failed=args.retry_failed,
-        ).run()
+        ).run(dashboard=not args.no_dashboard)
     except (ValueError, OSError, RuntimeError, KeyError) as exc:
         print(f"medical campaign: {exc}", file=sys.stderr)
         return 1

@@ -102,7 +102,10 @@ python scripts/run_rtis_campaign.py launch --campaign /path/to/new/rtis-plan \
   --checkout /path/to/separate/publisher --gpus 0,1,2,3,4,5,6,7,8,9
 ```
 
-The launcher starts independent tmux workers and a publisher. Each GPU claims
+The launcher starts independent tmux workers, a publisher, and the
+[shared campaign dashboard](medical-campaigns.md#live-dashboard). It prints the
+dashboard's `tmux attach` command; use `--no-dashboard` to opt out. A dashboard
+startup failure is diagnostic and does not prevent worker startup. Each GPU claims
 one job at a time. The queue covers 36 recipes and all four arms, with a maximum of 4,000
 optimizer steps per job. Validation runs every 250 steps. After three validation
 checks without at least 0.002 mIoU improvement (0.2 percentage points), training

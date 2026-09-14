@@ -38,6 +38,11 @@ def main():
     ap.add_argument("--campaign", type=Path, required=True)
     ap.add_argument("--previous-campaign", type=Path, required=True)
     ap.add_argument("--checkout", type=Path, required=True)
+    ap.add_argument(
+        "--no-dashboard",
+        action="store_true",
+        help="Do not start the shared tmux progress dashboard",
+    )
     args = ap.parse_args()
     root = args.campaign.resolve()
     old = args.previous_campaign.resolve()
@@ -57,9 +62,11 @@ def main():
     with runtime.lock(root / "locks/launcher.lock") as acquired:
         if not acquired:
             raise RuntimeError("Launcher already running")
-        from segmentary.rtis_progress import ensure_controller
+        if not args.no_dashboard:
+            sys.path.insert(0, str(repo / "src"))
+            from segmentary.campaign_dashboard import ensure_dashboard
 
-        ensure_controller(root, repo, sys.executable)
+            ensure_dashboard(root, repo, sys.executable, session="rtis-fullstats-controller")
         while not (root / "STOP_LAUNCHER").exists():
             runtime.verify_frozen(root, repo)
             states = [runtime.read(p) for p in (root / "state").glob("*.json")]

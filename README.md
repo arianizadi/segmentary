@@ -64,6 +64,8 @@ recipes spanning 2D, 2.5D, 3D CNNs, attention, query masks and state-space model
 with random initialization throughout and a shared native-volume evaluator.
 Use the [medical campaign guide](docs/guides/medical-campaigns.md) to queue those
 models across GPUs and generate readable comparison pages from actual run records.
+The [PanTS setup guide](docs/guides/medical-pants.md) adds pinned downloads,
+binary-mask intake and official-test protection for a separate PanTS study.
 
 ## Quick start
 
@@ -170,8 +172,15 @@ retraining anything.
 
 ## Watch it train
 
-`segmentary-progress runs/my_campaign` gives every lane one row, so a ten-GPU
-campaign fits in one window:
+`segmentary-progress runs/my_campaign` detects the campaign format. RTIS and
+medical campaigns share the same interactive model table, filters, focused
+learning curves and GPU view. Their launchers start this dashboard automatically
+in tmux and print the attach command; `--no-dashboard` disables automatic startup.
+The medical adapter shows mass and pancreas Dice with validation coverage and
+keeps nnU-Net patch pseudo-Dice separate. See the
+[shared progress guide](docs/guides/training-progress.md) for controls and details.
+
+Older lane campaigns keep their compact one-row-per-GPU display:
 
 ```text
 SEGMENTARY ⠹  all-model-city-rail        12/120 jobs   10/10 lanes running        finish Fri 08:14 PM · 09:31:05 PM
@@ -182,8 +191,8 @@ GPU1 ● train  upernet_convnext / cs      ✓▶········  ━━━━�
 GPU2 ✗ failed native_resnet50_psp / cs   ✓✓✗·······  —                            —    —          —        —     —    —
 ```
 
-**AGE** is the column to read when you're asking *is this thing alive?* It ticks
-every second, while the metric columns only change when training logs — so a
+**AGE** shows the time since the latest recorded sample. It updates with the
+view, while the metric columns only change when training logs — so a
 still frame is never mistaken for a stall. The view is read-only; Ctrl-C closes
 the display, not your training.
 

@@ -5,6 +5,14 @@ original pilot and starts each run from the declared pretrained/source endpoint,
 not from a partially trained RTIS checkpoint. Labels and the 220/37/50 grouped
 train/validation/test split are unchanged. The test split stays held out.
 
+For newly launched campaigns, `scripts/launch_rtis_full_campaign.py` uses the
+[shared campaign dashboard](medical-campaigns.md#live-dashboard), the same UI and
+automatic startup helper as the medical and RTIS pilot runners. Its preferred
+session name is `rtis-fullstats-controller`; an occupied session belonging to a
+different or unrecognized campaign gets a separate name with a path hash.
+`--no-dashboard` opts out, and dashboard failure does not stop scheduling.
+This monitoring change does not modify an already running frozen campaign.
+
 ## Experiment contract
 
 | Setting | Value |
