@@ -1,8 +1,10 @@
-# Pancreas Task07: training every scratch model
+# Pancreas Task07: model comparison
 
-Generated: 2026-09-14T04:50:38.113018+00:00. Source: `86363b101aa3685782defdf524face6af43edb2d`.
+Generated: 2026-09-14T04:57:14.189490+00:00. Source: `86363b101aa3685782defdf524face6af43edb2d`.
 
 **18 queued, 9 running.** GPU queue: 1, 2, 3, 4, 5, 6, 7, 8, 9.
+
+Prediction continuation: every model retains its parent training and selected scratch-origin checkpoint. This campaign reruns prediction and evaluation; it adds no training steps or independent seeds.
 
 1. Open [comparison.md](comparison.md) for model status and comparable validation results.
 2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.
@@ -13,7 +15,7 @@ Generated: 2026-09-14T04:50:38.113018+00:00. Source: `86363b101aa3685782defdf524
 7. Read [clinical-metrics.md](clinical-metrics.md) for P-Sen, T-Sen, specificity, AUC and DSC, including why some metrics cannot be estimated on Task07.
 
 ```text
-scratch-screen-20260913/
+report-directory/        this report's folder
   README.md              reading guide and interpretation
   comparison.md          all models, status, validation, ranking gates
   learning-curves.md     recorded epochs; no interpolated values
