@@ -22,6 +22,8 @@ from typing import Any
 
 import yaml
 
+from segmentary.medical.followup import validate_declared_followup
+from segmentary.medical.geometry import sha256_file
 from segmentary.medical.recipe_ablation import recipe_fingerprint, validate_declared_recipes
 from segmentary.medical_reporting import (
     clinical_metrics,
@@ -625,6 +627,10 @@ def _rank_groups(rows: list[dict]) -> dict:
     conclusions = {}
     for name, members in groups.items():
         reasons = []
+        if any(row.get("followup_experiment") for row in members):
+            reasons.append(
+                "Declared budget/resolution experiments are reported as planned contrasts, not a ranked architecture group"
+            )
         recipe_ablation = any(row.get("recipe_ablation") for row in members)
         if recipe_ablation and any(not row.get("runtime_fingerprint") for row in members):
             reasons.append("Recipe ablation runtime provenance is unavailable")
@@ -723,6 +729,17 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
     if len(set(expected_ids)) != len(expected_ids):
         raise ValueError("Validation partition contains duplicate cases")
     ablation = spec.get("protocol", {}).get("recipe_ablation")
+    followup = spec.get("protocol", {}).get("followup_experiments")
+    if (
+        followup is not None
+        or spec.get("protocol", {}).get("preset") == "task07_dynunet_followup_v1"
+    ):
+        validate_declared_followup(
+            spec, {run["id"]: _recipe(Path(run["config"])) for run in spec["runs"]}
+        )
+        for key in ("manifest", "splits"):
+            if spec["protocol"].get(f"{key}_sha256") != sha256_file(Path(spec[key])):
+                raise ValueError("Follow-up manifest or splits changed after planning")
     if (
         ablation is not None
         or spec.get("protocol", {}).get("preset") == "task07_dynunet_recipe_ablation_v1"
@@ -735,6 +752,13 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
         try:
             state = _read(state_dir / "runs" / f"{run['id']}.json")
             row = _collect_run(run, state, state_dir, expected_ids, now)
+            if followup is not None:
+                declared = followup["arms"][run["id"]]
+                if row["scientific_recipe_sha256"] != declared["scientific_recipe_sha256"]:
+                    raise ValueError("Bound run recipe differs from declared follow-up")
+                if row.get("code_fingerprint") and not row.get("runtime_fingerprint"):
+                    raise ValueError("Follow-up runtime provenance is unavailable")
+                row["followup_experiment"] = declared
             if ablation is not None:
                 declaration = ablation["arms"][run["id"]]
                 if row["scientific_recipe_sha256"] != declaration["scientific_recipe_sha256"]:
@@ -1363,6 +1387,17 @@ def render(snapshot: dict) -> dict[str, str]:
             "both also change background-center semantics relative to the uniform-volume "
             "control. Historical results used a different source snapshot and are not "
             "included as same-source replicates.\n\n"
+        )
+        for name in ("README.md", "comparison.md", "learning-curves.md"):
+            title, rest = files[name].split("\n", 1)
+            files[name] = title + "\n\n" + notice + rest.lstrip("\n")
+    if any(row.get("followup_experiment") for row in rows):
+        notice = (
+            "**Budget and resolution experiments:** all arms are scratch DynUNet runs with "
+            "the same held-out validation split. The long arm changes both update budget "
+            "and polynomial-decay horizon; the finer arm changes voxel spacing and patch "
+            "dimensions to preserve physical context, with more voxels per update. These "
+            "are planned recipe contrasts, not equal-compute architecture rankings.\n\n"
         )
         for name in ("README.md", "comparison.md", "learning-curves.md"):
             title, rest = files[name].split("\n", 1)

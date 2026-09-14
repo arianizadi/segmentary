@@ -1,0 +1,204 @@
+{
+  "scope": "6 Task07 training cases stratified by native mass volume; first 6 available nonempty PanTS training cases excluding known issues; 9 upstream artifact checks. Not a prevalence estimate or clinical adjudication. No held-out test payloads opened.",
+  "created_epoch": 1789417271.689823,
+  "script_sha256": "7eba667e6f7749a0fa5737296abcc1b30a1509eec0c9f95aa6e10157714cc868",
+  "known_artifacts_already_excluded": true,
+  "task07_training_count": 197,
+  "task07_label_encoding": "single mutually exclusive 0 background,1 pancreas,2 mass; pancreas union is labels1or2",
+  "pants_label_encoding": "separate binary pancreas and lesion files; overlap can be nonzero; adapter assigns lesion precedence",
+  "source_report_sha256": "b3718a2db63c55d309abb1cceb16d2da45e5dc161080a5aa303afd92f4d7f83e",
+  "cases": [
+    {
+      "review_id": "task07-train-01",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 303,
+      "mass_mm3": 412.8820804367273,
+      "mass_components": 1,
+      "pancreas_voxels": 36457,
+      "mass_overlap_pancreas_voxels": 0,
+      "spacing_mm": [
+        0.7382810115814209,
+        0.7382810115814209,
+        2.5
+      ],
+      "mass_fraction_inside_pancreas_mask": 0.0
+    },
+    {
+      "review_id": "task07-train-02",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 1024,
+      "mass_mm3": 1780.5551135543283,
+      "mass_components": 1,
+      "pancreas_voxels": 17838,
+      "mass_overlap_pancreas_voxels": 0,
+      "spacing_mm": [
+        0.8339840173721313,
+        0.8339840173721313,
+        2.5
+      ],
+      "mass_fraction_inside_pancreas_mask": 0.0
+    },
+    {
+      "review_id": "task07-train-03",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 2963,
+      "mass_mm3": 3077.2253158739322,
+      "mass_components": 1,
+      "pancreas_voxels": 48209,
+      "mass_overlap_pancreas_voxels": 0,
+      "spacing_mm": [
+        0.6445310115814209,
+        0.6445310115814209,
+        2.5
+      ],
+      "mass_fraction_inside_pancreas_mask": 0.0
+    },
+    {
+      "review_id": "task07-train-04",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 3489,
+      "mass_mm3": 6038.373957924109,
+      "mass_components": 1,
+      "pancreas_voxels": 36028,
+      "mass_overlap_pancreas_voxels": 0,
+      "spacing_mm": [
+        0.8320310115814209,
+        0.8320310115814209,
+        2.5
+      ],
+      "mass_fraction_inside_pancreas_mask": 0.0
+    },
+    {
+      "review_id": "task07-train-05",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 5012,
+      "mass_mm3": 10410.430835747653,
+      "mass_components": 1,
+      "pancreas_voxels": 40851,
+      "mass_overlap_pancreas_voxels": 0,
+      "spacing_mm": [
+        0.6445310115814209,
+        0.6445310115814209,
+        5.0
+      ],
+      "mass_fraction_inside_pancreas_mask": 0.0
+    },
+    {
+      "review_id": "task07-train-06",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 189621,
+      "mass_mm3": 732388.1467364802,
+      "mass_components": 1,
+      "pancreas_voxels": 35007,
+      "mass_overlap_pancreas_voxels": 0,
+      "spacing_mm": [
+        0.8789060115814209,
+        0.8789060115814209,
+        5.0
+      ],
+      "mass_fraction_inside_pancreas_mask": 0.0
+    },
+    {
+      "review_id": "pants-train-01",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 1055,
+      "mass_mm3": 5299.092095899244,
+      "mass_components": 1,
+      "pancreas_voxels": 14894,
+      "mass_overlap_pancreas_voxels": 1055,
+      "spacing_mm": [
+        0.8183590173721313,
+        0.8183590173721313,
+        7.5
+      ],
+      "mass_fraction_inside_pancreas_mask": 1.0
+    },
+    {
+      "review_id": "pants-train-02",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 7244,
+      "mass_mm3": 14325.834780225727,
+      "mass_components": 1,
+      "pancreas_voxels": 45095,
+      "mass_overlap_pancreas_voxels": 6813,
+      "spacing_mm": [
+        0.6289060115814209,
+        0.6289060115814209,
+        5.0
+      ],
+      "mass_fraction_inside_pancreas_mask": 0.9405024848150193
+    },
+    {
+      "review_id": "pants-train-03",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 1613,
+      "mass_mm3": 2910.8015827781555,
+      "mass_components": 1,
+      "pancreas_voxels": 46709,
+      "mass_overlap_pancreas_voxels": 1613,
+      "spacing_mm": [
+        0.8496090173721313,
+        0.8496090173721313,
+        2.5
+      ],
+      "mass_fraction_inside_pancreas_mask": 1.0
+    },
+    {
+      "review_id": "pants-train-04",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 540,
+      "mass_mm3": 1825.527634704831,
+      "mass_components": 2,
+      "pancreas_voxels": 37344,
+      "mass_overlap_pancreas_voxels": 158,
+      "spacing_mm": [
+        0.8222659826278687,
+        0.8222659826278687,
+        5.0
+      ],
+      "mass_fraction_inside_pancreas_mask": 0.29259259259259257
+    },
+    {
+      "review_id": "pants-train-05",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 937,
+      "mass_mm3": 2635.3125,
+      "mass_components": 1,
+      "pancreas_voxels": 50764,
+      "mass_overlap_pancreas_voxels": 933,
+      "spacing_mm": [
+        0.75,
+        0.75,
+        5.0
+      ],
+      "mass_fraction_inside_pancreas_mask": 0.9957310565635006
+    },
+    {
+      "review_id": "pants-train-06",
+      "geometry_compatible_1e4": true,
+      "mass_voxels": 82,
+      "mass_mm3": 276.75,
+      "mass_components": 1,
+      "pancreas_voxels": 2677,
+      "mass_overlap_pancreas_voxels": 74,
+      "spacing_mm": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass_fraction_inside_pancreas_mask": 0.9024390243902439
+    }
+  ],
+  "known_artifacts_nonzero_voxels": [
+    4,
+    166,
+    12,
+    16,
+    16,
+    20,
+    32,
+    36,
+    45
+  ],
+  "measurement_caution": "Task07 masks are mutually exclusive; zero intersection is an encoding identity, not anatomical lesion containment. PanTS overlap is between independent native binary masks."
+}

@@ -18,6 +18,7 @@ import numpy as np
 import torch
 from torch import nn
 
+from .torch_blending import InferenceBlending, gaussian_weights
 from .torch_config import TorchConfig
 
 
@@ -175,9 +176,19 @@ def _starts(size: int, patch_size: int, overlap: float) -> list[int]:
 
 
 def tiled_probabilities(
-    model: nn.Module, image: np.ndarray, config: TorchConfig, device: torch.device
+    model: nn.Module,
+    image: np.ndarray,
+    config: TorchConfig,
+    device: torch.device,
+    *,
+    blending: InferenceBlending | None = None,
 ) -> np.ndarray:
-    """Blend probabilities with uniform weights and cover every voxel exactly."""
+    """Cover every voxel, preserving original arithmetic for uniform blending."""
+    weights = (
+        gaussian_weights(config.patch_size, blending.sigma_scale)
+        if blending is not None and blending.mode == "gaussian"
+        else None
+    )
     original = image.shape[1:]
     padding = [(0, max(0, p - n)) for p, n in zip(config.patch_size, original, strict=True)]
     padded = np.pad(image, [(0, 0), *padding]) if any(after for _, after in padding) else image
@@ -209,8 +220,12 @@ def tiled_probabilities(
             probabilities = logits.float().softmax(1).cpu().numpy()
             # Preserve the original lexicographic window accumulation order.
             for region, probability in zip(regions, probabilities, strict=True):
-                total[(slice(None), *region)] += probability
-                count[region] += 1
+                if weights is None:
+                    total[(slice(None), *region)] += probability
+                    count[region] += 1
+                else:
+                    total[(slice(None), *region)] += probability * weights[None]
+                    count[region] += weights
     crop = tuple(slice(0, n) for n in original)
     return (total / count[None])[(slice(None), *crop)]
 
@@ -232,18 +247,25 @@ def _inference_probabilities(
     image: np.ndarray,
     config: TorchConfig,
     device: torch.device,
+    *,
+    blending: InferenceBlending | None = None,
 ) -> np.ndarray:
     """Run the original tile/slice sequence only on the calling thread."""
     was_training = model.training
     model.eval()
+    options = {} if blending is None else {"blending": blending}
     try:
         if config.mode == "3d":
-            probabilities = tiled_probabilities(model, image[None], config, device)
+            probabilities = tiled_probabilities(model, image[None], config, device, **options)
         else:
             probabilities = np.stack(
                 [
                     tiled_probabilities(
-                        model, context_image(image, z, config.context_slices), config, device
+                        model,
+                        context_image(image, z, config.context_slices),
+                        config,
+                        device,
+                        **options,
                     )
                     for z in range(image.shape[0])
                 ],
@@ -307,10 +329,12 @@ def predict_case(
     *,
     output: Path | None = None,
     cache: Any | None = None,
+    blending: InferenceBlending | None = None,
 ) -> np.ndarray:
     """Predict one case with unchanged tiling and exact finite native argmax."""
     data = _prepare_prediction(case, config, cache)
-    probabilities = _inference_probabilities(model, data["image"], config, device)
+    options = {} if blending is None else {"blending": blending}
+    probabilities = _inference_probabilities(model, data["image"], config, device, **options)
     geometry = {key: value for key, value in data.items() if key != "image"}
     del data
     return _finish_prediction(
@@ -338,6 +362,7 @@ def iter_predictions(
     *,
     output_directory: Path | None = None,
     cache: Any | None = None,
+    blending: InferenceBlending | None = None,
 ) -> Generator[PredictionResult, None, None]:
     """Overlap bounded CPU stages around serial, unchanged model inference.
 
@@ -406,7 +431,10 @@ def iter_predictions(
         try:
             if data is None:
                 raise ValueError("Prediction produced no preprocessed image")
-            probabilities = _inference_probabilities(model, data["image"], config, device)
+            options = {} if blending is None else {"blending": blending}
+            probabilities = _inference_probabilities(
+                model, data["image"], config, device, **options
+            )
             return probabilities, {key: value for key, value in data.items() if key != "image"}
         except Exception as exc:
             result.error = exc.with_traceback(None)

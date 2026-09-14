@@ -117,6 +117,42 @@ def test_audit_refuses_empty_partial_and_duplicate_arms(tmp_path, monkeypatch):
     assert not (tmp_path / "output").exists()
 
 
+@pytest.mark.parametrize(
+    "preset", ["task07_dynunet_recipe_ablation_v1", "task07_dynunet_followup_v1"]
+)
+@pytest.mark.parametrize("changed", ["manifest", "splits"])
+def test_audit_rejects_changed_frozen_input_before_payload_access(
+    tmp_path, monkeypatch, preset, changed
+):
+    inputs = {key: tmp_path / f"{key}.json" for key in ("manifest", "splits")}
+    for path in inputs.values():
+        path.write_text("{}\n")
+    campaign = tmp_path / "campaign.json"
+    campaign.write_text(
+        json.dumps(
+            {
+                **{key: str(path) for key, path in inputs.items()},
+                "protocol": {
+                    "preset": preset,
+                    **{f"{key}_sha256": auditor.sha256_file(path) for key, path in inputs.items()},
+                },
+            }
+        )
+    )
+    # Whitespace retains parsed metadata/fingerprints but violates the frozen bytes.
+    inputs[changed].write_text(inputs[changed].read_text() + "\n")
+
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("Frozen input changes must fail before dataset loading or cache work")
+
+    monkeypatch.setattr(auditor, "load_manifest", forbidden)
+    monkeypatch.setattr(auditor, "build_cached_case", forbidden)
+    output = tmp_path / "output"
+    with pytest.raises(ValueError, match=f"Frozen campaign {changed} changed"):
+        auditor.audit(campaign, output)
+    assert not output.exists()
+
+
 def test_aggregate_crop_mass_fraction_is_weighted_by_voxels():
     rows = []
     for samples, mass in [(2, 5), (1, 10)]:
@@ -140,7 +176,10 @@ def test_aggregate_crop_mass_fraction_is_weighted_by_voxels():
     assert result["mass_containing_patch_fraction"] == pytest.approx(2 / 3)
 
 
-def test_full_audit_succeeds_with_evaluation_payloads_removed(tmp_path, monkeypatch):
+@pytest.mark.parametrize("select_geometry", [False, True])
+def test_full_audit_succeeds_with_evaluation_payloads_removed(
+    tmp_path, monkeypatch, select_geometry
+):
     monkeypatch.setattr(auditor, "execution_provenance", lambda *_: {"source_clean": True})
     dataset = tmp_path / "Task07"
     training = []
@@ -202,7 +241,25 @@ def test_full_audit_succeeds_with_evaluation_payloads_removed(tmp_path, monkeypa
         )
     )
     output = tmp_path / "report"
-    report = auditor.audit(campaign_path, output, samples_per_case=2)
+    if select_geometry:
+        second = tmp_path / "fine.json"
+        second.write_text(
+            json.dumps(dataclasses.asdict(dataclasses.replace(config, spacing_mm=(0.5, 0.5, 1))))
+        )
+        spec = json.loads(campaign_path.read_text())
+        spec["runs"].append({"id": "fine", "config": str(second)})
+        campaign_path.write_text(json.dumps(spec))
+        for invalid in ([], ["missing"], ["control", "control"]):
+            with pytest.raises(ValueError, match="run IDs"):
+                auditor.audit(campaign_path, output, run_ids=invalid)
+        with pytest.raises(ValueError, match="share preprocessing"):
+            auditor.audit(campaign_path, output)
+    report = auditor.audit(
+        campaign_path,
+        output,
+        samples_per_case=2,
+        run_ids=["control"] if select_geometry else None,
+    )
     assert report["partition"] == "train"
     assert report["training_cases"] == 1
     assert report["resampling"]["vanished_native_components"] == 0

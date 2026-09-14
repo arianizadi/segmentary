@@ -186,6 +186,17 @@ def load_spec(path: Path) -> dict[str, Any]:
         raise ValueError("Unknown evaluation option; campaign scoring supports validation only")
     protocol = spec.get("protocol", {})
     if (
+        protocol.get("followup_experiments") is not None
+        or protocol.get("preset") == "task07_dynunet_followup_v1"
+    ):
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+        from segmentary.medical.followup import validate_declared_followup
+
+        validate_declared_followup(spec, recipes)
+        for key in ("manifest", "splits"):
+            if protocol.get(f"{key}_sha256") != sha256(Path(spec[key])):
+                raise ValueError("Follow-up manifest or splits changed after planning")
+    if (
         protocol.get("recipe_ablation") is not None
         or protocol.get("preset") == "task07_dynunet_recipe_ablation_v1"
     ):

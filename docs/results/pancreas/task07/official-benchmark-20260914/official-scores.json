@@ -1,0 +1,12 @@
+{
+  "retrieved_date": "2026-09-14",
+  "task": "Task07_Pancreas",
+  "source": "Public Grand Challenge evaluation pages, exact values extracted from their visible metrics.json download links using the browser",
+  "scope": "Four selected submissions, not an exhaustive pancreas leaderboard or a matched comparison with our validation cohort",
+  "scores": [
+    {"name":"CancerVerse (QiC99)","evaluation_id":"279a2fee-693e-4de0-8c9b-fd16c8c4722e","submission_date":"2025-01-19","cases":139,"pancreas_l1_dice_mean":0.8178254401873517,"mass_l2_dice_mean":0.6716146331443794,"mass_l2_dice_median":0.7631578947368421,"mass_l2_dice_q25":0.5689271636457112,"mass_l2_dice_q75":0.8389280637043858,"mass_l2_dice_std":0.24665627194825127,"mass_l2_dice_zero_cases":7,"pancreas_l1_nsd_mean":0.9631397183850515,"mass_l2_nsd_mean":0.8604852727634443},
+    {"name":"Universal Model (zongwei.zhou)","evaluation_id":"02791173-6108-423f-8061-522560778cda","submission_date":"2023-02-13","cases":139,"pancreas_l1_dice_mean":0.82846142855763,"mass_l2_dice_mean":0.6233347174417122,"mass_l2_dice_median":0.7315262988060665,"mass_l2_dice_q25":0.49016032585567515,"mass_l2_dice_q75":0.8210651201290966,"mass_l2_dice_std":0.26577728754388413,"mass_l2_dice_zero_cases":10,"pancreas_l1_nsd_mean":0.9665463245172294,"mass_l2_nsd_mean":0.8286822319245167},
+    {"name":"Swin_UNETR submission","evaluation_id":"ca86ba5f-9e5c-44c5-8f8d-8771a8b6a8fd","submission_date":"2021-11-13","cases":139,"pancreas_l1_dice_mean":0.8184558876913524,"mass_l2_dice_mean":0.5821567670381477,"mass_l2_dice_median":0.6871686108165429,"mass_l2_dice_q25":0.4375293267912405,"mass_l2_dice_q75":0.7972694525489913,"mass_l2_dice_std":0.28635913869010216,"mass_l2_dice_zero_cases":13,"pancreas_l1_nsd_mean":0.9656996932818736,"mass_l2_nsd_mean":0.7910471358922773},
+    {"name":"Isensee submission (historical nnU-Net reference)","evaluation_id":"e7503ac3-57b3-44a1-b448-b76314701b02","submission_date":"2019-12-06","cases":139,"pancreas_l1_dice_mean":0.8164329169933399,"mass_l2_dice_mean":0.5278303199597437,"mass_l2_dice_median":0.6406621197026592,"mass_l2_dice_q25":0.1868178186407902,"mass_l2_dice_q75":0.79846283755937,"mass_l2_dice_std":0.32985473194339177,"mass_l2_dice_zero_cases":27,"pancreas_l1_nsd_mean":0.9614157144971889,"mass_l2_nsd_mean":0.7146840871398826}
+  ]
+}

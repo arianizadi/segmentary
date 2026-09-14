@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Audit resampling and crop composition using the training partition only.
 
-No network is built and no optimizer is run. All arms must share preprocessing.
+No network is built and no optimizer is run. Selected arms must share preprocessing.
 Published output uses training ordinals, never source scan IDs or file paths.
 """
 
@@ -31,6 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from segmentary.medical.cli import _config
 from segmentary.medical.data import atomic_write_json, load_manifest, validate_splits
+from segmentary.medical.followup import validate_declared_followup
 from segmentary.medical.geometry import sha256_file, validate_nifti
 from segmentary.medical.recipe_ablation import validate_declared_recipes
 from segmentary.medical.torch_cache import build_cached_case, load_cached_case
@@ -205,7 +206,12 @@ def _aggregate_crops(rows: list[dict], patch_voxels: int) -> dict:
 
 
 def audit(
-    campaign_path: Path, output: Path, *, samples_per_case: int = 8, seed: int = 20260914
+    campaign_path: Path,
+    output: Path,
+    *,
+    samples_per_case: int = 8,
+    seed: int = 20260914,
+    run_ids: list[str] | None = None,
 ) -> dict:
     if type(samples_per_case) is not int or samples_per_case < 1:
         raise ValueError("samples_per_case must be positive")
@@ -215,12 +221,29 @@ def audit(
         raise FileExistsError("Use a fresh audit output directory")
     campaign = json.loads(campaign_path.read_text())
     manifest_path, splits_path = Path(campaign["manifest"]), Path(campaign["splits"])
+    protocol = campaign.get("protocol", {})
+    if (
+        protocol.get("recipe_ablation") is not None
+        or protocol.get("followup_experiments") is not None
+        or protocol.get("preset")
+        in {"task07_dynunet_recipe_ablation_v1", "task07_dynunet_followup_v1"}
+    ):
+        for key, path in (("manifest", manifest_path), ("splits", splits_path)):
+            if protocol.get(f"{key}_sha256") != sha256_file(path):
+                raise ValueError(f"Frozen campaign {key} changed after planning")
     manifest = load_manifest(manifest_path, verify_files=False)
     splits = json.loads(splits_path.read_text())
     cases = training_cases(manifest, splits)
     arms = [(run["id"], _config(Path(run["config"]))) for run in campaign["runs"]]
     if not arms or len({name for name, _ in arms}) != len(arms):
         raise ValueError("Audit requires unique explicit arm IDs")
+    recipes = {arm: json.loads(json.dumps(dataclasses.asdict(config))) for arm, config in arms}
+    validate_declared_recipes(campaign, recipes)
+    validate_declared_followup(campaign, recipes)
+    if run_ids is not None:
+        if not run_ids or len(set(run_ids)) != len(run_ids) or set(run_ids) - set(recipes):
+            raise ValueError("Audit run IDs must be nonempty, unique and present in the campaign")
+        arms = [(arm, config) for arm, config in arms if arm in run_ids]
     base = arms[0][1]
     if any(not isinstance(config, TorchConfig) for _, config in arms) or base.cache_root is None:
         raise ValueError("Audit requires Torch recipes with an explicit shared cache")
@@ -237,9 +260,6 @@ def audit(
 
     if any(geometry(config) != geometry(base) for _, config in arms):
         raise ValueError("Audit arms must share preprocessing, patch geometry and cache")
-    validate_declared_recipes(
-        campaign, {arm: json.loads(json.dumps(dataclasses.asdict(config))) for arm, config in arms}
-    )
     provenance = execution_provenance(campaign, arms)
     hashes = {str(path): sha256_file(path) for path in [campaign_path, manifest_path, splits_path]}
     hashes.update({run["config"]: sha256_file(run["config"]) for run in campaign["runs"]})
@@ -341,8 +361,15 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--samples-per-case", type=int, default=8)
     parser.add_argument("--seed", type=int, default=20260914)
+    parser.add_argument("--run-ids", nargs="+", help="Audit one compatible geometry subset")
     args = parser.parse_args()
-    audit(args.campaign, args.output, samples_per_case=args.samples_per_case, seed=args.seed)
+    audit(
+        args.campaign,
+        args.output,
+        samples_per_case=args.samples_per_case,
+        seed=args.seed,
+        run_ids=args.run_ids,
+    )
 
 
 if __name__ == "__main__":
