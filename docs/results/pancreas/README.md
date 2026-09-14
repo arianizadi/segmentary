@@ -7,6 +7,8 @@ These are research-development results, not a clinical diagnostic system or an i
 3. **[Convergence review](task07/convergence-review-20260914/README.md):** what the completed learning curves and failure counts show.
 4. **[Completed recipe experiments](task07/recipe-ablation-20260914/README.md):** six controlled 10,000-update DynUNet arms with paired analysis.
 5. **[Original model screening](task07/scratch-screen-20260913/comparison.md):** every architecture's reported status, pancreas Dice and mass Dice, including the separately budgeted official nnU-Net run.
+6. **[Completed fit and inference diagnostics](task07/followup-diagnostics-20260914/README.md):** two-case memorization and the paired Gaussian-versus-uniform comparison on all 42 validation examinations.
+7. **[Budget and resolution campaign](task07/followup-20260914/README.md):** the fresh 10,000-update control, 30,000-update schedule and finer-grid 10,000-update arm, with recorded status and subsequent native validation scores.
 
 ## Four follow-up questions
 

@@ -1,0 +1,84 @@
+{
+  "source_commit": "d072beb8e04a1bbcdf360cb50f3df3901d9fa08d",
+  "jobs": {
+    "fit": {
+      "status": "completed",
+      "baseline_training_cases": 4,
+      "baseline_mass_dice": 0.7608455835737792,
+      "baseline_pancreas_dice": 0.7334014659930396,
+      "memorization_steps": 2000,
+      "best_training_mass_dice": 0.9039952028227201,
+      "native_fit_curve": [
+        {
+          "step": 0,
+          "mean_mass_dice": 0.0005650125553283241,
+          "mean_pancreas_dice": 0.001303271213305041
+        },
+        {
+          "step": 100,
+          "mean_mass_dice": 0.0,
+          "mean_pancreas_dice": 0.6919470217661199
+        },
+        {
+          "step": 500,
+          "mean_mass_dice": 0.8720197030105726,
+          "mean_pancreas_dice": 0.8853587131861635
+        },
+        {
+          "step": 1000,
+          "mean_mass_dice": 0.9039952028227201,
+          "mean_pancreas_dice": 0.9154225837583001
+        },
+        {
+          "step": 2000,
+          "mean_mass_dice": 0.8999642717733718,
+          "mean_pancreas_dice": 0.9248379939627657
+        }
+      ]
+    },
+    "blending": {
+      "status": "completed",
+      "validation_cases": 42,
+      "uniform_reproduced": true,
+      "dice": {
+        "uniform": {
+          "mass": 0.3298359547409563,
+          "pancreas": 0.7558945692980761
+        },
+        "gaussian": {
+          "mass": 0.3495560591783628,
+          "pancreas": 0.777225475265065
+        }
+      },
+      "paired_gaussian_minus_uniform": {
+        "mass": {
+          "mean": 0.019720104437406544,
+          "ci": [
+            -0.0016610390104665914,
+            0.04083112695915284
+          ],
+          "cases": 42,
+          "patients": 42
+        },
+        "pancreas": {
+          "mean": 0.021330905966988983,
+          "ci": [
+            0.0072090837734455895,
+            0.03638024058271372
+          ],
+          "cases": 42,
+          "patients": 42
+        }
+      },
+      "inference_seconds": {
+        "uniform": 263.25800527632236,
+        "gaussian": 255.75718368589878
+      }
+    }
+  },
+  "limitations": [
+    "Fit scores intentionally overlap training and evaluation; they do not measure generalization.",
+    "Gaussian uses the same checkpoint selected by uniform validation; this is an exploratory validation comparison.",
+    "No test CT or label payloads are part of these diagnostics."
+  ]
+}
