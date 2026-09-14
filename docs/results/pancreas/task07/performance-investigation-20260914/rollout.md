@@ -29,6 +29,7 @@ their sum is not elapsed wall time.
 ## Where to look
 
 - [Original all-model comparison](../scratch-screen-20260913/README.md): 27 completed Torch models and the continuing nnU-Net run.
+- [Continuation comparison](../performance-continuation-20260914/README.md): the same 27 Torch checkpoints undergoing optimized prediction and evaluation, with parent training retained explicitly.
 - [Training cost](../scratch-screen-20260913/training-cost.md): epoch phases, invocation cost and available resource records.
 - [Inference benchmarks](../scratch-screen-20260913/inference.md): all 27 completed Torch models, each with 10 warmups and 50 retained CUDA-event samples. These are batch-one declared-input benchmarks, separate from CT throughput.
 - [Detection metrics](../scratch-screen-20260913/clinical-metrics.md): all 27 complete 42-case native-mask diagnostics with a fixed localization protocol.
