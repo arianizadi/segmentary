@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T01:53:16.378237+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T02:23:20.851368+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **2**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **2**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.235345+00:00 / — |
 | Last worker update | 2026-09-13T23:18:14.903773+00:00 |
-| Completed / budget steps | 5700 / 10000 |
-| Live step / phase | 5720 / train |
+| Completed / budget steps | 6800 / 10000 |
+| Live step / phase | 6830 / train |
 | Parameters | 67362723 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 2.5802 |
+| Active-stage allocated hours (estimate) | 3.0815 |
 | Peak allocated / reserved GiB | 19.29 / 22.59 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -153,6 +153,17 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 55 | 5500 | 0.3391 | 0.0001462219 | — | — |
 | 56 | 5600 | 0.3423 | 0.0001432942 | — | — |
 | 57 | 5700 | 0.3213 | 0.0001403598 | — | — |
+| 58 | 5800 | 0.3389 | 0.0001374186 | — | — |
+| 59 | 5900 | 0.3253 | 0.0001344704 | — | — |
+| 60 | 6000 | 0.3559 | 0.000131515 | 0.6901 | 0.2704 |
+| 61 | 6100 | 0.3437 | 0.0001285522 | — | — |
+| 62 | 6200 | 0.3203 | 0.0001255817 | — | — |
+| 63 | 6300 | 0.3351 | 0.0001226035 | — | — |
+| 64 | 6400 | 0.3378 | 0.0001196172 | — | — |
+| 65 | 6500 | 0.3187 | 0.0001166225 | — | — |
+| 66 | 6600 | 0.3156 | 0.0001136193 | — | — |
+| 67 | 6700 | 0.3166 | 0.0001106073 | — | — |
+| 68 | 6800 | 0.3192 | 0.0001075861 | — | — |
 
 ## Final validation evaluation
 

@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T01:53:16.378237+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T02:23:20.851368+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **1**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **1**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.233346+00:00 / — |
 | Last worker update | 2026-09-13T23:18:17.236892+00:00 |
-| Completed / budget steps | 5200 / 10000 |
-| Live step / phase | 5250 / train |
+| Completed / budget steps | 6200 / 10000 |
+| Live step / phase | 6290 / train |
 | Parameters | 22808675 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 2.5796 |
+| Active-stage allocated hours (estimate) | 3.0808 |
 | Peak allocated / reserved GiB | 33.55 / 38.72 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -149,6 +149,16 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 50 | 5000 | 0.3498 | 0.000160766 | 0.6415 | 0.2852 |
 | 51 | 5100 | 0.3655 | 0.0001578693 | — | — |
 | 52 | 5200 | 0.3382 | 0.0001549667 | — | — |
+| 53 | 5300 | 0.3490 | 0.000152058 | — | — |
+| 54 | 5400 | 0.3304 | 0.0001491431 | — | — |
+| 55 | 5500 | 0.3330 | 0.0001462219 | — | — |
+| 56 | 5600 | 0.3378 | 0.0001432942 | — | — |
+| 57 | 5700 | 0.3494 | 0.0001403598 | — | — |
+| 58 | 5800 | 0.3332 | 0.0001374186 | — | — |
+| 59 | 5900 | 0.3005 | 0.0001344704 | — | — |
+| 60 | 6000 | 0.3385 | 0.000131515 | 0.6974 | 0.3329 |
+| 61 | 6100 | 0.3552 | 0.0001285522 | — | — |
+| 62 | 6200 | 0.3112 | 0.0001255817 | — | — |
 
 ## Final validation evaluation
 
