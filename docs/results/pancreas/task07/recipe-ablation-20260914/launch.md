@@ -1,5 +1,7 @@
 # First controlled recipe round
 
+Completed follow-up: [convergence, stopping rules, failure counts and next experiments](../convergence-review-20260914/README.md).
+
 Launched on HDRFS on September 14, 2026. These are six fresh scratch DynUNet runs, each with its own immutable workspace. Read the [live comparison](README.md) for current progress and scores; this page records the launch protocol and completed checks.
 
 The question is whether patch selection or simple augmentation improves our starting recipe. This is an ingredient screen, not a reproduction of any paper or a claim of clinical performance.
