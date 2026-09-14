@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-14T23:30:21.173411+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
+Generated: 2026-09-14T23:37:24.377968+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
 
 ## Native CT prediction
 
@@ -9,7 +9,7 @@ This measures heterogeneous full CT examinations. Case p50/p95 includes CPU work
 | Model | Status | Cases | Failed | Pipeline wall s | Scans/s | Case p50 s | Case p95 s | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | 42/42 | 0 | 122.404 | 0.343 | 8.834 | 11.044 | 4.479 |
-| [dynunet-long30k-seed0](models/dynunet-long30k-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [dynunet-long30k-seed0](models/dynunet-long30k-seed0.md) | completed | 42/42 | 0 | 118.605 | 0.354 | 8.474 | 12.020 | 4.479 |
 | [dynunet-fine10k-seed0](models/dynunet-fine10k-seed0.md) | completed | 42/42 | 0 | 129.640 | 0.324 | 9.171 | 11.508 | 9.967 |
 
 [Per-case numerical timings](inference-cases.csv) use stable validation case ordinals. They contain preprocessing, tiled inference, reconstruction and export when recorded. Tiled inference includes copies, softmax and CPU blending; it is not model-only forward latency.
@@ -20,7 +20,7 @@ B1 synthetic inputs use each model's declared patch, context and precision. Warm
 
 | Model | Benchmark | Patch | Precision | Patches/s | p50 ms | p95 ms | Parameters | Weight MiB | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | [96, 96, 96] | bf16 | 116.727 | 8.563 | 8.590 | 16543683.0 | 126.218 | 0.625 |
 | [dynunet-long30k-seed0](models/dynunet-long30k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
 | [dynunet-fine10k-seed0](models/dynunet-fine10k-seed0.md) | not_recorded | [96, 144, 144] | bf16 | — | — | — | 16543683 | — | — |
 

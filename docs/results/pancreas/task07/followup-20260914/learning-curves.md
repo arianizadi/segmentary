@@ -2,7 +2,7 @@
 
 **Budget and resolution experiments:** all arms are scratch DynUNet runs with the same held-out validation split. The long arm changes both update budget and polynomial-decay horizon; the finer arm changes voxel spacing and patch dimensions to preserve physical context, with more voxels per update. These are planned recipe contrasts, not equal-compute architecture rankings.
 
-Generated: 2026-09-14T23:30:21.173411+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
+Generated: 2026-09-14T23:37:24.377968+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
 
 Each row is a completed training epoch. Blank validation cells mean validation was not scheduled. The step count, rather than wall-clock order, is the comparison axis. No values are interpolated.
 
@@ -407,6 +407,14 @@ Each row is a completed training epoch. Blank validation cells mean validation w
 | 290 | 29000 | 0.1422 | 1.405116e-05 | 0.7784 | 0.3021 | 22.8008 | 68.4602 | 0.4410 |
 | 291 | 29100 | 0.1310 | 1.277999e-05 | — | — | 22.6732 | 0.0000 | 0.4263 |
 | 292 | 29200 | 0.1332 | 1.149458e-05 | — | — | 22.6899 | 0.0000 | 0.4358 |
+| 293 | 29300 | 0.1452 | 1.019296e-05 | — | — | 22.7327 | 0.0000 | 0.4395 |
+| 294 | 29400 | 0.1318 | 8.872546e-06 | — | — | 22.7293 | 0.0000 | 0.4357 |
+| 295 | 29500 | 0.1283 | 7.529829e-06 | — | — | 22.7438 | 0.0000 | 0.4295 |
+| 296 | 29600 | 0.1358 | 6.159793e-06 | — | — | 22.7567 | 0.0000 | 0.4371 |
+| 297 | 29700 | 0.1356 | 4.75468e-06 | — | — | 22.7672 | 0.0000 | 0.4250 |
+| 298 | 29800 | 0.1416 | 3.300951e-06 | — | — | 22.7850 | 0.0000 | 0.4387 |
+| 299 | 29900 | 0.1393 | 1.768936e-06 | — | — | 22.7878 | 0.0000 | 0.4287 |
+| 300 | 30000 | 0.1371 | 0 | 0.7745 | 0.3027 | 22.7868 | 65.5947 | 0.4420 |
 
 ## dynunet-fine10k-seed0
 
