@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-14T18:25:34.599148+00:00. Source: `9714becaed028d7f0b03e1cf1782f68eb8c52853`.
+Generated: 2026-09-14T18:33:30.436031+00:00. Source: `9714becaed028d7f0b03e1cf1782f68eb8c52853`.
 
 ## Native CT prediction
 
@@ -24,10 +24,10 @@ B1 synthetic inputs use each model's declared patch, context and precision. Warm
 | Model | Benchmark | Patch | Precision | Patches/s | p50 ms | p95 ms | Parameters | Weight MiB | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [dynunet-control-seed0](models/dynunet-control-seed0.md) | completed | [96, 96, 96] | bf16 | 115.820 | 8.631 | 8.656 | 16543683.0 | 126.218 | 0.625 |
-| [dynunet-mass50-seed0](models/dynunet-mass50-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
-| [dynunet-class111-seed0](models/dynunet-class111-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
-| [dynunet-class115-seed0](models/dynunet-class115-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
-| [dynunet-rotation-seed0](models/dynunet-rotation-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
-| [dynunet-intensity-seed0](models/dynunet-intensity-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-mass50-seed0](models/dynunet-mass50-seed0.md) | completed | [96, 96, 96] | bf16 | 115.820 | 8.632 | 8.650 | 16543683.0 | 126.218 | 0.625 |
+| [dynunet-class111-seed0](models/dynunet-class111-seed0.md) | completed | [96, 96, 96] | bf16 | 115.793 | 8.627 | 8.665 | 16543683.0 | 126.218 | 0.625 |
+| [dynunet-class115-seed0](models/dynunet-class115-seed0.md) | completed | [96, 96, 96] | bf16 | 115.768 | 8.637 | 8.668 | 16543683.0 | 126.218 | 0.625 |
+| [dynunet-rotation-seed0](models/dynunet-rotation-seed0.md) | completed | [96, 96, 96] | bf16 | 115.790 | 8.629 | 8.667 | 16543683.0 | 126.218 | 0.625 |
+| [dynunet-intensity-seed0](models/dynunet-intensity-seed0.md) | completed | [96, 96, 96] | bf16 | 115.783 | 8.630 | 8.661 | 16543683.0 | 126.218 | 0.625 |
 
 [Training cost](training-cost.md) · [Comparison](comparison.md)

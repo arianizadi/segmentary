@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T18:25:34.599148+00:00. Source: `9714becaed028d7f0b03e1cf1782f68eb8c52853`.
+Generated: 2026-09-14T18:33:30.436031+00:00. Source: `9714becaed028d7f0b03e1cf1782f68eb8c52853`.
 
 Status: **completed**. Stage: **—**. GPU: **1**.
 

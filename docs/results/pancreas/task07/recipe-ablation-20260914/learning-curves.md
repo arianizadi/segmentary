@@ -2,7 +2,7 @@
 
 **Recipe experiment:** the named arms use the same DynUNet architecture, loss, split, inference protocol and fixed 10,000-update budget. Run IDs identify separate scratch initializations under declared ingredient changes; they are not different architectures. Rankings stay within each seed and require all planned arms to finish. The class111/class115 pair changes class weights; both also change background-center semantics relative to the uniform-volume control. Historical results used a different source snapshot and are not included as same-source replicates.
 
-Generated: 2026-09-14T18:25:34.599148+00:00. Source: `9714becaed028d7f0b03e1cf1782f68eb8c52853`.
+Generated: 2026-09-14T18:33:30.436031+00:00. Source: `9714becaed028d7f0b03e1cf1782f68eb8c52853`.
 
 Each row is a completed training epoch. Blank validation cells mean validation was not scheduled. The step count, rather than wall-clock order, is the comparison axis. No values are interpolated.
 
