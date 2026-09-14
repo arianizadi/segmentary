@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-14T17:28:27.928232+00:00. Source: `9714becaed028d7f0b03e1cf1782f68eb8c52853`.
+Generated: 2026-09-14T17:58:31.426550+00:00. Source: `9714becaed028d7f0b03e1cf1782f68eb8c52853`.
 
 ## Native CT prediction
 
@@ -23,11 +23,11 @@ B1 synthetic inputs use each model's declared patch, context and precision. Warm
 
 | Model | Benchmark | Patch | Precision | Patches/s | p50 ms | p95 ms | Parameters | Weight MiB | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control-seed0](models/dynunet-control-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-mass50-seed0](models/dynunet-mass50-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-class111-seed0](models/dynunet-class111-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-class115-seed0](models/dynunet-class115-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-rotation-seed0](models/dynunet-rotation-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-intensity-seed0](models/dynunet-intensity-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
+| [dynunet-control-seed0](models/dynunet-control-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-mass50-seed0](models/dynunet-mass50-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-class111-seed0](models/dynunet-class111-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-class115-seed0](models/dynunet-class115-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-rotation-seed0](models/dynunet-rotation-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-intensity-seed0](models/dynunet-intensity-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
 
 [Training cost](training-cost.md) · [Comparison](comparison.md)
