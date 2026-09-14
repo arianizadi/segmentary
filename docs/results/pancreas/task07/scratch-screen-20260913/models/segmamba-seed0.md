@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T00:53:11.494509+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T01:23:13.975052+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **2**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **2**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.235345+00:00 / — |
 | Last worker update | 2026-09-13T23:18:14.903773+00:00 |
-| Completed / budget steps | 3400 / 10000 |
-| Live step / phase | 3440 / train |
+| Completed / budget steps | 4500 / 10000 |
+| Live step / phase | 4590 / train |
 | Parameters | 67362723 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 1.5789 |
+| Active-stage allocated hours (estimate) | 2.0795 |
 | Peak allocated / reserved GiB | 19.29 / 22.59 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -130,6 +130,17 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 32 | 3200 | 0.4182 | 0.0002120212 | — | — |
 | 33 | 3300 | 0.4400 | 0.000209213 | — | — |
 | 34 | 3400 | 0.4451 | 0.0002064005 | — | — |
+| 35 | 3500 | 0.4264 | 0.0002035838 | — | — |
+| 36 | 3600 | 0.3984 | 0.0002007628 | — | — |
+| 37 | 3700 | 0.3903 | 0.0001979373 | — | — |
+| 38 | 3800 | 0.3952 | 0.0001951074 | — | — |
+| 39 | 3900 | 0.3879 | 0.0001922729 | — | — |
+| 40 | 4000 | 0.3809 | 0.0001894338 | 0.5944 | 0.2420 |
+| 41 | 4100 | 0.4098 | 0.0001865899 | — | — |
+| 42 | 4200 | 0.3953 | 0.0001837412 | — | — |
+| 43 | 4300 | 0.3922 | 0.0001808875 | — | — |
+| 44 | 4400 | 0.3623 | 0.0001780289 | — | — |
+| 45 | 4500 | 0.3655 | 0.0001751651 | — | — |
 
 ## Final validation evaluation
 

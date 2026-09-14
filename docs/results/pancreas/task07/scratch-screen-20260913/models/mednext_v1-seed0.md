@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T00:53:11.494509+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T01:23:13.975052+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **8**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **8**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.248888+00:00 / — |
 | Last worker update | 2026-09-13T23:18:17.459304+00:00 |
-| Completed / budget steps | 6000 / 10000 |
-| Live step / phase | 6080 / train |
+| Completed / budget steps | 8000 / 10000 |
+| Live step / phase | 8020 / train |
 | Parameters | 5550947 |
 | Objective | dense_ce_dice_no_auxiliary_heads |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 1.5781 |
+| Active-stage allocated hours (estimate) | 2.0788 |
 | Peak allocated / reserved GiB | 29.37 / 34.87 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -133,6 +133,26 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 58 | 5800 | 0.3460 | 0.0001374186 | — | — |
 | 59 | 5900 | 0.3284 | 0.0001344704 | — | — |
 | 60 | 6000 | 0.3752 | 0.000131515 | 0.6888 | 0.2845 |
+| 61 | 6100 | 0.3391 | 0.0001285522 | — | — |
+| 62 | 6200 | 0.3246 | 0.0001255817 | — | — |
+| 63 | 6300 | 0.3282 | 0.0001226035 | — | — |
+| 64 | 6400 | 0.3515 | 0.0001196172 | — | — |
+| 65 | 6500 | 0.3252 | 0.0001166225 | — | — |
+| 66 | 6600 | 0.3277 | 0.0001136193 | — | — |
+| 67 | 6700 | 0.3173 | 0.0001106073 | — | — |
+| 68 | 6800 | 0.3258 | 0.0001075861 | — | — |
+| 69 | 6900 | 0.3033 | 0.0001045555 | — | — |
+| 70 | 7000 | 0.3113 | 0.000101515 | 0.6942 | 0.2461 |
+| 71 | 7100 | 0.3072 | 9.846445e-05 | — | — |
+| 72 | 7200 | 0.3156 | 9.540332e-05 | — | — |
+| 73 | 7300 | 0.2984 | 9.233123e-05 | — | — |
+| 74 | 7400 | 0.3147 | 8.924775e-05 | — | — |
+| 75 | 7500 | 0.2982 | 8.615238e-05 | — | — |
+| 76 | 7600 | 0.2775 | 8.30446e-05 | — | — |
+| 77 | 7700 | 0.3162 | 7.992383e-05 | — | — |
+| 78 | 7800 | 0.3228 | 7.678947e-05 | — | — |
+| 79 | 7900 | 0.2994 | 7.364082e-05 | — | — |
+| 80 | 8000 | 0.3107 | 7.047714e-05 | 0.6943 | 0.2408 |
 
 ## Final validation evaluation
 
