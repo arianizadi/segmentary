@@ -20,6 +20,12 @@ The linked CancerVerse result has mean mass Dice 67.16%, median 76.32%, and seve
 
 This does not establish an annotation-imposed ceiling. Nor does it prove that a different architecture alone will close the gap. We trained from scratch on 197 cases, using one seed and a common 10,000-update recipe. Published entries may use more training data, their own planning/augmentation/schedules, model selection, ensembles, or pretrained components. Exact exposure and recipe for each checkpoint must be audited before claiming a scratch-only matched baseline; leaderboard names alone do not establish those details.
 
+### Likely paper associated with the supplied result
+
+CancerVerse is a team name. A strong paper candidate is [Chen et al., ICCV 2025, *Scaling Tumor Segmentation: Best Lessons from Real and Synthetic Data*](https://www.cs.jhu.edu/~zongwei/publication/chen2025scaling.pdf). Its official-MSD Table 2 reports mass Dice 67.2 +/- 24.7% and NSD 86.0 +/- 25.2%, matching this submission's rounded aggregates. The [official AbdomenAtlas 2.0 repository](https://github.com/BodyMaps/AbdomenAtlas2.0) links the paper and claims first place. Neither inspected source directly identifies evaluation `279a2fee...`, so this is an inferred association, not certified submission provenance.
+
+The paper describes ResEncM trained with AbdomenAtlas 2.0. Appendix C.2 lists an nnU-Net-based recipe using 1.5 mm isotropic spacing, a -175 to 250 HU window, 96-cubed patches, batch two, SGD with initial learning rate 0.01, and 250,000 iterations, plus its augmentation/inference choices. This provides a useful recipe lead, but the exact submitted initialization, training-patient exposure, fold/checkpoint ensemble and sampling mixture remain unresolved. It does not establish that 67.16% is a Task07-only, scratch-only target under our budget. The distinct 2026 longitudinal CancerVerse dataset should not be substituted for this submission's training data.
+
 The current next experiments address concrete alternatives: [training-fit and two-case memorization](../../../../guides/medical-training-fit-diagnostic.md), [a fresh 30,000-update schedule and finer in-plane sampling](../../../../guides/medical-followup-experiments.md), and [same-checkpoint Gaussian inference blending](../../../../guides/medical-inference-blending.md). The [annotation review](../annotation-review-20260914/README.md) is a separate audit, not a reason to remove difficult cases based on model errors.
 
 ## Metric and protocol cautions
