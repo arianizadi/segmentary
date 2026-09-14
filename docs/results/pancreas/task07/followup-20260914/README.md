@@ -2,9 +2,9 @@
 
 **Budget and resolution experiments:** all arms are scratch DynUNet runs with the same held-out validation split. The long arm changes both update budget and polynomial-decay horizon; the finer arm changes voxel spacing and patch dimensions to preserve physical context, with more voxels per update. These are planned recipe contrasts, not equal-compute architecture rankings.
 
-Generated: 2026-09-14T22:30:14.972452+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
+Generated: 2026-09-14T23:00:17.977338+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
 
-**1 completed, 2 running.** GPU queue: 1, 2, 3.
+**2 completed, 1 running.** GPU queue: 1, 2, 3.
 
 1. Open [comparison.md](comparison.md) for model status and comparable validation results.
 2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.
@@ -64,5 +64,5 @@ are useful within a run; they are not an accuracy ranking across objectives.
 | Model | Status | Steps / budget | Native mass Dice | Native pancreas Dice | Score scope | Cases |
 | --- | --- | --- | --- | --- | --- | --- |
 | [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | 10000/10000 | 0.3298 | 0.7559 | final reference-positive mean | 42/42 |
-| [dynunet-long30k-seed0](models/dynunet-long30k-seed0.md) | running | 17440/30000 | 0.3036 | 0.7586 | in-training step 17000 | 42/42 |
-| [dynunet-fine10k-seed0](models/dynunet-fine10k-seed0.md) | running | 8320/10000 | 0.2668 | 0.7441 | in-training step 8000 | 42/42 |
+| [dynunet-long30k-seed0](models/dynunet-long30k-seed0.md) | running | 23390/30000 | 0.2905 | 0.7626 | in-training step 23000 | 42/42 |
+| [dynunet-fine10k-seed0](models/dynunet-fine10k-seed0.md) | completed | 10000/10000 | 0.2820 | 0.7280 | final reference-positive mean | 42/42 |
