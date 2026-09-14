@@ -2,24 +2,24 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T03:23:29.603988+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T03:53:32.241578+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-Status: **running**. Stage: **train**. GPU: **9**.
+Status: **completed**. Stage: **—**. GPU: **9**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | 2026-09-14T02:59:10.935385+00:00 / — |
-| Last worker update | 2026-09-14T02:59:51.831671+00:00 |
-| Completed / budget steps | 4900 / 10000 |
+| Started / finished | 2026-09-14T02:59:10.935385+00:00 / 2026-09-14T03:49:36.664082+00:00 |
+| Last worker update | 2026-09-14T03:49:36.664092+00:00 |
+| Completed / budget steps | 10000 / 10000 |
 | Live step / phase | — / validation |
 | Parameters | 24442931 |
 | Objective | common_dice_ce |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
-| Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 0.3903 |
+| Selected checkpoint SHA256 | 4afb56fe68a3181be18f7995644f11da7a827b0a439df91c1826e3407ad60a3a |
+| Finished-stage allocated GPU-hours | 0.8078 |
+| Active-stage allocated hours (estimate) | — |
 | Peak allocated / reserved GiB | 0.78 / 0.84 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -120,7 +120,65 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 47 | 4700 | 0.5087 | 0.0001694219 | — | — |
 | 48 | 4800 | 0.4730 | 0.0001665422 | — | — |
 | 49 | 4900 | 0.4822 | 0.0001636569 | — | — |
+| 50 | 5000 | 0.4968 | 0.000160766 | 0.5641 | 0.1672 |
+| 51 | 5100 | 0.4904 | 0.0001578693 | — | — |
+| 52 | 5200 | 0.4575 | 0.0001549667 | — | — |
+| 53 | 5300 | 0.4402 | 0.000152058 | — | — |
+| 54 | 5400 | 0.4791 | 0.0001491431 | — | — |
+| 55 | 5500 | 0.4760 | 0.0001462219 | — | — |
+| 56 | 5600 | 0.4835 | 0.0001432942 | — | — |
+| 57 | 5700 | 0.4454 | 0.0001403598 | — | — |
+| 58 | 5800 | 0.4591 | 0.0001374186 | — | — |
+| 59 | 5900 | 0.4403 | 0.0001344704 | — | — |
+| 60 | 6000 | 0.4415 | 0.000131515 | 0.6483 | 0.1586 |
+| 61 | 6100 | 0.4294 | 0.0001285522 | — | — |
+| 62 | 6200 | 0.4569 | 0.0001255817 | — | — |
+| 63 | 6300 | 0.4123 | 0.0001226035 | — | — |
+| 64 | 6400 | 0.4256 | 0.0001196172 | — | — |
+| 65 | 6500 | 0.4355 | 0.0001166225 | — | — |
+| 66 | 6600 | 0.4825 | 0.0001136193 | — | — |
+| 67 | 6700 | 0.4428 | 0.0001106073 | — | — |
+| 68 | 6800 | 0.4506 | 0.0001075861 | — | — |
+| 69 | 6900 | 0.4669 | 0.0001045555 | — | — |
+| 70 | 7000 | 0.4382 | 0.000101515 | 0.6631 | 0.2555 |
+| 71 | 7100 | 0.4290 | 9.846445e-05 | — | — |
+| 72 | 7200 | 0.4418 | 9.540332e-05 | — | — |
+| 73 | 7300 | 0.4260 | 9.233123e-05 | — | — |
+| 74 | 7400 | 0.4129 | 8.924775e-05 | — | — |
+| 75 | 7500 | 0.4077 | 8.615238e-05 | — | — |
+| 76 | 7600 | 0.4280 | 8.30446e-05 | — | — |
+| 77 | 7700 | 0.4222 | 7.992383e-05 | — | — |
+| 78 | 7800 | 0.3987 | 7.678947e-05 | — | — |
+| 79 | 7900 | 0.4113 | 7.364082e-05 | — | — |
+| 80 | 8000 | 0.4074 | 7.047714e-05 | 0.6689 | 0.2386 |
+| 81 | 8100 | 0.4454 | 6.729759e-05 | — | — |
+| 82 | 8200 | 0.3877 | 6.410125e-05 | — | — |
+| 83 | 8300 | 0.4108 | 6.08871e-05 | — | — |
+| 84 | 8400 | 0.3914 | 5.765397e-05 | — | — |
+| 85 | 8500 | 0.3966 | 5.440056e-05 | — | — |
+| 86 | 8600 | 0.3857 | 5.112537e-05 | — | — |
+| 87 | 8700 | 0.3666 | 4.782668e-05 | — | — |
+| 88 | 8800 | 0.3894 | 4.45025e-05 | — | — |
+| 89 | 8900 | 0.3895 | 4.115046e-05 | — | — |
+| 90 | 9000 | 0.3878 | 3.776776e-05 | 0.6801 | 0.1950 |
+| 91 | 9100 | 0.3887 | 3.435101e-05 | — | — |
+| 92 | 9200 | 0.3856 | 3.0896e-05 | — | — |
+| 93 | 9300 | 0.3712 | 2.739741e-05 | — | — |
+| 94 | 9400 | 0.3640 | 2.38483e-05 | — | — |
+| 95 | 9500 | 0.3833 | 2.023924e-05 | — | — |
+| 96 | 9600 | 0.3634 | 1.655676e-05 | — | — |
+| 97 | 9700 | 0.3681 | 1.277999e-05 | — | — |
+| 98 | 9800 | 0.3791 | 8.872546e-06 | — | — |
+| 99 | 9900 | 0.3963 | 4.75468e-06 | — | — |
+| 100 | 10000 | 0.3769 | 0 | 0.6723 | 0.1816 |
 
 ## Final validation evaluation
 
-Not available yet. Training loss or a forward-pass smoke test cannot replace this evaluation.
+| Region | Patient mean Dice | 95% bootstrap interval | Surface Dice | HD95 mm | HD95 case coverage |
+| --- | --- | --- | --- | --- | --- |
+| pancreas | 0.6631 | 0.6187 to 0.7049 | 0.5117 | 29.5887 | 1.0000 |
+| mass | 0.2555 | 0.1830 to 0.3316 | 0.2205 | 44.1535 | 0.9762 |
+
+Complete prediction/reference coverage: **True**. Native reference cohort: `749cde7099ad36aea2e49b1978326a8ee29ca75ae4f9777c123d2742fd99a028`.
+
+HD95 excludes undefined/infinite distances; use its coverage alongside Dice so missed masses cannot disappear from interpretation.

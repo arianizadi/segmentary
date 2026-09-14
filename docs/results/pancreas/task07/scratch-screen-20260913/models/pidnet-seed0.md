@@ -2,25 +2,25 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T03:23:29.603988+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T03:53:32.241578+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-Status: **queued**. Stage: **—**. GPU: **None**.
+Status: **running**. Stage: **train**. GPU: **7**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | — / — |
-| Last worker update | — |
-| Completed / budget steps | 0 / 10000 |
-| Live step / phase | — / — |
-| Parameters | — |
-| Objective | — |
-| Checkpoint selection | — |
+| Started / finished | 2026-09-14T03:28:19.720192+00:00 / — |
+| Last worker update | 2026-09-14T03:29:00.345216+00:00 |
+| Completed / budget steps | 4900 / 10000 |
+| Live step / phase | — / validation |
+| Parameters | 7717383 |
+| Objective | ct_ce_aux_ce_boundary_bce |
+| Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | — |
-| Active-stage allocated hours (estimate) | — |
-| Peak allocated / reserved GiB | — / — |
+| Finished-stage allocated GPU-hours | 0.0000 |
+| Active-stage allocated hours (estimate) | 0.4054 |
+| Peak allocated / reserved GiB | 0.31 / 0.31 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
 
@@ -71,6 +71,55 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 
 | Epoch | Step | Training loss | Learning rate | Native pancreas Dice | Native mass Dice |
 | --- | --- | --- | --- | --- | --- |
+| 1 | 100 | 1.5807 | 0.0002972986 | 0.0015 | 0.0000 |
+| 2 | 200 | 0.0566 | 0.0002945946 | — | — |
+| 3 | 300 | 0.0467 | 0.0002918877 | — | — |
+| 4 | 400 | 0.0411 | 0.0002891781 | — | — |
+| 5 | 500 | 0.0441 | 0.0002864656 | — | — |
+| 6 | 600 | 0.0387 | 0.0002837503 | — | — |
+| 7 | 700 | 0.0325 | 0.0002810321 | — | — |
+| 8 | 800 | 0.0338 | 0.000278311 | — | — |
+| 9 | 900 | 0.0320 | 0.0002755869 | — | — |
+| 10 | 1000 | 0.0339 | 0.0002728598 | 0.0847 | 0.0000 |
+| 11 | 1100 | 0.0320 | 0.0002701297 | — | — |
+| 12 | 1200 | 0.0281 | 0.0002673965 | — | — |
+| 13 | 1300 | 0.0303 | 0.0002646602 | — | — |
+| 14 | 1400 | 0.0311 | 0.0002619207 | — | — |
+| 15 | 1500 | 0.0292 | 0.0002591781 | — | — |
+| 16 | 1600 | 0.0282 | 0.0002564322 | — | — |
+| 17 | 1700 | 0.0265 | 0.0002536831 | — | — |
+| 18 | 1800 | 0.0279 | 0.0002509307 | — | — |
+| 19 | 1900 | 0.0259 | 0.0002481749 | — | — |
+| 20 | 2000 | 0.0244 | 0.0002454156 | 0.1751 | 0.0011 |
+| 21 | 2100 | 0.0248 | 0.000242653 | — | — |
+| 22 | 2200 | 0.0247 | 0.0002398868 | — | — |
+| 23 | 2300 | 0.0270 | 0.0002371171 | — | — |
+| 24 | 2400 | 0.0256 | 0.0002343438 | — | — |
+| 25 | 2500 | 0.0235 | 0.0002315669 | — | — |
+| 26 | 2600 | 0.0213 | 0.0002287862 | — | — |
+| 27 | 2700 | 0.0245 | 0.0002260018 | — | — |
+| 28 | 2800 | 0.0242 | 0.0002232135 | — | — |
+| 29 | 2900 | 0.0235 | 0.0002204214 | — | — |
+| 30 | 3000 | 0.0221 | 0.0002176254 | 0.3652 | 0.0136 |
+| 31 | 3100 | 0.0229 | 0.0002148253 | — | — |
+| 32 | 3200 | 0.0226 | 0.0002120212 | — | — |
+| 33 | 3300 | 0.0206 | 0.000209213 | — | — |
+| 34 | 3400 | 0.0226 | 0.0002064005 | — | — |
+| 35 | 3500 | 0.0211 | 0.0002035838 | — | — |
+| 36 | 3600 | 0.0215 | 0.0002007628 | — | — |
+| 37 | 3700 | 0.0217 | 0.0001979373 | — | — |
+| 38 | 3800 | 0.0200 | 0.0001951074 | — | — |
+| 39 | 3900 | 0.0208 | 0.0001922729 | — | — |
+| 40 | 4000 | 0.0198 | 0.0001894338 | 0.3943 | 0.0214 |
+| 41 | 4100 | 0.0190 | 0.0001865899 | — | — |
+| 42 | 4200 | 0.0197 | 0.0001837412 | — | — |
+| 43 | 4300 | 0.0194 | 0.0001808875 | — | — |
+| 44 | 4400 | 0.0203 | 0.0001780289 | — | — |
+| 45 | 4500 | 0.0187 | 0.0001751651 | — | — |
+| 46 | 4600 | 0.0193 | 0.0001722962 | — | — |
+| 47 | 4700 | 0.0184 | 0.0001694219 | — | — |
+| 48 | 4800 | 0.0187 | 0.0001665422 | — | — |
+| 49 | 4900 | 0.0186 | 0.0001636569 | — | — |
 
 ## Final validation evaluation
 

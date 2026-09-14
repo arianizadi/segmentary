@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T03:23:29.603988+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T03:53:32.241578+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **2**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **2**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.235345+00:00 / — |
 | Last worker update | 2026-09-13T23:18:14.903773+00:00 |
-| Completed / budget steps | 8800 / 10000 |
-| Live step / phase | 8860 / train |
+| Completed / budget steps | 9900 / 10000 |
+| Live step / phase | 9970 / train |
 | Parameters | 67362723 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 4.0839 |
+| Active-stage allocated hours (estimate) | 4.5846 |
 | Peak allocated / reserved GiB | 19.29 / 22.59 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -184,6 +184,17 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 86 | 8600 | 0.2780 | 5.112537e-05 | — | — |
 | 87 | 8700 | 0.2687 | 4.782668e-05 | — | — |
 | 88 | 8800 | 0.2565 | 4.45025e-05 | — | — |
+| 89 | 8900 | 0.2612 | 4.115046e-05 | — | — |
+| 90 | 9000 | 0.2503 | 3.776776e-05 | 0.7355 | 0.3212 |
+| 91 | 9100 | 0.2547 | 3.435101e-05 | — | — |
+| 92 | 9200 | 0.2645 | 3.0896e-05 | — | — |
+| 93 | 9300 | 0.2562 | 2.739741e-05 | — | — |
+| 94 | 9400 | 0.2548 | 2.38483e-05 | — | — |
+| 95 | 9500 | 0.2330 | 2.023924e-05 | — | — |
+| 96 | 9600 | 0.2563 | 1.655676e-05 | — | — |
+| 97 | 9700 | 0.2553 | 1.277999e-05 | — | — |
+| 98 | 9800 | 0.2416 | 8.872546e-06 | — | — |
+| 99 | 9900 | 0.2316 | 4.75468e-06 | — | — |
 
 ## Final validation evaluation
 

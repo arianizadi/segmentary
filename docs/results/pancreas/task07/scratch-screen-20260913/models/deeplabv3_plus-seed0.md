@@ -2,24 +2,24 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T03:23:29.603988+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T03:53:32.241578+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-Status: **running**. Stage: **train**. GPU: **3**.
+Status: **completed**. Stage: **—**. GPU: **3**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | 2026-09-14T02:49:34.538394+00:00 / — |
-| Last worker update | 2026-09-14T02:50:15.370962+00:00 |
-| Completed / budget steps | 6600 / 10000 |
-| Live step / phase | 6670 / train |
+| Started / finished | 2026-09-14T02:49:34.538394+00:00 / 2026-09-14T03:47:26.708886+00:00 |
+| Last worker update | 2026-09-14T03:47:26.708894+00:00 |
+| Completed / budget steps | 10000 / 10000 |
+| Live step / phase | — / validation |
 | Parameters | 26684371 |
 | Objective | common_dice_ce |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
-| Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 0.5505 |
+| Selected checkpoint SHA256 | e2226ac310f336149bc0da5222074861bce45ecb8c6b4d437163917b3044568e |
+| Finished-stage allocated GPU-hours | 0.9277 |
+| Active-stage allocated hours (estimate) | — |
 | Peak allocated / reserved GiB | 1.07 / 1.13 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -137,7 +137,48 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 64 | 6400 | 0.4467 | 0.0001196172 | — | — |
 | 65 | 6500 | 0.4455 | 0.0001166225 | — | — |
 | 66 | 6600 | 0.4702 | 0.0001136193 | — | — |
+| 67 | 6700 | 0.4539 | 0.0001106073 | — | — |
+| 68 | 6800 | 0.4543 | 0.0001075861 | — | — |
+| 69 | 6900 | 0.4651 | 0.0001045555 | — | — |
+| 70 | 7000 | 0.4568 | 0.000101515 | 0.6229 | 0.2598 |
+| 71 | 7100 | 0.4408 | 9.846445e-05 | — | — |
+| 72 | 7200 | 0.4533 | 9.540332e-05 | — | — |
+| 73 | 7300 | 0.4615 | 9.233123e-05 | — | — |
+| 74 | 7400 | 0.4273 | 8.924775e-05 | — | — |
+| 75 | 7500 | 0.4323 | 8.615238e-05 | — | — |
+| 76 | 7600 | 0.4183 | 8.30446e-05 | — | — |
+| 77 | 7700 | 0.4254 | 7.992383e-05 | — | — |
+| 78 | 7800 | 0.4006 | 7.678947e-05 | — | — |
+| 79 | 7900 | 0.4180 | 7.364082e-05 | — | — |
+| 80 | 8000 | 0.4104 | 7.047714e-05 | 0.6332 | 0.2236 |
+| 81 | 8100 | 0.4296 | 6.729759e-05 | — | — |
+| 82 | 8200 | 0.4061 | 6.410125e-05 | — | — |
+| 83 | 8300 | 0.4085 | 6.08871e-05 | — | — |
+| 84 | 8400 | 0.3956 | 5.765397e-05 | — | — |
+| 85 | 8500 | 0.4121 | 5.440056e-05 | — | — |
+| 86 | 8600 | 0.4004 | 5.112537e-05 | — | — |
+| 87 | 8700 | 0.3854 | 4.782668e-05 | — | — |
+| 88 | 8800 | 0.3980 | 4.45025e-05 | — | — |
+| 89 | 8900 | 0.3869 | 4.115046e-05 | — | — |
+| 90 | 9000 | 0.4061 | 3.776776e-05 | 0.6475 | 0.2485 |
+| 91 | 9100 | 0.4120 | 3.435101e-05 | — | — |
+| 92 | 9200 | 0.3810 | 3.0896e-05 | — | — |
+| 93 | 9300 | 0.3980 | 2.739741e-05 | — | — |
+| 94 | 9400 | 0.3703 | 2.38483e-05 | — | — |
+| 95 | 9500 | 0.3904 | 2.023924e-05 | — | — |
+| 96 | 9600 | 0.3837 | 1.655676e-05 | — | — |
+| 97 | 9700 | 0.3677 | 1.277999e-05 | — | — |
+| 98 | 9800 | 0.4104 | 8.872546e-06 | — | — |
+| 99 | 9900 | 0.4109 | 4.75468e-06 | — | — |
+| 100 | 10000 | 0.3788 | 0 | 0.6483 | 0.2420 |
 
 ## Final validation evaluation
 
-Not available yet. Training loss or a forward-pass smoke test cannot replace this evaluation.
+| Region | Patient mean Dice | 95% bootstrap interval | Surface Dice | HD95 mm | HD95 case coverage |
+| --- | --- | --- | --- | --- | --- |
+| pancreas | 0.6229 | 0.5743 to 0.6669 | 0.4578 | 31.2535 | 1.0000 |
+| mass | 0.2598 | 0.1878 to 0.3334 | 0.2351 | 58.5970 | 0.9286 |
+
+Complete prediction/reference coverage: **True**. Native reference cohort: `749cde7099ad36aea2e49b1978326a8ee29ca75ae4f9777c123d2742fd99a028`.
+
+HD95 excludes undefined/infinite distances; use its coverage alongside Dice so missed masses cannot disappear from interpretation.

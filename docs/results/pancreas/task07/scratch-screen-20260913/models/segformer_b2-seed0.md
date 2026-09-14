@@ -2,24 +2,24 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T03:23:29.603988+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T03:53:32.241578+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-Status: **running**. Stage: **predict**. GPU: **7**.
+Status: **completed**. Stage: **—**. GPU: **7**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | 2026-09-14T02:21:05.099468+00:00 / — |
-| Last worker update | 2026-09-14T03:20:49.327911+00:00 |
+| Started / finished | 2026-09-14T02:21:05.099468+00:00 / 2026-09-14T03:28:19.716564+00:00 |
+| Last worker update | 2026-09-14T03:28:19.716575+00:00 |
 | Completed / budget steps | 10000 / 10000 |
 | Live step / phase | — / validation |
 | Parameters | 27355203 |
 | Objective | common_dice_ce |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
-| Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | 0.9805 |
-| Active-stage allocated hours (estimate) | 0.0424 |
+| Selected checkpoint SHA256 | be2776f76cb18860a6426de1d229272ec8974666b0f486eb115209f02954c80c |
+| Finished-stage allocated GPU-hours | 1.0826 |
+| Active-stage allocated hours (estimate) | — |
 | Peak allocated / reserved GiB | 2.12 / 2.33 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -174,4 +174,11 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 
 ## Final validation evaluation
 
-Not available yet. Training loss or a forward-pass smoke test cannot replace this evaluation.
+| Region | Patient mean Dice | 95% bootstrap interval | Surface Dice | HD95 mm | HD95 case coverage |
+| --- | --- | --- | --- | --- | --- |
+| pancreas | 0.3313 | 0.2849 to 0.3809 | 0.1884 | 67.8378 | 0.9762 |
+| mass | 0.1218 | 0.0796 to 0.1700 | 0.0936 | 91.1922 | 0.9524 |
+
+Complete prediction/reference coverage: **True**. Native reference cohort: `749cde7099ad36aea2e49b1978326a8ee29ca75ae4f9777c123d2742fd99a028`.
+
+HD95 excludes undefined/infinite distances; use its coverage alongside Dice so missed masses cannot disappear from interpretation.

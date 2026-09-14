@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T03:23:29.603988+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T03:53:32.241578+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **1**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **1**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.233346+00:00 / — |
 | Last worker update | 2026-09-13T23:18:17.236892+00:00 |
-| Completed / budget steps | 8300 / 10000 |
-| Live step / phase | 8301 / train |
+| Completed / budget steps | 9300 / 10000 |
+| Live step / phase | 9350 / train |
 | Parameters | 22808675 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 4.0832 |
+| Active-stage allocated hours (estimate) | 4.5840 |
 | Peak allocated / reserved GiB | 33.55 / 38.72 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -180,6 +180,16 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 81 | 8100 | 0.2845 | 6.729759e-05 | — | — |
 | 82 | 8200 | 0.2605 | 6.410125e-05 | — | — |
 | 83 | 8300 | 0.2637 | 6.08871e-05 | — | — |
+| 84 | 8400 | 0.2494 | 5.765397e-05 | — | — |
+| 85 | 8500 | 0.2509 | 5.440056e-05 | — | — |
+| 86 | 8600 | 0.2500 | 5.112537e-05 | — | — |
+| 87 | 8700 | 0.2615 | 4.782668e-05 | — | — |
+| 88 | 8800 | 0.2580 | 4.45025e-05 | — | — |
+| 89 | 8900 | 0.2515 | 4.115046e-05 | — | — |
+| 90 | 9000 | 0.2422 | 3.776776e-05 | 0.7512 | 0.3499 |
+| 91 | 9100 | 0.2536 | 3.435101e-05 | — | — |
+| 92 | 9200 | 0.2589 | 3.0896e-05 | — | — |
+| 93 | 9300 | 0.2593 | 2.739741e-05 | — | — |
 
 ## Final validation evaluation
 
