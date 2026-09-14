@@ -4,7 +4,7 @@ The visual concern is reasonable: in several reviewed scans, the mass contour li
 
 ## What was actually reviewed
 
-On 2026-09-14 we loaded native CT and reference masks for six Task07 **training** cases spanning mass-volume quantiles (minimum, 10th, 25th, median, 75th, maximum) and the first six available positive PanTS training cases outside the known artifact exclusions. This is a deliberately small exploratory sample, not a random estimate of dataset quality. The reserved test payloads were not opened.
+On 2026-09-14 we loaded native CT and reference masks for six Task07 **training** cases spanning mass-volume quantiles (minimum, 10th, 25th, median, 75th, maximum) and the first six available positive cases from the PanTS official training pool outside the known artifact exclusions. This is a deliberately small exploratory sample, not a random estimate of dataset quality. No Task07 reserved-test or PanTS official-test payloads were opened. PanTS examples came from ImageTr/LabelTr, not a separately verified project-specific training split.
 
 All 12 selected image/mask pairs had matching shapes and affines within an absolute tolerance of 0.0001. We rendered and visually inspected axial, coronal and sagittal views, with raw CT on the left and cyan pancreas/magenta mass contours on the right. Display used canonical RAS orientation, physical aspect ratio and the same -100 to 240 HU window. These are selected planes, not a complete diagnostic review of every slice or contrast phase.
 

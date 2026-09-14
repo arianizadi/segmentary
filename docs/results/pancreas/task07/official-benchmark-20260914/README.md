@@ -4,6 +4,10 @@ Our completed short screening runs are below the selected official tumor-segment
 
 Start with [the generated score tables](tables.md), including all 27 completed local models. [Exact source values](official-scores.json) retain the unrounded numbers from the public evaluation pages. Run `python generate_tables.py` in this directory to regenerate the tables from those values and the existing validated campaign CSV.
 
+![Mass Dice shown separately for official test and local validation cohorts](mass-dice-context.png)
+
+The [plot source](plot_scores.py) uses those same records. [SVG figure](mass-dice-context.svg) is available for export; the separate panels deliberately preserve the cohort distinction.
+
 ## What the two websites show
 
 The [original results page](http://medicaldecathlon.com/results/) is the historical challenge table. It rounds scores to two decimals and separates development tasks (phase 1, including pancreas) from held-out tasks (phase 2). Its original nnU-Net pancreas scores are about 0.80 and 0.52. Do not mix that historical result with the later December 2019 Isensee evaluation, which reports 0.8164329 and 0.5278303.
@@ -12,7 +16,7 @@ The [continuing Grand Challenge leaderboard](https://decathlon-10.grand-challeng
 
 ## What changes in our interpretation
 
-The linked CancerVerse result has mean mass Dice 67.16%, median 76.32%, and seven zero-overlap cases out of 139. The historical Isensee entry has mean 52.78% and 27 zero-overlap cases. These distributions show that a respectable mean can coexist with complete misses. Our best completed screening model, U-Mamba Encoder, has 35.71% mean mass Dice; the DynUNet control has 32.98%. The short-screening recipe is not yet competitive with these reference results.
+The linked CancerVerse result has mean mass Dice 67.16%, median 76.32%, and seven zero-overlap cases out of 139. The historical Isensee entry has mean 52.78% and 27 zero-overlap cases. These distributions show that a respectable mean can coexist with zero-overlap segmentations; Dice alone does not define patient-level detection. Our best completed screening model, U-Mamba Encoder, has 35.71% mean mass Dice; the DynUNet control has 32.98%. The short-screening recipe is not yet competitive with these reference results.
 
 This does not establish an annotation-imposed ceiling. Nor does it prove that a different architecture alone will close the gap. We trained from scratch on 197 cases, using one seed and a common 10,000-update recipe. Published entries may use more training data, their own planning/augmentation/schedules, model selection, ensembles, or pretrained components. Exact exposure and recipe for each checkpoint must be audited before claiming a scratch-only matched baseline; leaderboard names alone do not establish those details.
 
