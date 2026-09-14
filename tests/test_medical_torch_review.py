@@ -116,7 +116,7 @@ def test_same_run_resume_restores_optimizer_scheduler_and_all_sampling_rng(tmp_p
     monkeypatch.setattr(
         torch_backend,
         "_validation",
-        lambda model, *args: {
+        lambda model, *args, **kwargs: {
             "mean_mass_dice": float(model[0].weight.detach().mean()),
             "cases": [],
             "space": "native_full_volume",

@@ -41,6 +41,8 @@ stages; `--retry-failed` explicitly requests another attempt at failed work.
 Do not change recipes or source inside an active campaign. A changed scientific
 recipe needs a new run identity and workspace.
 
+For implementation-only source upgrades, use the [audited continuation procedure](medical-performance-continuation.md); preserve parent evidence and create a fresh workspace.
+
 ## Live dashboard
 
 The medical runner and both RTIS campaign launchers automatically open the same
@@ -96,10 +98,37 @@ scratch-screen-20260913/
   comparison.md         every model, status, metric and ranking gate
   learning-curves.md    each recorded epoch and native validation point
   optimization.md       runtime changes, profiling scope and available measurements
+  training-cost.md      training/validation/checkpoint costs, with source segments
+  inference.md          full-scan timings and measured B1 model-only patch speed
+  clinical-metrics.md   P-Sen/T-Sen/Spe/AUC/DSC and unavailable-value reasons
+  records/<run>.json    complete portable numerical record, without raw case IDs
+  epochs.csv            each retained epoch and training segment
+  validation-cases.csv per-case validation values/timings using frozen case ordinals
+  inference-cases.csv  per-case timing, image-only mass score and voxel counts
+  stage-invocations.csv recorded stage wall times
   models/<run>.md       recipe, objective, memory, timing and final evaluation
   results.csv           spreadsheet-friendly aggregate rows
   status.json           aggregate evidence and compatibility decisions
 ```
+
+The training and prediction workers write their timing, score and memory records
+automatically. Standardized model-only latency and the supplemental detection
+protocol are separate diagnostics; the reporter never invents these values from
+training speed or masks alone. Run them after a workspace is quiescent:
+
+```bash
+python scripts/benchmark_medical_inference.py \
+  --campaign /data/project/campaign --gpu 9
+```
+
+The benchmark launches each Torch model in its recorded interpreter and frozen
+source, locks an idle GPU, then measures 50 batch-one public forwards after 10
+warmups. It writes `standard-inference.json` in each workspace with raw latency
+samples, p50/p95, patch throughput, parameter/weight size and allocator peaks.
+Synthetic patch speed excludes CT preprocessing, reconstruction and export and
+is not examinations per second. nnU-Net remains a separate protocol. See the
+[detection diagnostic guide](medical-detection-diagnostics.md) for the fixed
+exploratory operating point, case/patient grouping and lesion-component limits.
 
 Generate again to update the snapshot. Publication is a separate, authorized Git
 operation; the reporting command does not commit or push. Keep periodic result

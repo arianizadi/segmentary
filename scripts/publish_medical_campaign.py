@@ -1,7 +1,8 @@
 """Publish aggregate pancreas reports from a separate checkout every 30 minutes.
 
-The frozen training checkout provides the reporter code; only generated report
-files are staged in the dedicated publisher checkout. No image, annotation,
+A pinned reporting checkout provides the reporter code; only generated report
+files are staged in the dedicated publisher checkout. The campaign retains its
+own frozen training source and binding. No image, annotation,
 checkpoint, patient identifier, or runtime path is copied into Git.
 """
 

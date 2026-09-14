@@ -339,3 +339,19 @@ def test_post_training_stage_ignores_stale_validation_progress(medical, stage):
     assert row["phase"] == stage
     assert not row["progress_text"].startswith("val")
     assert row["sample_time"] is None
+
+
+def test_checkpoint_progress_is_distinct_from_training(medical):
+    write(
+        medical / "runs/active/progress.json",
+        {
+            "phase": "checkpoint",
+            "step": 150,
+            "target_steps": 200,
+            "updated_at": time.time(),
+        },
+    )
+    rows, _, _ = MedicalTelemetry(medical, show_gpus=False).read()
+    active = next(row for row in rows if row["name"] == "active")
+    assert active["phase"] == "checkpoint"
+    assert active["progress_text"] == "save @150"

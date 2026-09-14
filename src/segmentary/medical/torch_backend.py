@@ -303,7 +303,8 @@ def plan_and_preprocess(config: TorchConfig, *, dry_run: bool = False) -> dict:
     return _run(config, "preprocess", {}, gpu=False)
 
 
-def _checkpoint(config: TorchConfig, name: str) -> Path:
+def _indexed_checkpoint(config: TorchConfig, name: str) -> tuple[Path, str]:
+    """Resolve an indexed checkpoint and its recorded digest without reading it."""
     if name not in {"checkpoint_latest.pth", "checkpoint_best.pth", "checkpoint_final.pth"}:
         raise ValueError("Only checkpoints from this scratch-origin run are accepted")
     index = _json(config.root / "checkpoint-index.json")
@@ -314,9 +315,41 @@ def _checkpoint(config: TorchConfig, name: str) -> Path:
     item = index["files"][name]
     if Path(item["path"]).name != item["path"]:
         raise ValueError("Checkpoint path escapes its experiment")
-    path = config.root / "checkpoints" / item["path"]
-    _check_hash(path, item["sha256"])
+    expected = item["sha256"]
+    if not isinstance(expected, str) or len(expected) != 64:
+        raise ValueError("Checkpoint index digest is missing or malformed")
+    return config.root / "checkpoints" / item["path"], expected
+
+
+def _checkpoint(config: TorchConfig, name: str) -> Path:
+    path, expected = _indexed_checkpoint(config, name)
+    _check_hash(path, expected)
     return path
+
+
+def _load_checkpoint(config: TorchConfig, name: str) -> tuple[dict, str]:
+    """Deserialize an indexed checkpoint from bytes that were read and hashed once.
+
+    The returned digest describes exactly the bytes that were deserialized, so
+    there is no window between hashing a file and later reading it. Callers
+    record that digest instead of rehashing a multi-hundred-megabyte file for
+    every predicted case; the file's own hash stays verified against the index.
+    """
+    import hashlib
+    import io
+
+    import torch
+
+    path, expected = _indexed_checkpoint(config, name)
+    data = path.read_bytes()
+    digest = hashlib.sha256(data).hexdigest()
+    if digest != expected:
+        raise ValueError(f"Content hash changed or missing: {path}")
+    state = torch.load(io.BytesIO(data), map_location="cpu", weights_only=False)
+    del data
+    if not isinstance(state, dict):
+        raise ValueError("Checkpoint payload is not a state mapping")
+    return state, digest
 
 
 def train(
@@ -439,14 +472,25 @@ def _save_checkpoint(config: TorchConfig, state: dict, names: list[str]) -> None
             old.unlink()
 
 
-def _validation(model: Any, cases: list[dict], config: TorchConfig, device: Any) -> dict:
+def _inference_cache(config: TorchConfig) -> Any:
+    from .torch_inference_cache import InferenceImageCache
+
+    root = Path(config.cache_root) if config.cache_root else config.root
+    return InferenceImageCache(root / "inference-images", config)
+
+
+def _validation(
+    model: Any, cases: list[dict], config: TorchConfig, device: Any, *, cache: Any = None
+) -> dict:
     import nibabel as nib
     import numpy as np
 
-    from .torch_data import predict_case
+    from .torch_data import iter_predictions
 
     scores: list[dict[str, Any]] = []
-    for case in cases:
+    timings: dict[str, float] = {}
+
+    def progress() -> None:
         _atomic_json(
             config.root / "progress.json",
             {
@@ -456,29 +500,52 @@ def _validation(model: Any, cases: list[dict], config: TorchConfig, device: Any)
                 "total_cases": len(cases),
             },
         )
-        prediction = predict_case(model, case, config, device)
-        label_image: Any = nib.load(case["label"])
-        truth = np.asarray(label_image.dataobj)
-        pred, target = prediction == 2, truth == 2
-        denominator = int(pred.sum()) + int(target.sum())
-        organ_pred, organ_target = prediction > 0, truth > 0
-        organ_denominator = int(organ_pred.sum()) + int(organ_target.sum())
-        scores.append(
-            {
-                "case_id": case["case_id"],
-                "mass_dice": 2 * int((pred & target).sum()) / denominator if denominator else 1.0,
-                "pancreas_dice": 2 * int((organ_pred & organ_target).sum()) / organ_denominator
-                if organ_denominator
-                else 1.0,
-                "mass_present": bool(target.any()),
-                "predicted_mass_voxels": int(pred.sum()),
-            }
-        )
+
+    progress()
+    with contextlib.closing(iter_predictions(model, cases, config, device, cache=cache)) as results:
+        for result in results:
+            if result.error is not None:
+                raise result.error
+            case, prediction = result.case, result.prediction
+            if prediction is None:
+                raise ValueError("Missing validation prediction")
+            metric_started = time.monotonic()
+            label_image: Any = nib.load(case["label"])
+            truth = np.asarray(label_image.dataobj)
+            pred, target = prediction == 2, truth == 2
+            denominator = int(pred.sum()) + int(target.sum())
+            organ_pred, organ_target = prediction > 0, truth > 0
+            organ_denominator = int(organ_pred.sum()) + int(organ_target.sum())
+            scores.append(
+                {
+                    "case_id": case["case_id"],
+                    "mass_dice": 2 * int((pred & target).sum()) / denominator
+                    if denominator
+                    else 1.0,
+                    "pancreas_dice": 2 * int((organ_pred & organ_target).sum()) / organ_denominator
+                    if organ_denominator
+                    else 1.0,
+                    "mass_present": bool(target.any()),
+                    "predicted_mass_voxels": int(pred.sum()),
+                    "wall_seconds": result.wall_seconds,
+                    "component_seconds": dict(result.timings),
+                    "prediction_statistics": dict(result.statistics),
+                }
+            )
+            for key, value in result.timings.items():
+                timings[key] = timings.get(key, 0.0) + value
+            timings["metrics_seconds"] = (
+                timings.get("metrics_seconds", 0.0) + time.monotonic() - metric_started
+            )
+            progress()
     return {
         "mean_mass_dice": float(np.mean([x["mass_dice"] for x in scores])),
         "mean_pancreas_dice": float(np.mean([x["pancreas_dice"] for x in scores])),
         "cases": scores,
         "space": "native_full_volume",
+        "component_seconds": timings,
+        "inference_cache": cache.stats if cache is not None else None,
+        "timing_scope": "Component sums may overlap; use epoch_validation_seconds for wall time",
     }
 
 
@@ -540,9 +607,7 @@ def _train_worker(config: TorchConfig, payload: dict, binding: dict) -> None:
     rng = np.random.default_rng(config.seed)
     epoch, step, best = 0, 0, -1.0
     if payload["resume"]:
-        state = torch.load(
-            _checkpoint(config, payload["checkpoint"]), map_location="cpu", weights_only=False
-        )
+        state, _ = _load_checkpoint(config, payload["checkpoint"])
         if state["identity"] != _digest(binding) or state["origin"] != origin:
             raise ValueError("Checkpoint identity mismatch")
         model.load_state_dict(state["model"], strict=True)
@@ -590,11 +655,40 @@ def _train_worker(config: TorchConfig, payload: dict, binding: dict) -> None:
             "best": best,
         }
 
+    def save(names: list[str], losses: list[float]) -> float:
+        # Serialization, fsync and hashing are not weight updates or validation.
+        # Label them so live utilization gaps are attributable, and record the
+        # duration that the epoch timers deliberately exclude.
+        progress: dict[str, Any] = {
+            "phase": "checkpoint",
+            "updated_at": time.time(),
+            "epoch": epoch,
+            "step": step,
+            "target_steps": config.epochs * config.steps_per_epoch,
+            "checkpoint_names": names,
+        }
+        if losses:
+            progress.update(
+                loss=losses[-1],
+                epoch_mean_loss=float(np.mean(losses)),
+                learning_rate=scheduler.get_last_lr()[0],
+            )
+        _atomic_json(config.root / "progress.json", progress)
+        started = time.monotonic()
+        _save_checkpoint(config, checkpoint_state(), names)
+        duration = time.monotonic() - started
+        progress.update(updated_at=time.time(), checkpoint_seconds=duration)
+        _atomic_json(config.root / "progress.json", progress)
+        return duration
+
     if not payload["resume"]:
-        _save_checkpoint(config, checkpoint_state(), ["checkpoint_latest.pth"])
+        save(["checkpoint_latest.pth"], [])
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats()
-    with BatchStream(config, splits["train"], cached, rng, device) as batches:
+    with (
+        _inference_cache(config) as inference_cache,
+        BatchStream(config, splits["train"], cached, rng, device) as batches,
+    ):
         started = time.monotonic()
         for current in range(epoch, config.epochs):
             epoch_started = time.monotonic()
@@ -640,7 +734,9 @@ def _train_worker(config: TorchConfig, payload: dict, binding: dict) -> None:
                 epoch == 1 or epoch % config.validation_interval == 0 or epoch == config.epochs
             )
             validation = (
-                _validation(model, [lookup[c] for c in splits["val"]], config, device)
+                _validation(
+                    model, [lookup[c] for c in splits["val"]], config, device, cache=inference_cache
+                )
                 if validate
                 else None
             )
@@ -671,7 +767,8 @@ def _train_worker(config: TorchConfig, payload: dict, binding: dict) -> None:
                 names.append("checkpoint_best.pth")
             if epoch == config.epochs:
                 names.append("checkpoint_final.pth")
-            _save_checkpoint(config, checkpoint_state(), names)
+            metrics["epoch_checkpoint_seconds"] = save(names, losses)
+            _atomic_json(config.root / "metrics" / f"epoch-{epoch:05d}.json", metrics)
             print(json.dumps(metrics), flush=True)
     _atomic_json(
         config.root / "training-result.json",
@@ -692,7 +789,7 @@ def _worker(request_path: Path) -> None:
     import torch
 
     from .model_registry import build_model
-    from .torch_data import predict_case, preprocess_case
+    from .torch_data import iter_predictions, preprocess_case
 
     request = _json(request_path)
     config = TorchConfig(**request["config"])
@@ -747,8 +844,7 @@ def _worker(request_path: Path) -> None:
             patch_size=config.patch_size,
             model_options=config.model_options,
         ).to(device)
-        checkpoint = _checkpoint(config, payload["checkpoint"])
-        state = torch.load(checkpoint, map_location="cpu", weights_only=False)
+        state, checkpoint_digest = _load_checkpoint(config, payload["checkpoint"])
         if state["identity"] != _digest(binding) or state["origin"] != _json(
             config.root / "scratch-origin.json"
         ):
@@ -763,31 +859,76 @@ def _worker(request_path: Path) -> None:
             raise ValueError("Prediction partition is empty")
         output = config.root / "predictions" / payload["partition"]
         output.mkdir(parents=True)
+        del state
+        if device.type == "cuda":
+            torch.cuda.reset_peak_memory_stats(device)
+        prediction_started = time.monotonic()
         statuses = []
-        for case_id in ids:
-            case = lookup[case_id]
-            start = time.monotonic()
-            try:
-                _check_hash(case["image"], case["image_sha256"])
-                predict_case(model, case, config, device, output=output / f"{case_id}.nii.gz")
-                statuses.append(
-                    {
-                        "case_id": case_id,
-                        "status": "completed",
-                        "wall_seconds": time.monotonic() - start,
-                    }
+        with (
+            _inference_cache(config) as inference_cache,
+            contextlib.closing(
+                iter_predictions(
+                    model,
+                    [lookup[case_id] for case_id in ids],
+                    config,
+                    device,
+                    output_directory=output,
+                    cache=inference_cache,
                 )
-            except Exception as exc:
-                statuses.append({"case_id": case_id, "status": "failed", "error": str(exc)})
-            _atomic_json(
-                output / "prediction-status.json",
-                {
-                    "cases": statuses,
-                    "identity": _digest(binding),
-                    "checkpoint_sha256": _sha(checkpoint),
-                    "partition": payload["partition"],
-                },
-            )
+            ) as results,
+        ):
+            for result in results:
+                if result.error is None:
+                    statuses.append(
+                        {
+                            "case_id": result.case["case_id"],
+                            "status": "completed",
+                            "wall_seconds": result.wall_seconds,
+                            "component_seconds": result.timings,
+                            "prediction_statistics": result.statistics,
+                        }
+                    )
+                else:
+                    statuses.append(
+                        {
+                            "case_id": result.case["case_id"],
+                            "status": "failed",
+                            "error": str(result.error),
+                        }
+                    )
+                _atomic_json(
+                    output / "prediction-status.json",
+                    {
+                        "cases": statuses,
+                        "identity": _digest(binding),
+                        "checkpoint_sha256": checkpoint_digest,
+                        "partition": payload["partition"],
+                        "performance": {
+                            "wall_seconds": time.monotonic() - prediction_started,
+                            "scope": "model_ready_to_last_case_including_cache_export",
+                            "completed": len(statuses) == len(ids),
+                            "successful_cases": sum(x["status"] == "completed" for x in statuses),
+                            "total_cases": len(ids),
+                            "peak_allocated_bytes": torch.cuda.max_memory_allocated(device)
+                            if device.type == "cuda"
+                            else None,
+                            "peak_reserved_bytes": torch.cuda.max_memory_reserved(device)
+                            if device.type == "cuda"
+                            else None,
+                            "cache": inference_cache.stats,
+                        },
+                        "timing_scope": "Overlapped case/component times are not additive stage wall time",
+                    },
+                )
+                _atomic_json(
+                    config.root / "progress.json",
+                    {
+                        "phase": "prediction",
+                        "completed_cases": len(statuses),
+                        "total_cases": len(ids),
+                        "updated_at": time.time(),
+                    },
+                )
         if any(x["status"] != "completed" for x in statuses):
             raise RuntimeError("Some predictions failed; inspect prediction-status.json")
     else:

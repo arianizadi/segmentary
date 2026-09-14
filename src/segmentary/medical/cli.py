@@ -95,6 +95,23 @@ def _parser() -> argparse.ArgumentParser:
             )
             p.add_argument("--final-test", action="store_true")
             p.add_argument("--checkpoint", default="checkpoint_best.pth")
+    p = commands.add_parser(
+        "continue-scratch",
+        help="Create an audited new-workspace continuation from own scratch checkpoints",
+    )
+    p.add_argument("--source-workspace", type=Path, required=True)
+    p.add_argument("--config", type=Path, required=True)
+    p.add_argument(
+        "--source-code-root",
+        type=Path,
+        required=True,
+        help="Original frozen medical source directory",
+    )
+    p.add_argument(
+        "--policy", type=Path, required=True, help="Reviewed exact source-map and evidence policy"
+    )
+    p.add_argument("--action", choices=("predict", "resume"), required=True)
+    p.add_argument("--dry-run", action="store_true")
     p = commands.add_parser("evaluate", help="Score saved native-space volume predictions")
     p.add_argument("--manifest", type=Path, required=True)
     p.add_argument("--predictions", type=Path, required=True)
@@ -264,6 +281,19 @@ def dispatch(args: argparse.Namespace) -> Any:
 
     config = _config(args.config)
     implementation: Any = torch_backend if isinstance(config, TorchConfig) else backend
+    if command == "continue-scratch":
+        from .continuation import create_continuation
+
+        if not isinstance(config, TorchConfig):
+            raise ValueError("Performance continuation currently supports the Torch backend only")
+        return create_continuation(
+            args.source_workspace,
+            config,
+            source_code_root=args.source_code_root,
+            policy=args.policy,
+            action=args.action,
+            dry_run=args.dry_run,
+        )
     if command == "prepare":
         return implementation.prepare_dataset(
             args.manifest, args.splits, config, dry_run=args.dry_run

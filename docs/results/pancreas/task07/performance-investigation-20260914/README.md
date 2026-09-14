@@ -1,5 +1,7 @@
 # Why the GPUs pause during the Task07 campaign
 
+Implementation follow-up: [reviewed fixes and real-CT verification](reviewed-fixes.md).
+
 Measured 2026-09-14, 03:41–03:45 UTC for host/epoch/preprocessing evidence, with a later paired argmax microbenchmark (September 13 evening Pacific).
 Frozen training source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 

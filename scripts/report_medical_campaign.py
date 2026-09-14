@@ -22,6 +22,14 @@ from typing import Any
 
 import yaml
 
+from segmentary.medical_reporting import (
+    clinical_metrics,
+    collect_performance,
+    metric_history,
+    model_performance_markdown,
+    performance_assets,
+)
+
 
 def _reject_constant(value: str) -> None:
     raise ValueError(f"Nonfinite JSON number: {value}")
@@ -457,7 +465,8 @@ def _collect_run(
     if binding.get("config"):
         config = binding["config"]
     backend = config.get("backend", run.get("backend", "nnunet"))
-    metrics = [_read(path) for path in sorted((workspace / "metrics").glob("epoch-*.json"))]
+    history = metric_history(workspace, binding, reader=_read)
+    metrics = [metric for _, metric in history]
     epochs, steps = set(), -1
     curves = []
     for metric in metrics:
@@ -483,6 +492,9 @@ def _collect_run(
             "validation_cases": len(validation_cases) if validation else None,
             "peak_allocated_bytes": metric.get("peak_allocated_bytes"),
             "peak_reserved_bytes": metric.get("peak_reserved_bytes"),
+            "epoch_training_seconds": metric.get("epoch_training_seconds"),
+            "epoch_validation_seconds": metric.get("epoch_validation_seconds"),
+            "epoch_checkpoint_seconds": metric.get("epoch_checkpoint_seconds"),
         }
         curves.append(values)
     progress = _read(workspace / "progress.json")
@@ -558,6 +570,8 @@ def _collect_run(
         "manifest_fingerprint": binding.get("manifest_fingerprint"),
         "split_fingerprint": binding.get("split_fingerprint"),
         "code_fingerprint": _digest(binding["code"]) if "code" in binding else None,
+        "runtime_fingerprint": _digest(binding["runtime"]) if "runtime" in binding else None,
+        "performance": collect_performance(workspace, binding, history, expected_ids),
         "curves": curves,
         "latest_validation": next(
             (c for c in reversed(curves) if c["mass_dice"] is not None), None
@@ -578,6 +592,20 @@ def _collect_run(
     result["peak_reserved_bytes"] = (
         max((c["peak_reserved_bytes"] or 0 for c in curves), default=0) or None
     )
+    result["clinical_metrics"] = clinical_metrics(
+        workspace / "clinical-detection/report.json",
+        len(expected_ids),
+        result.get("selected_checkpoint_sha256")
+        or result.get("performance", {}).get("prediction", {}).get("checkpoint_sha256"),
+    )
+    if backend == "nnunet":
+        from segmentary.medical_progress import parse_nnunet, tail
+
+        logs = sorted(
+            workspace.glob("nnUNet_results/**/training_log_*.txt"),
+            key=lambda path: path.stat().st_mtime,
+        )
+        result["nnunet_patch_history"] = parse_nnunet(tail(logs[-1])) if logs else {}
     return result
 
 
@@ -684,6 +712,26 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
         try:
             state = _read(state_dir / "runs" / f"{run['id']}.json")
             row = _collect_run(run, state, state_dir, expected_ids, now)
+            row["expected_validation_cases"] = len(expected_ids)
+            if not row["clinical_metrics"].get("available"):
+                row["clinical_metrics"] = clinical_metrics(
+                    campaign.parent / "clinical-detection" / run["id"] / "report.json",
+                    len(expected_ids),
+                    row.get("selected_checkpoint_sha256")
+                    or row.get("performance", {}).get("prediction", {}).get("checkpoint_sha256"),
+                )
+            if row.get("backend") == "nnunet":
+                protocol = spec.get("protocol", {}).get("nnunet", {})
+                recipe = row.get("recipe", {})
+                epochs = recipe.get("num_epochs") or protocol.get("expected_default_epochs")
+                updates = recipe.get("num_iterations_per_epoch") or protocol.get(
+                    "expected_default_updates_per_epoch"
+                )
+                if epochs and updates:
+                    row["budget_steps"] = epochs * updates
+                    completed = row.get("nnunet_patch_history", {}).get("epochs", [])
+                    if completed:
+                        row["completed_steps"] = completed[-1]["epoch"] * updates
         except (KeyError, ValueError, TypeError, OSError) as exc:
             row = {
                 "id": run["id"],
@@ -791,9 +839,12 @@ def render(snapshot: dict) -> dict[str, str]:
                 row.get("stage") or "—",
                 f"{row.get('completed_steps', 0)}/{row.get('budget_steps') or '—'}",
                 latest.get("step", "—"),
+                f"{latest.get('validation_cases', 0)}/{row.get('expected_validation_cases', '—')}",
                 _number(latest.get("mass_dice")),
+                _number(latest.get("pancreas_dice")),
                 _number(evaluation.get("mass", {}).get("dice")),
                 _number(evaluation.get("pancreas", {}).get("dice")),
+                f"{evaluation.get('coverage', {}).get('valid_prediction_cases', 0)}/{row.get('expected_validation_cases', '—')}",
                 row.get("screening_rank") or "—",
             ]
         )
@@ -805,6 +856,9 @@ def render(snapshot: dict) -> dict[str, str]:
                 "Learning rate",
                 "Native pancreas Dice",
                 "Native mass Dice",
+                "Training s",
+                "Validation s",
+                "Checkpoint s",
             ],
             [
                 [
@@ -814,6 +868,9 @@ def render(snapshot: dict) -> dict[str, str]:
                     f"{curve['learning_rate']:.7g}",
                     _number(curve["pancreas_dice"]),
                     _number(curve["mass_dice"]),
+                    _number(curve.get("epoch_training_seconds")),
+                    _number(curve.get("epoch_validation_seconds")),
+                    _number(curve.get("epoch_checkpoint_seconds")),
                 ]
                 for curve in row["curves"]
             ],
@@ -920,6 +977,34 @@ def render(snapshot: dict) -> dict[str, str]:
             per_run += [
                 "Not available yet. Training loss or a forward-pass smoke test cannot replace this evaluation."
             ]
+        per_run += ["", model_performance_markdown(row)]
+        if row.get("nnunet_patch_history"):
+            per_run += [
+                "",
+                "## Official nnU-Net patch telemetry",
+                "",
+                "These patch pseudo-Dice values are not native full-volume Dice and are never substituted in the comparison quality columns.",
+                "",
+                _table(
+                    [
+                        "Completed epoch",
+                        "Training loss",
+                        "Mass PATCH pseudo-Dice",
+                        "Pancreas CLASS PATCH pseudo-Dice",
+                        "Epoch seconds",
+                    ],
+                    [
+                        [
+                            item["epoch"],
+                            _number(item.get("loss")),
+                            _number(item.get("mass_pseudo")),
+                            _number(item.get("pancreas_pseudo")),
+                            _number(item.get("seconds")),
+                        ]
+                        for item in row["nnunet_patch_history"].get("epochs", [])
+                    ],
+                ),
+            ]
         files[f"models/{row['id']}.md"] = "\n".join(per_run) + "\n"
     group_text = []
     for name, group in snapshot["groups"].items():
@@ -947,9 +1032,12 @@ def render(snapshot: dict) -> dict[str, str]:
                         "Stage",
                         "Committed steps / budget",
                         "Validated step",
+                        "Interim cases",
                         "Interim mass Dice",
+                        "Interim pancreas Dice",
                         "Final mass Dice",
                         "Final pancreas Dice",
+                        "Final cases",
                         "Screening rank",
                     ],
                     comparison_rows,
@@ -976,7 +1064,9 @@ def render(snapshot: dict) -> dict[str, str]:
                 "2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.",
                 "3. Follow a model link for its recipe, objective, timing, memory, coverage, and evaluation interval.",
                 "4. Read [optimization.md](optimization.md) for the throughput investigation and measurement limits.",
-                "5. Use [results.csv](results.csv) for a spreadsheet or [status.json](status.json) for aggregate machine records.",
+                "5. Open [training-cost.md](training-cost.md) and [inference.md](inference.md) for separate training, validation, checkpoint, full-CT and model-only measurements.",
+                "6. Use [results.csv](results.csv), [epochs.csv](epochs.csv), [validation-cases.csv](validation-cases.csv), [inference-cases.csv](inference-cases.csv), and [stage-invocations.csv](stage-invocations.csv) for spreadsheets. [status.json](status.json) and [records/](records/) retain numerical evidence and provenance.",
+                "7. Read [clinical-metrics.md](clinical-metrics.md) for P-Sen, T-Sen, specificity, AUC and DSC, including why some metrics cannot be estimated on Task07.",
                 "",
                 "```text",
                 "scratch-screen-20260913/",
@@ -984,7 +1074,15 @@ def render(snapshot: dict) -> dict[str, str]:
                 "  comparison.md          all models, status, validation, ranking gates",
                 "  learning-curves.md     recorded epochs; no interpolated values",
                 "  optimization.md        throughput changes and measured evidence",
+                "  training-cost.md       retained epoch phases and allocation cost",
+                "  inference.md           native CT and model-only speed/memory",
+                "  clinical-metrics.md    detection/DSC metrics and unavailable reasons",
                 "  models/<run>.md        per-model recipe, resources and evaluation",
+                "  records/<run>.json     full numerical model record and lineage",
+                "  epochs.csv             training/validation/checkpoint timings",
+                "  validation-cases.csv   per-epoch native Dice by case ordinal",
+                "  inference-cases.csv    native prediction phase timings",
+                "  stage-invocations.csv  completed/failed/cancelled stage costs",
                 "  results.csv            one aggregate row per run",
                 "  status.json            aggregate evidence and comparison gates",
                 "```",
@@ -1015,12 +1113,37 @@ def render(snapshot: dict) -> dict[str, str]:
         "screening_rank",
         "finished_stage_gpu_hours",
         "peak_allocated_bytes",
+        "interim_pancreas_dice",
+        "validation_cases",
+        "expected_validation_cases",
+        "final_cases",
+        "parameters",
+        "peak_reserved_bytes",
+        "prediction_complete",
+        "prediction_pipeline_wall_seconds",
+        "prediction_scans_per_second",
+        "prediction_case_p50_seconds",
+        "prediction_case_p95_seconds",
+        "prediction_peak_reserved_bytes",
+        "model_only_patches_per_second",
+        "model_only_p50_ms",
+        "model_only_p95_ms",
+        "patient_sensitivity",
+        "tumor_sensitivity",
+        "specificity",
+        "auc",
+        "code_fingerprint",
+        "runtime_fingerprint",
+        "continuation_action",
     ]
     writer = csv.DictWriter(stream, fieldnames=fields)
     writer.writeheader()
     for row in rows:
         latest = row.get("latest_validation") or {}
         evaluation = row.get("evaluation", {})
+        perf = row.get("performance", {})
+        prediction = perf.get("prediction", {})
+        standard = perf.get("model_only_inference", {})
         writer.writerow(
             {
                 **{key: row.get(key) for key in fields[:8]},
@@ -1031,6 +1154,35 @@ def render(snapshot: dict) -> dict[str, str]:
                 "screening_rank": row.get("screening_rank"),
                 "finished_stage_gpu_hours": row["resources"].get("finished_stage_gpu_hours"),
                 "peak_allocated_bytes": row.get("peak_allocated_bytes"),
+                "interim_pancreas_dice": latest.get("pancreas_dice"),
+                "validation_cases": latest.get("validation_cases"),
+                "expected_validation_cases": row.get("expected_validation_cases"),
+                "final_cases": evaluation.get("coverage", {}).get("valid_prediction_cases"),
+                "parameters": row.get("parameters"),
+                "peak_reserved_bytes": row.get("peak_reserved_bytes"),
+                "prediction_complete": prediction.get("complete_cohort"),
+                "prediction_pipeline_wall_seconds": prediction.get("pipeline_wall_seconds"),
+                "prediction_scans_per_second": prediction.get("scans_per_second"),
+                "prediction_case_p50_seconds": prediction.get("case_latency_seconds", {}).get(
+                    "p50"
+                ),
+                "prediction_case_p95_seconds": prediction.get("case_latency_seconds", {}).get(
+                    "p95"
+                ),
+                "prediction_peak_reserved_bytes": prediction.get("peak_reserved_bytes"),
+                "model_only_patches_per_second": standard.get("patches_per_second"),
+                "model_only_p50_ms": standard.get("latency_ms", {}).get("p50"),
+                "model_only_p95_ms": standard.get("latency_ms", {}).get("p95"),
+                **{
+                    name: row.get("clinical_metrics", {})
+                    .get("metrics", {})
+                    .get(name, {})
+                    .get("value")
+                    for name in ("patient_sensitivity", "tumor_sensitivity", "specificity", "auc")
+                },
+                "code_fingerprint": row.get("code_fingerprint"),
+                "runtime_fingerprint": row.get("runtime_fingerprint"),
+                "continuation_action": perf.get("lineage", {}).get("action"),
             }
         )
     files["results.csv"] = stream.getvalue()
@@ -1098,6 +1250,45 @@ def render(snapshot: dict) -> dict[str, str]:
     )
     files["status.json"] = json.dumps(snapshot, indent=2, allow_nan=False) + "\n"
     files["optimization.md"] += "\n" + _pipeline_markdown(optimization.get("pipeline", {}))
+    files.update(performance_assets(rows, metadata))
+    overview = []
+    for row in rows:
+        final = row.get("evaluation", {})
+        latest = row.get("latest_validation") or {}
+        complete = final.get("complete_coverage", False)
+        overview.append(
+            [
+                f"[{row['model']}](models/{row['id']}.md)",
+                row["status"],
+                f"{row.get('live_step') or row.get('completed_steps', 0)}/{row.get('budget_steps') or '—'}",
+                _number(final.get("mass", {}).get("dice") if complete else latest.get("mass_dice")),
+                _number(
+                    final.get("pancreas", {}).get("dice")
+                    if complete
+                    else latest.get("pancreas_dice")
+                ),
+                "final reference-positive mean"
+                if complete
+                else f"in-training step {latest.get('step', '—')}",
+                f"{final.get('coverage', {}).get('valid_prediction_cases', 0) if complete else latest.get('validation_cases', 0)}/{row.get('expected_validation_cases', '—')}",
+            ]
+        )
+    files["README.md"] += (
+        "\n## All models at a glance\n\n"
+        + _table(
+            [
+                "Model",
+                "Status",
+                "Steps / budget",
+                "Native mass Dice",
+                "Native pancreas Dice",
+                "Score scope",
+                "Cases",
+            ],
+            overview,
+        )
+        + "\n"
+    )
     return files
 
 

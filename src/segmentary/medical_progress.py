@@ -278,6 +278,12 @@ class MedicalTelemetry:
                 row["progress_text"] = (
                     f"val {progress.get('completed_cases', 0)}/{progress.get('total_cases', '?')}"
                 )
+            if progress.get("phase") == "checkpoint" and training:
+                row["progress_text"] = f"save @{step:,}"
+            if row.get("stage") == "predict" and progress.get("phase") == "prediction":
+                row["progress_text"] = (
+                    f"predict {progress.get('completed_cases', 0)}/{progress.get('total_cases', '?')}"
+                )
             if row.get("backend") == "nnunet":
                 logs = sorted(
                     workspace.glob("nnUNet_results/**/training_log_*.txt"),

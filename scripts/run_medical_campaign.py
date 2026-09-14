@@ -565,6 +565,17 @@ class Campaign:
                         self.verify(state, stage)
                         self.complete_stage(state, stage, recovered=True)
                         continue
+                if stage == "train" and (root / "continuation.json").is_file():
+                    continuation = read_json(root / "continuation.json")
+                    if continuation.get("action") == "predict":
+                        training_result = read_json(root / "training-result.json")
+                        if training_result.get("completed") is not True:
+                            raise ValueError(
+                                "Prediction continuation has no completed parent training"
+                            )
+                        self.verify(state, stage)
+                        self.complete_stage(state, stage, recovered=True)
+                        continue
                 if stage == "evaluate":
                     self.save(state, evaluation=str(self.root / "evaluations" / state["id"]))
                 result = self.execute(state, stage, self.command(state, stage))

@@ -1,0 +1,190 @@
+{
+  "measured_at_utc": "2026-09-14T04:16:51.669792+00:00",
+  "scope": "Two audited TRAIN CTs only, original completed-run scratch-origin U-Net2D checkpoint. Exact native label and tile-forward comparison; no labels or quality metrics. Sequential baseline then new cold-derived-cache then same-loader warm cache; no randomized order or statistical throughput claim.",
+  "original_binding_sha256": "11530bd281bb60395bc57e54fffe98d9356346f3a331026adc4c5cead8368106",
+  "original_scratch_origin_sha256": "809b4d892dbe7b36057dd36a1bd4e712656baf2a05ac37b14630101448454139",
+  "checkpoint_sha256": "4afb56fe68a3181be18f7995644f11da7a827b0a439df91c1826e3407ad60a3a",
+  "checkpoint_epoch": 70,
+  "checkpoint_step": 7000,
+  "manifest_sha256": "9e6c363908beffe4e2feb9544f99552e06220d03af289b6913557870e28931a2",
+  "splits_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
+  "script_sha256": "69cb1fd4feb98590b960ea4322dec7afa4cf661ca2477ad3301e597a442b6577",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "9",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "1",
+    "CUBLAS_WORKSPACE_CONFIG": ":4096:8"
+  },
+  "model_initialization": "original verified own scratch-origin checkpoint",
+  "labels_opened": false,
+  "untimed_warmup": "Two zero-valued synthetic tile batches, B1 and B4, same 5-channel256x256 BF16 recipe; model eval and no quality measurements.",
+  "peak_allocated_cuda_bytes": 210039296,
+  "peak_reserved_cuda_bytes": 268435456,
+  "original_checkpoint_unchanged": true,
+  "raw_evidence_sha256": "fcdc4a4bfa4afe186905e2de82bf06b5b180c668ec5f588800d6deaf451c37e6",
+  "inference_source_sha256": {
+    "segmentary/medical/torch_data.py": "d7adf45e7250fc30874031acf53b257d25048d509db4367397eaddb26fefcbc1",
+    "segmentary/medical/torch_geometry.py": "d5ba5def881c63285ae1f79df62d3ed2bdbd95b25e4650fbd3f5298ccb94da66",
+    "segmentary/medical/torch_inference_cache.py": "d99a5cbdfd5b034c486a3b9505f325090a33f467409d156d787308318925ec09"
+  },
+  "config": {
+    "augment": true,
+    "backend": "torch",
+    "batch_size": 8,
+    "context_slices": 5,
+    "deterministic": false,
+    "epochs": 100,
+    "foreground_probability": 0.5,
+    "gpu": "9",
+    "gradient_clip": 12.0,
+    "hu_window": [
+      -100.0,
+      240.0
+    ],
+    "inference_batch_size": 8,
+    "initialization": "scratch",
+    "learning_rate": 0.0003,
+    "mode": "2.5d",
+    "model": "unet_2d",
+    "model_options": {
+      "profile": "standard"
+    },
+    "overlap": 0.5,
+    "patch_size": [
+      256,
+      256
+    ],
+    "precision": "bf16",
+    "prefetch_batches": true,
+    "progress_interval": 10,
+    "purpose": "baseline",
+    "seed": 0,
+    "spacing_mm": [
+      1.5,
+      1.5,
+      2.5
+    ],
+    "steps_per_epoch": 100,
+    "validation_interval": 10,
+    "weight_decay": 1e-05,
+    "workers": 4
+  },
+  "cases": [
+    {
+      "partition": "train",
+      "native_shape": [
+        512,
+        512,
+        37
+      ],
+      "image_sha256": "7cca21bdbdb55fb10b3cf1de55e0068f099b0d1492b92eeac0aa87b7498b9ec7",
+      "case_ordinal": 1
+    },
+    {
+      "partition": "train",
+      "native_shape": [
+        512,
+        512,
+        93
+      ],
+      "image_sha256": "4fac77adb60ae199e62a72410815ef813b4c5b49f9fbf3ae97a814f9de60fdb6",
+      "case_ordinal": 2
+    }
+  ],
+  "baseline": {
+    "wall_seconds": 6.674978174269199,
+    "per_case_seconds": [
+      2.2745174802839756,
+      4.400441002100706
+    ],
+    "forward_call_sequence_sha256": "63fb4a0b22626f4bd134d986772b8c0bbfad9e960d3ff96b9f337fb7c301bf32",
+    "forward_call_count": 166
+  },
+  "cold_derived_cache": {
+    "wall_seconds": 4.56133957952261,
+    "cases": [
+      {
+        "native_voxels": 9699328,
+        "disagreement_voxels": 0,
+        "exact_equal": true,
+        "timings": {
+          "preprocess_seconds": 0.7854937389492989,
+          "inference_seconds": 0.5352008119225502,
+          "reconstruction_seconds": 0.5368716940283775,
+          "export_seconds": 5.327165126800537e-07
+        },
+        "case_wall_seconds_including_overlap": 1.8610097877681255,
+        "case_ordinal": 1
+      },
+      {
+        "native_voxels": 24379392,
+        "disagreement_voxels": 0,
+        "exact_equal": true,
+        "timings": {
+          "preprocess_seconds": 1.9089469611644745,
+          "inference_seconds": 0.5599782653152943,
+          "reconstruction_seconds": 1.3029862456023693,
+          "export_seconds": 2.980232238769531e-07
+        },
+        "case_wall_seconds_including_overlap": 3.773785524070263,
+        "case_ordinal": 2
+      }
+    ],
+    "cache_stats": {
+      "loads": 2,
+      "source_verifications": 2,
+      "cache_verifications": 2,
+      "builds": 2,
+      "memory_hits": 0,
+      "disk_hits": 0,
+      "open_cases": 2,
+      "verified_cases": 2
+    },
+    "same_forward_calls_as_baseline": true,
+    "forward_call_count": 166
+  },
+  "warm_same_loader_cache": {
+    "wall_seconds": 2.42721438780427,
+    "cases": [
+      {
+        "native_voxels": 9699328,
+        "disagreement_voxels": 0,
+        "exact_equal": true,
+        "timings": {
+          "preprocess_seconds": 0.0012422502040863037,
+          "inference_seconds": 0.3807895928621292,
+          "reconstruction_seconds": 0.6278067640960217,
+          "export_seconds": 2.868473529815674e-07
+        },
+        "case_wall_seconds_including_overlap": 1.013955783098936,
+        "case_ordinal": 1
+      },
+      {
+        "native_voxels": 24379392,
+        "disagreement_voxels": 0,
+        "exact_equal": true,
+        "timings": {
+          "preprocess_seconds": 0.0005722381174564362,
+          "inference_seconds": 0.7131805382668972,
+          "reconstruction_seconds": 1.328174289315939,
+          "export_seconds": 4.0978193283081055e-07
+        },
+        "case_wall_seconds_including_overlap": 2.423714216798544,
+        "case_ordinal": 2
+      }
+    ],
+    "cache_stats": {
+      "loads": 4,
+      "source_verifications": 2,
+      "cache_verifications": 2,
+      "builds": 2,
+      "memory_hits": 2,
+      "disk_hits": 0,
+      "open_cases": 2,
+      "verified_cases": 2
+    },
+    "same_forward_calls_as_baseline": true,
+    "forward_call_count": 166
+  }
+}

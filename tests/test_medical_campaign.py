@@ -389,3 +389,24 @@ def test_config_changed_after_assignment_is_rejected_before_stage(spec_path, tmp
     with pytest.raises(ValueError, match="configuration changed during"):
         campaign.Campaign.execute(runner, state, "train", [sys.executable, "-c", "print('{}')"])
     assert not runner.processes
+
+
+def test_completed_scratch_continuation_reuses_training_and_executes_prediction(
+    spec_path, tmp_path
+):
+    spec = campaign.read_json(spec_path)
+    spec["runs"] = spec["runs"][:1]
+    campaign.write_json(spec_path, spec)
+    root = Path(campaign.read_json(Path(spec["runs"][0]["config"]))["workspace"])
+    campaign.write_json(root / "binding.json", {"identity": "continued"})
+    campaign.write_json(root / "continuation.json", {"action": "predict"})
+    campaign.write_json(root / "training-result.json", {"completed": True})
+    campaign.write_json(root / "checkpoint-index.json", {"epoch": 100})
+    campaign.write_json(root / "scratch-origin.json", {"external_weight_loads": 0})
+    runner = FakeCampaign(spec_path, tmp_path / "state")
+    assert runner.run() == 0
+    stages = [stage for _, stage, _ in runner.calls]
+    assert "train" not in stages
+    assert stages == ["preprocess", "predict", "evaluate"]
+    assert ("run-0", "train") in runner.verified
+    assert runner.states["run-0"]["completed_stages"]["train"]["recovered"]

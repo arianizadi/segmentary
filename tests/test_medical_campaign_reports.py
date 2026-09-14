@@ -222,6 +222,15 @@ def test_generated_records_are_aggregate_only(campaign: tuple[Path, Path]) -> No
         "status.json",
         "models/a.md",
         "models/b.md",
+        "records/a.json",
+        "records/b.json",
+        "training-cost.md",
+        "inference.md",
+        "epochs.csv",
+        "validation-cases.csv",
+        "inference-cases.csv",
+        "stage-invocations.csv",
+        "clinical-metrics.md",
     }
     assert ",200,200,200," in files["results.csv"]
 
@@ -287,3 +296,237 @@ def test_pipeline_evidence_discards_identifiers_and_rejects_non_numeric_payloads
     original["data"][0]["npz_seconds"] = float("nan")
     with pytest.raises(ValueError, match="finite nonnegative"):
         reporter._sanitize_pipeline(original)
+
+
+def test_reports_retain_epoch_and_prediction_components_without_false_throughput(campaign):
+    spec, state = campaign
+    workspace = spec.parent / "a"
+    metric_path = workspace / "metrics/epoch-00002.json"
+    metric = reporter._read(metric_path)
+    metric.update(epoch_training_seconds=10, epoch_validation_seconds=20)
+    metric["validation"]["cases"][0].update(
+        mass_dice=0.5,
+        pancreas_dice=0.8,
+        wall_seconds=20,
+        component_seconds={
+            "preprocess_seconds": 5,
+            "inference_seconds": 3,
+            "reconstruction_seconds": 12,
+        },
+    )
+    write(metric_path, metric)
+    prediction = {
+        "partition": "val",
+        "checkpoint_sha256": "a" * 64,
+        "timing_scope": "Overlapped case/component times are not additive stage wall time",
+        "cases": [
+            {
+                "case_id": "private-case-A",
+                "status": "completed",
+                "wall_seconds": 20,
+                "component_seconds": {"inference_seconds": 3, "export_seconds": 2},
+                "error": "/data/private-patient-A",
+            }
+        ],
+        "performance": {
+            "completed": True,
+            "wall_seconds": 8,
+            "scope": "model_ready_to_last_case_including_cache_export",
+            "peak_allocated_bytes": 2**30,
+            "cache": {"loads": 1, "source_verifications": 1},
+        },
+    }
+    write(workspace / "predictions/val/prediction-status.json", prediction)
+    snapshot = reporter.collect(spec, state)
+    perf = snapshot["runs"][0]["performance"]
+    assert perf["prediction"]["scans_per_second"] == 0.125
+    assert perf["prediction"]["case_latency_seconds"]["p50"] == 20
+    assert perf["training_segments"][0]["totals"]["epoch_checkpoint_seconds"]["seconds"] is None
+    files = reporter.render(snapshot)
+    assert "private-case-A" not in "\n".join(files.values())
+    assert "private-patient-A" not in "\n".join(files.values())
+    assert "inference_seconds" in files["inference-cases.csv"]
+    assert "10.0,20.0,," in files["epochs.csv"]
+    prediction["performance"]["completed"] = False
+    write(workspace / "predictions/val/prediction-status.json", prediction)
+    assert (
+        reporter.collect(spec, state)["runs"][0]["performance"]["prediction"]["scans_per_second"]
+        is None
+    )
+
+
+@pytest.mark.parametrize(
+    "corruption", ["duplicate", "outside", "negative", "nan", "wrong_partition"]
+)
+def test_prediction_timing_integrity_is_checked(campaign, corruption):
+    spec, state = campaign
+    prediction = {
+        "partition": "val",
+        "cases": [{"case_id": "private-case-A", "status": "completed", "wall_seconds": 1}],
+    }
+    if corruption == "duplicate":
+        prediction["cases"] *= 2
+    elif corruption == "outside":
+        prediction["cases"][0]["case_id"] = "other-patient"
+    elif corruption == "negative":
+        prediction["cases"][0]["wall_seconds"] = -1
+    elif corruption == "nan":
+        prediction["cases"][0]["wall_seconds"] = float("nan")
+    else:
+        prediction["partition"] = "test"
+    write(spec.parent / "a/predictions/val/prediction-status.json", prediction)
+    assert reporter.collect(spec, state)["runs"][0]["status"] == "invalid_report"
+
+
+def test_prediction_continuation_keeps_parent_training_after_best_checkpoint(campaign):
+    import hashlib
+
+    from segmentary.medical_reporting import _digest, metric_history
+
+    spec, _state = campaign
+    parent = spec.parent / "a"
+    binding = reporter._read(parent / "binding.json")
+    child = spec.parent / "continued"
+    record = {
+        "action": "predict",
+        "resume_step": 100,
+        "parent": {
+            "workspace": str(parent),
+            "binding_sha256": hashlib.sha256((parent / "binding.json").read_bytes()).hexdigest(),
+            "binding_identity": _digest(binding),
+            "artifact_sha256": {
+                "training-result.json": hashlib.sha256(
+                    (parent / "training-result.json").read_bytes()
+                ).hexdigest()
+            },
+        },
+    }
+    write(child / "continuation.json", record)
+    rows = metric_history(child, {"continuation_lineage": [record["parent"]]})
+    assert [(scope, metric["step"]) for scope, metric in rows] == [("parent/current", 200)]
+    record["action"] = "resume"
+    write(child / "continuation.json", record)
+    assert metric_history(child, {"continuation_lineage": [record["parent"]]}) == []
+
+
+def test_standardized_inference_requires_matching_provenance_and_measured_samples(tmp_path):
+    from segmentary.medical_reporting import _digest, standardized_inference
+
+    binding = {
+        "config": {
+            "model": "unet",
+            "patch_size": [64, 64],
+            "context_slices": 5,
+            "precision": "bf16",
+        },
+        "code": {"file": "hash"},
+        "runtime": {"python": "3.11"},
+    }
+    record = {
+        "status": "completed",
+        "input_scope": "synthetic_model_only",
+        "model": "unet",
+        "batch_size": 1,
+        "patch_size": [64, 64],
+        "context_slices": 5,
+        "precision": "bf16",
+        "warmup_iterations": 10,
+        "measured_iterations": 3,
+        "sample_latencies_ms": [1, 2, 3],
+        "latency_ms": {"mean": 2, "p50": 2, "p95": 2.9, "min": 1, "max": 3},
+        "patches_per_second": 500,
+        "checkpoint_sha256": "a" * 64,
+        **{f"{key}_fingerprint": _digest(binding[key]) for key in ("config", "code", "runtime")},
+    }
+    write(tmp_path / "standard-inference.json", record)
+    assert standardized_inference(tmp_path, binding)["patches_per_second"] == 500
+    for key in ("config", "code", "runtime"):
+        broken = copy.deepcopy(record)
+        broken[f"{key}_fingerprint"] = "b" * 64
+        write(tmp_path / "standard-inference.json", broken)
+        with pytest.raises(ValueError, match="fingerprint"):
+            standardized_inference(tmp_path, binding)
+    for samples in ([0, 2, 3], [1, 2], [float("nan"), 2, 3]):
+        broken = copy.deepcopy(record)
+        broken["sample_latencies_ms"] = samples
+        write(tmp_path / "standard-inference.json", broken)
+        with pytest.raises(ValueError):
+            standardized_inference(tmp_path, binding)
+
+
+def test_clinical_report_keeps_specificity_auc_unavailable_and_removes_raw_identifiers(tmp_path):
+    from segmentary.medical_reporting import CLINICAL_METRICS, clinical_metrics
+
+    artifact = {
+        "schema_version": 1,
+        "kind": "medical_detection_diagnostic",
+        "partition": "val",
+        "cohort_complete": True,
+        "counts": {
+            "eligible_cases": 1,
+            "valid_cases": 1,
+            "patient_groups": 1,
+            "complete_patient_groups": 1,
+            "reference_positive_groups": 1,
+            "reference_negative_groups": 0,
+        },
+        "protocol": {"connectivity": 26, "iou_threshold": 0.1, "minimum_prediction_volume_mm3": 10},
+        "provenance": {"prediction_checkpoint_sha256": "a" * 64, "path": "/private-patient"},
+        "cases": [{"case_id": "private-case-A", "patient_id": "private-patient-A"}],
+        "metrics": {
+            name: {
+                "value": 0.5,
+                "status": "available",
+                "numerator": 0.5,
+                "denominator": 1,
+                "reason_code": None,
+            }
+            for name in CLINICAL_METRICS
+        },
+    }
+    path = tmp_path / "report.json"
+    write(path, artifact)
+    result = clinical_metrics(path, 1, "a" * 64)
+    assert result["metrics"]["patient_sensitivity"]["value"] == 0.5
+    assert result["metrics"]["specificity"]["value"] is None
+    assert result["metrics"]["auc"]["value"] is None
+    assert result["grouping_status"] == "unverified_case_groups"
+    assert "private" not in json.dumps(result)
+    with pytest.raises(ValueError, match="checkpoint"):
+        clinical_metrics(path, 1, "b" * 64)
+    artifact["cohort_complete"] = False
+    write(path, artifact)
+    assert all(
+        metric["value"] is None
+        for metric in clinical_metrics(path, 1, "a" * 64)["metrics"].values()
+    )
+
+
+def test_prediction_statistics_are_retained_with_case_ordinals(campaign):
+    spec, state = campaign
+    stats = {
+        "mass_probability_max": 0.85,
+        "native_voxels": 100,
+        "predicted_mass_voxels": 12,
+        "mass_score_definition": "maximum_native_class2_probability",
+    }
+    write(
+        spec.parent / "a/predictions/val/prediction-status.json",
+        {
+            "partition": "val",
+            "cases": [
+                {
+                    "case_id": "private-case-A",
+                    "status": "completed",
+                    "wall_seconds": 1,
+                    "prediction_statistics": stats,
+                }
+            ],
+        },
+    )
+    snapshot = reporter.collect(spec, state)
+    sample = snapshot["runs"][0]["performance"]["prediction"]["cases"][0]
+    assert sample["case_number"] == 1 and sample["mass_probability_max"] == 0.85
+    files = reporter.render(snapshot)
+    assert "mass_probability_max" in files["inference-cases.csv"]
+    assert "private-case-A" not in files["inference-cases.csv"]

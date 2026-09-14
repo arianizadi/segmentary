@@ -7,7 +7,10 @@ The fixed HU window/spacing are declared before evaluation, never fitted on test
 from __future__ import annotations
 
 import itertools
-from collections.abc import Callable
+import time
+from collections.abc import Callable, Generator, Sequence
+from concurrent.futures import Future, ThreadPoolExecutor
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -157,22 +160,25 @@ def tiled_probabilities(
     return (total / count[None])[(slice(None), *crop)]
 
 
-def predict_case(
-    model: nn.Module,
-    case: dict,
-    config: TorchConfig,
-    device: torch.device,
-    *,
-    output: Path | None = None,
-) -> np.ndarray:
+def _prepare_prediction(case: dict, config: TorchConfig, cache: Any | None) -> dict[str, Any]:
     import nibabel as nib
 
-    from .geometry import export_native_prediction
-    from .torch_geometry import native_probabilities
-
+    if cache is not None:
+        return cache.load(case)
     # No access to case['label'], including during validation inference.
     data = preprocess_case(case, config, with_label=False)
-    image = data["image"]
+    reference: Any = nib.load(case["image"])
+    data.update(native_shape=reference.shape, native_affine=reference.affine)
+    return data
+
+
+def _inference_probabilities(
+    model: nn.Module,
+    image: np.ndarray,
+    config: TorchConfig,
+    device: torch.device,
+) -> np.ndarray:
+    """Run the original tile/slice sequence only on the calling thread."""
     was_training = model.training
     model.eval()
     try:
@@ -190,14 +196,209 @@ def predict_case(
             )
     finally:
         model.train(was_training)
-    reference: Any = nib.load(case["image"])
+    return probabilities
+
+
+def _finish_prediction(
+    probabilities: np.ndarray,
+    geometry: dict[str, Any],
+    case: dict,
+    config: TorchConfig,
+    output: Path | None,
+    cache: Any | None,
+    workers: int,
+    timings: dict[str, float],
+    statistics: dict[str, Any] | None = None,
+) -> np.ndarray:
+    from .geometry import export_native_prediction
+    from .torch_geometry import native_argmax, native_probabilities
+
+    started = time.monotonic()
     native = native_probabilities(
-        probabilities, data["affine"], reference.shape, reference.affine, workers=config.workers
+        probabilities,
+        geometry["affine"],
+        tuple(geometry["native_shape"]),
+        np.asarray(geometry["native_affine"]),
+        workers=workers,
     )
-    prediction = np.stack(native).argmax(0).astype(np.uint8)
+    prediction = native_argmax(native)
+    if statistics is not None:
+        statistics.update(
+            # Image-only continuous scan score, before any lesion postprocessing.
+            # AUC still requires both reference classes in the scored cohort.
+            mass_probability_max=float(np.max(native[2])),
+            mass_score_definition="maximum_native_class2_probability",
+            native_voxels=int(prediction.size),
+            predicted_mass_voxels=int(np.count_nonzero(prediction == 2)),
+        )
+    timings["reconstruction_seconds"] = time.monotonic() - started
+    if cache is not None:
+        cache.check(case)
+    started = time.monotonic()
     if output is not None:
-        export_native_prediction(case["image"], prediction, output)
+        if cache is None:
+            export_native_prediction(case["image"], prediction, output)
+        else:
+            cache.export_prediction(case, prediction, output)
+    timings["export_seconds"] = time.monotonic() - started
     return prediction
+
+
+def predict_case(
+    model: nn.Module,
+    case: dict,
+    config: TorchConfig,
+    device: torch.device,
+    *,
+    output: Path | None = None,
+    cache: Any | None = None,
+) -> np.ndarray:
+    """Predict one case with unchanged tiling and exact finite native argmax."""
+    data = _prepare_prediction(case, config, cache)
+    probabilities = _inference_probabilities(model, data["image"], config, device)
+    geometry = {key: value for key, value in data.items() if key != "image"}
+    del data
+    return _finish_prediction(
+        probabilities, geometry, case, config, output, cache, config.workers, {}
+    )
+
+
+@dataclass
+class PredictionResult:
+    """One ordered outcome; callers choose fail-fast or per-case continuation."""
+
+    case: dict
+    prediction: np.ndarray | None = None
+    error: Exception | None = None
+    wall_seconds: float = 0.0
+    timings: dict[str, float] = field(default_factory=dict)
+    statistics: dict[str, Any] = field(default_factory=dict)
+
+
+def iter_predictions(
+    model: nn.Module,
+    cases: Sequence[dict],
+    config: TorchConfig,
+    device: torch.device,
+    *,
+    output_directory: Path | None = None,
+    cache: Any | None = None,
+) -> Generator[PredictionResult, None, None]:
+    """Overlap bounded CPU stages around serial, unchanged model inference.
+
+    At most one next case is prepared and one previous case is reconstructed.
+    No worker executes the model or advances an RNG. Results retain case order;
+    errors are delivered with their case, never confused with a following case.
+    ``workers=1`` stays serial. Otherwise one CPU worker prepares images and at
+    most ``min(3, workers-1)`` independent channels reconstruct the prior case.
+
+    Use ``contextlib.closing`` when consuming only part of the iterator: closing
+    cancels queued preparation and waits for in-flight CPU work before returning.
+    The caller owns any cache and retains it across validation epochs. Prediction
+    buffers for a finished case are released before accepting another result.
+    Timings include CPU stage work separately; wall time may overlap other cases.
+    """
+    if not cases:
+        return
+
+    def prepare(case: dict) -> tuple[dict | None, PredictionResult, float]:
+        started = time.monotonic()
+        result = PredictionResult(case)
+        try:
+            data = _prepare_prediction(case, config, cache)
+        except Exception as exc:
+            result.error = exc.with_traceback(None)
+            data = None
+        result.timings["preprocess_seconds"] = time.monotonic() - started
+        return data, result, started
+
+    def finish(
+        probabilities: np.ndarray | None,
+        geometry: dict,
+        result: PredictionResult,
+        started: float,
+        workers: int,
+    ) -> PredictionResult:
+        if result.error is None:
+            try:
+                if probabilities is None:
+                    raise ValueError("Prediction produced no probabilities")
+                output = (
+                    output_directory / f"{result.case['case_id']}.nii.gz"
+                    if output_directory is not None
+                    else None
+                )
+                result.prediction = _finish_prediction(
+                    probabilities,
+                    geometry,
+                    result.case,
+                    config,
+                    output,
+                    cache,
+                    workers,
+                    result.timings,
+                    result.statistics,
+                )
+            except Exception as exc:
+                result.error = exc.with_traceback(None)
+        result.wall_seconds = time.monotonic() - started
+        return result
+
+    def infer(data: dict | None, result: PredictionResult) -> tuple[np.ndarray | None, dict]:
+        if result.error is not None:
+            return None, {}
+        started = time.monotonic()
+        try:
+            if data is None:
+                raise ValueError("Prediction produced no preprocessed image")
+            probabilities = _inference_probabilities(model, data["image"], config, device)
+            return probabilities, {key: value for key, value in data.items() if key != "image"}
+        except Exception as exc:
+            result.error = exc.with_traceback(None)
+            return None, {}
+        finally:
+            result.timings["inference_seconds"] = time.monotonic() - started
+
+    if config.workers == 1:
+        for case in cases:
+            data, result, started = prepare(case)
+            probabilities, geometry = infer(data, result)
+            del data
+            yield finish(probabilities, geometry, result, started, 1)
+            del probabilities, geometry, result
+        return
+
+    preparation = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ct-prepare")
+    reconstruction = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ct-reconstruct")
+    prepared: Future | None = None
+    pending: Future | None = None
+    try:
+        prepared = preparation.submit(prepare, cases[0])
+        for index in range(len(cases)):
+            assert prepared is not None
+            data, result, started = prepared.result()
+            prepared = (
+                preparation.submit(prepare, cases[index + 1]) if index + 1 < len(cases) else None
+            )
+            probabilities, geometry = infer(data, result)
+            del data
+            previous = pending.result() if pending is not None else None
+            pending = reconstruction.submit(
+                finish, probabilities, geometry, result, started, max(1, config.workers - 1)
+            )
+            del probabilities, geometry, result
+            if previous is not None:
+                yield previous
+                del previous
+        if pending is not None:
+            yield pending.result()
+    finally:
+        if prepared is not None:
+            prepared.cancel()
+        if pending is not None:
+            pending.cancel()
+        preparation.shutdown(wait=True, cancel_futures=True)
+        reconstruction.shutdown(wait=True, cancel_futures=True)
 
 
 def dice_ce(logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:

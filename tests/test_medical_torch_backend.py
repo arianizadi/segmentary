@@ -243,6 +243,93 @@ def test_resumed_epoch_matches_uninterrupted_optimizer_and_rng(experiment, monke
     assert resumed["sampling_rng"] == uninterrupted["sampling_rng"]
 
 
+def test_prediction_status_records_loaded_checkpoint_bytes_without_per_case_rehash(
+    experiment, monkeypatch
+):
+    config, _, splits, manifest_path, splits_path = experiment
+    backend.prepare_dataset(manifest_path, splits_path, config)
+    backend.plan_and_preprocess(config)
+    backend._train_worker(config, {"resume": False}, backend._binding(config))
+    checkpoint = backend._checkpoint(config, "checkpoint_best.pth")
+    expected = backend._sha(checkpoint)
+    hashed: list[Path] = []
+    original = backend._sha
+
+    def counting_sha(path):
+        hashed.append(Path(path))
+        return original(path)
+
+    monkeypatch.setattr(backend, "_sha", counting_sha)
+    request = config.root / "stages" / "predict-test" / "request.json"
+    backend._atomic_json(
+        request,
+        {
+            "config": backend._config_record(config),
+            "action": "predict",
+            "payload": {"partition": "val", "checkpoint": "checkpoint_best.pth"},
+            "identity": backend._digest(backend._binding(config)),
+        },
+    )
+    backend._worker(request)
+    status = json.loads(
+        (config.root / "predictions" / "val" / "prediction-status.json").read_text()
+    )
+    assert [x["status"] for x in status["cases"]] == ["completed"] * len(splits["val"])
+    # The recorded digest is of the exact bytes that were deserialized; the
+    # multi-hundred-megabyte checkpoint file is never rehashed per predicted
+    # case (the digest comes from the single in-memory read in the loader).
+    assert status["checkpoint_sha256"] == expected
+    assert hashed.count(checkpoint) == 0
+    performance = status["performance"]
+    assert performance["wall_seconds"] > 0
+    assert performance["scope"] == "model_ready_to_last_case_including_cache_export"
+    assert performance["completed"] and performance["successful_cases"] == len(splits["val"])
+    assert performance["cache"]["source_verifications"] == len(splits["val"])
+    assert performance["peak_allocated_bytes"] is None  # CPU is unmeasured, not zero GPU memory
+    assert all(x["component_seconds"]["inference_seconds"] > 0 for x in status["cases"])
+    for case in status["cases"]:
+        stats = case["prediction_statistics"]
+        assert 0 <= stats["mass_probability_max"] <= 1
+        assert stats["mass_score_definition"] == "maximum_native_class2_probability"
+        assert stats["native_voxels"] == 9 * 10 * 8
+        assert 0 <= stats["predicted_mass_voxels"] <= stats["native_voxels"]
+
+
+def test_checkpoint_loader_rejects_bytes_that_differ_from_the_index(experiment):
+    config, _, _, manifest_path, splits_path = experiment
+    backend.prepare_dataset(manifest_path, splits_path, config)
+    backend.plan_and_preprocess(config)
+    backend._train_worker(config, {"resume": False}, backend._binding(config))
+    state, digest = backend._load_checkpoint(config, "checkpoint_latest.pth")
+    assert state["epoch"] == config.epochs
+    assert digest == backend._sha(backend._checkpoint(config, "checkpoint_latest.pth"))
+    index = backend._json(config.root / "checkpoint-index.json")
+    path = config.root / "checkpoints" / index["files"]["checkpoint_latest.pth"]["path"]
+    path.write_bytes(path.read_bytes() + b"\0")
+    with pytest.raises(ValueError, match="Content hash"):
+        backend._load_checkpoint(config, "checkpoint_latest.pth")
+
+
+def test_checkpoint_saves_are_reported_as_their_own_progress_phase(experiment, monkeypatch):
+    config, _, _, manifest_path, splits_path = experiment
+    backend.prepare_dataset(manifest_path, splits_path, config)
+    backend.plan_and_preprocess(config)
+    phases: list[str] = []
+    original = backend._save_checkpoint
+
+    def observe(cfg, state, names):
+        phases.append(json.loads((cfg.root / "progress.json").read_text())["phase"])
+        original(cfg, state, names)
+
+    monkeypatch.setattr(backend, "_save_checkpoint", observe)
+    backend._train_worker(config, {"resume": False}, backend._binding(config))
+    # Initial scratch save happens before any training progress exists; every
+    # epoch-end save is labelled as checkpoint work rather than training.
+    assert phases == ["checkpoint"] * (config.epochs + 1)
+    final = json.loads((config.root / "progress.json").read_text())
+    assert final["phase"] == "checkpoint" and final["checkpoint_seconds"] >= 0
+
+
 def test_preprocessing_uses_nearest_neighbor_labels_and_fixed_ct_window(tmp_path):
     image, label = tmp_path / "ct.nii.gz", tmp_path / "mask.nii.gz"
     affine = np.diag([1, 2, 3, 1])
@@ -267,7 +354,7 @@ def test_validation_cadence_keeps_last_checkpoint_and_forces_final(experiment, m
     backend.plan_and_preprocess(config)
     validated = []
 
-    def validate(model, cases, cfg, device):
+    def validate(model, cases, cfg, device, **kwargs):
         validated.append(len(validated) + 1)
         return {"mean_mass_dice": len(validated) / 10, "cases": [], "space": "native_full_volume"}
 

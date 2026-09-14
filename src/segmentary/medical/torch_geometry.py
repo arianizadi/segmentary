@@ -2,9 +2,31 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
+
+
+def native_argmax(channels: Sequence[np.ndarray]) -> np.ndarray:
+    """Choose among three finite native channels without a full stacked copy.
+
+    Strict comparisons preserve NumPy argmax's first-channel tie convention,
+    including signed zeros. NaNs are rejected rather than silently assigning a
+    different class. The input probability arrays are never modified.
+    """
+    if len(channels) != 3:
+        raise ValueError("Native argmax requires exactly three channels")
+    shape = channels[0].shape
+    if len(shape) != 3 or any(size < 1 for size in shape):
+        raise ValueError("Native argmax requires nonempty three-dimensional channels")
+    for channel in channels:
+        if channel.shape != shape or channel.dtype.kind != "f" or not np.isfinite(channel).all():
+            raise ValueError("Native argmax requires same-shape finite floating-point channels")
+    background, pancreas, mass = channels
+    prediction = (pancreas > background).astype(np.uint8)
+    prediction[(mass > background) & (mass > pancreas)] = 2
+    return prediction
 
 
 def native_probabilities(
