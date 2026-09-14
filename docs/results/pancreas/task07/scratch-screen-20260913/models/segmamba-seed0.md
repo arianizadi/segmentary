@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T02:53:25.170579+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T03:23:29.603988+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **2**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **2**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.235345+00:00 / — |
 | Last worker update | 2026-09-13T23:18:14.903773+00:00 |
-| Completed / budget steps | 7700 / 10000 |
-| Live step / phase | 7770 / train |
+| Completed / budget steps | 8800 / 10000 |
+| Live step / phase | 8860 / train |
 | Parameters | 67362723 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 3.5827 |
+| Active-stage allocated hours (estimate) | 4.0839 |
 | Peak allocated / reserved GiB | 19.29 / 22.59 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -173,6 +173,17 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 75 | 7500 | 0.2948 | 8.615238e-05 | — | — |
 | 76 | 7600 | 0.2700 | 8.30446e-05 | — | — |
 | 77 | 7700 | 0.3040 | 7.992383e-05 | — | — |
+| 78 | 7800 | 0.3050 | 7.678947e-05 | — | — |
+| 79 | 7900 | 0.2893 | 7.364082e-05 | — | — |
+| 80 | 8000 | 0.2924 | 7.047714e-05 | 0.7320 | 0.2921 |
+| 81 | 8100 | 0.2835 | 6.729759e-05 | — | — |
+| 82 | 8200 | 0.2744 | 6.410125e-05 | — | — |
+| 83 | 8300 | 0.2602 | 6.08871e-05 | — | — |
+| 84 | 8400 | 0.2511 | 5.765397e-05 | — | — |
+| 85 | 8500 | 0.2566 | 5.440056e-05 | — | — |
+| 86 | 8600 | 0.2780 | 5.112537e-05 | — | — |
+| 87 | 8700 | 0.2687 | 4.782668e-05 | — | — |
+| 88 | 8800 | 0.2565 | 4.45025e-05 | — | — |
 
 ## Final validation evaluation
 

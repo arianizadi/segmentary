@@ -2,16 +2,16 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T02:53:25.170579+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T03:23:29.603988+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-Status: **running**. Stage: **evaluate**. GPU: **9**.
+Status: **completed**. Stage: **—**. GPU: **9**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | 2026-09-14T01:26:30.047348+00:00 / — |
-| Last worker update | 2026-09-14T02:50:30.616331+00:00 |
+| Started / finished | 2026-09-14T01:26:30.047348+00:00 / 2026-09-14T02:59:10.931834+00:00 |
+| Last worker update | 2026-09-14T02:59:10.931850+00:00 |
 | Completed / budget steps | 10000 / 10000 |
 | Live step / phase | — / validation |
 | Parameters | 41722302 |
@@ -174,4 +174,11 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 
 ## Final validation evaluation
 
-Not available yet. Training loss or a forward-pass smoke test cannot replace this evaluation.
+| Region | Patient mean Dice | 95% bootstrap interval | Surface Dice | HD95 mm | HD95 case coverage |
+| --- | --- | --- | --- | --- | --- |
+| pancreas | 0.0044 | 0.0038 to 0.0053 | 0.0000 | 265.8412 | 1.0000 |
+| mass | 0.0005 | 0.0003 to 0.0007 | 0.0000 | 305.6774 | 1.0000 |
+
+Complete prediction/reference coverage: **True**. Native reference cohort: `749cde7099ad36aea2e49b1978326a8ee29ca75ae4f9777c123d2742fd99a028`.
+
+HD95 excludes undefined/infinite distances; use its coverage alongside Dice so missed masses cannot disappear from interpretation.

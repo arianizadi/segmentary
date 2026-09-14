@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T02:53:25.170579+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T03:23:29.603988+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **1**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **1**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.233346+00:00 / — |
 | Last worker update | 2026-09-13T23:18:17.236892+00:00 |
-| Completed / budget steps | 7200 / 10000 |
-| Live step / phase | 7250 / train |
+| Completed / budget steps | 8300 / 10000 |
+| Live step / phase | 8301 / train |
 | Parameters | 22808675 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 3.5820 |
+| Active-stage allocated hours (estimate) | 4.0832 |
 | Peak allocated / reserved GiB | 33.55 / 38.72 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -169,6 +169,17 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 70 | 7000 | 0.3140 | 0.000101515 | 0.7381 | 0.3440 |
 | 71 | 7100 | 0.2867 | 9.846445e-05 | — | — |
 | 72 | 7200 | 0.2970 | 9.540332e-05 | — | — |
+| 73 | 7300 | 0.2759 | 9.233123e-05 | — | — |
+| 74 | 7400 | 0.2796 | 8.924775e-05 | — | — |
+| 75 | 7500 | 0.2803 | 8.615238e-05 | — | — |
+| 76 | 7600 | 0.2656 | 8.30446e-05 | — | — |
+| 77 | 7700 | 0.2884 | 7.992383e-05 | — | — |
+| 78 | 7800 | 0.2897 | 7.678947e-05 | — | — |
+| 79 | 7900 | 0.2598 | 7.364082e-05 | — | — |
+| 80 | 8000 | 0.2774 | 7.047714e-05 | 0.7541 | 0.3571 |
+| 81 | 8100 | 0.2845 | 6.729759e-05 | — | — |
+| 82 | 8200 | 0.2605 | 6.410125e-05 | — | — |
+| 83 | 8300 | 0.2637 | 6.08871e-05 | — | — |
 
 ## Final validation evaluation
 
