@@ -428,6 +428,12 @@ def validate_splits(manifest: dict[str, Any], splits: dict[str, Any]) -> None:
         raise MedicalDataError("split lists must cover every fully labeled case exactly once")
     if not splits["train"]:
         raise MedicalDataError("training split must not be empty")
+    if manifest.get("dataset") == "PanTS" or any(
+        case.get("source") == "PanTS" for case in manifest["cases"]
+    ):
+        from .pants import validate_official_partitions
+
+        validate_official_partitions(manifest, splits)
     # Unlabeled companions remain outside fitting/scoring, but do not constitute
     # an independent future test when they share a patient or image with any split.
     expected_excluded = sorted(set(cases) - eligible)
@@ -493,6 +499,12 @@ def make_splits(
     if train_fraction <= 0 or val_fraction < 0 or train_fraction + val_fraction > 1:
         raise MedicalDataError("train fraction must be positive and train + val at most 1")
     manifest = load_manifest(manifest_path, verify_files=True)
+    if manifest.get("dataset") == "PanTS" or any(
+        case.get("source") == "PanTS" for case in manifest["cases"]
+    ):
+        raise MedicalDataError(
+            "PanTS requires split-pants to preserve its official train/test boundary"
+        )
     cases = {case["case_id"]: case for case in manifest["cases"]}
     components = _group_assignments(cases, manifest.get("inherited_group_assignments"))
     groups: dict[str, list[str]] = {}

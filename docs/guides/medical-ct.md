@@ -2,6 +2,9 @@
 
 `segmentary-medical` is a separate medical-volume workflow. It uses audited NIfTI volumes and the official nnU-Net v2 trainer instead of treating CT as RGB PNG images. Existing `segmentary-train` and object workflows retain their current contracts.
 
+For the larger PanTS cohort, follow the [PanTS setup guide](medical-pants.md) for
+release downloads, mask conversion, known annotation issues and protected splits.
+
 ## Install and inspect
 
 Use a dedicated Python 3.11 environment. Install the appropriate platform PyTorch build first; then install the optional workflow:

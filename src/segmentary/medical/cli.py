@@ -21,6 +21,47 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--dataset-root", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--groups", type=Path)
+    p = commands.add_parser(
+        "audit-pants", help="Audit PanTS binary masks and preserve official partitions"
+    )
+    p.add_argument("--dataset-root", type=Path, required=True)
+    p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--metadata", type=Path)
+    p.add_argument(
+        "--audit-report",
+        type=Path,
+        help="Collect per-case failures and preserve successful journals; no manifest on any failure",
+    )
+    p.add_argument("--prepared-root", type=Path)
+    p.add_argument("--groups", type=Path)
+    p.add_argument(
+        "--exclude-cases", type=Path, help="JSON exclusions with case ID, reason and source URL"
+    )
+    p.add_argument(
+        "--case-id", action="append", help="Explicit official-training-only smoke subset"
+    )
+    p.add_argument(
+        "--allow-missing-negative-lesion",
+        action="store_true",
+        help="Explicitly allow absent lesion masks only when metadata tumor? is 0",
+    )
+    p.add_argument(
+        "--normalize-unknown-units-from-metadata",
+        action="store_true",
+        help="Create derived mm-unit copies only when unknown-unit grids agree with metadata spacing",
+    )
+    p.add_argument(
+        "--normalize-binary-roundoff",
+        action="store_true",
+        help="Create derived binary uint8 masks only for finite values within absolute 1e-6 of zero or one",
+    )
+    p = commands.add_parser(
+        "split-pants", help="Split PanTS official training groups; reserve official test"
+    )
+    p.add_argument("--manifest", type=Path, required=True)
+    p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--val-fraction", type=float, default=0.15)
+    p.add_argument("--seed", type=int, default=0)
     p = commands.add_parser("subset", help="Make a traceable subset for a separate smoke run")
     p.add_argument("--manifest", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
@@ -134,6 +175,28 @@ def dispatch(args: argparse.Namespace) -> Any:
         from .data import audit_task07
 
         return audit_task07(args.dataset_root, args.output, groups_path=args.groups)
+    if command == "audit-pants":
+        from .pants import audit_pants
+
+        return audit_pants(
+            args.dataset_root,
+            args.output,
+            metadata_path=args.metadata,
+            prepared_root=args.prepared_root,
+            groups_path=args.groups,
+            exclude_cases_path=args.exclude_cases,
+            audit_report_path=args.audit_report,
+            case_ids=args.case_id,
+            allow_missing_negative_lesion=args.allow_missing_negative_lesion,
+            normalize_unknown_units_from_metadata=args.normalize_unknown_units_from_metadata,
+            normalize_binary_roundoff=args.normalize_binary_roundoff,
+        )
+    if command == "split-pants":
+        from .pants import make_pants_splits
+
+        return make_pants_splits(
+            args.manifest, args.output, val_fraction=args.val_fraction, seed=args.seed
+        )
     if command == "subset":
         from .data import subset_manifest
 
