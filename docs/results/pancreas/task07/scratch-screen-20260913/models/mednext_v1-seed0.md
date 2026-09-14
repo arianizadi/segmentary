@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T01:23:13.975052+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T01:53:16.378237+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **8**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **8**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.248888+00:00 / — |
 | Last worker update | 2026-09-13T23:18:17.459304+00:00 |
-| Completed / budget steps | 8000 / 10000 |
-| Live step / phase | 8020 / train |
+| Completed / budget steps | 9900 / 10000 |
+| Live step / phase | — / validation |
 | Parameters | 5550947 |
 | Objective | dense_ce_dice_no_auxiliary_heads |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 2.0788 |
+| Active-stage allocated hours (estimate) | 2.5795 |
 | Peak allocated / reserved GiB | 29.37 / 34.87 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -153,6 +153,25 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 78 | 7800 | 0.3228 | 7.678947e-05 | — | — |
 | 79 | 7900 | 0.2994 | 7.364082e-05 | — | — |
 | 80 | 8000 | 0.3107 | 7.047714e-05 | 0.6943 | 0.2408 |
+| 81 | 8100 | 0.3020 | 6.729759e-05 | — | — |
+| 82 | 8200 | 0.2856 | 6.410125e-05 | — | — |
+| 83 | 8300 | 0.2890 | 6.08871e-05 | — | — |
+| 84 | 8400 | 0.2668 | 5.765397e-05 | — | — |
+| 85 | 8500 | 0.2790 | 5.440056e-05 | — | — |
+| 86 | 8600 | 0.2910 | 5.112537e-05 | — | — |
+| 87 | 8700 | 0.2933 | 4.782668e-05 | — | — |
+| 88 | 8800 | 0.2722 | 4.45025e-05 | — | — |
+| 89 | 8900 | 0.2839 | 4.115046e-05 | — | — |
+| 90 | 9000 | 0.2578 | 3.776776e-05 | 0.7116 | 0.2716 |
+| 91 | 9100 | 0.2730 | 3.435101e-05 | — | — |
+| 92 | 9200 | 0.2850 | 3.0896e-05 | — | — |
+| 93 | 9300 | 0.2758 | 2.739741e-05 | — | — |
+| 94 | 9400 | 0.2721 | 2.38483e-05 | — | — |
+| 95 | 9500 | 0.2470 | 2.023924e-05 | — | — |
+| 96 | 9600 | 0.2697 | 1.655676e-05 | — | — |
+| 97 | 9700 | 0.2733 | 1.277999e-05 | — | — |
+| 98 | 9800 | 0.2570 | 8.872546e-06 | — | — |
+| 99 | 9900 | 0.2588 | 4.75468e-06 | — | — |
 
 ## Final validation evaluation
 
