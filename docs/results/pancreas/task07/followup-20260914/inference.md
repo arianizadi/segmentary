@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-14T21:30:08.948358+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
+Generated: 2026-09-14T22:00:11.789175+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
 
 ## Native CT prediction
 
@@ -8,7 +8,7 @@ This measures heterogeneous full CT examinations. Case p50/p95 includes CPU work
 
 | Model | Status | Cases | Failed | Pipeline wall s | Scans/s | Case p50 s | Case p95 s | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | 42/42 | 0 | 122.404 | 0.343 | 8.834 | 11.044 | 4.479 |
 | [dynunet-long30k-seed0](models/dynunet-long30k-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
 | [dynunet-fine10k-seed0](models/dynunet-fine10k-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
 

@@ -1,4 +1,6 @@
 run_id,model,invocation_number,action,status,wall_seconds,allocated_gpu_hours
-dynunet-control10k-seed0,dynunet,1,preprocess,completed,28.783501863479614,0.0
+dynunet-control10k-seed0,dynunet,1,predict,completed,128.4093940258026,0.035669276118278505
+dynunet-control10k-seed0,dynunet,2,preprocess,completed,28.783501863479614,0.0
+dynunet-control10k-seed0,dynunet,3,train,completed,3127.58820104599,0.8687745002905528
 dynunet-long30k-seed0,dynunet,1,preprocess,completed,28.829469203948975,0.0
 dynunet-fine10k-seed0,dynunet,1,preprocess,completed,37.614110708236694,0.0
