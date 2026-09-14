@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "source_commit": "d072beb8e04a1bbcdf360cb50f3df3901d9fa08d",
+  "partition": "val",
+  "comparison_type": "declared_budget_and_resolution_followup_selected_best",
+  "arm_recipes": {
+    "dynunet-control10k-seed0": {
+      "arm": "control10k",
+      "changes_from_control": {},
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Fresh original control with a 10,000-update polynomial schedule",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "ac306b72211940a81848175ec3803780fe87f0fe3763eef0f7c725135771025a",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    },
+    "dynunet-long30k-seed0": {
+      "arm": "long30k",
+      "changes_from_control": {
+        "epochs": 300
+      },
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Fresh original control with a 30,000-update polynomial schedule",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 30000,
+      "sampled_patches": 240000,
+      "scientific_recipe_sha256": "9432ee728090d87f423149ac4edf24d65b87e156ac432595cc5a7f8f0c27a934",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100,
+        110,
+        120,
+        130,
+        140,
+        150,
+        160,
+        170,
+        180,
+        190,
+        200,
+        210,
+        220,
+        230,
+        240,
+        250,
+        260,
+        270,
+        280,
+        290,
+        300
+      ]
+    },
+    "dynunet-fine10k-seed0": {
+      "arm": "fine10k",
+      "changes_from_control": {
+        "patch_size": [
+          96,
+          144,
+          144
+        ],
+        "spacing_mm": [
+          1.0,
+          1.0,
+          2.5
+        ]
+      },
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Finer in-plane sampling with matched nominal physical crop extent",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "c82ac72f0dc277d8ed1b24b40b81f236e6f20d43ac5a5276ddd26232875333ed",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    }
+  },
+  "comparisons": [
+    {
+      "candidate": "dynunet-long30k-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "optimizer budget and full polynomial schedule",
+      "mean_difference": 0.008177761106185108,
+      "ci95": [
+        -0.044573113641091934,
+        0.05415195013977031
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-long30k-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "optimizer budget and full polynomial schedule",
+      "mean_difference": -0.029678050260540094,
+      "ci95": [
+        -0.05349809998430587,
+        -0.008437082919600797
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-fine10k-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "in-plane spacing and voxel patch size at matched nominal physical context",
+      "mean_difference": -0.0478586902261137,
+      "ci95": [
+        -0.1026526437248488,
+        -0.0005533178455044759
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-fine10k-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "in-plane spacing and voxel patch size at matched nominal physical context",
+      "mean_difference": -0.0279047710289959,
+      "ci95": [
+        -0.04518266692687439,
+        -0.010148645125620519
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    }
+  ],
+  "grouping": "provided dataset-case groups; independent patient linkage remains unverified",
+  "limitations": [
+    "Exploratory same-seed validation comparisons, not held-out or external confirmation.",
+    "Validation selected the checkpoints and may select an arm; intervals do not correct selection optimism.",
+    "Four pointwise 95% bootstrap intervals are not adjusted for multiple comparisons.",
+    "Intervals resample provided case/patient groups and do not include training-seed uncertainty.",
+    "Long30k changes the complete learning-rate schedule and uses three times as many updates; this is not an equal-compute comparison.",
+    "Fine10k uses 1.0/1.0/2.5-mm spacing and a 96x144x144 patch versus 1.5/1.5/2.5 mm and 96 cubed; nominal physical context matches, voxel count and cost differ.",
+    "Each arm selects its own best validation checkpoint; selected-best differences are exploratory and not an independent test.",
+    "Mass labels do not establish pancreatic cancer diagnosis."
+  ],
+  "primary_report_sha256": {
+    "dynunet-control10k-seed0": "085e30d619cc9bc504c0d6223ec039336d06df20c1a40f2b139e67dabf8c5980",
+    "dynunet-long30k-seed0": "a473854fe2043b6a859e060a0a82c5363d0df75ae5502cb51fa4beed6ebbf4ec",
+    "dynunet-fine10k-seed0": "58fc0e205a6bdcca4340c8d12942c1ad2f34d5ed9b8b0e86a72524c85b9693ab"
+  }
+}
