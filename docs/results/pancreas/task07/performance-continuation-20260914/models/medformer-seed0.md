@@ -2,23 +2,23 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T04:57:14.189490+00:00. Source: `86363b101aa3685782defdf524face6af43edb2d`.
+Generated: 2026-09-14T05:23:18.255196+00:00. Source: `86363b101aa3685782defdf524face6af43edb2d`.
 
-Status: **running**. Stage: **preprocess**. GPU: **7**.
+Status: **completed**. Stage: **—**. GPU: **7**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | 2026-09-14T04:49:04.544264+00:00 / — |
-| Last worker update | 2026-09-14T04:49:04.887226+00:00 |
+| Started / finished | 2026-09-14T04:49:04.544264+00:00 / 2026-09-14T05:03:15.674860+00:00 |
+| Last worker update | 2026-09-14T05:03:15.674876+00:00 |
 | Completed / budget steps | 10000 / 10000 |
-| Live step / phase | — / preprocess |
+| Live step / phase | — / prediction |
 | Parameters | 39591555 |
 | Objective | dense_ce_dice_no_auxiliary_heads |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
-| Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | — |
+| Selected checkpoint SHA256 | cf56bf5a4edbe431b00f3d8b8ede30d681158f07cf8bd481b40f132e8f35c43c |
+| Finished-stage allocated GPU-hours | 0.0395 |
 | Active-stage allocated hours (estimate) | — |
 | Peak allocated / reserved GiB | 29.95 / 33.89 |
 
@@ -224,7 +224,14 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 
 ## Final validation evaluation
 
-Not available yet. Training loss or a forward-pass smoke test cannot replace this evaluation.
+| Region | Patient mean Dice | 95% bootstrap interval | Surface Dice | HD95 mm | HD95 case coverage |
+| --- | --- | --- | --- | --- | --- |
+| pancreas | 0.7187 | 0.6702 to 0.7593 | 0.6171 | 28.4652 | 1.0000 |
+| mass | 0.3272 | 0.2362 to 0.4196 | 0.2846 | 40.5183 | 0.8571 |
+
+Complete prediction/reference coverage: **True**. Native reference cohort: `749cde7099ad36aea2e49b1978326a8ee29ca75ae4f9777c123d2742fd99a028`.
+
+HD95 excludes undefined/infinite distances; use its coverage alongside Dice so missed masses cannot disappear from interpretation.
 
 ## Recorded training and inference data
 
@@ -232,11 +239,11 @@ Not available yet. Training loss or a forward-pass smoke test cannot replace thi
 
 | Measurement | Value |
 | --- | --- |
-| Native predictions completed / expected / failed | 0 / 42 / 0 |
-| Measured prediction pipeline wall seconds | — |
-| Complete-cohort scans per second | — |
-| Recorded case latency mean / p50 / p95 seconds | — / — / — |
-| Prediction allocated / reserved peak GiB | — / — |
+| Native predictions completed / expected / failed | 42 / 42 / 0 |
+| Measured prediction pipeline wall seconds | 137.817 |
+| Complete-cohort scans per second | 0.305 |
+| Recorded case latency mean / p50 / p95 seconds | 9.476 / 9.285 / 13.747 |
+| Prediction allocated / reserved peak GiB | 11.489 / 15.215 |
 | Standardized model-only benchmark | not_recorded |
 | Model-only patches/s; p50 / p95 ms | —; — / — |
 

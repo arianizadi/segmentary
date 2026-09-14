@@ -1,42 +1,42 @@
 # Task07 model comparison
 
-Generated: 2026-09-14T04:57:14.189490+00:00. Source: `86363b101aa3685782defdf524face6af43edb2d`.
+Generated: 2026-09-14T05:23:18.255196+00:00. Source: `86363b101aa3685782defdf524face6af43edb2d`.
 
-**18 queued, 9 running.**
+**27 completed.**
 
 Interim values are shown in campaign order, not sorted by apparent accuracy. Different validated step counts cannot establish a winner.
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [umamba_enc](models/umamba_enc-seed0.md) | running | preprocess | 10000/10000 | 10000 | 42/42 | 0.3451 | 0.7695 | — | — | 0/42 | — |
-| [segmamba](models/segmamba-seed0.md) | running | preprocess | 10000/10000 | 10000 | 42/42 | 0.3118 | 0.7423 | — | — | 0/42 | — |
-| [umamba_bot](models/umamba_bot-seed0.md) | running | preprocess | 10000/10000 | 10000 | 42/42 | 0.3063 | 0.7621 | — | — | 0/42 | — |
-| [swin_unetr](models/swin_unetr-seed0.md) | running | preprocess | 10000/10000 | 10000 | 42/42 | 0.2270 | 0.7166 | — | — | 0/42 | — |
-| [unetr](models/unetr-seed0.md) | running | preprocess | 10000/10000 | 10000 | 42/42 | 0.0965 | 0.4813 | — | — | 0/42 | — |
-| [transunet_3d](models/transunet_3d-seed0.md) | running | preprocess | 10000/10000 | 10000 | 42/42 | 0.3041 | 0.7554 | — | — | 0/42 | — |
-| [medformer](models/medformer-seed0.md) | running | preprocess | 10000/10000 | 10000 | 42/42 | 0.3057 | 0.7331 | — | — | 0/42 | — |
-| [mednext_v1](models/mednext_v1-seed0.md) | running | preprocess | 10000/10000 | 10000 | 42/42 | 0.2606 | 0.7246 | — | — | 0/42 | — |
-| [dynunet](models/dynunet-seed0.md) | running | preprocess | 10000/10000 | 10000 | 42/42 | 0.2986 | 0.7607 | — | — | 0/42 | — |
-| [segresnet](models/segresnet-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.2991 | 0.7063 | — | — | 0/42 | — |
-| [unet_3d](models/unet_3d-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.1603 | 0.6428 | — | — | 0/42 | — |
-| [mask2former](models/mask2former-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.1490 | 0.5844 | — | — | 0/42 | — |
-| [maskformer](models/maskformer-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.0000 | 0.0087 | — | — | 0/42 | — |
-| [dpt](models/dpt-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.0199 | 0.4083 | — | — | 0/42 | — |
-| [swin_upernet](models/swin_upernet-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.1000 | 0.6046 | — | — | 0/42 | — |
-| [convnext_upernet](models/convnext_upernet-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.1200 | 0.6297 | — | — | 0/42 | — |
-| [segformer_b2](models/segformer_b2-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.1203 | 0.4105 | — | — | 0/42 | — |
-| [hrnet_ocr](models/hrnet_ocr-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.1279 | 0.6756 | — | — | 0/42 | — |
-| [unet_plus_plus](models/unet_plus_plus-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.2367 | 0.6919 | — | — | 0/42 | — |
-| [deeplabv3_plus](models/deeplabv3_plus-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.2420 | 0.6483 | — | — | 0/42 | — |
-| [fpn](models/fpn-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.2037 | 0.6731 | — | — | 0/42 | — |
-| [unet_2d](models/unet_2d-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.1816 | 0.6723 | — | — | 0/42 | — |
-| [segformer_b0](models/segformer_b0-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.1117 | 0.4684 | — | — | 0/42 | — |
-| [pidnet](models/pidnet-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.0202 | 0.5500 | — | — | 0/42 | — |
-| [ddrnet](models/ddrnet-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.0432 | 0.5746 | — | — | 0/42 | — |
-| [bisenetv2](models/bisenetv2-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.1039 | 0.5888 | — | — | 0/42 | — |
-| [lraspp](models/lraspp-seed0.md) | queued | — | 10000/10000 | 10000 | 42/42 | 0.1044 | 0.5543 | — | — | 0/42 | — |
+| [umamba_enc](models/umamba_enc-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3451 | 0.7695 | 0.3571 | 0.7541 | 42/42 | 1 |
+| [segmamba](models/segmamba-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3118 | 0.7423 | 0.3212 | 0.7355 | 42/42 | 5 |
+| [umamba_bot](models/umamba_bot-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3063 | 0.7621 | 0.3216 | 0.7276 | 42/42 | 4 |
+| [swin_unetr](models/swin_unetr-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2270 | 0.7166 | 0.2446 | 0.7045 | 42/42 | 12 |
+| [unetr](models/unetr-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.0965 | 0.4813 | 0.1116 | 0.4810 | 42/42 | 23 |
+| [transunet_3d](models/transunet_3d-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3041 | 0.7554 | 0.3101 | 0.7354 | 42/42 | 6 |
+| [medformer](models/medformer-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3057 | 0.7331 | 0.3272 | 0.7187 | 42/42 | 3 |
+| [mednext_v1](models/mednext_v1-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2606 | 0.7246 | 0.2845 | 0.6888 | 42/42 | 8 |
+| [dynunet](models/dynunet-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2986 | 0.7607 | 0.3298 | 0.7559 | 42/42 | 2 |
+| [segresnet](models/segresnet-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2991 | 0.7063 | 0.3090 | 0.6610 | 42/42 | 7 |
+| [unet_3d](models/unet_3d-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1603 | 0.6428 | 0.1833 | 0.6084 | 42/42 | 14 |
+| [mask2former](models/mask2former-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1490 | 0.5844 | 0.1490 | 0.5844 | 42/42 | 16 |
+| [maskformer](models/maskformer-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.0000 | 0.0087 | 0.0005 | 0.0044 | 42/42 | 27 |
+| [dpt](models/dpt-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.0199 | 0.4083 | 0.0637 | 0.3644 | 42/42 | 25 |
+| [swin_upernet](models/swin_upernet-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1000 | 0.6046 | 0.1391 | 0.5348 | 42/42 | 19 |
+| [convnext_upernet](models/convnext_upernet-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1200 | 0.6297 | 0.1278 | 0.6405 | 42/42 | 20 |
+| [segformer_b2](models/segformer_b2-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1203 | 0.4105 | 0.1218 | 0.3313 | 42/42 | 21 |
+| [hrnet_ocr](models/hrnet_ocr-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1279 | 0.6756 | 0.1701 | 0.6618 | 42/42 | 15 |
+| [unet_plus_plus](models/unet_plus_plus-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2367 | 0.6919 | 0.2601 | 0.6722 | 42/42 | 9 |
+| [deeplabv3_plus](models/deeplabv3_plus-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2420 | 0.6483 | 0.2598 | 0.6229 | 42/42 | 10 |
+| [fpn](models/fpn-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2037 | 0.6731 | 0.2399 | 0.6382 | 42/42 | 13 |
+| [unet_2d](models/unet_2d-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1816 | 0.6723 | 0.2555 | 0.6631 | 42/42 | 11 |
+| [segformer_b0](models/segformer_b0-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1117 | 0.4684 | 0.1156 | 0.4408 | 42/42 | 22 |
+| [pidnet](models/pidnet-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.0202 | 0.5500 | 0.0324 | 0.5757 | 42/42 | 26 |
+| [ddrnet](models/ddrnet-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.0432 | 0.5746 | 0.0806 | 0.5269 | 42/42 | 24 |
+| [bisenetv2](models/bisenetv2-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1039 | 0.5888 | 0.1464 | 0.5664 | 42/42 | 17 |
+| [lraspp](models/lraspp-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1044 | 0.5543 | 0.1463 | 0.5191 | 42/42 | 18 |
 
-- **torch_common_scratch_seed0_10000_steps** (27 planned runs): No ranking: Not all planned runs have completed; Native validation coverage is incomplete; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Mass Dice is unavailable.
+- **torch_common_scratch_seed0_10000_steps** (27 planned runs): Completed exploratory ranking available; seed replication and external evaluation remain outstanding.
 
 All scores are on a 0-1 scale; — means unavailable, never zero. This is an
 exploratory seed-0 screening study, with no claim of a clinical or publishable
