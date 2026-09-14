@@ -1,0 +1,10 @@
+id,model,status,stage,gpu,completed_steps,budget_steps,validated_step,interim_mass_dice,final_mass_dice,final_pancreas_dice,screening_rank,finished_stage_gpu_hours,peak_allocated_bytes,interim_pancreas_dice,validation_cases,expected_validation_cases,final_cases,parameters,peak_reserved_bytes,prediction_complete,prediction_pipeline_wall_seconds,prediction_scans_per_second,prediction_case_p50_seconds,prediction_case_p95_seconds,prediction_peak_reserved_bytes,model_only_patches_per_second,model_only_p50_ms,model_only_p95_ms,patient_sensitivity,tumor_sensitivity,specificity,auc,code_fingerprint,runtime_fingerprint,continuation_action
+dynunet-control10k-seed0,dynunet,queued,,,0,10000,,,,,,,,,,42,,,,False,,,,,,,,,,,,,,,
+dynunet-deep10k-seed0,dynunet,queued,,,0,10000,,,,,,,,,,42,,,,False,,,,,,,,,,,,,,,
+dynunet-focal05-seed0,dynunet,queued,,,0,10000,,,,,,,,,,42,,,,False,,,,,,,,,,,,,,,
+dynunet-focal10-seed0,dynunet,queued,,,0,10000,,,,,,,,,,42,,,,False,,,,,,,,,,,,,,,
+dynunet-window-seed0,dynunet,queued,,,0,10000,,,,,,,,,,42,,,,False,,,,,,,,,,,,,,,
+dynunet-minmax-seed0,dynunet,queued,,,0,10000,,,,,,,,,,42,,,,False,,,,,,,,,,,,,,,
+dynunet-isotropic-seed0,dynunet,queued,,,0,10000,,,,,,,,,,42,,,,False,,,,,,,,,,,,,,,
+swin_unetr-swin24-seed0,swin_unetr,queued,,,0,10000,,,,,,,,,,42,,,,False,,,,,,,,,,,,,,,
+swin_unetr-swin48-seed0,swin_unetr,queued,,,0,10000,,,,,,,,,,42,,,,False,,,,,,,,,,,,,,,

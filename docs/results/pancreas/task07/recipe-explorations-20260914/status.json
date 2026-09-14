@@ -1,0 +1,2366 @@
+{
+  "schema_version": 1,
+  "campaign_id": "task07-recipe-explorations-20260914",
+  "generated_at": "2026-09-14T23:58:36.669554+00:00",
+  "source_commit": "52bb2cd90780989546d5e3f2e5734bdf952d72f2",
+  "split_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
+  "split_counts": {
+    "train": 197,
+    "val": 42,
+    "test": 42
+  },
+  "grouping_status": "dataset_case_unverified",
+  "gpus": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8"
+  ],
+  "groups": {
+    "dynunet_deep_supervision_seed0_control_10000_steps": {
+      "ranked": false,
+      "reasons": [
+        "Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group",
+        "Not all planned runs have completed",
+        "Native validation coverage is incomplete",
+        "Complete scratch training evidence is unavailable",
+        "Required source, split or checkpoint provenance is unavailable",
+        "Evaluation is not bound to the declared best validation checkpoint",
+        "Declared optimization budget has not been completed",
+        "Mass Dice is unavailable"
+      ],
+      "planned_runs": 1
+    },
+    "dynunet_deep_supervision_seed0_auxiliary_10000_steps": {
+      "ranked": false,
+      "reasons": [
+        "Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group",
+        "Not all planned runs have completed",
+        "Native validation coverage is incomplete",
+        "Complete scratch training evidence is unavailable",
+        "Required source, split or checkpoint provenance is unavailable",
+        "Evaluation is not bound to the declared best validation checkpoint",
+        "Declared optimization budget has not been completed",
+        "Mass Dice is unavailable"
+      ],
+      "planned_runs": 1
+    },
+    "recipe_focal05": {
+      "ranked": false,
+      "reasons": [
+        "Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group",
+        "Not all planned runs have completed",
+        "Native validation coverage is incomplete",
+        "Complete scratch training evidence is unavailable",
+        "Required source, split or checkpoint provenance is unavailable",
+        "Evaluation is not bound to the declared best validation checkpoint",
+        "Declared optimization budget has not been completed",
+        "Mass Dice is unavailable"
+      ],
+      "planned_runs": 1
+    },
+    "recipe_focal10": {
+      "ranked": false,
+      "reasons": [
+        "Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group",
+        "Not all planned runs have completed",
+        "Native validation coverage is incomplete",
+        "Complete scratch training evidence is unavailable",
+        "Required source, split or checkpoint provenance is unavailable",
+        "Evaluation is not bound to the declared best validation checkpoint",
+        "Declared optimization budget has not been completed",
+        "Mass Dice is unavailable"
+      ],
+      "planned_runs": 1
+    },
+    "recipe_hu_window": {
+      "ranked": false,
+      "reasons": [
+        "Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group",
+        "Not all planned runs have completed",
+        "Native validation coverage is incomplete",
+        "Complete scratch training evidence is unavailable",
+        "Required source, split or checkpoint provenance is unavailable",
+        "Evaluation is not bound to the declared best validation checkpoint",
+        "Declared optimization budget has not been completed",
+        "Mass Dice is unavailable"
+      ],
+      "planned_runs": 1
+    },
+    "recipe_volume_minmax": {
+      "ranked": false,
+      "reasons": [
+        "Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group",
+        "Not all planned runs have completed",
+        "Native validation coverage is incomplete",
+        "Complete scratch training evidence is unavailable",
+        "Required source, split or checkpoint provenance is unavailable",
+        "Evaluation is not bound to the declared best validation checkpoint",
+        "Declared optimization budget has not been completed",
+        "Mass Dice is unavailable"
+      ],
+      "planned_runs": 1
+    },
+    "recipe_isotropic": {
+      "ranked": false,
+      "reasons": [
+        "Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group",
+        "Not all planned runs have completed",
+        "Native validation coverage is incomplete",
+        "Complete scratch training evidence is unavailable",
+        "Required source, split or checkpoint provenance is unavailable",
+        "Evaluation is not bound to the declared best validation checkpoint",
+        "Declared optimization budget has not been completed",
+        "Mass Dice is unavailable"
+      ],
+      "planned_runs": 1
+    },
+    "recipe_swin24": {
+      "ranked": false,
+      "reasons": [
+        "Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group",
+        "Not all planned runs have completed",
+        "Native validation coverage is incomplete",
+        "Complete scratch training evidence is unavailable",
+        "Required source, split or checkpoint provenance is unavailable",
+        "Evaluation is not bound to the declared best validation checkpoint",
+        "Declared optimization budget has not been completed",
+        "Mass Dice is unavailable"
+      ],
+      "planned_runs": 1
+    },
+    "recipe_swin48": {
+      "ranked": false,
+      "reasons": [
+        "Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group",
+        "Not all planned runs have completed",
+        "Native validation coverage is incomplete",
+        "Complete scratch training evidence is unavailable",
+        "Required source, split or checkpoint provenance is unavailable",
+        "Evaluation is not bound to the declared best validation checkpoint",
+        "Declared optimization budget has not been completed",
+        "Mass Dice is unavailable"
+      ],
+      "planned_runs": 1
+    }
+  },
+  "status_counts": {
+    "queued": 9
+  },
+  "optimization": {
+    "pipeline": {
+      "data": [],
+      "training": [],
+      "inference": [],
+      "inverse": [],
+      "prefetch": {},
+      "cache": {},
+      "source_summaries_sha256": []
+    },
+    "measurement_scope": null,
+    "warmup_steps": null,
+    "measured_steps": null,
+    "gpu_name": null,
+    "rows": []
+  },
+  "runs": [
+    {
+      "id": "dynunet-control10k-seed0",
+      "model": "dynunet",
+      "scientific_recipe_sha256": "60ffcca5f8131b8b4af3ccc35c101dcefd0a7de9f32de360a70c9f79ec0889b3",
+      "backend": "torch",
+      "comparison_group": "dynunet_deep_supervision_seed0_control_10000_steps",
+      "status": "queued",
+      "stage": null,
+      "gpu": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": null,
+      "seed": 0,
+      "initialization": "scratch",
+      "scratch_origin_verified": false,
+      "parameters": null,
+      "training_complete": false,
+      "completed_steps": 0,
+      "live_step": null,
+      "live_phase": null,
+      "budget_steps": 10000,
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "center_probabilities": null,
+        "class_center_weights": null,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "intensity_scale_probability": 0.0,
+        "intensity_scale_range": [
+          0.9,
+          1.1
+        ],
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "dynunet",
+        "model_options": {
+          "filters": [
+            32,
+            64,
+            128,
+            256,
+            320
+          ],
+          "res_block": false
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "rotation_degrees": [
+          -15.0,
+          15.0
+        ],
+        "rotation_padding_value": 0.0,
+        "rotation_probability": 0.0,
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "objective": null,
+      "checkpoint_selection": null,
+      "selected_checkpoint": null,
+      "selected_checkpoint_sha256": null,
+      "manifest_fingerprint": null,
+      "split_fingerprint": null,
+      "code_fingerprint": null,
+      "runtime_fingerprint": null,
+      "performance": {
+        "epochs": [],
+        "training_segments": [],
+        "validation_cases": [],
+        "stage_invocations": [],
+        "lineage": {
+          "is_continuation": false,
+          "independent_training_replicate": true,
+          "parents": [],
+          "continued_from_step": null,
+          "action": null,
+          "parent_history_available": null
+        },
+        "prediction": {
+          "available": false,
+          "expected_cases": 42,
+          "recorded_cases": 0,
+          "completed_cases": 0,
+          "failed_cases": 0,
+          "complete_cohort": false,
+          "pipeline_measurement_complete": false,
+          "cases": [],
+          "case_latency_seconds": {
+            "count": 0,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "min": null,
+            "max": null
+          },
+          "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+          "pipeline_wall_seconds": null,
+          "pipeline_scope": "not_recorded",
+          "scans_per_second": null,
+          "peak_allocated_bytes": null,
+          "peak_reserved_bytes": null,
+          "cache": {},
+          "checkpoint_sha256": null
+        },
+        "model_only_inference": {
+          "status": "not_recorded",
+          "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+        },
+        "definitions": {
+          "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+          "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+          "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+          "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+          "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+        }
+      },
+      "curves": [],
+      "latest_validation": null,
+      "resources": {
+        "finished_stage_gpu_hours": null,
+        "active_stage_allocated_hours_estimate": null,
+        "recorded_stage_invocations": 0,
+        "active_stage_status": null,
+        "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+      },
+      "evaluation": {},
+      "screening_rank": null,
+      "report_issues": [],
+      "failure_recorded": false,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "clinical_metrics": {
+        "available": false,
+        "cohort_complete": false,
+        "metrics": {
+          "patient_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "tumor_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "specificity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "auc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "mass_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "pancreas_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          }
+        }
+      },
+      "followup_experiment": {
+        "arm": "control10k",
+        "changes_from_control": {},
+        "control_run_id": "dynunet-control10k-seed0",
+        "description": "Fresh 10,000-update DynUNet without auxiliary decoder losses",
+        "nominal_crop_extent_mm_xyz": [
+          144.0,
+          144.0,
+          240.0
+        ],
+        "optimizer_steps": 10000,
+        "sampled_patches": 80000,
+        "scientific_recipe_sha256": "60ffcca5f8131b8b4af3ccc35c101dcefd0a7de9f32de360a70c9f79ec0889b3",
+        "validation_epochs": [
+          1,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ]
+      },
+      "expected_validation_cases": 42,
+      "display_name": "dynunet-control10k-seed0"
+    },
+    {
+      "id": "dynunet-deep10k-seed0",
+      "model": "dynunet",
+      "scientific_recipe_sha256": "663a3272f96ac3717caff2c2e774440fdfe602e754294ccfded577fc06b7b4d5",
+      "backend": "torch",
+      "comparison_group": "dynunet_deep_supervision_seed0_auxiliary_10000_steps",
+      "status": "queued",
+      "stage": null,
+      "gpu": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": null,
+      "seed": 0,
+      "initialization": "scratch",
+      "scratch_origin_verified": false,
+      "parameters": null,
+      "training_complete": false,
+      "completed_steps": 0,
+      "live_step": null,
+      "live_phase": null,
+      "budget_steps": 10000,
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "center_probabilities": null,
+        "class_center_weights": null,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "intensity_scale_probability": 0.0,
+        "intensity_scale_range": [
+          0.9,
+          1.1
+        ],
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "dynunet",
+        "model_options": {
+          "deep_supervision": true,
+          "filters": [
+            32,
+            64,
+            128,
+            256,
+            320
+          ],
+          "res_block": false
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "rotation_degrees": [
+          -15.0,
+          15.0
+        ],
+        "rotation_padding_value": 0.0,
+        "rotation_probability": 0.0,
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "objective": null,
+      "checkpoint_selection": null,
+      "selected_checkpoint": null,
+      "selected_checkpoint_sha256": null,
+      "manifest_fingerprint": null,
+      "split_fingerprint": null,
+      "code_fingerprint": null,
+      "runtime_fingerprint": null,
+      "performance": {
+        "epochs": [],
+        "training_segments": [],
+        "validation_cases": [],
+        "stage_invocations": [],
+        "lineage": {
+          "is_continuation": false,
+          "independent_training_replicate": true,
+          "parents": [],
+          "continued_from_step": null,
+          "action": null,
+          "parent_history_available": null
+        },
+        "prediction": {
+          "available": false,
+          "expected_cases": 42,
+          "recorded_cases": 0,
+          "completed_cases": 0,
+          "failed_cases": 0,
+          "complete_cohort": false,
+          "pipeline_measurement_complete": false,
+          "cases": [],
+          "case_latency_seconds": {
+            "count": 0,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "min": null,
+            "max": null
+          },
+          "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+          "pipeline_wall_seconds": null,
+          "pipeline_scope": "not_recorded",
+          "scans_per_second": null,
+          "peak_allocated_bytes": null,
+          "peak_reserved_bytes": null,
+          "cache": {},
+          "checkpoint_sha256": null
+        },
+        "model_only_inference": {
+          "status": "not_recorded",
+          "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+        },
+        "definitions": {
+          "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+          "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+          "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+          "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+          "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+        }
+      },
+      "curves": [],
+      "latest_validation": null,
+      "resources": {
+        "finished_stage_gpu_hours": null,
+        "active_stage_allocated_hours_estimate": null,
+        "recorded_stage_invocations": 0,
+        "active_stage_status": null,
+        "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+      },
+      "evaluation": {},
+      "screening_rank": null,
+      "report_issues": [],
+      "failure_recorded": false,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "clinical_metrics": {
+        "available": false,
+        "cohort_complete": false,
+        "metrics": {
+          "patient_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "tumor_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "specificity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "auc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "mass_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "pancreas_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          }
+        }
+      },
+      "followup_experiment": {
+        "arm": "deep10k",
+        "changes_from_control": {
+          "model_options": {
+            "deep_supervision": true,
+            "filters": [
+              32,
+              64,
+              128,
+              256,
+              320
+            ],
+            "res_block": false
+          }
+        },
+        "control_run_id": "dynunet-control10k-seed0",
+        "description": "Matched 10,000-update DynUNet with two native decoder auxiliary losses",
+        "nominal_crop_extent_mm_xyz": [
+          144.0,
+          144.0,
+          240.0
+        ],
+        "optimizer_steps": 10000,
+        "sampled_patches": 80000,
+        "scientific_recipe_sha256": "663a3272f96ac3717caff2c2e774440fdfe602e754294ccfded577fc06b7b4d5",
+        "validation_epochs": [
+          1,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ]
+      },
+      "expected_validation_cases": 42,
+      "display_name": "dynunet-deep10k-seed0"
+    },
+    {
+      "id": "dynunet-focal05-seed0",
+      "model": "dynunet",
+      "scientific_recipe_sha256": "6a142dbd68e98c52b7c807f55ef480956295eeb230f7505cd80cee0fd7008893",
+      "backend": "torch",
+      "comparison_group": "recipe_focal05",
+      "status": "queued",
+      "stage": null,
+      "gpu": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": null,
+      "seed": 0,
+      "initialization": "scratch",
+      "scratch_origin_verified": false,
+      "parameters": null,
+      "training_complete": false,
+      "completed_steps": 0,
+      "live_step": null,
+      "live_phase": null,
+      "budget_steps": 10000,
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "center_probabilities": null,
+        "class_center_weights": null,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "intensity_scale_probability": 0.0,
+        "intensity_scale_range": [
+          0.9,
+          1.1
+        ],
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "dynunet",
+        "model_options": {
+          "filters": [
+            32,
+            64,
+            128,
+            256,
+            320
+          ],
+          "res_block": false
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "rotation_degrees": [
+          -15.0,
+          15.0
+        ],
+        "rotation_padding_value": 0.0,
+        "rotation_probability": 0.0,
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "objective": null,
+      "checkpoint_selection": null,
+      "selected_checkpoint": null,
+      "selected_checkpoint_sha256": null,
+      "manifest_fingerprint": null,
+      "split_fingerprint": null,
+      "code_fingerprint": null,
+      "runtime_fingerprint": null,
+      "performance": {
+        "epochs": [],
+        "training_segments": [],
+        "validation_cases": [],
+        "stage_invocations": [],
+        "lineage": {
+          "is_continuation": false,
+          "independent_training_replicate": true,
+          "parents": [],
+          "continued_from_step": null,
+          "action": null,
+          "parent_history_available": null
+        },
+        "prediction": {
+          "available": false,
+          "expected_cases": 42,
+          "recorded_cases": 0,
+          "completed_cases": 0,
+          "failed_cases": 0,
+          "complete_cohort": false,
+          "pipeline_measurement_complete": false,
+          "cases": [],
+          "case_latency_seconds": {
+            "count": 0,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "min": null,
+            "max": null
+          },
+          "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+          "pipeline_wall_seconds": null,
+          "pipeline_scope": "not_recorded",
+          "scans_per_second": null,
+          "peak_allocated_bytes": null,
+          "peak_reserved_bytes": null,
+          "cache": {},
+          "checkpoint_sha256": null
+        },
+        "model_only_inference": {
+          "status": "not_recorded",
+          "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+        },
+        "definitions": {
+          "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+          "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+          "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+          "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+          "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+        }
+      },
+      "curves": [],
+      "latest_validation": null,
+      "resources": {
+        "finished_stage_gpu_hours": null,
+        "active_stage_allocated_hours_estimate": null,
+        "recorded_stage_invocations": 0,
+        "active_stage_status": null,
+        "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+      },
+      "evaluation": {},
+      "screening_rank": null,
+      "report_issues": [],
+      "failure_recorded": false,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "clinical_metrics": {
+        "available": false,
+        "cohort_complete": false,
+        "metrics": {
+          "patient_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "tumor_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "specificity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "auc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "mass_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "pancreas_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          }
+        }
+      },
+      "followup_experiment": {
+        "arm": "focal05",
+        "changes_from_control": {
+          "focal_coefficient": 0.5,
+          "loss": "dice_focal"
+        },
+        "control_run_id": "dynunet-control10k-seed0",
+        "description": "Foreground Dice + 0.5 times multiclass focal, gamma 2",
+        "nominal_crop_extent_mm_xyz": [
+          144.0,
+          144.0,
+          240.0
+        ],
+        "optimizer_steps": 10000,
+        "sampled_patches": 80000,
+        "scientific_recipe_sha256": "6a142dbd68e98c52b7c807f55ef480956295eeb230f7505cd80cee0fd7008893",
+        "validation_epochs": [
+          1,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ]
+      },
+      "expected_validation_cases": 42,
+      "display_name": "dynunet-focal05-seed0"
+    },
+    {
+      "id": "dynunet-focal10-seed0",
+      "model": "dynunet",
+      "scientific_recipe_sha256": "53dc38af6069545f1d64f9daf631710a67b779a6a6f0bb25308f09e4d1892964",
+      "backend": "torch",
+      "comparison_group": "recipe_focal10",
+      "status": "queued",
+      "stage": null,
+      "gpu": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": null,
+      "seed": 0,
+      "initialization": "scratch",
+      "scratch_origin_verified": false,
+      "parameters": null,
+      "training_complete": false,
+      "completed_steps": 0,
+      "live_step": null,
+      "live_phase": null,
+      "budget_steps": 10000,
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "center_probabilities": null,
+        "class_center_weights": null,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "intensity_scale_probability": 0.0,
+        "intensity_scale_range": [
+          0.9,
+          1.1
+        ],
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "dynunet",
+        "model_options": {
+          "filters": [
+            32,
+            64,
+            128,
+            256,
+            320
+          ],
+          "res_block": false
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "rotation_degrees": [
+          -15.0,
+          15.0
+        ],
+        "rotation_padding_value": 0.0,
+        "rotation_probability": 0.0,
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "objective": null,
+      "checkpoint_selection": null,
+      "selected_checkpoint": null,
+      "selected_checkpoint_sha256": null,
+      "manifest_fingerprint": null,
+      "split_fingerprint": null,
+      "code_fingerprint": null,
+      "runtime_fingerprint": null,
+      "performance": {
+        "epochs": [],
+        "training_segments": [],
+        "validation_cases": [],
+        "stage_invocations": [],
+        "lineage": {
+          "is_continuation": false,
+          "independent_training_replicate": true,
+          "parents": [],
+          "continued_from_step": null,
+          "action": null,
+          "parent_history_available": null
+        },
+        "prediction": {
+          "available": false,
+          "expected_cases": 42,
+          "recorded_cases": 0,
+          "completed_cases": 0,
+          "failed_cases": 0,
+          "complete_cohort": false,
+          "pipeline_measurement_complete": false,
+          "cases": [],
+          "case_latency_seconds": {
+            "count": 0,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "min": null,
+            "max": null
+          },
+          "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+          "pipeline_wall_seconds": null,
+          "pipeline_scope": "not_recorded",
+          "scans_per_second": null,
+          "peak_allocated_bytes": null,
+          "peak_reserved_bytes": null,
+          "cache": {},
+          "checkpoint_sha256": null
+        },
+        "model_only_inference": {
+          "status": "not_recorded",
+          "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+        },
+        "definitions": {
+          "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+          "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+          "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+          "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+          "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+        }
+      },
+      "curves": [],
+      "latest_validation": null,
+      "resources": {
+        "finished_stage_gpu_hours": null,
+        "active_stage_allocated_hours_estimate": null,
+        "recorded_stage_invocations": 0,
+        "active_stage_status": null,
+        "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+      },
+      "evaluation": {},
+      "screening_rank": null,
+      "report_issues": [],
+      "failure_recorded": false,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "clinical_metrics": {
+        "available": false,
+        "cohort_complete": false,
+        "metrics": {
+          "patient_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "tumor_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "specificity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "auc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "mass_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "pancreas_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          }
+        }
+      },
+      "followup_experiment": {
+        "arm": "focal10",
+        "changes_from_control": {
+          "loss": "dice_focal"
+        },
+        "control_run_id": "dynunet-control10k-seed0",
+        "description": "Foreground Dice + 1.0 times multiclass focal, gamma 2",
+        "nominal_crop_extent_mm_xyz": [
+          144.0,
+          144.0,
+          240.0
+        ],
+        "optimizer_steps": 10000,
+        "sampled_patches": 80000,
+        "scientific_recipe_sha256": "53dc38af6069545f1d64f9daf631710a67b779a6a6f0bb25308f09e4d1892964",
+        "validation_epochs": [
+          1,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ]
+      },
+      "expected_validation_cases": 42,
+      "display_name": "dynunet-focal10-seed0"
+    },
+    {
+      "id": "dynunet-window-seed0",
+      "model": "dynunet",
+      "scientific_recipe_sha256": "f2eb3893069e066615cff7c8d3887c487d1d1f9e40beab4859016c4ac085cccc",
+      "backend": "torch",
+      "comparison_group": "recipe_hu_window",
+      "status": "queued",
+      "stage": null,
+      "gpu": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": null,
+      "seed": 0,
+      "initialization": "scratch",
+      "scratch_origin_verified": false,
+      "parameters": null,
+      "training_complete": false,
+      "completed_steps": 0,
+      "live_step": null,
+      "live_phase": null,
+      "budget_steps": 10000,
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "center_probabilities": null,
+        "class_center_weights": null,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -175.0,
+          250.0
+        ],
+        "inference_batch_size": 8,
+        "intensity_scale_probability": 0.0,
+        "intensity_scale_range": [
+          0.9,
+          1.1
+        ],
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "dynunet",
+        "model_options": {
+          "filters": [
+            32,
+            64,
+            128,
+            256,
+            320
+          ],
+          "res_block": false
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "rotation_degrees": [
+          -15.0,
+          15.0
+        ],
+        "rotation_padding_value": 0.0,
+        "rotation_probability": 0.0,
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "objective": null,
+      "checkpoint_selection": null,
+      "selected_checkpoint": null,
+      "selected_checkpoint_sha256": null,
+      "manifest_fingerprint": null,
+      "split_fingerprint": null,
+      "code_fingerprint": null,
+      "runtime_fingerprint": null,
+      "performance": {
+        "epochs": [],
+        "training_segments": [],
+        "validation_cases": [],
+        "stage_invocations": [],
+        "lineage": {
+          "is_continuation": false,
+          "independent_training_replicate": true,
+          "parents": [],
+          "continued_from_step": null,
+          "action": null,
+          "parent_history_available": null
+        },
+        "prediction": {
+          "available": false,
+          "expected_cases": 42,
+          "recorded_cases": 0,
+          "completed_cases": 0,
+          "failed_cases": 0,
+          "complete_cohort": false,
+          "pipeline_measurement_complete": false,
+          "cases": [],
+          "case_latency_seconds": {
+            "count": 0,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "min": null,
+            "max": null
+          },
+          "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+          "pipeline_wall_seconds": null,
+          "pipeline_scope": "not_recorded",
+          "scans_per_second": null,
+          "peak_allocated_bytes": null,
+          "peak_reserved_bytes": null,
+          "cache": {},
+          "checkpoint_sha256": null
+        },
+        "model_only_inference": {
+          "status": "not_recorded",
+          "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+        },
+        "definitions": {
+          "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+          "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+          "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+          "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+          "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+        }
+      },
+      "curves": [],
+      "latest_validation": null,
+      "resources": {
+        "finished_stage_gpu_hours": null,
+        "active_stage_allocated_hours_estimate": null,
+        "recorded_stage_invocations": 0,
+        "active_stage_status": null,
+        "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+      },
+      "evaluation": {},
+      "screening_rank": null,
+      "report_issues": [],
+      "failure_recorded": false,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "clinical_metrics": {
+        "available": false,
+        "cohort_complete": false,
+        "metrics": {
+          "patient_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "tumor_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "specificity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "auc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "mass_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "pancreas_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          }
+        }
+      },
+      "followup_experiment": {
+        "arm": "window",
+        "changes_from_control": {
+          "hu_window": [
+            -175.0,
+            250.0
+          ]
+        },
+        "control_run_id": "dynunet-control10k-seed0",
+        "description": "Wider fixed HU window [-175,250], scaled to [0,1]",
+        "nominal_crop_extent_mm_xyz": [
+          144.0,
+          144.0,
+          240.0
+        ],
+        "optimizer_steps": 10000,
+        "sampled_patches": 80000,
+        "scientific_recipe_sha256": "f2eb3893069e066615cff7c8d3887c487d1d1f9e40beab4859016c4ac085cccc",
+        "validation_epochs": [
+          1,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ]
+      },
+      "expected_validation_cases": 42,
+      "display_name": "dynunet-window-seed0"
+    },
+    {
+      "id": "dynunet-minmax-seed0",
+      "model": "dynunet",
+      "scientific_recipe_sha256": "d71bc3de876e30cc8893bb143a4634f2fd0d8a54adf160c865257ea12bd47d55",
+      "backend": "torch",
+      "comparison_group": "recipe_volume_minmax",
+      "status": "queued",
+      "stage": null,
+      "gpu": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": null,
+      "seed": 0,
+      "initialization": "scratch",
+      "scratch_origin_verified": false,
+      "parameters": null,
+      "training_complete": false,
+      "completed_steps": 0,
+      "live_step": null,
+      "live_phase": null,
+      "budget_steps": 10000,
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "center_probabilities": null,
+        "class_center_weights": null,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "intensity_scale_probability": 0.0,
+        "intensity_scale_range": [
+          0.9,
+          1.1
+        ],
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "dynunet",
+        "model_options": {
+          "filters": [
+            32,
+            64,
+            128,
+            256,
+            320
+          ],
+          "res_block": false
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "rotation_degrees": [
+          -15.0,
+          15.0
+        ],
+        "rotation_padding_value": 0.0,
+        "rotation_probability": 0.0,
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "objective": null,
+      "checkpoint_selection": null,
+      "selected_checkpoint": null,
+      "selected_checkpoint_sha256": null,
+      "manifest_fingerprint": null,
+      "split_fingerprint": null,
+      "code_fingerprint": null,
+      "runtime_fingerprint": null,
+      "performance": {
+        "epochs": [],
+        "training_segments": [],
+        "validation_cases": [],
+        "stage_invocations": [],
+        "lineage": {
+          "is_continuation": false,
+          "independent_training_replicate": true,
+          "parents": [],
+          "continued_from_step": null,
+          "action": null,
+          "parent_history_available": null
+        },
+        "prediction": {
+          "available": false,
+          "expected_cases": 42,
+          "recorded_cases": 0,
+          "completed_cases": 0,
+          "failed_cases": 0,
+          "complete_cohort": false,
+          "pipeline_measurement_complete": false,
+          "cases": [],
+          "case_latency_seconds": {
+            "count": 0,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "min": null,
+            "max": null
+          },
+          "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+          "pipeline_wall_seconds": null,
+          "pipeline_scope": "not_recorded",
+          "scans_per_second": null,
+          "peak_allocated_bytes": null,
+          "peak_reserved_bytes": null,
+          "cache": {},
+          "checkpoint_sha256": null
+        },
+        "model_only_inference": {
+          "status": "not_recorded",
+          "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+        },
+        "definitions": {
+          "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+          "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+          "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+          "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+          "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+        }
+      },
+      "curves": [],
+      "latest_validation": null,
+      "resources": {
+        "finished_stage_gpu_hours": null,
+        "active_stage_allocated_hours_estimate": null,
+        "recorded_stage_invocations": 0,
+        "active_stage_status": null,
+        "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+      },
+      "evaluation": {},
+      "screening_rank": null,
+      "report_issues": [],
+      "failure_recorded": false,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "clinical_metrics": {
+        "available": false,
+        "cohort_complete": false,
+        "metrics": {
+          "patient_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "tumor_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "specificity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "auc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "mass_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "pancreas_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          }
+        }
+      },
+      "followup_experiment": {
+        "arm": "minmax",
+        "changes_from_control": {
+          "normalization": "volume_minmax"
+        },
+        "control_run_id": "dynunet-control10k-seed0",
+        "description": "Full-volume image-only raw min/max to [0,1], without HU clipping",
+        "nominal_crop_extent_mm_xyz": [
+          144.0,
+          144.0,
+          240.0
+        ],
+        "optimizer_steps": 10000,
+        "sampled_patches": 80000,
+        "scientific_recipe_sha256": "d71bc3de876e30cc8893bb143a4634f2fd0d8a54adf160c865257ea12bd47d55",
+        "validation_epochs": [
+          1,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ]
+      },
+      "expected_validation_cases": 42,
+      "display_name": "dynunet-minmax-seed0"
+    },
+    {
+      "id": "dynunet-isotropic-seed0",
+      "model": "dynunet",
+      "scientific_recipe_sha256": "5a4ac7a1003aa580d902b4832bebf328edac9d79c4e8c780cb9bc9ea19d62e9d",
+      "backend": "torch",
+      "comparison_group": "recipe_isotropic",
+      "status": "queued",
+      "stage": null,
+      "gpu": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": null,
+      "seed": 0,
+      "initialization": "scratch",
+      "scratch_origin_verified": false,
+      "parameters": null,
+      "training_complete": false,
+      "completed_steps": 0,
+      "live_step": null,
+      "live_phase": null,
+      "budget_steps": 10000,
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "center_probabilities": null,
+        "class_center_weights": null,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "intensity_scale_probability": 0.0,
+        "intensity_scale_range": [
+          0.9,
+          1.1
+        ],
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "dynunet",
+        "model_options": {
+          "filters": [
+            32,
+            64,
+            128,
+            256,
+            320
+          ],
+          "res_block": false
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          160,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "rotation_degrees": [
+          -15.0,
+          15.0
+        ],
+        "rotation_padding_value": 0.0,
+        "rotation_probability": 0.0,
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          1.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "objective": null,
+      "checkpoint_selection": null,
+      "selected_checkpoint": null,
+      "selected_checkpoint_sha256": null,
+      "manifest_fingerprint": null,
+      "split_fingerprint": null,
+      "code_fingerprint": null,
+      "runtime_fingerprint": null,
+      "performance": {
+        "epochs": [],
+        "training_segments": [],
+        "validation_cases": [],
+        "stage_invocations": [],
+        "lineage": {
+          "is_continuation": false,
+          "independent_training_replicate": true,
+          "parents": [],
+          "continued_from_step": null,
+          "action": null,
+          "parent_history_available": null
+        },
+        "prediction": {
+          "available": false,
+          "expected_cases": 42,
+          "recorded_cases": 0,
+          "completed_cases": 0,
+          "failed_cases": 0,
+          "complete_cohort": false,
+          "pipeline_measurement_complete": false,
+          "cases": [],
+          "case_latency_seconds": {
+            "count": 0,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "min": null,
+            "max": null
+          },
+          "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+          "pipeline_wall_seconds": null,
+          "pipeline_scope": "not_recorded",
+          "scans_per_second": null,
+          "peak_allocated_bytes": null,
+          "peak_reserved_bytes": null,
+          "cache": {},
+          "checkpoint_sha256": null
+        },
+        "model_only_inference": {
+          "status": "not_recorded",
+          "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+        },
+        "definitions": {
+          "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+          "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+          "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+          "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+          "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+        }
+      },
+      "curves": [],
+      "latest_validation": null,
+      "resources": {
+        "finished_stage_gpu_hours": null,
+        "active_stage_allocated_hours_estimate": null,
+        "recorded_stage_invocations": 0,
+        "active_stage_status": null,
+        "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+      },
+      "evaluation": {},
+      "screening_rank": null,
+      "report_issues": [],
+      "failure_recorded": false,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "clinical_metrics": {
+        "available": false,
+        "cohort_complete": false,
+        "metrics": {
+          "patient_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "tumor_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "specificity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "auc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "mass_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "pancreas_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          }
+        }
+      },
+      "followup_experiment": {
+        "arm": "isotropic",
+        "changes_from_control": {
+          "patch_size": [
+            160,
+            96,
+            96
+          ],
+          "spacing_mm": [
+            1.5,
+            1.5,
+            1.5
+          ]
+        },
+        "control_run_id": "dynunet-control10k-seed0",
+        "description": "Isotropic 1.5 mm grid, matched 144x144x240 mm nominal crop",
+        "nominal_crop_extent_mm_xyz": [
+          144.0,
+          144.0,
+          240.0
+        ],
+        "optimizer_steps": 10000,
+        "sampled_patches": 80000,
+        "scientific_recipe_sha256": "5a4ac7a1003aa580d902b4832bebf328edac9d79c4e8c780cb9bc9ea19d62e9d",
+        "validation_epochs": [
+          1,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ]
+      },
+      "expected_validation_cases": 42,
+      "display_name": "dynunet-isotropic-seed0"
+    },
+    {
+      "id": "swin_unetr-swin24-seed0",
+      "model": "swin_unetr",
+      "scientific_recipe_sha256": "34e2db801aff5c84c9c7844960237712b5c83a4832c7efcfdfeca8e645ff257b",
+      "backend": "torch",
+      "comparison_group": "recipe_swin24",
+      "status": "queued",
+      "stage": null,
+      "gpu": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": null,
+      "seed": 0,
+      "initialization": "scratch",
+      "scratch_origin_verified": false,
+      "parameters": null,
+      "training_complete": false,
+      "completed_steps": 0,
+      "live_step": null,
+      "live_phase": null,
+      "budget_steps": 10000,
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "center_probabilities": null,
+        "class_center_weights": null,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "intensity_scale_probability": 0.0,
+        "intensity_scale_range": [
+          0.9,
+          1.1
+        ],
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "swin_unetr",
+        "model_options": {
+          "feature_size": 24
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "rotation_degrees": [
+          -15.0,
+          15.0
+        ],
+        "rotation_padding_value": 0.0,
+        "rotation_probability": 0.0,
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "objective": null,
+      "checkpoint_selection": null,
+      "selected_checkpoint": null,
+      "selected_checkpoint_sha256": null,
+      "manifest_fingerprint": null,
+      "split_fingerprint": null,
+      "code_fingerprint": null,
+      "runtime_fingerprint": null,
+      "performance": {
+        "epochs": [],
+        "training_segments": [],
+        "validation_cases": [],
+        "stage_invocations": [],
+        "lineage": {
+          "is_continuation": false,
+          "independent_training_replicate": true,
+          "parents": [],
+          "continued_from_step": null,
+          "action": null,
+          "parent_history_available": null
+        },
+        "prediction": {
+          "available": false,
+          "expected_cases": 42,
+          "recorded_cases": 0,
+          "completed_cases": 0,
+          "failed_cases": 0,
+          "complete_cohort": false,
+          "pipeline_measurement_complete": false,
+          "cases": [],
+          "case_latency_seconds": {
+            "count": 0,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "min": null,
+            "max": null
+          },
+          "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+          "pipeline_wall_seconds": null,
+          "pipeline_scope": "not_recorded",
+          "scans_per_second": null,
+          "peak_allocated_bytes": null,
+          "peak_reserved_bytes": null,
+          "cache": {},
+          "checkpoint_sha256": null
+        },
+        "model_only_inference": {
+          "status": "not_recorded",
+          "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+        },
+        "definitions": {
+          "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+          "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+          "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+          "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+          "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+        }
+      },
+      "curves": [],
+      "latest_validation": null,
+      "resources": {
+        "finished_stage_gpu_hours": null,
+        "active_stage_allocated_hours_estimate": null,
+        "recorded_stage_invocations": 0,
+        "active_stage_status": null,
+        "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+      },
+      "evaluation": {},
+      "screening_rank": null,
+      "report_issues": [],
+      "failure_recorded": false,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "clinical_metrics": {
+        "available": false,
+        "cohort_complete": false,
+        "metrics": {
+          "patient_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "tumor_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "specificity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "auc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "mass_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "pancreas_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          }
+        }
+      },
+      "followup_experiment": {
+        "arm": "swin24",
+        "changes_from_control": {
+          "model": "swin_unetr",
+          "model_options": {
+            "feature_size": 24
+          }
+        },
+        "control_run_id": "dynunet-control10k-seed0",
+        "description": "Scratch shifted-window Swin UNETR, feature width 24",
+        "nominal_crop_extent_mm_xyz": [
+          144.0,
+          144.0,
+          240.0
+        ],
+        "optimizer_steps": 10000,
+        "sampled_patches": 80000,
+        "scientific_recipe_sha256": "34e2db801aff5c84c9c7844960237712b5c83a4832c7efcfdfeca8e645ff257b",
+        "validation_epochs": [
+          1,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ]
+      },
+      "expected_validation_cases": 42,
+      "display_name": "swin_unetr-swin24-seed0"
+    },
+    {
+      "id": "swin_unetr-swin48-seed0",
+      "model": "swin_unetr",
+      "scientific_recipe_sha256": "e36fc334ae4dc01eb8f6c30cbd8b5051e326ef74ece562211f08cab483301474",
+      "backend": "torch",
+      "comparison_group": "recipe_swin48",
+      "status": "queued",
+      "stage": null,
+      "gpu": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": null,
+      "seed": 0,
+      "initialization": "scratch",
+      "scratch_origin_verified": false,
+      "parameters": null,
+      "training_complete": false,
+      "completed_steps": 0,
+      "live_step": null,
+      "live_phase": null,
+      "budget_steps": 10000,
+      "recipe": {
+        "augment": true,
+        "backend": "torch",
+        "batch_size": 8,
+        "center_probabilities": null,
+        "class_center_weights": null,
+        "context_slices": 1,
+        "deterministic": false,
+        "epochs": 100,
+        "foreground_probability": 0.5,
+        "gradient_clip": 12.0,
+        "hu_window": [
+          -100.0,
+          240.0
+        ],
+        "inference_batch_size": 8,
+        "intensity_scale_probability": 0.0,
+        "intensity_scale_range": [
+          0.9,
+          1.1
+        ],
+        "learning_rate": 0.0003,
+        "mode": "3d",
+        "model": "swin_unetr",
+        "model_options": {
+          "feature_size": 48,
+          "use_checkpoint": true
+        },
+        "overlap": 0.5,
+        "patch_size": [
+          96,
+          96,
+          96
+        ],
+        "precision": "bf16",
+        "prefetch_batches": true,
+        "progress_interval": 10,
+        "purpose": "baseline",
+        "rotation_degrees": [
+          -15.0,
+          15.0
+        ],
+        "rotation_padding_value": 0.0,
+        "rotation_probability": 0.0,
+        "seed": 0,
+        "spacing_mm": [
+          1.5,
+          1.5,
+          2.5
+        ],
+        "steps_per_epoch": 100,
+        "validation_interval": 10,
+        "weight_decay": 1e-05,
+        "workers": 4
+      },
+      "objective": null,
+      "checkpoint_selection": null,
+      "selected_checkpoint": null,
+      "selected_checkpoint_sha256": null,
+      "manifest_fingerprint": null,
+      "split_fingerprint": null,
+      "code_fingerprint": null,
+      "runtime_fingerprint": null,
+      "performance": {
+        "epochs": [],
+        "training_segments": [],
+        "validation_cases": [],
+        "stage_invocations": [],
+        "lineage": {
+          "is_continuation": false,
+          "independent_training_replicate": true,
+          "parents": [],
+          "continued_from_step": null,
+          "action": null,
+          "parent_history_available": null
+        },
+        "prediction": {
+          "available": false,
+          "expected_cases": 42,
+          "recorded_cases": 0,
+          "completed_cases": 0,
+          "failed_cases": 0,
+          "complete_cohort": false,
+          "pipeline_measurement_complete": false,
+          "cases": [],
+          "case_latency_seconds": {
+            "count": 0,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "min": null,
+            "max": null
+          },
+          "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+          "pipeline_wall_seconds": null,
+          "pipeline_scope": "not_recorded",
+          "scans_per_second": null,
+          "peak_allocated_bytes": null,
+          "peak_reserved_bytes": null,
+          "cache": {},
+          "checkpoint_sha256": null
+        },
+        "model_only_inference": {
+          "status": "not_recorded",
+          "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+        },
+        "definitions": {
+          "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+          "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+          "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+          "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+          "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+        }
+      },
+      "curves": [],
+      "latest_validation": null,
+      "resources": {
+        "finished_stage_gpu_hours": null,
+        "active_stage_allocated_hours_estimate": null,
+        "recorded_stage_invocations": 0,
+        "active_stage_status": null,
+        "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+      },
+      "evaluation": {},
+      "screening_rank": null,
+      "report_issues": [],
+      "failure_recorded": false,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "clinical_metrics": {
+        "available": false,
+        "cohort_complete": false,
+        "metrics": {
+          "patient_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "tumor_sensitivity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "specificity": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "auc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "mass_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          },
+          "pancreas_dsc": {
+            "value": null,
+            "status": "unavailable",
+            "reason_code": "not_run",
+            "reason": "Diagnostic has not run yet.",
+            "numerator": null,
+            "denominator": null
+          }
+        }
+      },
+      "followup_experiment": {
+        "arm": "swin48",
+        "changes_from_control": {
+          "model": "swin_unetr",
+          "model_options": {
+            "feature_size": 48,
+            "use_checkpoint": true
+          }
+        },
+        "control_run_id": "dynunet-control10k-seed0",
+        "description": "Scratch shifted-window Swin UNETR, feature width 48",
+        "nominal_crop_extent_mm_xyz": [
+          144.0,
+          144.0,
+          240.0
+        ],
+        "optimizer_steps": 10000,
+        "sampled_patches": 80000,
+        "scientific_recipe_sha256": "e36fc334ae4dc01eb8f6c30cbd8b5051e326ef74ece562211f08cab483301474",
+        "validation_epochs": [
+          1,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ]
+      },
+      "expected_validation_cases": 42,
+      "display_name": "swin_unetr-swin48-seed0"
+    }
+  ]
+}
