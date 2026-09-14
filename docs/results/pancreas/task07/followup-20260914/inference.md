@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-14T21:00:04.574801+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
+Generated: 2026-09-14T21:30:08.948358+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
 
 ## Native CT prediction
 
@@ -20,8 +20,8 @@ B1 synthetic inputs use each model's declared patch, context and precision. Warm
 
 | Model | Benchmark | Patch | Precision | Patches/s | p50 ms | p95 ms | Parameters | Weight MiB | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-long30k-seed0](models/dynunet-long30k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-fine10k-seed0](models/dynunet-fine10k-seed0.md) | not_recorded | [96, 144, 144] | bf16 | — | — | — | None | — | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-long30k-seed0](models/dynunet-long30k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-fine10k-seed0](models/dynunet-fine10k-seed0.md) | not_recorded | [96, 144, 144] | bf16 | — | — | — | 16543683 | — | — |
 
 [Training cost](training-cost.md) · [Comparison](comparison.md)
