@@ -2,24 +2,24 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T03:53:32.241578+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T04:23:34.902604+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-Status: **running**. Stage: **train**. GPU: **2**.
+Status: **completed**. Stage: **—**. GPU: **2**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | 2026-09-13T23:17:33.235345+00:00 / — |
-| Last worker update | 2026-09-13T23:18:14.903773+00:00 |
-| Completed / budget steps | 9900 / 10000 |
-| Live step / phase | 9970 / train |
+| Started / finished | 2026-09-13T23:17:33.235345+00:00 / 2026-09-14T04:07:26.020026+00:00 |
+| Last worker update | 2026-09-14T04:07:26.020034+00:00 |
+| Completed / budget steps | 10000 / 10000 |
+| Live step / phase | — / validation |
 | Parameters | 67362723 |
 | Objective | dense_ce_dice |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
-| Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 4.5846 |
+| Selected checkpoint SHA256 | cc0f7d591988d9641d14f64346cdc8b485d0ccea4a042cfb1eabed3af32b9599 |
+| Finished-stage allocated GPU-hours | 4.7999 |
+| Active-stage allocated hours (estimate) | — |
 | Peak allocated / reserved GiB | 19.29 / 22.59 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -195,7 +195,15 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 97 | 9700 | 0.2553 | 1.277999e-05 | — | — |
 | 98 | 9800 | 0.2416 | 8.872546e-06 | — | — |
 | 99 | 9900 | 0.2316 | 4.75468e-06 | — | — |
+| 100 | 10000 | 0.2496 | 0 | 0.7423 | 0.3118 |
 
 ## Final validation evaluation
 
-Not available yet. Training loss or a forward-pass smoke test cannot replace this evaluation.
+| Region | Patient mean Dice | 95% bootstrap interval | Surface Dice | HD95 mm | HD95 case coverage |
+| --- | --- | --- | --- | --- | --- |
+| pancreas | 0.7355 | 0.6903 to 0.7796 | 0.6290 | 13.7329 | 1.0000 |
+| mass | 0.3212 | 0.2302 to 0.4238 | 0.3061 | 27.7549 | 0.8810 |
+
+Complete prediction/reference coverage: **True**. Native reference cohort: `749cde7099ad36aea2e49b1978326a8ee29ca75ae4f9777c123d2742fd99a028`.
+
+HD95 excludes undefined/infinite distances; use its coverage alongside Dice so missed masses cannot disappear from interpretation.

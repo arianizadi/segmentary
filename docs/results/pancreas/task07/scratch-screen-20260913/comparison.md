@@ -1,16 +1,16 @@
 # Task07 model comparison
 
-Generated: 2026-09-14T03:53:32.241578+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T04:23:34.902604+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-**19 completed, 9 running.**
+**23 completed, 5 running.**
 
 Interim values are shown in campaign order, not sorted by apparent accuracy. Different validated step counts cannot establish a winner.
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim mass Dice | Final mass Dice | Final pancreas Dice | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | train | 0/— | — | — | — | — | — |
-| [umamba_enc](models/umamba_enc-seed0.md) | running | train | 9300/10000 | 9000 | 0.3499 | — | — | — |
-| [segmamba](models/segmamba-seed0.md) | running | train | 9900/10000 | 9000 | 0.3212 | — | — | — |
+| [umamba_enc](models/umamba_enc-seed0.md) | completed | — | 10000/10000 | 10000 | 0.3451 | 0.3571 | 0.7541 | — |
+| [segmamba](models/segmamba-seed0.md) | completed | — | 10000/10000 | 10000 | 0.3118 | 0.3212 | 0.7355 | — |
 | [umamba_bot](models/umamba_bot-seed0.md) | completed | — | 10000/10000 | 10000 | 0.3063 | 0.3216 | 0.7276 | — |
 | [swin_unetr](models/swin_unetr-seed0.md) | completed | — | 10000/10000 | 10000 | 0.2270 | 0.2446 | 0.7045 | — |
 | [unetr](models/unetr-seed0.md) | completed | — | 10000/10000 | 10000 | 0.0965 | 0.1116 | 0.4810 | — |
@@ -26,16 +26,16 @@ Interim values are shown in campaign order, not sorted by apparent accuracy. Dif
 | [swin_upernet](models/swin_upernet-seed0.md) | completed | — | 10000/10000 | 10000 | 0.1000 | 0.1391 | 0.5348 | — |
 | [convnext_upernet](models/convnext_upernet-seed0.md) | completed | — | 10000/10000 | 10000 | 0.1200 | 0.1278 | 0.6405 | — |
 | [segformer_b2](models/segformer_b2-seed0.md) | completed | — | 10000/10000 | 10000 | 0.1203 | 0.1218 | 0.3313 | — |
-| [hrnet_ocr](models/hrnet_ocr-seed0.md) | running | predict | 10000/10000 | 10000 | 0.1279 | — | — | — |
+| [hrnet_ocr](models/hrnet_ocr-seed0.md) | completed | — | 10000/10000 | 10000 | 0.1279 | 0.1701 | 0.6618 | — |
 | [unet_plus_plus](models/unet_plus_plus-seed0.md) | completed | — | 10000/10000 | 10000 | 0.2367 | 0.2601 | 0.6722 | — |
 | [deeplabv3_plus](models/deeplabv3_plus-seed0.md) | completed | — | 10000/10000 | 10000 | 0.2420 | 0.2598 | 0.6229 | — |
 | [fpn](models/fpn-seed0.md) | completed | — | 10000/10000 | 10000 | 0.2037 | 0.2399 | 0.6382 | — |
 | [unet_2d](models/unet_2d-seed0.md) | completed | — | 10000/10000 | 10000 | 0.1816 | 0.2555 | 0.6631 | — |
-| [segformer_b0](models/segformer_b0-seed0.md) | running | train | 7900/10000 | 7000 | 0.1126 | — | — | — |
-| [pidnet](models/pidnet-seed0.md) | running | train | 4900/10000 | 4000 | 0.0214 | — | — | — |
-| [ddrnet](models/ddrnet-seed0.md) | running | train | 1900/10000 | 1000 | 0.0000 | — | — | — |
-| [bisenetv2](models/bisenetv2-seed0.md) | running | train | 2100/10000 | 2000 | 0.0000 | — | — | — |
-| [lraspp](models/lraspp-seed0.md) | running | train | 900/10000 | 100 | 0.0000 | — | — | — |
+| [segformer_b0](models/segformer_b0-seed0.md) | completed | — | 10000/10000 | 10000 | 0.1117 | 0.1156 | 0.4408 | — |
+| [pidnet](models/pidnet-seed0.md) | running | predict | 10000/10000 | 10000 | 0.0202 | — | — | — |
+| [ddrnet](models/ddrnet-seed0.md) | running | train | 9900/10000 | 9000 | 0.0502 | — | — | — |
+| [bisenetv2](models/bisenetv2-seed0.md) | running | predict | 10000/10000 | 10000 | 0.1039 | — | — | — |
+| [lraspp](models/lraspp-seed0.md) | running | train | 7900/10000 | 7000 | 0.1463 | — | — | — |
 
 - **nnunet_official_resenc_l_seed0** (1 planned runs): No ranking: Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
 - **torch_common_scratch_seed0_10000_steps** (27 planned runs): No ranking: Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Cohort, protocol, source, split, seed, budget, batch, or selection differs; Mass Dice is unavailable.
