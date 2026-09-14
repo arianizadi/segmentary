@@ -1,0 +1,5838 @@
+{
+  "source_commit": "9f7615bd1f6035d65aca3f848a263b67c49f531f",
+  "observed_at_utc": "2026-09-14T03:44:48.467984+00:00",
+  "method_notes": [
+    "Read only small JSON artifacts and nnU-Net text log; no model, checkpoint, or image read.",
+    "Partial epoch currently executing is not included in historical completed epoch sums.",
+    "Summed model seconds are allocated job time, not campaign wall time because jobs run concurrently.",
+    "epoch_training_seconds includes batch fetching, training operations, per-step sync and progress JSON writes.",
+    "epoch_validation_seconds includes complete serial CPU and GPU validation pipeline, not just GPU time.",
+    "Timer is recorded before each epoch checkpoint save; unclassified wall includes previous checkpoint saves, metrics output and small scheduling overhead.",
+    "Current campaign state.stage takes precedence over stale progress_snapshot.phase.",
+    "Final evaluation derived from preceding predict completion includes orchestration/import overhead."
+  ],
+  "evidence_sha256": {
+    "epoch-accounting.json": "2f0fe683161ee1688745ca3cfacd98b2a0d3158eba92b5640060535d25a3aa04",
+    "host-samples.json": "91a528a55c88791ca6c58b586ca95879f819b21ca8c05b10413a1772583409ba",
+    "cpu-profile.json": "e58e026c2e9db094477f9e2d482db131abef3f5d938e297f23129680931453e7",
+    "argmax-profile.json": "c7f65fe33fbc6cca67b5a916d55f1264c2bbb7df7302089dc4cded2c917b2f9e",
+    "model-summary.json": "25fc3438ddf6c99404293d8aaf9468d378fc6f81b18faed09057d3bc83b7a952"
+  },
+  "epoch_aggregate": {
+    "model_count": 24,
+    "training_seconds": 71650.21505068615,
+    "validation_seconds": 59501.24708681926,
+    "validation_fraction_of_train_plus_val": 0.45368344444711817,
+    "unclassified_wall_seconds_to_latest_metrics": 2510.5545381084085
+  },
+  "models": [
+    {
+      "model": "nnunet_resenc_l",
+      "backend": "nnunet",
+      "status": "running",
+      "completed_epochs": null,
+      "training_seconds": null,
+      "validation_seconds": null,
+      "validation_fraction_of_train_plus_val": null,
+      "median_100_step_training_epoch_seconds": null,
+      "median_full_validation_seconds": null,
+      "other_wall_seconds_before_latest_metrics": null,
+      "completed_stage_timings": [
+        {
+          "action": "plan",
+          "status": "completed",
+          "wall_seconds": 384.15498399734497,
+          "allocated_gpu_hours": 0
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": null,
+      "nnunet_epoch_time_seconds": {
+        "count": 94,
+        "sum": 15353.989999999993,
+        "mean": 163.34031914893617,
+        "median": 160.98000000000002,
+        "min": 159.58,
+        "max": 186.62
+      },
+      "nnunet_epoch_timing_scope": "nnU-Net text reports aggregate patch training plus patch validation epoch time; cannot separate the two from this log."
+    },
+    {
+      "model": "umamba_enc",
+      "backend": "torch",
+      "status": "running",
+      "completed_epochs": 89,
+      "training_seconds": 12968.230713687837,
+      "validation_seconds": 2527.082677911967,
+      "validation_fraction_of_train_plus_val": 0.16308690337827753,
+      "median_100_step_training_epoch_seconds": 144.06399285420775,
+      "median_full_validation_seconds": 277.1147887632251,
+      "other_wall_seconds_before_latest_metrics": 57.66446087509394,
+      "completed_stage_timings": [
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 30.23946261405945,
+          "allocated_gpu_hours": 0
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": null,
+      "best_checkpoint_bytes": 273985427,
+      "logical_bytes_for_42_checkpoint_hashes": 11507387934
+    },
+    {
+      "model": "segmamba",
+      "backend": "torch",
+      "status": "running",
+      "completed_epochs": 95,
+      "training_seconds": 12749.848206799477,
+      "validation_seconds": 2936.9377505593,
+      "validation_fraction_of_train_plus_val": 0.18722367721104544,
+      "median_100_step_training_epoch_seconds": 131.84247148409486,
+      "median_full_validation_seconds": 272.5915626771748,
+      "other_wall_seconds_before_latest_metrics": 173.2115376368165,
+      "completed_stage_timings": [
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 29.665613889694214,
+          "allocated_gpu_hours": 0
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": null,
+      "best_checkpoint_bytes": 808732041,
+      "logical_bytes_for_42_checkpoint_hashes": 33966745722
+    },
+    {
+      "model": "umamba_bot",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 5611.3934672139585,
+      "validation_seconds": 2420.435265954584,
+      "validation_fraction_of_train_plus_val": 0.3013554380161349,
+      "median_100_step_training_epoch_seconds": 56.07248005270958,
+      "median_full_validation_seconds": 216.99382259324193,
+      "other_wall_seconds_before_latest_metrics": 63.27775165811181,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 321.94502902030945,
+          "allocated_gpu_hours": 0.08942917472786374
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 29.742249488830566,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 8110.10635638237,
+          "allocated_gpu_hours": 2.252807321217325
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 44.339248,
+      "best_checkpoint_bytes": 271074547,
+      "logical_bytes_for_42_checkpoint_hashes": 11385130974
+    },
+    {
+      "model": "swin_unetr",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 6108.624385867268,
+      "validation_seconds": 2481.646267402917,
+      "validation_fraction_of_train_plus_val": 0.2888903467154661,
+      "median_100_step_training_epoch_seconds": 61.05529337748885,
+      "median_full_validation_seconds": 224.97643377259374,
+      "other_wall_seconds_before_latest_metrics": 47.29344191774726,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 301.58459734916687,
+          "allocated_gpu_hours": 0.08377349926365746
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 30.07237720489502,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 8653.761960983276,
+          "allocated_gpu_hours": 2.403822766939799
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 46.529954,
+      "best_checkpoint_bytes": 196176435,
+      "logical_bytes_for_42_checkpoint_hashes": 8239410270
+    },
+    {
+      "model": "unetr",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 1790.7472268268466,
+      "validation_seconds": 2057.8851089142263,
+      "validation_fraction_of_train_plus_val": 0.5347055601552988,
+      "median_100_step_training_epoch_seconds": 17.868067424744368,
+      "median_full_validation_seconds": 187.2859788313508,
+      "other_wall_seconds_before_latest_metrics": 245.5447978489101,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 294.739413022995,
+          "allocated_gpu_hours": 0.08187205917305417
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 30.08572769165039,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 4112.253303766251,
+          "allocated_gpu_hours": 1.142292584379514
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 49.528997,
+      "best_checkpoint_bytes": 1113641835,
+      "logical_bytes_for_42_checkpoint_hashes": 46772957070
+    },
+    {
+      "model": "transunet_3d",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 2684.9211624637246,
+      "validation_seconds": 2121.689127214253,
+      "validation_fraction_of_train_plus_val": 0.44141068223702346,
+      "median_100_step_training_epoch_seconds": 26.83523028716445,
+      "median_full_validation_seconds": 192.88152248039842,
+      "other_wall_seconds_before_latest_metrics": 269.65785571560264,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 295.6788468360901,
+          "allocated_gpu_hours": 0.08213301301002503
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 29.996201753616333,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 5094.658946275711,
+          "allocated_gpu_hours": 1.415183040632142
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 46.190725,
+      "best_checkpoint_bytes": 1227742245,
+      "logical_bytes_for_42_checkpoint_hashes": 51565174290
+    },
+    {
+      "model": "medformer",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 7848.5352973379195,
+      "validation_seconds": 2579.505989383906,
+      "validation_fraction_of_train_plus_val": 0.2473624641924297,
+      "median_100_step_training_epoch_seconds": 78.47893291339278,
+      "median_full_validation_seconds": 234.37644989416003,
+      "other_wall_seconds_before_latest_metrics": 110.57253991812468,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 329.7445785999298,
+          "allocated_gpu_hours": 0.09159571627775828
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 30.180715799331665,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 10553.48403263092,
+          "allocated_gpu_hours": 2.931523342397478
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 65.538369,
+      "best_checkpoint_bytes": 475512133,
+      "logical_bytes_for_42_checkpoint_hashes": 19971509586
+    },
+    {
+      "model": "mednext_v1",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 6693.810390371829,
+      "validation_seconds": 2585.651475120336,
+      "validation_fraction_of_train_plus_val": 0.278642394634508,
+      "median_100_step_training_epoch_seconds": 66.9301369190216,
+      "median_full_validation_seconds": 228.3844340927899,
+      "other_wall_seconds_before_latest_metrics": 18.9998597279191,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 322.33367109298706,
+          "allocated_gpu_hours": 0.08953713085916307
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 30.42868685722351,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 9311.55621290207,
+          "allocated_gpu_hours": 2.586543392472797
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 47.866801,
+      "best_checkpoint_bytes": 66901721,
+      "logical_bytes_for_42_checkpoint_hashes": 2809872282
+    },
+    {
+      "model": "dynunet",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 2280.5951070040464,
+      "validation_seconds": 2077.3119175843894,
+      "validation_fraction_of_train_plus_val": 0.4766765114224924,
+      "median_100_step_training_epoch_seconds": 22.767567394301295,
+      "median_full_validation_seconds": 188.6555870398879,
+      "other_wall_seconds_before_latest_metrics": 46.58197781443596,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 268.6492807865143,
+          "allocated_gpu_hours": 0.07462480021847619
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 29.97784185409546,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 4419.520781517029,
+          "allocated_gpu_hours": 1.227644661532508
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 44.880567,
+      "best_checkpoint_bytes": 198631259,
+      "logical_bytes_for_42_checkpoint_hashes": 8342512878
+    },
+    {
+      "model": "segresnet",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 3667.420735206455,
+      "validation_seconds": 2450.831243108958,
+      "validation_fraction_of_train_plus_val": 0.40057703602193984,
+      "median_100_step_training_epoch_seconds": 36.68246969208121,
+      "median_full_validation_seconds": 222.28797472640872,
+      "other_wall_seconds_before_latest_metrics": 53.077063608914614,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 426.5140063762665,
+          "allocated_gpu_hours": 0.11847611288229624
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.430503368377686,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 6185.584043264389,
+          "allocated_gpu_hours": 1.7182177897956636
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 81.62194,
+      "best_checkpoint_bytes": 225672035,
+      "logical_bytes_for_42_checkpoint_hashes": 9478225470
+    },
+    {
+      "model": "unet_3d",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 589.0339368395507,
+      "validation_seconds": 1961.7721106112003,
+      "validation_fraction_of_train_plus_val": 0.7690792926305686,
+      "median_100_step_training_epoch_seconds": 5.885822504758835,
+      "median_full_validation_seconds": 177.59903626143932,
+      "other_wall_seconds_before_latest_metrics": 23.68057480454445,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 247.57435584068298,
+          "allocated_gpu_hours": 0.06877065440018972
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 29.01818060874939,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 2588.565756082535,
+          "allocated_gpu_hours": 0.7190460433562597
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 44.807565,
+      "best_checkpoint_bytes": 95024811,
+      "logical_bytes_for_42_checkpoint_hashes": 3991042062
+    },
+    {
+      "model": "mask2former",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 2170.474698960781,
+      "validation_seconds": 3745.172296974808,
+      "validation_fraction_of_train_plus_val": 0.6330959740410423,
+      "median_100_step_training_epoch_seconds": 21.725909719243646,
+      "median_full_validation_seconds": 336.84250289574265,
+      "other_wall_seconds_before_latest_metrics": 142.39222640544176,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 565.9902255535126,
+          "allocated_gpu_hours": 0.15721950709819793
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.0352783203125,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 6073.140214681625,
+          "allocated_gpu_hours": 1.686983392967118
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 52.332835,
+      "best_checkpoint_bytes": 569586096,
+      "logical_bytes_for_42_checkpoint_hashes": 23922616032
+    },
+    {
+      "model": "maskformer",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 1306.7185846343637,
+      "validation_seconds": 3043.038442313671,
+      "validation_fraction_of_train_plus_val": 0.6995881433057399,
+      "median_100_step_training_epoch_seconds": 13.098850885406137,
+      "median_full_validation_seconds": 268.70840791240335,
+      "other_wall_seconds_before_latest_metrics": 118.3435499407351,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 496.91857051849365,
+          "allocated_gpu_hours": 0.13803293625513713
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.120693683624268,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 4482.499203681946,
+          "allocated_gpu_hours": 1.2451386676894294
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 520.323146,
+      "best_checkpoint_bytes": 501464836,
+      "logical_bytes_for_42_checkpoint_hashes": 21061523112
+    },
+    {
+      "model": "dpt",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 650.6472211703658,
+      "validation_seconds": 2711.209003277123,
+      "validation_fraction_of_train_plus_val": 0.8064619133802197,
+      "median_100_step_training_epoch_seconds": 6.445165315642953,
+      "median_full_validation_seconds": 236.73964035883546,
+      "other_wall_seconds_before_latest_metrics": 296.54627738520503,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 366.9667704105377,
+          "allocated_gpu_hours": 0.10193521400292714
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 30.837117195129395,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 3675.8070220947266,
+          "allocated_gpu_hours": 1.021057506137424
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 74.027002,
+      "best_checkpoint_bytes": 1328688671,
+      "logical_bytes_for_42_checkpoint_hashes": 55804924182
+    },
+    {
+      "model": "swin_upernet",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 732.4184809811413,
+      "validation_seconds": 2841.904033984989,
+      "validation_fraction_of_train_plus_val": 0.7950888656761066,
+      "median_100_step_training_epoch_seconds": 7.317599065601826,
+      "median_full_validation_seconds": 259.1246183179319,
+      "other_wall_seconds_before_latest_metrics": 170.94510399922729,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 345.97793340682983,
+          "allocated_gpu_hours": 0.09610498150189718
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 27.904723405838013,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 3760.5814406871796,
+          "allocated_gpu_hours": 1.0446059557464387
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 45.368699,
+      "best_checkpoint_bytes": 718399806,
+      "logical_bytes_for_42_checkpoint_hashes": 30172791852
+    },
+    {
+      "model": "convnext_upernet",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 567.2846084944904,
+      "validation_seconds": 3100.859539721161,
+      "validation_fraction_of_train_plus_val": 0.8453483326792262,
+      "median_100_step_training_epoch_seconds": 5.59331595338881,
+      "median_full_validation_seconds": 270.77635541558266,
+      "other_wall_seconds_before_latest_metrics": 179.93045552447438,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 351.59484577178955,
+          "allocated_gpu_hours": 0.09766523493660821
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.660971641540527,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 3863.261325597763,
+          "allocated_gpu_hours": 1.0731281459993787
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 53.672746,
+      "best_checkpoint_bytes": 721955653,
+      "logical_bytes_for_42_checkpoint_hashes": 30322137426
+    },
+    {
+      "model": "segformer_b2",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 684.5280550457537,
+      "validation_seconds": 2751.4959254600108,
+      "validation_fraction_of_train_plus_val": 0.8007790228096735,
+      "median_100_step_training_epoch_seconds": 6.758936444297433,
+      "median_full_validation_seconds": 240.61111550405622,
+      "other_wall_seconds_before_latest_metrics": 80.03192214667797,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 367.8133373260498,
+          "allocated_gpu_hours": 0.10217037147945827
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.790658712387085,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 3529.6872992515564,
+          "allocated_gpu_hours": 0.9804686942365435
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 74.725621,
+      "best_checkpoint_bytes": 328758382,
+      "logical_bytes_for_42_checkpoint_hashes": 13807852044
+    },
+    {
+      "model": "hrnet_ocr",
+      "backend": "torch",
+      "status": "running",
+      "completed_epochs": 99,
+      "training_seconds": 984.352690897882,
+      "validation_seconds": 3467.2308443002403,
+      "validation_fraction_of_train_plus_val": 0.7788758352809227,
+      "median_100_step_training_epoch_seconds": 9.986358556896448,
+      "median_full_validation_seconds": 337.72161366790533,
+      "other_wall_seconds_before_latest_metrics": 114.61294263228774,
+      "completed_stage_timings": [
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.674110174179077,
+          "allocated_gpu_hours": 0
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": null,
+      "best_checkpoint_bytes": 420834015,
+      "logical_bytes_for_42_checkpoint_hashes": 17675028630
+    },
+    {
+      "model": "unet_plus_plus",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 385.3134292885661,
+      "validation_seconds": 2595.2863694019616,
+      "validation_fraction_of_train_plus_val": 0.8707262110606575,
+      "median_100_step_training_epoch_seconds": 3.8219461869448423,
+      "median_full_validation_seconds": 241.07404354587197,
+      "other_wall_seconds_before_latest_metrics": 74.19227105006576,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 328.247989654541,
+          "allocated_gpu_hours": 0.09117999712626139
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.61707067489624,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 3067.2157123088837,
+          "allocated_gpu_hours": 0.8520043645302454
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 75.866139,
+      "best_checkpoint_bytes": 313397791,
+      "logical_bytes_for_42_checkpoint_hashes": 13162707222
+    },
+    {
+      "model": "deeplabv3_plus",
+      "backend": "torch",
+      "status": "running",
+      "completed_epochs": 100,
+      "training_seconds": 327.16822791844606,
+      "validation_seconds": 2637.678424485028,
+      "validation_fraction_of_train_plus_val": 0.8896508770012692,
+      "median_100_step_training_epoch_seconds": 3.337050126865506,
+      "median_full_validation_seconds": 238.6838094331324,
+      "other_wall_seconds_before_latest_metrics": 76.89651123806834,
+      "completed_stage_timings": [
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.87536883354187,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 3054.5065870285034,
+          "allocated_gpu_hours": 0.848474051952362
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": null,
+      "best_checkpoint_bytes": 320753535,
+      "logical_bytes_for_42_checkpoint_hashes": 13471648470
+    },
+    {
+      "model": "fpn",
+      "backend": "torch",
+      "status": "completed",
+      "completed_epochs": 100,
+      "training_seconds": 263.5306429192424,
+      "validation_seconds": 1909.1894094496965,
+      "validation_fraction_of_train_plus_val": 0.8787093428663706,
+      "median_100_step_training_epoch_seconds": 2.718305079266429,
+      "median_full_validation_seconds": 172.70198701694608,
+      "other_wall_seconds_before_latest_metrics": 63.420368909835815,
+      "completed_stage_timings": [
+        {
+          "action": "predict",
+          "status": "completed",
+          "wall_seconds": 253.49549102783203,
+          "allocated_gpu_hours": 0.07041541417439778
+        },
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 31.26889944076538,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 2248.9796550273895,
+          "allocated_gpu_hours": 0.6247165708409416
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": 46.410164,
+      "best_checkpoint_bytes": 278233163,
+      "logical_bytes_for_42_checkpoint_hashes": 11685792846
+    },
+    {
+      "model": "unet_2d",
+      "backend": "torch",
+      "status": "running",
+      "completed_epochs": 100,
+      "training_seconds": 267.6686977148056,
+      "validation_seconds": 2241.8689279221,
+      "validation_fraction_of_train_plus_val": 0.8933394363247003,
+      "median_100_step_training_epoch_seconds": 2.7533345222473145,
+      "median_full_validation_seconds": 177.7126962505281,
+      "other_wall_seconds_before_latest_metrics": 68.10572931170464,
+      "completed_stage_timings": [
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.830037117004395,
+          "allocated_gpu_hours": 0
+        },
+        {
+          "action": "train",
+          "status": "completed",
+          "wall_seconds": 2590.072200536728,
+          "allocated_gpu_hours": 0.7194645001490911
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": null,
+      "best_checkpoint_bytes": 293624455,
+      "logical_bytes_for_42_checkpoint_hashes": 12332227110
+    },
+    {
+      "model": "segformer_b0",
+      "backend": "torch",
+      "status": "running",
+      "completed_epochs": 59,
+      "training_seconds": 211.45608012378216,
+      "validation_seconds": 1512.019227296114,
+      "validation_fraction_of_train_plus_val": 0.8773083204537816,
+      "median_100_step_training_epoch_seconds": 3.4819357357919216,
+      "median_full_validation_seconds": 249.789067376405,
+      "other_wall_seconds_before_latest_metrics": 8.060702599585056,
+      "completed_stage_timings": [
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.687060117721558,
+          "allocated_gpu_hours": 0
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": null,
+      "best_checkpoint_bytes": 44890829,
+      "logical_bytes_for_42_checkpoint_hashes": 1885414818
+    },
+    {
+      "model": "pidnet",
+      "backend": "torch",
+      "status": "running",
+      "completed_epochs": 29,
+      "training_seconds": 105.49300291761756,
+      "validation_seconds": 743.5457084663212,
+      "validation_fraction_of_train_plus_val": 0.8757500671015774,
+      "median_100_step_training_epoch_seconds": 3.6126473881304264,
+      "median_full_validation_seconds": 242.78994108736515,
+      "other_wall_seconds_before_latest_metrics": 7.512300979346037,
+      "completed_stage_timings": [
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.63399052619934,
+          "allocated_gpu_hours": 0
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": null,
+      "best_checkpoint_bytes": 93089760,
+      "logical_bytes_for_42_checkpoint_hashes": 3909769920
+    },
+    {
+      "model": "ddrnet",
+      "backend": "torch",
+      "status": "running",
+      "completed_epochs": 0,
+      "training_seconds": null,
+      "validation_seconds": null,
+      "validation_fraction_of_train_plus_val": null,
+      "median_100_step_training_epoch_seconds": null,
+      "median_full_validation_seconds": null,
+      "other_wall_seconds_before_latest_metrics": null,
+      "completed_stage_timings": [
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.769221305847168,
+          "allocated_gpu_hours": 0
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": null,
+      "best_checkpoint_bytes": 69154605,
+      "logical_bytes_for_42_checkpoint_hashes": 2904493410
+    },
+    {
+      "model": "bisenetv2",
+      "backend": "torch",
+      "status": "running",
+      "completed_epochs": 0,
+      "training_seconds": null,
+      "validation_seconds": null,
+      "validation_fraction_of_train_plus_val": null,
+      "median_100_step_training_epoch_seconds": null,
+      "median_full_validation_seconds": null,
+      "other_wall_seconds_before_latest_metrics": null,
+      "completed_stage_timings": [
+        {
+          "action": "preprocess",
+          "status": "completed",
+          "wall_seconds": 28.36540460586548,
+          "allocated_gpu_hours": 0
+        }
+      ],
+      "final_evaluation_seconds_including_orchestration": null
+    },
+    {
+      "model": "lraspp",
+      "backend": "torch",
+      "status": "queued",
+      "completed_epochs": 0,
+      "training_seconds": null,
+      "validation_seconds": null,
+      "validation_fraction_of_train_plus_val": null,
+      "median_100_step_training_epoch_seconds": null,
+      "median_full_validation_seconds": null,
+      "other_wall_seconds_before_latest_metrics": null,
+      "completed_stage_timings": [],
+      "final_evaluation_seconds_including_orchestration": null
+    }
+  ],
+  "host_sample": {
+    "started_at": "2026-09-14T03:41:39.598397+00:00",
+    "finished_at": "2026-09-14T03:42:39.797170+00:00",
+    "scope": "61 one-second GPU samples; campaign stage every5samples; arithmetic sampled average, not end-to-end campaign utilization",
+    "source_sha256": "91a528a55c88791ca6c58b586ca95879f819b21ca8c05b10413a1772583409ba",
+    "gpus": [
+      {
+        "gpu": 0,
+        "mean_util_percent": 94.91803278688525,
+        "zero_samples": 2,
+        "sample_count": 61,
+        "phases": {
+          "nnunet_resenc_l:train": 13
+        }
+      },
+      {
+        "gpu": 1,
+        "mean_util_percent": 37.65573770491803,
+        "zero_samples": 34,
+        "sample_count": 61,
+        "phases": {
+          "umamba_enc:validation": 13
+        }
+      },
+      {
+        "gpu": 2,
+        "mean_util_percent": 99.78688524590164,
+        "zero_samples": 0,
+        "sample_count": 61,
+        "phases": {
+          "segmamba:train": 13
+        }
+      },
+      {
+        "gpu": 3,
+        "mean_util_percent": 4.836065573770492,
+        "zero_samples": 54,
+        "sample_count": 61,
+        "phases": {
+          "deeplabv3_plus:predict": 13
+        }
+      },
+      {
+        "gpu": 4,
+        "mean_util_percent": 0.0,
+        "zero_samples": 61,
+        "sample_count": 61,
+        "phases": {
+          "fpn:evaluate": 9,
+          "bisenetv2:prepare": 2,
+          "bisenetv2:preprocess": 2
+        }
+      },
+      {
+        "gpu": 5,
+        "mean_util_percent": 47.39344262295082,
+        "zero_samples": 2,
+        "sample_count": 61,
+        "phases": {
+          "hrnet_ocr:train": 13
+        }
+      },
+      {
+        "gpu": 6,
+        "mean_util_percent": 4.622950819672131,
+        "zero_samples": 51,
+        "sample_count": 61,
+        "phases": {
+          "ddrnet:preprocess": 1,
+          "ddrnet:train": 1,
+          "ddrnet:validation": 11
+        }
+      },
+      {
+        "gpu": 7,
+        "mean_util_percent": 4.540983606557377,
+        "zero_samples": 52,
+        "sample_count": 61,
+        "phases": {
+          "pidnet:validation": 13
+        }
+      },
+      {
+        "gpu": 8,
+        "mean_util_percent": 16.16393442622951,
+        "zero_samples": 24,
+        "sample_count": 61,
+        "phases": {
+          "segformer_b0:train": 7,
+          "segformer_b0:validation": 6
+        }
+      },
+      {
+        "gpu": 9,
+        "mean_util_percent": 7.622950819672131,
+        "zero_samples": 50,
+        "sample_count": 61,
+        "phases": {
+          "unet_2d:validation": 13
+        }
+      }
+    ],
+    "numeric_samples": [
+      {
+        "time": 1789357299.7477612,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            86.0,
+            21229.0,
+            316.62
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            97.95
+          ],
+          [
+            2.0,
+            100.0,
+            96.0,
+            23715.0,
+            337.42
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            655.0,
+            81.01
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            84.59
+          ],
+          [
+            5.0,
+            52.0,
+            17.0,
+            2637.0,
+            131.53
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            0.0,
+            32.61
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.47
+          ],
+          [
+            8.0,
+            30.0,
+            11.0,
+            1377.0,
+            116.35
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            114.23
+          ]
+        ]
+      },
+      {
+        "time": 1789357300.7731223,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            93.0,
+            21229.0,
+            310.31
+          ],
+          [
+            1.0,
+            100.0,
+            91.0,
+            40235.0,
+            192.58
+          ],
+          [
+            2.0,
+            100.0,
+            79.0,
+            23715.0,
+            338.87
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            655.0,
+            81.26
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            64.29
+          ],
+          [
+            5.0,
+            53.0,
+            17.0,
+            2637.0,
+            160.27
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            0.0,
+            32.6
+          ],
+          [
+            7.0,
+            33.0,
+            0.0,
+            839.0,
+            98.1
+          ],
+          [
+            8.0,
+            27.0,
+            10.0,
+            1377.0,
+            125.74
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            88.71
+          ]
+        ]
+      },
+      {
+        "time": 1789357301.7743003,
+        "gpus": [
+          [
+            0.0,
+            98.0,
+            99.0,
+            21229.0,
+            319.54
+          ],
+          [
+            1.0,
+            100.0,
+            86.0,
+            40235.0,
+            250.35
+          ],
+          [
+            2.0,
+            100.0,
+            76.0,
+            23715.0,
+            326.34
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            655.0,
+            81.35
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            48.65
+          ],
+          [
+            5.0,
+            52.0,
+            16.0,
+            2637.0,
+            189.66
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            0.0,
+            32.6
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            86.11
+          ],
+          [
+            8.0,
+            30.0,
+            11.0,
+            1377.0,
+            130.21
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            83.76
+          ]
+        ]
+      },
+      {
+        "time": 1789357302.74673,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            90.0,
+            21229.0,
+            319.42
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            145.02
+          ],
+          [
+            2.0,
+            100.0,
+            85.0,
+            23715.0,
+            329.41
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            655.0,
+            81.18
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            34.33
+          ],
+          [
+            5.0,
+            51.0,
+            17.0,
+            2637.0,
+            132.16
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            465.0,
+            41.81
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.81
+          ],
+          [
+            8.0,
+            28.0,
+            11.0,
+            1377.0,
+            134.52
+          ],
+          [
+            9.0,
+            49.0,
+            14.0,
+            1375.0,
+            94.11
+          ]
+        ]
+      },
+      {
+        "time": 1789357303.7680838,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            99.0,
+            21229.0,
+            317.35
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            98.37
+          ],
+          [
+            2.0,
+            100.0,
+            94.0,
+            23715.0,
+            336.18
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            655.0,
+            81.35
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            34.34
+          ],
+          [
+            5.0,
+            52.0,
+            16.0,
+            2637.0,
+            186.16
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            729.0,
+            83.0
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.57
+          ],
+          [
+            8.0,
+            30.0,
+            11.0,
+            1377.0,
+            118.39
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            96.51
+          ]
+        ]
+      },
+      {
+        "time": 1789357304.788692,
+        "gpus": [
+          [
+            0.0,
+            98.0,
+            100.0,
+            21229.0,
+            332.31
+          ],
+          [
+            1.0,
+            99.0,
+            92.0,
+            40235.0,
+            115.37
+          ],
+          [
+            2.0,
+            100.0,
+            71.0,
+            23715.0,
+            336.22
+          ],
+          [
+            3.0,
+            48.0,
+            7.0,
+            745.0,
+            100.89
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            34.31
+          ],
+          [
+            5.0,
+            0.0,
+            0.0,
+            2637.0,
+            125.74
+          ],
+          [
+            6.0,
+            25.0,
+            4.0,
+            769.0,
+            107.41
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            84.65
+          ],
+          [
+            8.0,
+            27.0,
+            11.0,
+            1377.0,
+            121.22
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            90.1
+          ]
+        ]
+      },
+      {
+        "time": 1789357305.7626488,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            84.0,
+            21229.0,
+            318.51
+          ],
+          [
+            1.0,
+            58.0,
+            55.0,
+            40235.0,
+            244.19
+          ],
+          [
+            2.0,
+            100.0,
+            73.0,
+            23715.0,
+            342.34
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            94.27
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            34.42
+          ],
+          [
+            5.0,
+            47.0,
+            17.0,
+            2637.0,
+            179.64
+          ],
+          [
+            6.0,
+            24.0,
+            4.0,
+            769.0,
+            113.04
+          ],
+          [
+            7.0,
+            31.0,
+            0.0,
+            839.0,
+            99.4
+          ],
+          [
+            8.0,
+            29.0,
+            11.0,
+            1377.0,
+            120.92
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            81.59
+          ]
+        ]
+      },
+      {
+        "time": 1789357306.7832832,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            82.0,
+            21229.0,
+            306.73
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            182.16
+          ],
+          [
+            2.0,
+            100.0,
+            74.0,
+            23715.0,
+            340.82
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            88.37
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            34.24
+          ],
+          [
+            5.0,
+            47.0,
+            16.0,
+            2637.0,
+            204.83
+          ],
+          [
+            6.0,
+            20.0,
+            3.0,
+            769.0,
+            111.62
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            85.47
+          ],
+          [
+            8.0,
+            28.0,
+            10.0,
+            1377.0,
+            120.74
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            81.28
+          ]
+        ]
+      },
+      {
+        "time": 1789357307.7447064,
+        "gpus": [
+          [
+            0.0,
+            99.0,
+            100.0,
+            21229.0,
+            309.35
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            97.47
+          ],
+          [
+            2.0,
+            100.0,
+            92.0,
+            23715.0,
+            340.74
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.2
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            34.01
+          ],
+          [
+            5.0,
+            50.0,
+            14.0,
+            2637.0,
+            179.69
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            90.63
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.13
+          ],
+          [
+            8.0,
+            30.0,
+            11.0,
+            1377.0,
+            122.11
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            89.7
+          ]
+        ]
+      },
+      {
+        "time": 1789357308.781656,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            76.0,
+            21229.0,
+            319.87
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            82.93
+          ],
+          [
+            2.0,
+            100.0,
+            77.0,
+            23715.0,
+            331.08
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.11
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            34.07
+          ],
+          [
+            5.0,
+            51.0,
+            16.0,
+            2637.0,
+            214.94
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            85.76
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.21
+          ],
+          [
+            8.0,
+            30.0,
+            11.0,
+            1377.0,
+            123.6
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            85.51
+          ]
+        ]
+      },
+      {
+        "time": 1789357309.7769291,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            74.0,
+            21229.0,
+            320.12
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            82.72
+          ],
+          [
+            2.0,
+            100.0,
+            79.0,
+            23715.0,
+            336.67
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.32
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            34.06
+          ],
+          [
+            5.0,
+            52.0,
+            16.0,
+            2637.0,
+            229.76
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            86.15
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.21
+          ],
+          [
+            8.0,
+            30.0,
+            11.0,
+            1377.0,
+            122.42
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.9
+          ]
+        ]
+      },
+      {
+        "time": 1789357310.7803414,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            74.0,
+            21229.0,
+            314.27
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            82.48
+          ],
+          [
+            2.0,
+            100.0,
+            66.0,
+            23715.0,
+            329.09
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.18
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.94
+          ],
+          [
+            5.0,
+            51.0,
+            16.0,
+            2637.0,
+            233.92
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            84.16
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.97
+          ],
+          [
+            8.0,
+            29.0,
+            11.0,
+            1377.0,
+            120.04
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.82
+          ]
+        ]
+      },
+      {
+        "time": 1789357311.788632,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            97.0,
+            21229.0,
+            318.02
+          ],
+          [
+            1.0,
+            52.0,
+            49.0,
+            40235.0,
+            196.08
+          ],
+          [
+            2.0,
+            100.0,
+            95.0,
+            23715.0,
+            333.31
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.14
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.95
+          ],
+          [
+            5.0,
+            49.0,
+            16.0,
+            2637.0,
+            152.47
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            81.17
+          ],
+          [
+            7.0,
+            32.0,
+            0.0,
+            839.0,
+            97.37
+          ],
+          [
+            8.0,
+            29.0,
+            11.0,
+            1377.0,
+            122.0
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.7
+          ]
+        ]
+      },
+      {
+        "time": 1789357312.791116,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            73.0,
+            21229.0,
+            313.65
+          ],
+          [
+            1.0,
+            29.0,
+            27.0,
+            40235.0,
+            258.44
+          ],
+          [
+            2.0,
+            100.0,
+            79.0,
+            23715.0,
+            340.3
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            103.07
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            34.06
+          ],
+          [
+            5.0,
+            52.0,
+            17.0,
+            2637.0,
+            177.62
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            81.38
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            89.14
+          ],
+          [
+            8.0,
+            30.0,
+            11.0,
+            1377.0,
+            121.19
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.58
+          ]
+        ]
+      },
+      {
+        "time": 1789357313.7863603,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            96.0,
+            21229.0,
+            318.05
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            84.56
+          ],
+          [
+            2.0,
+            100.0,
+            62.0,
+            23715.0,
+            330.57
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            88.91
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.94
+          ],
+          [
+            5.0,
+            54.0,
+            21.0,
+            2637.0,
+            219.24
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            81.62
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            85.55
+          ],
+          [
+            8.0,
+            32.0,
+            13.0,
+            1377.0,
+            126.8
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.58
+          ]
+        ]
+      },
+      {
+        "time": 1789357314.7675812,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            93.0,
+            21229.0,
+            317.62
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            82.38
+          ],
+          [
+            2.0,
+            100.0,
+            63.0,
+            23715.0,
+            340.59
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.02
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.83
+          ],
+          [
+            5.0,
+            53.0,
+            20.0,
+            2637.0,
+            190.12
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            81.43
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.17
+          ],
+          [
+            8.0,
+            30.0,
+            11.0,
+            1377.0,
+            130.16
+          ],
+          [
+            9.0,
+            48.0,
+            14.0,
+            1375.0,
+            101.57
+          ]
+        ]
+      },
+      {
+        "time": 1789357315.7694838,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            76.0,
+            21229.0,
+            313.87
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            82.07
+          ],
+          [
+            2.0,
+            99.0,
+            92.0,
+            23715.0,
+            343.56
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.18
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.83
+          ],
+          [
+            5.0,
+            4.0,
+            0.0,
+            2637.0,
+            144.66
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            81.35
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.97
+          ],
+          [
+            8.0,
+            31.0,
+            12.0,
+            1377.0,
+            119.08
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            94.8
+          ]
+        ]
+      },
+      {
+        "time": 1789357316.774126,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            86.0,
+            21229.0,
+            314.97
+          ],
+          [
+            1.0,
+            98.0,
+            94.0,
+            40235.0,
+            119.25
+          ],
+          [
+            2.0,
+            100.0,
+            88.0,
+            23715.0,
+            327.71
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.52
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.78
+          ],
+          [
+            5.0,
+            53.0,
+            16.0,
+            2637.0,
+            102.99
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            81.4
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.75
+          ],
+          [
+            8.0,
+            32.0,
+            11.0,
+            1377.0,
+            126.81
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            88.25
+          ]
+        ]
+      },
+      {
+        "time": 1789357317.7847142,
+        "gpus": [
+          [
+            0.0,
+            4.0,
+            0.0,
+            21229.0,
+            126.86
+          ],
+          [
+            1.0,
+            59.0,
+            56.0,
+            40235.0,
+            245.39
+          ],
+          [
+            2.0,
+            100.0,
+            60.0,
+            23715.0,
+            335.81
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.33
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.78
+          ],
+          [
+            5.0,
+            64.0,
+            21.0,
+            2637.0,
+            184.19
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            92.14
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            94.82
+          ],
+          [
+            8.0,
+            30.0,
+            11.0,
+            1377.0,
+            128.18
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            81.09
+          ]
+        ]
+      },
+      {
+        "time": 1789357318.766124,
+        "gpus": [
+          [
+            0.0,
+            0.0,
+            0.0,
+            21229.0,
+            102.39
+          ],
+          [
+            1.0,
+            100.0,
+            94.0,
+            40235.0,
+            262.26
+          ],
+          [
+            2.0,
+            100.0,
+            67.0,
+            23715.0,
+            337.19
+          ],
+          [
+            3.0,
+            31.0,
+            5.0,
+            745.0,
+            115.46
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.83
+          ],
+          [
+            5.0,
+            56.0,
+            21.0,
+            2637.0,
+            205.96
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            84.27
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            86.36
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            119.63
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.94
+          ]
+        ]
+      },
+      {
+        "time": 1789357319.7936726,
+        "gpus": [
+          [
+            0.0,
+            0.0,
+            0.0,
+            21229.0,
+            101.61
+          ],
+          [
+            1.0,
+            100.0,
+            93.0,
+            40235.0,
+            242.91
+          ],
+          [
+            2.0,
+            99.0,
+            88.0,
+            23715.0,
+            336.26
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            88.54
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.78
+          ],
+          [
+            5.0,
+            57.0,
+            17.0,
+            2637.0,
+            181.67
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            81.75
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.17
+          ],
+          [
+            8.0,
+            26.0,
+            10.0,
+            1377.0,
+            121.0
+          ],
+          [
+            9.0,
+            49.0,
+            15.0,
+            1375.0,
+            98.68
+          ]
+        ]
+      },
+      {
+        "time": 1789357320.7951586,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            87.0,
+            21229.0,
+            222.23
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            121.0
+          ],
+          [
+            2.0,
+            100.0,
+            89.0,
+            23715.0,
+            324.18
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.2
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.66
+          ],
+          [
+            5.0,
+            59.0,
+            18.0,
+            2637.0,
+            206.79
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            81.76
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.09
+          ],
+          [
+            8.0,
+            28.0,
+            10.0,
+            1377.0,
+            122.18
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            109.36
+          ]
+        ]
+      },
+      {
+        "time": 1789357321.7527037,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            83.0,
+            21229.0,
+            321.95
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            102.32
+          ],
+          [
+            2.0,
+            100.0,
+            60.0,
+            23715.0,
+            327.17
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.21
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.66
+          ],
+          [
+            5.0,
+            57.0,
+            21.0,
+            2637.0,
+            193.82
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            81.79
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.85
+          ],
+          [
+            8.0,
+            25.0,
+            10.0,
+            1377.0,
+            119.43
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            88.46
+          ]
+        ]
+      },
+      {
+        "time": 1789357322.7744927,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            91.0,
+            21229.0,
+            301.17
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            81.67
+          ],
+          [
+            2.0,
+            99.0,
+            70.0,
+            23715.0,
+            329.95
+          ],
+          [
+            3.0,
+            29.0,
+            3.0,
+            745.0,
+            84.3
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.78
+          ],
+          [
+            5.0,
+            55.0,
+            18.0,
+            2637.0,
+            175.45
+          ],
+          [
+            6.0,
+            33.0,
+            0.0,
+            769.0,
+            90.83
+          ],
+          [
+            7.0,
+            33.0,
+            0.0,
+            839.0,
+            85.12
+          ],
+          [
+            8.0,
+            22.0,
+            8.0,
+            1377.0,
+            111.53
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.88
+          ]
+        ]
+      },
+      {
+        "time": 1789357323.792582,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            78.0,
+            21229.0,
+            300.1
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            81.59
+          ],
+          [
+            2.0,
+            98.0,
+            85.0,
+            23715.0,
+            341.26
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            93.82
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.7
+          ],
+          [
+            5.0,
+            52.0,
+            16.0,
+            2637.0,
+            222.57
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            91.55
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            98.69
+          ],
+          [
+            8.0,
+            29.0,
+            11.0,
+            1377.0,
+            117.72
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.82
+          ]
+        ]
+      },
+      {
+        "time": 1789357324.8145235,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            79.0,
+            21229.0,
+            307.17
+          ],
+          [
+            1.0,
+            100.0,
+            93.0,
+            40235.0,
+            140.65
+          ],
+          [
+            2.0,
+            100.0,
+            96.0,
+            23715.0,
+            335.66
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            85.0
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.53
+          ],
+          [
+            5.0,
+            51.0,
+            16.0,
+            2637.0,
+            233.75
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            84.15
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            85.51
+          ],
+          [
+            8.0,
+            25.0,
+            10.0,
+            1377.0,
+            121.27
+          ],
+          [
+            9.0,
+            40.0,
+            12.0,
+            1375.0,
+            104.75
+          ]
+        ]
+      },
+      {
+        "time": 1789357325.8034015,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            100.0,
+            21229.0,
+            308.32
+          ],
+          [
+            1.0,
+            100.0,
+            90.0,
+            40235.0,
+            254.37
+          ],
+          [
+            2.0,
+            100.0,
+            77.0,
+            23715.0,
+            325.65
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.26
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.65
+          ],
+          [
+            5.0,
+            39.0,
+            14.0,
+            2637.0,
+            150.09
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.07
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.96
+          ],
+          [
+            8.0,
+            22.0,
+            9.0,
+            1377.0,
+            116.81
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            88.93
+          ]
+        ]
+      },
+      {
+        "time": 1789357326.8047962,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            65.0,
+            21229.0,
+            314.44
+          ],
+          [
+            1.0,
+            100.0,
+            99.0,
+            40235.0,
+            261.04
+          ],
+          [
+            2.0,
+            100.0,
+            64.0,
+            23715.0,
+            332.42
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.28
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.64
+          ],
+          [
+            5.0,
+            0.0,
+            0.0,
+            2637.0,
+            88.15
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            81.67
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.9
+          ],
+          [
+            8.0,
+            24.0,
+            10.0,
+            1377.0,
+            109.87
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.71
+          ]
+        ]
+      },
+      {
+        "time": 1789357327.7810798,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            74.0,
+            21229.0,
+            319.34
+          ],
+          [
+            1.0,
+            100.0,
+            100.0,
+            40235.0,
+            264.91
+          ],
+          [
+            2.0,
+            98.0,
+            86.0,
+            23715.0,
+            344.47
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.28
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.53
+          ],
+          [
+            5.0,
+            57.0,
+            16.0,
+            2637.0,
+            160.37
+          ],
+          [
+            6.0,
+            29.0,
+            0.0,
+            769.0,
+            84.81
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.99
+          ],
+          [
+            8.0,
+            25.0,
+            8.0,
+            1377.0,
+            121.3
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.6
+          ]
+        ]
+      },
+      {
+        "time": 1789357328.7925625,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            98.0,
+            21229.0,
+            318.71
+          ],
+          [
+            1.0,
+            100.0,
+            99.0,
+            40235.0,
+            253.99
+          ],
+          [
+            2.0,
+            100.0,
+            93.0,
+            23715.0,
+            324.11
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.28
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.53
+          ],
+          [
+            5.0,
+            57.0,
+            20.0,
+            2637.0,
+            188.17
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            91.23
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            85.08
+          ],
+          [
+            8.0,
+            24.0,
+            10.0,
+            1377.0,
+            120.04
+          ],
+          [
+            9.0,
+            43.0,
+            12.0,
+            1375.0,
+            86.87
+          ]
+        ]
+      },
+      {
+        "time": 1789357329.7796519,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            61.0,
+            21229.0,
+            320.63
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            134.77
+          ],
+          [
+            2.0,
+            100.0,
+            71.0,
+            23715.0,
+            336.33
+          ],
+          [
+            3.0,
+            48.0,
+            7.0,
+            745.0,
+            103.75
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.48
+          ],
+          [
+            5.0,
+            49.0,
+            16.0,
+            2637.0,
+            180.17
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            84.5
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            95.0
+          ],
+          [
+            8.0,
+            25.0,
+            10.0,
+            1377.0,
+            120.79
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            119.01
+          ]
+        ]
+      },
+      {
+        "time": 1789357330.780108,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            81.0,
+            21229.0,
+            324.9
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            100.78
+          ],
+          [
+            2.0,
+            99.0,
+            77.0,
+            23715.0,
+            337.53
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            89.1
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.54
+          ],
+          [
+            5.0,
+            51.0,
+            18.0,
+            2637.0,
+            127.43
+          ],
+          [
+            6.0,
+            27.0,
+            0.0,
+            769.0,
+            85.88
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            85.69
+          ],
+          [
+            8.0,
+            26.0,
+            10.0,
+            1377.0,
+            119.09
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            88.79
+          ]
+        ]
+      },
+      {
+        "time": 1789357331.8010905,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            92.0,
+            21229.0,
+            316.17
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            81.44
+          ],
+          [
+            2.0,
+            100.0,
+            84.0,
+            23715.0,
+            331.47
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.41
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.54
+          ],
+          [
+            5.0,
+            62.0,
+            21.0,
+            2637.0,
+            141.08
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            85.48
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.74
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            88.2
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.87
+          ]
+        ]
+      },
+      {
+        "time": 1789357332.7842264,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            72.0,
+            21229.0,
+            305.58
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            81.47
+          ],
+          [
+            2.0,
+            100.0,
+            95.0,
+            23715.0,
+            322.86
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.21
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.54
+          ],
+          [
+            5.0,
+            50.0,
+            16.0,
+            2637.0,
+            218.25
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            84.05
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.87
+          ],
+          [
+            8.0,
+            19.0,
+            1.0,
+            1377.0,
+            90.24
+          ],
+          [
+            9.0,
+            49.0,
+            14.0,
+            1375.0,
+            94.49
+          ]
+        ]
+      },
+      {
+        "time": 1789357333.806429,
+        "gpus": [
+          [
+            0.0,
+            99.0,
+            93.0,
+            21229.0,
+            310.87
+          ],
+          [
+            1.0,
+            100.0,
+            88.0,
+            40235.0,
+            168.35
+          ],
+          [
+            2.0,
+            100.0,
+            73.0,
+            23715.0,
+            326.53
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.18
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.53
+          ],
+          [
+            5.0,
+            50.0,
+            16.0,
+            2637.0,
+            135.61
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.51
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            84.78
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            95.0
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            109.61
+          ]
+        ]
+      },
+      {
+        "time": 1789357334.7889235,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            87.0,
+            21229.0,
+            309.38
+          ],
+          [
+            1.0,
+            100.0,
+            96.0,
+            40235.0,
+            269.52
+          ],
+          [
+            2.0,
+            100.0,
+            76.0,
+            23715.0,
+            339.32
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.18
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.47
+          ],
+          [
+            5.0,
+            52.0,
+            17.0,
+            2637.0,
+            179.25
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.65
+          ],
+          [
+            7.0,
+            26.0,
+            0.0,
+            839.0,
+            95.12
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            85.51
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            88.45
+          ]
+        ]
+      },
+      {
+        "time": 1789357335.7820225,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            92.0,
+            21229.0,
+            311.3
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            160.46
+          ],
+          [
+            2.0,
+            100.0,
+            95.0,
+            23715.0,
+            339.31
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.23
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.48
+          ],
+          [
+            5.0,
+            50.0,
+            16.0,
+            2637.0,
+            180.29
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            88.99
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            87.57
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            83.51
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.66
+          ]
+        ]
+      },
+      {
+        "time": 1789357336.790125,
+        "gpus": [
+          [
+            0.0,
+            98.0,
+            98.0,
+            21229.0,
+            318.66
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            105.74
+          ],
+          [
+            2.0,
+            100.0,
+            97.0,
+            23715.0,
+            336.8
+          ],
+          [
+            3.0,
+            48.0,
+            7.0,
+            745.0,
+            106.2
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.54
+          ],
+          [
+            5.0,
+            4.0,
+            0.0,
+            2637.0,
+            176.58
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            85.69
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            85.0
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            83.35
+          ],
+          [
+            9.0,
+            48.0,
+            14.0,
+            1375.0,
+            92.66
+          ]
+        ]
+      },
+      {
+        "time": 1789357337.7748466,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            88.0,
+            21229.0,
+            324.99
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            81.94
+          ],
+          [
+            2.0,
+            100.0,
+            80.0,
+            23715.0,
+            330.19
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            88.81
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.47
+          ],
+          [
+            5.0,
+            33.0,
+            9.0,
+            2637.0,
+            100.38
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.55
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.13
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            83.11
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            118.62
+          ]
+        ]
+      },
+      {
+        "time": 1789357338.8041904,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            98.0,
+            21229.0,
+            324.52
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            81.71
+          ],
+          [
+            2.0,
+            100.0,
+            72.0,
+            23715.0,
+            339.81
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.5
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.41
+          ],
+          [
+            5.0,
+            59.0,
+            17.0,
+            2637.0,
+            203.89
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.41
+          ],
+          [
+            7.0,
+            33.0,
+            0.0,
+            839.0,
+            90.14
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            82.86
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            88.01
+          ]
+        ]
+      },
+      {
+        "time": 1789357339.7709746,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            94.0,
+            21229.0,
+            318.8
+          ],
+          [
+            1.0,
+            14.0,
+            12.0,
+            40235.0,
+            144.86
+          ],
+          [
+            2.0,
+            100.0,
+            84.0,
+            23715.0,
+            346.35
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.49
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.53
+          ],
+          [
+            5.0,
+            51.0,
+            16.0,
+            2637.0,
+            183.47
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.17
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            92.56
+          ],
+          [
+            8.0,
+            21.0,
+            5.0,
+            1377.0,
+            103.63
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.67
+          ]
+        ]
+      },
+      {
+        "time": 1789357340.795493,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            84.0,
+            21229.0,
+            321.42
+          ],
+          [
+            1.0,
+            88.0,
+            88.0,
+            40235.0,
+            243.94
+          ],
+          [
+            2.0,
+            100.0,
+            97.0,
+            23715.0,
+            325.73
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.54
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.46
+          ],
+          [
+            5.0,
+            50.0,
+            16.0,
+            2637.0,
+            204.55
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            93.21
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            85.52
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            91.16
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.48
+          ]
+        ]
+      },
+      {
+        "time": 1789357341.7807033,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            82.0,
+            21229.0,
+            298.11
+          ],
+          [
+            1.0,
+            100.0,
+            95.0,
+            40235.0,
+            249.8
+          ],
+          [
+            2.0,
+            100.0,
+            73.0,
+            23715.0,
+            335.63
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.3
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.4
+          ],
+          [
+            5.0,
+            54.0,
+            19.0,
+            2637.0,
+            143.78
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            84.79
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.96
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            86.06
+          ],
+          [
+            9.0,
+            47.0,
+            14.0,
+            1375.0,
+            101.81
+          ]
+        ]
+      },
+      {
+        "time": 1789357342.8000138,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            100.0,
+            21229.0,
+            306.95
+          ],
+          [
+            1.0,
+            100.0,
+            87.0,
+            40235.0,
+            256.73
+          ],
+          [
+            2.0,
+            100.0,
+            56.0,
+            23715.0,
+            357.11
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.23
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.35
+          ],
+          [
+            5.0,
+            48.0,
+            16.0,
+            2637.0,
+            224.04
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.09
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.75
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            83.29
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            94.62
+          ]
+        ]
+      },
+      {
+        "time": 1789357343.7780378,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            66.0,
+            21229.0,
+            307.46
+          ],
+          [
+            1.0,
+            100.0,
+            95.0,
+            40235.0,
+            269.69
+          ],
+          [
+            2.0,
+            100.0,
+            83.0,
+            23715.0,
+            334.13
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.59
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.23
+          ],
+          [
+            5.0,
+            53.0,
+            19.0,
+            2637.0,
+            210.27
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.15
+          ],
+          [
+            7.0,
+            31.0,
+            0.0,
+            839.0,
+            97.02
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            83.11
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            87.97
+          ]
+        ]
+      },
+      {
+        "time": 1789357344.7723246,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            74.0,
+            21229.0,
+            316.63
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            117.92
+          ],
+          [
+            2.0,
+            100.0,
+            94.0,
+            23715.0,
+            327.38
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            102.66
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.24
+          ],
+          [
+            5.0,
+            58.0,
+            20.0,
+            2637.0,
+            148.08
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.15
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            89.29
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            82.99
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.67
+          ]
+        ]
+      },
+      {
+        "time": 1789357345.797595,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            98.0,
+            21229.0,
+            314.04
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            97.52
+          ],
+          [
+            2.0,
+            100.0,
+            90.0,
+            23715.0,
+            326.69
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            88.0
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.24
+          ],
+          [
+            5.0,
+            50.0,
+            17.0,
+            2637.0,
+            224.2
+          ],
+          [
+            6.0,
+            32.0,
+            0.0,
+            769.0,
+            94.64
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            85.7
+          ],
+          [
+            8.0,
+            21.0,
+            5.0,
+            1377.0,
+            91.74
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.46
+          ]
+        ]
+      },
+      {
+        "time": 1789357346.7972875,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            61.0,
+            21229.0,
+            320.19
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            82.58
+          ],
+          [
+            2.0,
+            100.0,
+            65.0,
+            23715.0,
+            337.0
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.37
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.29
+          ],
+          [
+            5.0,
+            61.0,
+            17.0,
+            2637.0,
+            180.07
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            86.88
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            83.15
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            99.63
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.34
+          ]
+        ]
+      },
+      {
+        "time": 1789357347.7996614,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            83.0,
+            21229.0,
+            322.64
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            82.31
+          ],
+          [
+            2.0,
+            100.0,
+            61.0,
+            23715.0,
+            334.36
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.23
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.3
+          ],
+          [
+            5.0,
+            4.0,
+            0.0,
+            2637.0,
+            151.53
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            84.89
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.97
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            86.84
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            97.77
+          ]
+        ]
+      },
+      {
+        "time": 1789357348.8233213,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            90.0,
+            21229.0,
+            316.53
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            81.98
+          ],
+          [
+            2.0,
+            99.0,
+            86.0,
+            23715.0,
+            339.36
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.28
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.3
+          ],
+          [
+            5.0,
+            53.0,
+            21.0,
+            2637.0,
+            139.26
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.62
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.75
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            82.84
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            90.07
+          ]
+        ]
+      },
+      {
+        "time": 1789357349.7818294,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            74.0,
+            21229.0,
+            301.24
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            81.86
+          ],
+          [
+            2.0,
+            100.0,
+            81.0,
+            23715.0,
+            327.58
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.45
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.3
+          ],
+          [
+            5.0,
+            61.0,
+            18.0,
+            2637.0,
+            160.26
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.61
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            87.33
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            83.11
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            81.52
+          ]
+        ]
+      },
+      {
+        "time": 1789357350.800616,
+        "gpus": [
+          [
+            0.0,
+            98.0,
+            92.0,
+            21229.0,
+            316.46
+          ],
+          [
+            1.0,
+            90.0,
+            84.0,
+            40235.0,
+            148.85
+          ],
+          [
+            2.0,
+            100.0,
+            62.0,
+            23715.0,
+            332.33
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.18
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.25
+          ],
+          [
+            5.0,
+            51.0,
+            16.0,
+            2637.0,
+            211.3
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            82.53
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            95.38
+          ],
+          [
+            8.0,
+            21.0,
+            5.0,
+            1377.0,
+            98.32
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.94
+          ]
+        ]
+      },
+      {
+        "time": 1789357351.8087616,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            85.0,
+            21229.0,
+            308.68
+          ],
+          [
+            1.0,
+            32.0,
+            28.0,
+            40235.0,
+            253.43
+          ],
+          [
+            2.0,
+            99.0,
+            77.0,
+            23715.0,
+            343.63
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.15
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.25
+          ],
+          [
+            5.0,
+            55.0,
+            18.0,
+            2637.0,
+            193.05
+          ],
+          [
+            6.0,
+            32.0,
+            0.0,
+            769.0,
+            87.29
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            85.57
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            91.4
+          ],
+          [
+            9.0,
+            39.0,
+            11.0,
+            1375.0,
+            124.54
+          ]
+        ]
+      },
+      {
+        "time": 1789357352.795209,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            92.0,
+            21229.0,
+            317.9
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            211.39
+          ],
+          [
+            2.0,
+            99.0,
+            84.0,
+            23715.0,
+            326.75
+          ],
+          [
+            3.0,
+            42.0,
+            6.0,
+            745.0,
+            136.24
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.24
+          ],
+          [
+            5.0,
+            54.0,
+            17.0,
+            2637.0,
+            171.43
+          ],
+          [
+            6.0,
+            28.0,
+            0.0,
+            769.0,
+            100.89
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.98
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            86.23
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            92.1
+          ]
+        ]
+      },
+      {
+        "time": 1789357353.8252897,
+        "gpus": [
+          [
+            0.0,
+            98.0,
+            99.0,
+            21229.0,
+            318.95
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            102.8
+          ],
+          [
+            2.0,
+            100.0,
+            91.0,
+            23715.0,
+            337.76
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            97.85
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.24
+          ],
+          [
+            5.0,
+            51.0,
+            16.0,
+            2637.0,
+            188.48
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            86.46
+          ],
+          [
+            7.0,
+            32.0,
+            0.0,
+            839.0,
+            87.36
+          ],
+          [
+            8.0,
+            20.0,
+            1.0,
+            1377.0,
+            87.16
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.41
+          ]
+        ]
+      },
+      {
+        "time": 1789357354.8363853,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            86.0,
+            21229.0,
+            317.76
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            81.46
+          ],
+          [
+            2.0,
+            100.0,
+            61.0,
+            23715.0,
+            323.7
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            87.26
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.25
+          ],
+          [
+            5.0,
+            54.0,
+            21.0,
+            2637.0,
+            191.19
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            84.81
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            96.24
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            90.64
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.34
+          ]
+        ]
+      },
+      {
+        "time": 1789357355.8126767,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            97.0,
+            21229.0,
+            329.84
+          ],
+          [
+            1.0,
+            95.0,
+            89.0,
+            40235.0,
+            99.07
+          ],
+          [
+            2.0,
+            100.0,
+            65.0,
+            23715.0,
+            338.35
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.31
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.25
+          ],
+          [
+            5.0,
+            48.0,
+            16.0,
+            2637.0,
+            166.73
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            83.71
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            85.41
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            85.17
+          ],
+          [
+            9.0,
+            15.0,
+            5.0,
+            1375.0,
+            86.71
+          ]
+        ]
+      },
+      {
+        "time": 1789357356.7871559,
+        "gpus": [
+          [
+            0.0,
+            98.0,
+            100.0,
+            21229.0,
+            318.8
+          ],
+          [
+            1.0,
+            83.0,
+            82.0,
+            40235.0,
+            223.89
+          ],
+          [
+            2.0,
+            99.0,
+            87.0,
+            23715.0,
+            340.19
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.31
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.24
+          ],
+          [
+            5.0,
+            47.0,
+            15.0,
+            2637.0,
+            187.68
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            83.35
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.89
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            82.83
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            114.03
+          ]
+        ]
+      },
+      {
+        "time": 1789357357.812559,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            84.0,
+            21229.0,
+            315.2
+          ],
+          [
+            1.0,
+            100.0,
+            93.0,
+            40235.0,
+            246.97
+          ],
+          [
+            2.0,
+            100.0,
+            89.0,
+            23715.0,
+            326.4
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.52
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.23
+          ],
+          [
+            5.0,
+            48.0,
+            16.0,
+            2637.0,
+            186.23
+          ],
+          [
+            6.0,
+            32.0,
+            0.0,
+            769.0,
+            89.76
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.97
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            82.77
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            88.2
+          ]
+        ]
+      },
+      {
+        "time": 1789357358.788471,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            81.0,
+            21229.0,
+            300.5
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            139.57
+          ],
+          [
+            2.0,
+            100.0,
+            63.0,
+            23715.0,
+            327.5
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            745.0,
+            81.4
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.23
+          ],
+          [
+            5.0,
+            3.0,
+            0.0,
+            2637.0,
+            128.84
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            87.0
+          ],
+          [
+            7.0,
+            0.0,
+            0.0,
+            839.0,
+            82.99
+          ],
+          [
+            8.0,
+            21.0,
+            5.0,
+            1377.0,
+            90.61
+          ],
+          [
+            9.0,
+            0.0,
+            0.0,
+            1375.0,
+            80.65
+          ]
+        ]
+      },
+      {
+        "time": 1789357359.7899115,
+        "gpus": [
+          [
+            0.0,
+            100.0,
+            100.0,
+            21229.0,
+            309.84
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            40235.0,
+            104.35
+          ],
+          [
+            2.0,
+            99.0,
+            73.0,
+            23715.0,
+            337.77
+          ],
+          [
+            3.0,
+            49.0,
+            7.0,
+            745.0,
+            96.62
+          ],
+          [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            33.12
+          ],
+          [
+            5.0,
+            50.0,
+            16.0,
+            2637.0,
+            114.83
+          ],
+          [
+            6.0,
+            0.0,
+            0.0,
+            769.0,
+            85.13
+          ],
+          [
+            7.0,
+            26.0,
+            0.0,
+            839.0,
+            94.07
+          ],
+          [
+            8.0,
+            0.0,
+            0.0,
+            1377.0,
+            96.33
+          ],
+          [
+            9.0,
+            38.0,
+            6.0,
+            1375.0,
+            93.59
+          ]
+        ]
+      }
+    ]
+  },
+  "cpu_profile": {
+    "scope": "Two sequential CPU-only preprocess calls, same median native-voxel-count TRAIN CT; cProfile overhead included; filesystem page cache uncontrolled. Synthetic zero probabilities for geometry-only backprojection benchmark; no accuracy conclusions.",
+    "source_files": {
+      "torch_data.py": "9f6315dacdcd8813a2c37bb6a00ed029300b874ff5f0319a2b08424caef147c0",
+      "geometry.py": "1f4595de3860ce9530b9ff8e4cc92dd9380bad253d8095b31a94be81a5520f97",
+      "torch_geometry.py": "1ac2447d1950e12ffa95b8bb814f8c9750d93da63a448233d755701bcf3932a2",
+      "torch_config.py": "00854e0c6501476d3fa8e4b20d5d9795b8776da57c797fa8032cd6544da66387"
+    },
+    "runtime": {
+      "numpy": "2.4.4",
+      "scipy": "1.17.1",
+      "nibabel": "5.4.2",
+      "torch": "2.11.0+cu128"
+    },
+    "gpu_used": false,
+    "labels_opened": false,
+    "train_case_selection": "median native voxel count among197 frozen train cases",
+    "native_shape_xyz": [
+      512,
+      512,
+      93
+    ],
+    "processed_shape_zyx": [
+      93,
+      306,
+      306
+    ],
+    "preprocess_runs": [
+      {
+        "run": 1,
+        "wall_seconds": 2.2804952412843704,
+        "functions": [
+          {
+            "function": "__array__",
+            "calls": 2,
+            "self_seconds": 9.640000000000001e-06,
+            "cumulative_seconds": 0.7821724510000001
+          },
+          {
+            "function": "validate_nifti",
+            "calls": 1,
+            "self_seconds": 0.020696525,
+            "cumulative_seconds": 0.745608044
+          },
+          {
+            "function": "resample_to_output",
+            "calls": 1,
+            "self_seconds": 2.0249000000000002e-05,
+            "cumulative_seconds": 0.7253110700000001
+          },
+          {
+            "function": "affine_transform",
+            "calls": 1,
+            "self_seconds": 6.3951e-05,
+            "cumulative_seconds": 0.7238838750000001
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "wall_seconds": 2.246072832494974,
+        "functions": [
+          {
+            "function": "resample_to_output",
+            "calls": 1,
+            "self_seconds": 7.24e-06,
+            "cumulative_seconds": 0.868614659
+          },
+          {
+            "function": "affine_transform",
+            "calls": 1,
+            "self_seconds": 1.7682e-05,
+            "cumulative_seconds": 0.8677352140000001
+          },
+          {
+            "function": "__array__",
+            "calls": 2,
+            "self_seconds": 7.754e-06,
+            "cumulative_seconds": 0.776930482
+          },
+          {
+            "function": "validate_nifti",
+            "calls": 1,
+            "self_seconds": 0.0065187710000000005,
+            "cumulative_seconds": 0.701460804
+          },
+          {
+            "function": "sha256_file",
+            "calls": 2,
+            "self_seconds": 9.107600000000001e-05,
+            "cumulative_seconds": 0.040945043
+          }
+        ]
+      }
+    ],
+    "inference_work_geometry": {
+      "context_slices": 5,
+      "slices": 93,
+      "tiles_per_axis": [
+        2,
+        2
+      ],
+      "tiles_per_slice": 4,
+      "configured_batch_size": 8,
+      "forward_calls_per_volume": 93,
+      "effective_largest_batch": 4,
+      "note": "Derived from production tiling loops; no model or GPU inference run."
+    },
+    "synthetic_backprojection": {
+      "input": "Three zero-valued float32 channels with real CT processed/native geometry; not model predictions",
+      "runs": [
+        {
+          "configured_workers": 1,
+          "actual_channel_threads": 1,
+          "wall_seconds": 3.807462178170681,
+          "exact_equal_to_serial": null
+        },
+        {
+          "configured_workers": 4,
+          "actual_channel_threads": 3,
+          "wall_seconds": 1.2628647238016129,
+          "exact_equal_to_serial": true
+        }
+      ]
+    },
+    "synthetic_native_argmax": {
+      "wall_seconds": 1.3601118214428425,
+      "shape": [
+        512,
+        512,
+        93
+      ],
+      "all_background": true
+    }
+  },
+  "argmax_candidate": {
+    "measured_at_utc": "2026-09-14T03:47:54.152618+00:00",
+    "scope": "CPU-only synthetic finite float32 arrays at median native CT dimensions. No model predictions, CT payloads, masks, or labels loaded. Not real-model validation. Three alternating-order repetitions, no discarded warmups; first-use allocation effects included.",
+    "shape": [
+      512,
+      512,
+      93
+    ],
+    "voxels": 24379392,
+    "seed": 20260914,
+    "input": "Three independent uniform[0,1) channels plus explicit ties. Values are not normalized probabilities; argmax equivalence only depends on their order.",
+    "precondition": "Exactly three finite same-shape float32 channels. NaN behavior is not supported by this candidate. Production upstream finite checks must remain.",
+    "finite_precheck": {
+      "passed": true,
+      "wall_seconds": 0.015800587832927704,
+      "included_in_kernel_timings": false,
+      "reason": "Neither current production argmax nor candidate itself validates finite values; upstream inference does."
+    },
+    "explicit_patterns": [
+      [
+        0.5,
+        0.5,
+        0.5
+      ],
+      [
+        0.5,
+        0.5,
+        0.25
+      ],
+      [
+        0.25,
+        0.5,
+        0.5
+      ],
+      [
+        0.5,
+        0.25,
+        0.5
+      ],
+      [
+        0.20000000298023224,
+        0.800000011920929,
+        0.4000000059604645
+      ],
+      [
+        0.10000000149011612,
+        0.5,
+        0.8999999761581421
+      ],
+      [
+        0.8999999761581421,
+        0.5,
+        0.10000000149011612
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0
+      ]
+    ],
+    "explicit_expected_classes": [
+      0,
+      0,
+      1,
+      0,
+      1,
+      2,
+      0,
+      0,
+      0
+    ],
+    "timing_scope": "Includes full output allocation; original includes stack, argmax int64 output and uint8 cast; pairwise includes uint8 prediction and comparison temporaries. Excludes generating/checking inputs and validating output equality.",
+    "runs": [
+      {
+        "repeat": 1,
+        "order": [
+          "original",
+          "pairwise"
+        ],
+        "wall_seconds": {
+          "original": 0.4471343047916889,
+          "pairwise": 0.11222892627120018
+        },
+        "exact_equal": true,
+        "explicit_ties_equal": true,
+        "disagreement_voxels": 0
+      },
+      {
+        "repeat": 2,
+        "order": [
+          "pairwise",
+          "original"
+        ],
+        "wall_seconds": {
+          "pairwise": 0.1076391190290451,
+          "original": 0.4524596557021141
+        },
+        "exact_equal": true,
+        "explicit_ties_equal": true,
+        "disagreement_voxels": 0
+      },
+      {
+        "repeat": 3,
+        "order": [
+          "original",
+          "pairwise"
+        ],
+        "wall_seconds": {
+          "original": 0.4623223692178726,
+          "pairwise": 0.11405050754547119
+        },
+        "exact_equal": true,
+        "explicit_ties_equal": true,
+        "disagreement_voxels": 0
+      }
+    ],
+    "median_seconds": {
+      "original": 0.4524596557021141,
+      "pairwise": 0.11222892627120018
+    },
+    "median_speedup": 4.031577871544004,
+    "numpy_version": "2.4.4",
+    "script_sha256": "80cf99120d546351dce92b131bd876dfded14bb87831f89e1ec702b7d007999e",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "peak_process_rss_kib": 1182796
+  },
+  "method_notes_scope": "Existing epoch/stage accounting only; CPU preprocessing separately reads one training CT."
+}
