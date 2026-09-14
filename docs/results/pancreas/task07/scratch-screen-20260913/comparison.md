@@ -1,6 +1,6 @@
 # Task07 model comparison
 
-Generated: 2026-09-14T22:28:56.066323+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-14T22:59:02.286662+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 **27 completed, 1 running.**
 
@@ -8,7 +8,7 @@ Interim values are shown in campaign order, not sorted by apparent accuracy. Dif
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | train | 127500/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | train | 130250/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
 | [umamba_enc](models/umamba_enc-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3451 | 0.7695 | 0.3571 | 0.7541 | 42/42 | 1 |
 | [segmamba](models/segmamba-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3118 | 0.7423 | 0.3212 | 0.7355 | 42/42 | 5 |
 | [umamba_bot](models/umamba_bot-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3063 | 0.7621 | 0.3216 | 0.7276 | 42/42 | 4 |
