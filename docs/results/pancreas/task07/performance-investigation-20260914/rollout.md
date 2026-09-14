@@ -13,6 +13,11 @@ immutable HDRFS checkout. Its [GitHub Actions checks passed](https://github.com/
 Implementation and evidence are described in [reviewed-fixes.md](reviewed-fixes.md).
 The original source remains `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
+The final [main checks also passed](https://github.com/arianizadi/segmentary/actions/runs/34807708097)
+at reporter/test commit `51c31c0b`: **2,257 passed, 4 skipped, 41 deselected**,
+plus dependency consistency, lint, formatting and types. Both publishers use a
+clean reporter snapshot at this commit; the medical workers remain on `86363b10`.
+
 All 27 continuation imports completed successfully before launch. They retain
 model, optimizer, scheduler, scaler, RNG, epoch, step and checkpoint-selection
 state, with exact original checkpoint bytes and explicit source lineage.
