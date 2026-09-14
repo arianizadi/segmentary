@@ -207,3 +207,23 @@ def test_roi_manifest_builder_reads_predictions_and_images_never_reference_label
     assert set(saved["cases"]) == {"case"}
     assert saved["cases"]["case"]["bbox_xyz"] == [[3, 5], [4, 6], [5, 7]]
     assert saved["reference_labels_used"] is False
+
+
+def test_localizer_progress_can_advance_past_the_first_case(tmp_path, monkeypatch):
+    import importlib.util
+    from pathlib import Path
+
+    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    monkeypatch.syspath_prepend(str(scripts))
+    spec = importlib.util.spec_from_file_location(
+        "localizer_progress_test", scripts / "predict_medical_localizer.py"
+    )
+    localizer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(localizer)
+    for count in (1, 2, 239):
+        localizer.write_progress(
+            tmp_path,
+            {"completed_cases": count, "status": "completed" if count == 239 else "running"},
+        )
+        assert json.loads((tmp_path / "progress.json").read_text())["completed_cases"] == count
+    assert json.loads((tmp_path / "progress.json").read_text())["status"] == "completed"

@@ -24,8 +24,13 @@ from medical_checkpoint_diagnostic import sha256, verified_historical_checkpoint
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from segmentary.medical.backend import _lock
+from segmentary.medical.backend import _atomic_json, _lock
 from segmentary.medical.data import atomic_write_json, load_manifest, validate_splits
+
+
+def write_progress(output: Path, value: dict) -> None:
+    """Progress is mutable status; predictions and provenance remain immutable."""
+    _atomic_json(output / "progress.json", value)
 
 
 def main() -> None:
@@ -128,8 +133,8 @@ def main() -> None:
                             ),
                         },
                     )
-                    atomic_write_json(
-                        args.output / "progress.json",
+                    write_progress(
+                        args.output,
                         {
                             "status": "running",
                             "completed_cases": index,
@@ -159,8 +164,8 @@ def main() -> None:
                 "stage_two_initialization": "independent scratch; this checkpoint is only used for ROI prediction",
             }
             atomic_write_json(args.output / "provenance.json", receipt)
-            atomic_write_json(
-                args.output / "progress.json",
+            write_progress(
+                args.output,
                 {
                     "status": "completed",
                     "completed_cases": len(cases),
