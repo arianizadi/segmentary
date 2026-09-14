@@ -1,6 +1,6 @@
 # Exploratory mass detection and segmentation metrics
 
-Generated: 2026-09-14T22:00:11.789175+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
+Generated: 2026-09-14T22:30:14.972452+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
 
 All metrics use a 0-1 scale. P-Sen flags a positive group when any retained mass component is predicted, even at the wrong location. T-Sen requires one-to-one localization matches to reference connected components. Spe is the true-negative fraction among fully annotated negative groups. AUC requires continuous image-only scores and both reference classes. DSC is segmentation overlap. These definitions are separate from clinical diagnosis.
 

@@ -2,7 +2,7 @@
 
 **Budget and resolution experiments:** all arms are scratch DynUNet runs with the same held-out validation split. The long arm changes both update budget and polynomial-decay horizon; the finer arm changes voxel spacing and patch dimensions to preserve physical context, with more voxels per update. These are planned recipe contrasts, not equal-compute architecture rankings.
 
-Generated: 2026-09-14T22:00:11.789175+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
+Generated: 2026-09-14T22:30:14.972452+00:00. Source: `d072beb8e04a1bbcdf360cb50f3df3901d9fa08d`.
 
 **1 completed, 2 running.**
 
@@ -11,8 +11,8 @@ Interim values are shown in campaign order, not sorted by apparent accuracy. Dif
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2986 | 0.7607 | 0.3298 | 0.7559 | 42/42 | — |
-| [dynunet-long30k-seed0](models/dynunet-long30k-seed0.md) | running | train | 11500/30000 | 11000 | 42/42 | 0.2940 | 0.7260 | — | — | 0/42 | — |
-| [dynunet-fine10k-seed0](models/dynunet-fine10k-seed0.md) | running | train | 5400/10000 | 5000 | 42/42 | 0.2820 | 0.7280 | — | — | 0/42 | — |
+| [dynunet-long30k-seed0](models/dynunet-long30k-seed0.md) | running | train | 17400/30000 | 17000 | 42/42 | 0.3036 | 0.7586 | — | — | 0/42 | — |
+| [dynunet-fine10k-seed0](models/dynunet-fine10k-seed0.md) | running | train | 8300/10000 | 8000 | 42/42 | 0.2668 | 0.7441 | — | — | 0/42 | — |
 
 - **dynunet_followup_seed0_control_10000_steps_coarse** (1 planned runs): No ranking: Declared budget/resolution experiments are reported as planned contrasts, not a ranked architecture group.
 - **dynunet_followup_seed0_budget_30000_steps_coarse** (1 planned runs): No ranking: Declared budget/resolution experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
