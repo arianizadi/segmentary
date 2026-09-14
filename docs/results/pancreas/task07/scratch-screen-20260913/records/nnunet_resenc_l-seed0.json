@@ -14,7 +14,7 @@
   "scratch_origin_verified": false,
   "parameters": null,
   "training_complete": false,
-  "completed_steps": 28750,
+  "completed_steps": 30000,
   "live_step": null,
   "live_phase": null,
   "budget_steps": 250000,
@@ -99,7 +99,7 @@
   "latest_validation": null,
   "resources": {
     "finished_stage_gpu_hours": 0,
-    "active_stage_allocated_hours_estimate": 5.302151487535901,
+    "active_stage_allocated_hours_estimate": 5.523953487740623,
     "recorded_stage_invocations": 1,
     "active_stage_status": "running",
     "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
@@ -165,7 +165,7 @@
     }
   },
   "nnunet_patch_history": {
-    "current_epoch": 116,
+    "current_epoch": 121,
     "epochs": [
       {
         "epoch": 1,
@@ -971,6 +971,41 @@
         "pancreas_pseudo": 0.7954,
         "mass_pseudo": 0.556,
         "seconds": 160.93
+      },
+      {
+        "epoch": 116,
+        "loss": -0.6875,
+        "pancreas_pseudo": 0.7891,
+        "mass_pseudo": 0.5239,
+        "seconds": 161.11
+      },
+      {
+        "epoch": 117,
+        "loss": -0.6737,
+        "pancreas_pseudo": 0.7798,
+        "mass_pseudo": 0.4754,
+        "seconds": 161.05
+      },
+      {
+        "epoch": 118,
+        "loss": -0.6563,
+        "pancreas_pseudo": 0.7676,
+        "mass_pseudo": 0.4967,
+        "seconds": 161.1
+      },
+      {
+        "epoch": 119,
+        "loss": -0.6735,
+        "pancreas_pseudo": 0.7864,
+        "mass_pseudo": 0.3719,
+        "seconds": 161.17
+      },
+      {
+        "epoch": 120,
+        "loss": -0.6855,
+        "pancreas_pseudo": 0.7606,
+        "mass_pseudo": 0.4326,
+        "seconds": 160.99
       }
     ],
     "errors": []
