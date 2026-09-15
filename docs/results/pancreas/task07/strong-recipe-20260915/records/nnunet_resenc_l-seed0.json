@@ -1,0 +1,187 @@
+{
+  "id": "nnunet_resenc_l-seed0",
+  "model": "nnunet_resenc_l",
+  "scientific_recipe_sha256": "7d46abaf2947a1c6fa43da834f78434b35b8c1f0539fe06b712c9dbd04056452",
+  "backend": "nnunet",
+  "comparison_group": "nnunet_frozen_plan_scratch_seed0_250000_steps",
+  "status": "prepared",
+  "stage": null,
+  "gpu": "1",
+  "started_at": "2026-09-15T17:38:21.348484+00:00",
+  "finished_at": "2026-09-15T17:39:01.913309+00:00",
+  "last_update": "2026-09-15T17:39:01.913327+00:00",
+  "seed": 0,
+  "initialization": "scratch",
+  "scratch_origin_verified": false,
+  "parameters": null,
+  "training_complete": false,
+  "completed_steps": 0,
+  "live_step": null,
+  "live_phase": null,
+  "budget_steps": null,
+  "recipe": {
+    "architecture": "resenc",
+    "configuration": "3d_fullres",
+    "deterministic": false,
+    "fold": 0,
+    "num_epochs": null,
+    "num_iterations_per_epoch": null,
+    "purpose": "baseline",
+    "resenc": "L",
+    "seed": 0,
+    "workers": 4,
+    "patch_size": [
+      56,
+      320,
+      256
+    ],
+    "batch_size": 2,
+    "spacing": [
+      2.5,
+      0.8125,
+      0.8125
+    ],
+    "batch_dice": false,
+    "normalization_schemes": [
+      "CTNormalization"
+    ]
+  },
+  "objective": null,
+  "checkpoint_selection": "official_ema_foreground_dice",
+  "selected_checkpoint": null,
+  "selected_checkpoint_sha256": null,
+  "manifest_fingerprint": "fe4e840c2686df58c5d025dd0b7af8f0f78858cb65fc9429197df0ab85deaf85",
+  "split_fingerprint": "46183f9f5d14f3974d276bbfa7b3820f3572fae4897b17c1551b91b34765abfb",
+  "code_fingerprint": "eab6243fcc1ac87cc5b3ff6ad277ce984d89c58fbcb76910c33578d90c949505",
+  "runtime_fingerprint": "949a1552e47e137101262f91810dc28b7e5292ea40c47edbf5a196d4a4cc7a8d",
+  "performance": {
+    "epochs": [],
+    "training_segments": [],
+    "validation_cases": [],
+    "stage_invocations": [],
+    "lineage": {
+      "is_continuation": false,
+      "independent_training_replicate": true,
+      "parents": [],
+      "continued_from_step": null,
+      "action": null,
+      "parent_history_available": null
+    },
+    "prediction": {
+      "available": false,
+      "expected_cases": 42,
+      "recorded_cases": 0,
+      "completed_cases": 0,
+      "failed_cases": 0,
+      "complete_cohort": false,
+      "pipeline_measurement_complete": false,
+      "cases": [],
+      "case_latency_seconds": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "min": null,
+        "max": null
+      },
+      "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+      "pipeline_wall_seconds": null,
+      "pipeline_scope": "not_recorded",
+      "scans_per_second": null,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "cache": {},
+      "checkpoint_sha256": null
+    },
+    "model_only_inference": {
+      "status": "not_recorded",
+      "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+    },
+    "definitions": {
+      "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+      "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+      "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+      "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+      "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+    }
+  },
+  "curves": [],
+  "latest_validation": null,
+  "resources": {
+    "finished_stage_gpu_hours": null,
+    "active_stage_allocated_hours_estimate": null,
+    "recorded_stage_invocations": 0,
+    "active_stage_status": null,
+    "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+  },
+  "evaluation": {},
+  "screening_rank": null,
+  "report_issues": [],
+  "failure_recorded": false,
+  "peak_allocated_bytes": null,
+  "peak_reserved_bytes": null,
+  "clinical_metrics": {
+    "available": false,
+    "cohort_complete": false,
+    "metrics": {
+      "patient_sensitivity": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      },
+      "tumor_sensitivity": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      },
+      "specificity": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      },
+      "auc": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      },
+      "mass_dsc": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      },
+      "pancreas_dsc": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      }
+    }
+  },
+  "nnunet_training_telemetry": {
+    "status": null,
+    "training_seconds": null,
+    "validation_seconds": null,
+    "peak_allocated_gpu_bytes": null,
+    "peak_reserved_gpu_bytes": null
+  },
+  "nnunet_patch_history": {},
+  "expected_validation_cases": 42,
+  "display_name": "nnunet_resenc_l"
+}
