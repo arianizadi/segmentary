@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-15T20:32:58.680549+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-15T20:36:04.494272+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 ## Native CT prediction
 
@@ -8,7 +8,7 @@ This measures heterogeneous full CT examinations. Case p50/p95 includes CPU work
 
 | Model | Status | Cases | Failed | Pipeline wall s | Scans/s | Case p50 s | Case p95 s | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | completed | 0/42 | 0 | — | — | — | — | — |
 | [umamba_enc](models/umamba_enc-seed0.md) | completed | 42/42 | 0 | — | — | 7.561 | 11.806 | — |
 | [segmamba](models/segmamba-seed0.md) | completed | 42/42 | 0 | — | — | 8.459 | 12.950 | — |
 | [umamba_bot](models/umamba_bot-seed0.md) | completed | 42/42 | 0 | — | — | 7.493 | 11.457 | — |

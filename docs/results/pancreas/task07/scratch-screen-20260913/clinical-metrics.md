@@ -1,12 +1,12 @@
 # Exploratory mass detection and segmentation metrics
 
-Generated: 2026-09-15T20:32:58.680549+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-15T20:36:04.494272+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 All metrics use a 0-1 scale. P-Sen flags a positive group when any retained mass component is predicted, even at the wrong location. T-Sen requires one-to-one localization matches to reference connected components. Spe is the true-negative fraction among fully annotated negative groups. AUC requires continuous image-only scores and both reference classes. DSC is segmentation overlap. These definitions are separate from clinical diagnosis.
 
 | Model | Status | Complete cohort | P-Sen (group proxy) | T-Sen | Spe | AUC | Mass DSC | Pancreas DSC | Unavailable reasons |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | False | — | — | — | — | — | — | Diagnostic has not run yet. |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | completed | False | — | — | — | — | — | — | Diagnostic has not run yet. |
 | [umamba_enc](models/umamba_enc-seed0.md) | completed | True | 0.857 | 0.595 | — | — | 0.357 | 0.754 | No fully annotated reference-negative groups.; ROC AUC requires positive and negative reference groups. |
 | [segmamba](models/segmamba-seed0.md) | completed | True | 0.881 | 0.524 | — | — | 0.321 | 0.736 | No fully annotated reference-negative groups.; ROC AUC requires positive and negative reference groups. |
 | [umamba_bot](models/umamba_bot-seed0.md) | completed | True | 0.857 | 0.500 | — | — | 0.322 | 0.728 | No fully annotated reference-negative groups.; ROC AUC requires positive and negative reference groups. |

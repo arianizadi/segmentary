@@ -2,24 +2,24 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-15T20:32:58.680549+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-15T20:36:04.494272+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-Status: **running**. Stage: **predict**. GPU: **0**.
+Status: **completed**. Stage: **—**. GPU: **0**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | 2026-09-13T23:17:33.231143+00:00 / — |
-| Last worker update | 2026-09-15T20:31:33.890625+00:00 |
+| Started / finished | 2026-09-13T23:17:33.231143+00:00 / 2026-09-15T20:35:30.258394+00:00 |
+| Last worker update | 2026-09-15T20:35:30.258404+00:00 |
 | Completed / budget steps | 250000 / 250000 |
 | Live step / phase | — / — |
 | Parameters | — |
 | Objective | — |
 | Checkpoint selection | — |
-| Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | 45.1190 |
-| Active-stage allocated hours (estimate) | 0.0229 |
+| Selected checkpoint SHA256 | 75cc4fcb2f5a5d9b1c113d51f86b75fe0c8eb58e936fbe424e2a2eab657d4289 |
+| Finished-stage allocated GPU-hours | 45.1689 |
+| Active-stage allocated hours (estimate) | — |
 | Peak allocated / reserved GiB | — / — |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -45,7 +45,14 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 
 ## Final validation evaluation
 
-Not available yet. Training loss or a forward-pass smoke test cannot replace this evaluation.
+| Region | Patient mean Dice | 95% bootstrap interval | Surface Dice | HD95 mm | HD95 case coverage |
+| --- | --- | --- | --- | --- | --- |
+| pancreas | 0.8419 | 0.8208 to 0.8633 | 0.7873 | 14.9215 | 1.0000 |
+| mass | 0.5468 | 0.4414 to 0.6283 | 0.5320 | 20.8297 | 0.9524 |
+
+Complete prediction/reference coverage: **True**. Native reference cohort: `749cde7099ad36aea2e49b1978326a8ee29ca75ae4f9777c123d2742fd99a028`.
+
+HD95 excludes undefined/infinite distances; use its coverage alongside Dice so missed masses cannot disappear from interpretation.
 
 ## Recorded training and inference data
 

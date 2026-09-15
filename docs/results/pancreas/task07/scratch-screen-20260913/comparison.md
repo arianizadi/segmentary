@@ -1,14 +1,14 @@
 # Task07 model comparison
 
-Generated: 2026-09-15T20:32:58.680549+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-15T20:36:04.494272+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
-**27 completed, 1 running.**
+**28 completed.**
 
 Interim values are shown in campaign order, not sorted by apparent accuracy. Different validated step counts cannot establish a winner.
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | predict | 250000/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | completed | — | 250000/250000 | — | 0/42 | — | — | 0.5468 | 0.8419 | 42/42 | — |
 | [umamba_enc](models/umamba_enc-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3451 | 0.7695 | 0.3571 | 0.7541 | 42/42 | 1 |
 | [segmamba](models/segmamba-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3118 | 0.7423 | 0.3212 | 0.7355 | 42/42 | 5 |
 | [umamba_bot](models/umamba_bot-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3063 | 0.7621 | 0.3216 | 0.7276 | 42/42 | 4 |
@@ -37,7 +37,7 @@ Interim values are shown in campaign order, not sorted by apparent accuracy. Dif
 | [bisenetv2](models/bisenetv2-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1039 | 0.5888 | 0.1464 | 0.5664 | 42/42 | 17 |
 | [lraspp](models/lraspp-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.1044 | 0.5543 | 0.1463 | 0.5191 | 42/42 | 18 |
 
-- **nnunet_official_resenc_l_seed0** (1 planned runs): No ranking: Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Mass Dice is unavailable.
+- **nnunet_official_resenc_l_seed0** (1 planned runs): No ranking: Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable.
 - **torch_common_scratch_seed0_10000_steps** (27 planned runs): Completed exploratory ranking available; seed replication and external evaluation remain outstanding.
 
 All scores are on a 0-1 scale; — means unavailable, never zero. This is an

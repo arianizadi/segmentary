@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign_id": "task07-scratch-screen-20260913",
-  "generated_at": "2026-09-15T20:32:58.680549+00:00",
+  "generated_at": "2026-09-15T20:36:04.494272+00:00",
   "source_commit": "9f7615bd1f6035d65aca3f848a263b67c49f531f",
   "split_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
   "split_counts": {
@@ -26,12 +26,8 @@
     "nnunet_official_resenc_l_seed0": {
       "ranked": false,
       "reasons": [
-        "Not all planned runs have completed",
-        "Native validation coverage is incomplete",
         "Complete scratch training evidence is unavailable",
-        "Required source, split or checkpoint provenance is unavailable",
-        "Evaluation is not bound to the declared best validation checkpoint",
-        "Mass Dice is unavailable"
+        "Required source, split or checkpoint provenance is unavailable"
       ],
       "planned_runs": 1
     },
@@ -42,8 +38,7 @@
     }
   },
   "status_counts": {
-    "running": 1,
-    "completed": 27
+    "completed": 28
   },
   "optimization": {
     "pipeline": {
@@ -627,12 +622,12 @@
       "model": "nnunet_resenc_l",
       "backend": "nnunet",
       "comparison_group": "nnunet_official_resenc_l_seed0",
-      "status": "running",
-      "stage": "predict",
+      "status": "completed",
+      "stage": null,
       "gpu": "0",
       "started_at": "2026-09-13T23:17:33.231143+00:00",
-      "finished_at": null,
-      "last_update": "2026-09-15T20:31:33.890625+00:00",
+      "finished_at": "2026-09-15T20:35:30.258394+00:00",
+      "last_update": "2026-09-15T20:35:30.258404+00:00",
       "seed": 0,
       "initialization": null,
       "scratch_origin_verified": false,
@@ -655,8 +650,8 @@
       },
       "objective": null,
       "checkpoint_selection": null,
-      "selected_checkpoint": null,
-      "selected_checkpoint_sha256": null,
+      "selected_checkpoint": "checkpoint_best.pth",
+      "selected_checkpoint_sha256": "75cc4fcb2f5a5d9b1c113d51f86b75fe0c8eb58e936fbe424e2a2eab657d4289",
       "manifest_fingerprint": "fe4e840c2686df58c5d025dd0b7af8f0f78858cb65fc9429197df0ab85deaf85",
       "split_fingerprint": "46183f9f5d14f3974d276bbfa7b3820f3572fae4897b17c1551b91b34765abfb",
       "code_fingerprint": "600a666367cc1eea377235527b5d7788b3853b79b3024d90e8eb5603aee60248",
@@ -671,6 +666,12 @@
             "status": "completed",
             "wall_seconds": 384.15498399734497,
             "allocated_gpu_hours": 0.0
+          },
+          {
+            "action": "predict",
+            "status": "completed",
+            "wall_seconds": 179.5545313358307,
+            "allocated_gpu_hours": 0.049876258704397415
           },
           {
             "action": "train",
@@ -728,13 +729,68 @@
       "curves": [],
       "latest_validation": null,
       "resources": {
-        "finished_stage_gpu_hours": 45.118990921378135,
-        "active_stage_allocated_hours_estimate": 0.0229423991839091,
-        "recorded_stage_invocations": 2,
-        "active_stage_status": "running",
+        "finished_stage_gpu_hours": 45.16886718008253,
+        "active_stage_allocated_hours_estimate": null,
+        "recorded_stage_invocations": 3,
+        "active_stage_status": "completed",
         "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
       },
-      "evaluation": {},
+      "evaluation": {
+        "cohort_fingerprint": "749cde7099ad36aea2e49b1978326a8ee29ca75ae4f9777c123d2742fd99a028",
+        "manifest_fingerprint": "fe4e840c2686df58c5d025dd0b7af8f0f78858cb65fc9429197df0ab85deaf85",
+        "protocol_fingerprint": "12a12e4e1439ef7e86145f24561e6cfd4c305ca81339635f052714de3cee4561",
+        "protocol": {
+          "pancreas_include_mass": true,
+          "surface_tolerance_mm": 2.0,
+          "surface_method": "DeepMind surfel-area-weighted surface-distance",
+          "hd95_definition": "maximum of directional area-weighted 95th-percentile distances in mm",
+          "prediction_failure_policy": "zero Dice and surface Dice for known positive references; undefined distances; no imputed negatives",
+          "empty_policy": "both-empty excluded from Dice means; reference-empty outcomes reported separately",
+          "aggregation": "equal-weight patient means over reference-positive annotated cases",
+          "lesion_iou_threshold": null,
+          "bootstrap_samples": 1000,
+          "seed": 0
+        },
+        "coverage": {
+          "eligible_cases": 42,
+          "annotated_cases": 42,
+          "status_counts": {
+            "ok": 42
+          },
+          "valid_reference_cases": 42,
+          "reference_coverage": 1.0,
+          "valid_prediction_cases": 42,
+          "prediction_coverage": 1.0,
+          "review_failures": 0
+        },
+        "complete_coverage": true,
+        "pancreas": {
+          "dice": 0.8419230931460624,
+          "dice_ci": [
+            0.8207517692191559,
+            0.8633336659647831
+          ],
+          "surface_dice": 0.7872959059224269,
+          "hd95_mm": 14.921493674648554,
+          "hd95_coverage": 1.0,
+          "reference_positive_cases": 42,
+          "reference_empty_cases": 0,
+          "reference_empty_prediction_nonempty_cases": 0
+        },
+        "mass": {
+          "dice": 0.5467946241684135,
+          "dice_ci": [
+            0.4413767316389881,
+            0.628258636638048
+          ],
+          "surface_dice": 0.5320330213501121,
+          "hd95_mm": 20.82973810238054,
+          "hd95_coverage": 0.9523809523809523,
+          "reference_positive_cases": 42,
+          "reference_empty_cases": 0,
+          "reference_empty_prediction_nonempty_cases": 0
+        }
+      },
       "screening_rank": null,
       "report_issues": [],
       "failure_recorded": false,
