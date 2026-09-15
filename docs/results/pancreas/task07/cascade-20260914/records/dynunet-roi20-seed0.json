@@ -1,0 +1,243 @@
+{
+  "id": "dynunet-roi20-seed0",
+  "model": "dynunet",
+  "scientific_recipe_sha256": "fc63784c1c483fa18e23d9cfd0f7b419ed1b47f2fe94ed68c64d66508fbc8c79",
+  "backend": "torch",
+  "comparison_group": "recipe_cascade_roi20",
+  "status": "queued",
+  "stage": null,
+  "gpu": null,
+  "started_at": null,
+  "finished_at": null,
+  "last_update": null,
+  "seed": 0,
+  "initialization": "scratch",
+  "scratch_origin_verified": false,
+  "parameters": null,
+  "training_complete": false,
+  "completed_steps": 0,
+  "live_step": null,
+  "live_phase": null,
+  "budget_steps": 10000,
+  "recipe": {
+    "augment": true,
+    "backend": "torch",
+    "batch_size": 8,
+    "center_probabilities": null,
+    "class_center_weights": null,
+    "context_slices": 1,
+    "deterministic": false,
+    "epochs": 100,
+    "foreground_probability": 0.5,
+    "gradient_clip": 12.0,
+    "hu_window": [
+      -100.0,
+      240.0
+    ],
+    "inference_batch_size": 8,
+    "intensity_scale_probability": 0.0,
+    "intensity_scale_range": [
+      0.9,
+      1.1
+    ],
+    "learning_rate": 0.0003,
+    "mode": "3d",
+    "model": "dynunet",
+    "model_options": {
+      "filters": [
+        32,
+        64,
+        128,
+        256,
+        320
+      ],
+      "res_block": false
+    },
+    "overlap": 0.5,
+    "patch_size": [
+      96,
+      96,
+      96
+    ],
+    "precision": "bf16",
+    "prefetch_batches": true,
+    "progress_interval": 10,
+    "purpose": "baseline",
+    "rotation_degrees": [
+      -15.0,
+      15.0
+    ],
+    "rotation_padding_value": 0.0,
+    "rotation_probability": 0.0,
+    "seed": 0,
+    "spacing_mm": [
+      1.5,
+      1.5,
+      2.5
+    ],
+    "steps_per_epoch": 100,
+    "validation_interval": 10,
+    "weight_decay": 1e-05,
+    "workers": 4
+  },
+  "objective": null,
+  "checkpoint_selection": null,
+  "selected_checkpoint": null,
+  "selected_checkpoint_sha256": null,
+  "manifest_fingerprint": null,
+  "split_fingerprint": null,
+  "code_fingerprint": null,
+  "runtime_fingerprint": null,
+  "performance": {
+    "epochs": [],
+    "training_segments": [],
+    "validation_cases": [],
+    "stage_invocations": [],
+    "lineage": {
+      "is_continuation": false,
+      "independent_training_replicate": true,
+      "parents": [],
+      "continued_from_step": null,
+      "action": null,
+      "parent_history_available": null
+    },
+    "prediction": {
+      "available": false,
+      "expected_cases": 42,
+      "recorded_cases": 0,
+      "completed_cases": 0,
+      "failed_cases": 0,
+      "complete_cohort": false,
+      "pipeline_measurement_complete": false,
+      "cases": [],
+      "case_latency_seconds": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "min": null,
+        "max": null
+      },
+      "case_latency_scope": "legacy serial case wall including preprocessing and export; excludes status/checkpoint hash writes",
+      "pipeline_wall_seconds": null,
+      "pipeline_scope": "not_recorded",
+      "scans_per_second": null,
+      "peak_allocated_bytes": null,
+      "peak_reserved_bytes": null,
+      "cache": {},
+      "checkpoint_sha256": null
+    },
+    "model_only_inference": {
+      "status": "not_recorded",
+      "scope": "No standardized CUDA-event forward benchmark has been recorded; CT case timings cannot substitute."
+    },
+    "definitions": {
+      "epoch_totals": "Observed committed epoch logs only; missing checkpoint times remain missing. Parent and current segments are separate, not independent seeds.",
+      "stage_cost": "Current workspace invocations only, including failures/cancellations. Allocation is not utilization. Parent allocation is not copied or double-counted.",
+      "case_numbers": "One-based positions in frozen validation partition; no scan or patient identifiers published.",
+      "inference_seconds": "Tiled pipeline including host/device transfers, model forward, softmax and CPU blending; not model-only latency.",
+      "percentiles": "Inclusive linear p95 over recorded case wall times; heterogeneous CT sizes and queue time prevent a standardized model-speed claim."
+    }
+  },
+  "curves": [],
+  "latest_validation": null,
+  "resources": {
+    "finished_stage_gpu_hours": null,
+    "active_stage_allocated_hours_estimate": null,
+    "recorded_stage_invocations": 0,
+    "active_stage_status": null,
+    "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
+  },
+  "evaluation": {},
+  "screening_rank": null,
+  "report_issues": [],
+  "failure_recorded": false,
+  "peak_allocated_bytes": null,
+  "peak_reserved_bytes": null,
+  "clinical_metrics": {
+    "available": false,
+    "cohort_complete": false,
+    "metrics": {
+      "patient_sensitivity": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      },
+      "tumor_sensitivity": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      },
+      "specificity": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      },
+      "auc": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      },
+      "mass_dsc": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      },
+      "pancreas_dsc": {
+        "value": null,
+        "status": "unavailable",
+        "reason_code": "not_run",
+        "reason": "Diagnostic has not run yet.",
+        "numerator": null,
+        "denominator": null
+      }
+    }
+  },
+  "followup_experiment": {
+    "arm": "roi20",
+    "changes_from_control": {
+      "roi_manifest": "/data/izadia1/projects/segmentary-cascade-operator-20260914/roi20.json",
+      "roi_manifest_sha256": "627cc11b7d45cb456e2d5795b0b8ba4db5af1248b2a044862fac5c600196b574"
+    },
+    "control_run_id": "dynunet-control10k-seed0",
+    "description": "Predicted pancreas bounding box with 20 mm margin; full-native evaluation",
+    "nominal_crop_extent_mm_xyz": [
+      144.0,
+      144.0,
+      240.0
+    ],
+    "optimizer_steps": 10000,
+    "sampled_patches": 80000,
+    "scientific_recipe_sha256": "fc63784c1c483fa18e23d9cfd0f7b419ed1b47f2fe94ed68c64d66508fbc8c79",
+    "validation_epochs": [
+      1,
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100
+    ]
+  },
+  "expected_validation_cases": 42,
+  "display_name": "dynunet-roi20-seed0"
+}
