@@ -2,21 +2,21 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T02:41:56.708661+00:00. Source: `993e6413341dbc5c39ec46cdf5f846e246215b4f`.
+Generated: 2026-09-15T03:08:59.740627+00:00. Source: `993e6413341dbc5c39ec46cdf5f846e246215b4f`.
 
-**3 running.**
+**3 completed.**
 
 Interim values are shown in campaign order, not sorted by apparent accuracy. Different validated step counts cannot establish a winner.
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | train | 5400/10000 | 5000 | 42/42 | 0.2729 | 0.7198 | — | — | 0/42 | — |
-| [dynunet-roi20-seed0](models/dynunet-roi20-seed0.md) | running | train | 6700/10000 | 6000 | 42/42 | 0.3189 | 0.6948 | — | — | 0/42 | — |
-| [dynunet-roi40-seed0](models/dynunet-roi40-seed0.md) | running | train | 6600/10000 | 6000 | 42/42 | 0.3259 | 0.7312 | — | — | 0/42 | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2986 | 0.7607 | 0.3298 | 0.7559 | 42/42 | — |
+| [dynunet-roi20-seed0](models/dynunet-roi20-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2963 | 0.7025 | 0.3189 | 0.6948 | 42/42 | — |
+| [dynunet-roi40-seed0](models/dynunet-roi40-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2890 | 0.7207 | 0.3296 | 0.7307 | 42/42 | — |
 
-- **dynunet_deep_supervision_seed0_control_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
-- **recipe_cascade_roi20** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
-- **recipe_cascade_roi40** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
+- **dynunet_deep_supervision_seed0_control_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
+- **recipe_cascade_roi20** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
+- **recipe_cascade_roi40** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
 
 All scores are on a 0-1 scale; — means unavailable, never zero. This is an
 exploratory seed-0 screening study, with no claim of a clinical or publishable

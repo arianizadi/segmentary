@@ -1,4 +1,10 @@
 run_id,model,invocation_number,action,status,wall_seconds,allocated_gpu_hours
-dynunet-control10k-seed0,dynunet,1,preprocess,completed,29.049036264419556,0.0
-dynunet-roi20-seed0,dynunet,1,preprocess,completed,15.089914798736572,0.0
-dynunet-roi40-seed0,dynunet,1,preprocess,completed,15.832709789276123,0.0
+dynunet-control10k-seed0,dynunet,1,predict,completed,119.60895848274231,0.03322471068965064
+dynunet-control10k-seed0,dynunet,2,preprocess,completed,29.049036264419556,0.0
+dynunet-control10k-seed0,dynunet,3,train,completed,3154.076931476593,0.8761324809657203
+dynunet-roi20-seed0,dynunet,1,predict,completed,81.55527591705322,0.022654243310292563
+dynunet-roi20-seed0,dynunet,2,preprocess,completed,15.089914798736572,0.0
+dynunet-roi20-seed0,dynunet,3,train,completed,2624.4089941978455,0.7290024983882905
+dynunet-roi40-seed0,dynunet,1,predict,completed,86.20340847969055,0.023945391244358488
+dynunet-roi40-seed0,dynunet,2,preprocess,completed,15.832709789276123,0.0
+dynunet-roi40-seed0,dynunet,3,train,completed,2660.147893190384,0.7389299703306622
