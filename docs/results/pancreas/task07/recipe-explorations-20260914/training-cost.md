@@ -1,20 +1,20 @@
 # Recorded training cost
 
-Generated: 2026-09-15T00:38:50.653104+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T01:08:53.939138+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 All models remain visible. Seconds are sums of retained committed epoch measurements; coverage shows recorded timings / retained epochs in that segment. Missing legacy checkpoint timings are unknown, never zero. Parent segments describe the same training lineage, not additional seeds. Current stage GPU-hours include failed/cancelled invocations and startup; they are allocation time, not GPU utilization.
 
 | Model | Status | History segment | Training seconds (coverage) | Validation seconds (coverage) | Checkpoint seconds (coverage) | Current finished-stage GPU-h |
 | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | current | 1244.924 (55/55 epochs) | 455.912 (55/55 epochs) | 25.591 (55/55 epochs) | 0.000 |
-| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | running | current | 1244.289 (54/54 epochs) | 466.942 (54/54 epochs) | 25.094 (54/54 epochs) | 0.000 |
-| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | running | current | 1258.071 (55/55 epochs) | 454.686 (55/55 epochs) | 25.591 (55/55 epochs) | 0.000 |
-| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | running | current | 1255.046 (55/55 epochs) | 449.633 (55/55 epochs) | 25.480 (55/55 epochs) | 0.000 |
-| [dynunet-window-seed0](models/dynunet-window-seed0.md) | running | current | 1252.848 (55/55 epochs) | 456.765 (55/55 epochs) | 25.999 (55/55 epochs) | 0.000 |
-| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | running | current | 1235.287 (54/54 epochs) | 454.697 (54/54 epochs) | 25.192 (54/54 epochs) | 0.000 |
-| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | current | 1303.996 (34/34 epochs) | 395.413 (34/34 epochs) | 16.318 (34/34 epochs) | 0.000 |
-| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | current | 1403.956 (23/23 epochs) | 301.673 (23/23 epochs) | 10.954 (23/23 epochs) | 0.000 |
-| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | queued | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | current | 2263.016 (100/100 epochs) | 812.416 (100/100 epochs) | 47.341 (100/100 epochs) | 0.907 |
+| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | completed | current | 2303.384 (100/100 epochs) | 829.258 (100/100 epochs) | 46.848 (100/100 epochs) | 0.920 |
+| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | completed | current | 2286.400 (100/100 epochs) | 810.077 (100/100 epochs) | 46.660 (100/100 epochs) | 0.911 |
+| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | completed | current | 2282.607 (100/100 epochs) | 814.844 (100/100 epochs) | 47.155 (100/100 epochs) | 0.912 |
+| [dynunet-window-seed0](models/dynunet-window-seed0.md) | completed | current | 2277.908 (100/100 epochs) | 823.821 (100/100 epochs) | 47.173 (100/100 epochs) | 0.914 |
+| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | completed | current | 2287.721 (100/100 epochs) | 814.350 (100/100 epochs) | 47.313 (100/100 epochs) | 0.914 |
+| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | current | 2722.171 (71/71 epochs) | 770.233 (71/71 epochs) | 33.875 (71/71 epochs) | 0.000 |
+| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | current | 2989.790 (49/49 epochs) | 494.981 (49/49 epochs) | 23.239 (49/49 epochs) | 0.000 |
+| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | 0.000 |
 
 [Epoch numerical records](epochs.csv) · [Stage invocations, including failures](stage-invocations.csv) · [Comparison](comparison.md)
 

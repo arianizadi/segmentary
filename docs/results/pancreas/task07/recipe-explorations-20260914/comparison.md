@@ -2,30 +2,30 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T00:38:50.653104+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T01:08:53.939138+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
-**1 queued, 8 running.**
+**6 completed, 3 running.**
 
 Interim values are shown in campaign order, not sorted by apparent accuracy. Different validated step counts cannot establish a winner.
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | train | 5500/10000 | 5000 | 42/42 | 0.2729 | 0.7198 | — | — | 0/42 | — |
-| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | running | train | 5400/10000 | 5000 | 42/42 | 0.2585 | 0.6899 | — | — | 0/42 | — |
-| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | running | train | 5500/10000 | 5000 | 42/42 | 0.3013 | 0.7020 | — | — | 0/42 | — |
-| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | running | train | 5500/10000 | 5000 | 42/42 | 0.3238 | 0.7185 | — | — | 0/42 | — |
-| [dynunet-window-seed0](models/dynunet-window-seed0.md) | running | train | 5500/10000 | 5000 | 42/42 | 0.2953 | 0.7110 | — | — | 0/42 | — |
-| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | running | train | 5400/10000 | 5000 | 42/42 | 0.2649 | 0.6717 | — | — | 0/42 | — |
-| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | train | 3400/10000 | 3000 | 42/42 | 0.3296 | 0.6866 | — | — | 0/42 | — |
-| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | train | 2300/10000 | 2000 | 42/42 | 0.1845 | 0.4764 | — | — | 0/42 | — |
-| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2986 | 0.7607 | 0.3298 | 0.7559 | 42/42 | — |
+| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3049 | 0.7471 | 0.3069 | 0.7407 | 42/42 | — |
+| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2942 | 0.7438 | 0.3171 | 0.7228 | 42/42 | — |
+| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3094 | 0.7555 | 0.3238 | 0.7185 | 42/42 | — |
+| [dynunet-window-seed0](models/dynunet-window-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2886 | 0.7341 | 0.2953 | 0.7110 | 42/42 | — |
+| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2978 | 0.7492 | 0.3067 | 0.7045 | 42/42 | — |
+| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | train | 7100/10000 | 7000 | 42/42 | 0.2840 | 0.7296 | — | — | 0/42 | — |
+| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | train | 4900/10000 | 4000 | 42/42 | 0.2011 | 0.6450 | — | — | 0/42 | — |
+| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | train | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
 
-- **dynunet_deep_supervision_seed0_control_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
-- **dynunet_deep_supervision_seed0_auxiliary_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
-- **recipe_focal05** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
-- **recipe_focal10** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
-- **recipe_hu_window** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
-- **recipe_volume_minmax** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
+- **dynunet_deep_supervision_seed0_control_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
+- **dynunet_deep_supervision_seed0_auxiliary_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
+- **recipe_focal05** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
+- **recipe_focal10** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
+- **recipe_hu_window** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
+- **recipe_volume_minmax** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
 - **recipe_isotropic** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
 - **recipe_swin24** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
 - **recipe_swin48** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.

@@ -2,24 +2,24 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-15T00:38:50.653104+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T01:08:53.939138+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
-Status: **running**. Stage: **train**. GPU: **2**.
+Status: **completed**. Stage: **—**. GPU: **2**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | 2026-09-15T00:08:44.942069+00:00 / — |
-| Last worker update | 2026-09-15T00:09:26.169813+00:00 |
-| Completed / budget steps | 5400 / 10000 |
-| Live step / phase | 5410 / train |
+| Started / finished | 2026-09-15T00:08:44.942069+00:00 / 2026-09-15T01:05:56.698374+00:00 |
+| Last worker update | 2026-09-15T01:05:56.698391+00:00 |
+| Completed / budget steps | 10000 / 10000 |
+| Live step / phase | — / prediction |
 | Parameters | 16544265 |
 | Objective | dense_ce_dice_with_two_native_decoder_auxiliary_losses |
 | Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
-| Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 0.4866 |
+| Selected checkpoint SHA256 | dd61b169e9caabe66ce828f028277179c852e67a477b27285cd7518dc9e8762c |
+| Finished-stage allocated GPU-hours | 0.9203 |
+| Active-stage allocated hours (estimate) | — |
 | Peak allocated / reserved GiB | 7.74 / 10.92 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -147,10 +147,63 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 | 52 | 5200 | 0.3262 | 0.0001549667 | — | — | 22.9869 | 0.0000 | 0.4711 |
 | 53 | 5300 | 0.3246 | 0.000152058 | — | — | 23.0115 | 0.0000 | 0.4682 |
 | 54 | 5400 | 0.3310 | 0.0001491431 | — | — | 23.0193 | 0.0000 | 0.4577 |
+| 55 | 5500 | 0.3216 | 0.0001462219 | — | — | 23.0291 | 0.0000 | 0.4718 |
+| 56 | 5600 | 0.3109 | 0.0001432942 | — | — | 23.0763 | 0.0000 | 0.4693 |
+| 57 | 5700 | 0.3171 | 0.0001403598 | — | — | 23.0492 | 0.0000 | 0.4902 |
+| 58 | 5800 | 0.3102 | 0.0001374186 | — | — | 23.0811 | 0.0000 | 0.5411 |
+| 59 | 5900 | 0.3137 | 0.0001344704 | — | — | 23.0532 | 0.0000 | 0.4703 |
+| 60 | 6000 | 0.3251 | 0.000131515 | 0.7407 | 0.3027 | 23.0052 | 70.3530 | 0.5965 |
+| 61 | 6100 | 0.3198 | 0.0001285522 | — | — | 22.9281 | 0.0000 | 0.4164 |
+| 62 | 6200 | 0.2993 | 0.0001255817 | — | — | 22.9881 | 0.0000 | 0.4566 |
+| 63 | 6300 | 0.2988 | 0.0001226035 | — | — | 23.0059 | 0.0000 | 0.4711 |
+| 64 | 6400 | 0.3054 | 0.0001196172 | — | — | 23.0242 | 0.0000 | 0.4490 |
+| 65 | 6500 | 0.3093 | 0.0001166225 | — | — | 22.9860 | 0.0000 | 0.4689 |
+| 66 | 6600 | 0.3083 | 0.0001136193 | — | — | 23.0042 | 0.0000 | 0.4479 |
+| 67 | 6700 | 0.3013 | 0.0001106073 | — | — | 23.0390 | 0.0000 | 0.4567 |
+| 68 | 6800 | 0.2983 | 0.0001075861 | — | — | 22.9849 | 0.0000 | 0.4887 |
+| 69 | 6900 | 0.2713 | 0.0001045555 | — | — | 23.0001 | 0.0000 | 0.4730 |
+| 70 | 7000 | 0.2739 | 0.000101515 | 0.7111 | 0.2472 | 23.0035 | 73.2749 | 0.4612 |
+| 71 | 7100 | 0.2714 | 9.846445e-05 | — | — | 22.9368 | 0.0000 | 0.4579 |
+| 72 | 7200 | 0.2845 | 9.540332e-05 | — | — | 22.9909 | 0.0000 | 0.4704 |
+| 73 | 7300 | 0.2710 | 9.233123e-05 | — | — | 23.4121 | 0.0000 | 0.4653 |
+| 74 | 7400 | 0.2810 | 8.924775e-05 | — | — | 23.0327 | 0.0000 | 0.4677 |
+| 75 | 7500 | 0.2726 | 8.615238e-05 | — | — | 23.0627 | 0.0000 | 0.4754 |
+| 76 | 7600 | 0.2522 | 8.30446e-05 | — | — | 23.0528 | 0.0000 | 0.4778 |
+| 77 | 7700 | 0.2850 | 7.992383e-05 | — | — | 23.0271 | 0.0000 | 0.4681 |
+| 78 | 7800 | 0.2889 | 7.678947e-05 | — | — | 23.0069 | 0.0000 | 0.4724 |
+| 79 | 7900 | 0.2660 | 7.364082e-05 | — | — | 23.0015 | 0.0000 | 0.4680 |
+| 80 | 8000 | 0.2783 | 7.047714e-05 | 0.7300 | 0.2955 | 23.0122 | 69.5906 | 0.4736 |
+| 81 | 8100 | 0.2663 | 6.729759e-05 | — | — | 22.9151 | 0.0000 | 0.4743 |
+| 82 | 8200 | 0.2589 | 6.410125e-05 | — | — | 22.9695 | 0.0000 | 0.4707 |
+| 83 | 8300 | 0.2597 | 6.08871e-05 | — | — | 23.0144 | 0.0000 | 0.4726 |
+| 84 | 8400 | 0.2415 | 5.765397e-05 | — | — | 23.0392 | 0.0000 | 0.4696 |
+| 85 | 8500 | 0.2453 | 5.440056e-05 | — | — | 23.0400 | 0.0000 | 0.4674 |
+| 86 | 8600 | 0.2460 | 5.112537e-05 | — | — | 23.0202 | 0.0000 | 0.4673 |
+| 87 | 8700 | 0.2662 | 4.782668e-05 | — | — | 23.0231 | 0.0000 | 0.4749 |
+| 88 | 8800 | 0.2484 | 4.45025e-05 | — | — | 23.0134 | 0.0000 | 0.4721 |
+| 89 | 8900 | 0.2560 | 4.115046e-05 | — | — | 23.0223 | 0.0000 | 0.4573 |
+| 90 | 9000 | 0.2334 | 3.776776e-05 | 0.7407 | 0.3069 | 23.1458 | 74.4420 | 0.5059 |
+| 91 | 9100 | 0.2388 | 3.435101e-05 | — | — | 22.9190 | 0.0000 | 0.4893 |
+| 92 | 9200 | 0.2568 | 3.0896e-05 | — | — | 22.9598 | 0.0000 | 0.4718 |
+| 93 | 9300 | 0.2551 | 2.739741e-05 | — | — | 22.9422 | 0.0000 | 0.4725 |
+| 94 | 9400 | 0.2484 | 2.38483e-05 | — | — | 23.0085 | 0.0000 | 0.4823 |
+| 95 | 9500 | 0.2257 | 2.023924e-05 | — | — | 23.0431 | 0.0000 | 0.4703 |
+| 96 | 9600 | 0.2479 | 1.655676e-05 | — | — | 23.0222 | 0.0000 | 0.4525 |
+| 97 | 9700 | 0.2507 | 1.277999e-05 | — | — | 23.0601 | 0.0000 | 0.4701 |
+| 98 | 9800 | 0.2344 | 8.872546e-06 | — | — | 23.0241 | 0.0000 | 0.4688 |
+| 99 | 9900 | 0.2221 | 4.75468e-06 | — | — | 23.0659 | 0.0000 | 0.4606 |
+| 100 | 10000 | 0.2360 | 0 | 0.7471 | 0.3049 | 23.0528 | 74.6547 | 0.4585 |
 
 ## Final validation evaluation
 
-Not available yet. Training loss or a forward-pass smoke test cannot replace this evaluation.
+| Region | Patient mean Dice | 95% bootstrap interval | Surface Dice | HD95 mm | HD95 case coverage |
+| --- | --- | --- | --- | --- | --- |
+| pancreas | 0.7407 | 0.7025 to 0.7792 | 0.6334 | 20.6235 | 1.0000 |
+| mass | 0.3069 | 0.2109 to 0.4120 | 0.2788 | 33.2126 | 0.7857 |
+
+Complete prediction/reference coverage: **True**. Native reference cohort: `749cde7099ad36aea2e49b1978326a8ee29ca75ae4f9777c123d2742fd99a028`.
+
+HD95 excludes undefined/infinite distances; use its coverage alongside Dice so missed masses cannot disappear from interpretation.
 
 ## Recorded training and inference data
 
@@ -158,11 +211,11 @@ Not available yet. Training loss or a forward-pass smoke test cannot replace thi
 
 | Measurement | Value |
 | --- | --- |
-| Native predictions completed / expected / failed | 0 / 42 / 0 |
-| Measured prediction pipeline wall seconds | — |
-| Complete-cohort scans per second | — |
-| Recorded case latency mean / p50 / p95 seconds | — / — / — |
-| Prediction allocated / reserved peak GiB | — / — |
+| Native predictions completed / expected / failed | 42 / 42 / 0 |
+| Measured prediction pipeline wall seconds | 112.845 |
+| Complete-cohort scans per second | 0.372 |
+| Recorded case latency mean / p50 / p95 seconds | 7.934 / 8.209 / 9.806 |
+| Prediction allocated / reserved peak GiB | 3.216 / 4.479 |
 | Standardized model-only benchmark | not_recorded |
 | Model-only patches/s; p50 / p95 ms | —; — / — |
 

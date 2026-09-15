@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-15T00:38:50.653104+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T01:08:53.939138+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 ## Native CT prediction
 
@@ -8,15 +8,15 @@ This measures heterogeneous full CT examinations. Case p50/p95 includes CPU work
 
 | Model | Status | Cases | Failed | Pipeline wall s | Scans/s | Case p50 s | Case p95 s | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-window-seed0](models/dynunet-window-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | 42/42 | 0 | 122.368 | 0.343 | 8.492 | 13.017 | 4.479 |
+| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | completed | 42/42 | 0 | 112.845 | 0.372 | 8.209 | 9.806 | 4.479 |
+| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | completed | 42/42 | 0 | 115.140 | 0.365 | 8.420 | 9.985 | 4.479 |
+| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | completed | 42/42 | 0 | 118.349 | 0.355 | 8.380 | 10.868 | 4.479 |
+| [dynunet-window-seed0](models/dynunet-window-seed0.md) | completed | 42/42 | 0 | 119.627 | 0.351 | 8.652 | 10.069 | 4.479 |
+| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | completed | 42/42 | 0 | 120.952 | 0.347 | 8.691 | 10.095 | 4.479 |
 | [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
 | [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | queued | 0/42 | 0 | — | — | — | — | — |
+| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
 
 [Per-case numerical timings](inference-cases.csv) use stable validation case ordinals. They contain preprocessing, tiled inference, reconstruction and export when recorded. Tiled inference includes copies, softmax and CPU blending; it is not model-only forward latency.
 
@@ -34,6 +34,6 @@ B1 synthetic inputs use each model's declared patch, context and precision. Warm
 | [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
 | [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | not_recorded | [160, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
 | [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 15703029 | — | — |
-| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
+| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 62186757 | — | — |
 
 [Training cost](training-cost.md) · [Comparison](comparison.md)
