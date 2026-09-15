@@ -58,6 +58,10 @@ Training localization predictions come from a stage-one model trained on those t
 
 The [nnU-Net Revisited paper](https://arxiv.org/abs/2404.09556) supports careful control of implementation and training configuration when making architecture claims. It does not establish which of these specific changes will improve our split.
 
+## Failure analysis and architecture research
+
+Use the [failure-analysis workflow](medical-failure-analysis.md) to review completed native predictions, audit crop exclusions and record radiologist feedback. The [architecture-study planner](medical-architecture-studies.md) declares matched controls and multiple seeds without launching or changing current experiments.
+
 ## Reporting and operational requirements
 
 The ordinary Segmentary runner supplies live views, progress/learning curves, immutable run bindings, checkpoint selection and retention, native evaluation, and cleanup of its owned dashboard panes. Keep latest and best only. New scientific recipes require new scratch runs; resuming is only for that run's own unchanged recipe and checkpoint.
