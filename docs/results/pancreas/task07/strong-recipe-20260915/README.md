@@ -1,6 +1,6 @@
 # Pancreas Task07: model comparison
 
-Generated: 2026-09-15T18:04:55.064097+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
+Generated: 2026-09-15T18:11:34.573336+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
 
 **3 running.** GPU queue: 1, 2, 3.
 
@@ -51,6 +51,6 @@ All three arms share the complete nnU-Net preprocessing, augmentation, SGD sched
 
 | Model | Status | Steps / budget | Native mass Dice | Native pancreas Dice | Score scope | Cases |
 | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | 1250/250000 | — | — | in-training step — | 0/42 |
-| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | running | 1750/250000 | — | — | in-training step — | 0/42 |
-| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | running | 1750/250000 | — | — | in-training step — | 0/42 |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | 1750/250000 | — | — | in-training step — | 0/42 |
+| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | running | 2750/250000 | — | — | in-training step — | 0/42 |
+| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | running | 2750/250000 | — | — | in-training step — | 0/42 |
