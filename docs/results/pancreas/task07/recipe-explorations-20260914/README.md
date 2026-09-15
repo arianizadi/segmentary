@@ -2,9 +2,9 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T01:08:53.939138+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T01:38:58.142087+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
-**6 completed, 3 running.** GPU queue: 1, 2, 3, 4, 5, 6, 7, 8.
+**7 completed, 2 running.** GPU queue: 1, 2, 3, 4, 5, 6, 7, 8.
 
 1. Open [comparison.md](comparison.md) for model status and comparable validation results.
 2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.
@@ -69,6 +69,6 @@ are useful within a run; they are not an accuracy ranking across objectives.
 | [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | completed | 10000/10000 | 0.3238 | 0.7185 | final reference-positive mean | 42/42 |
 | [dynunet-window-seed0](models/dynunet-window-seed0.md) | completed | 10000/10000 | 0.2953 | 0.7110 | final reference-positive mean | 42/42 |
 | [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | completed | 10000/10000 | 0.3067 | 0.7045 | final reference-positive mean | 42/42 |
-| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | 7110/10000 | 0.2840 | 0.7296 | in-training step 7000 | 42/42 |
-| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | 4950/10000 | 0.2011 | 0.6450 | in-training step 4000 | 42/42 |
-| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
+| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | completed | 10000/10000 | 0.3483 | 0.7569 | final reference-positive mean | 42/42 |
+| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | 7420/10000 | 0.1898 | 0.6885 | in-training step 7000 | 42/42 |
+| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | 1610/10000 | 0.0608 | 0.5145 | in-training step 1000 | 42/42 |

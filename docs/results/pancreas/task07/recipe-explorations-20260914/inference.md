@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-15T01:08:53.939138+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T01:38:58.142087+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 ## Native CT prediction
 
@@ -14,7 +14,7 @@ This measures heterogeneous full CT examinations. Case p50/p95 includes CPU work
 | [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | completed | 42/42 | 0 | 118.349 | 0.355 | 8.380 | 10.868 | 4.479 |
 | [dynunet-window-seed0](models/dynunet-window-seed0.md) | completed | 42/42 | 0 | 119.627 | 0.351 | 8.652 | 10.069 | 4.479 |
 | [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | completed | 42/42 | 0 | 120.952 | 0.347 | 8.691 | 10.095 | 4.479 |
-| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | completed | 42/42 | 0 | 121.889 | 0.345 | 8.618 | 11.162 | 7.406 |
 | [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
 | [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
 

@@ -1,6 +1,6 @@
 # Recorded training cost
 
-Generated: 2026-09-15T01:08:53.939138+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T01:38:58.142087+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 All models remain visible. Seconds are sums of retained committed epoch measurements; coverage shows recorded timings / retained epochs in that segment. Missing legacy checkpoint timings are unknown, never zero. Parent segments describe the same training lineage, not additional seeds. Current stage GPU-hours include failed/cancelled invocations and startup; they are allocation time, not GPU utilization.
 
@@ -12,9 +12,9 @@ All models remain visible. Seconds are sums of retained committed epoch measurem
 | [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | completed | current | 2282.607 (100/100 epochs) | 814.844 (100/100 epochs) | 47.155 (100/100 epochs) | 0.912 |
 | [dynunet-window-seed0](models/dynunet-window-seed0.md) | completed | current | 2277.908 (100/100 epochs) | 823.821 (100/100 epochs) | 47.173 (100/100 epochs) | 0.914 |
 | [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | completed | current | 2287.721 (100/100 epochs) | 814.350 (100/100 epochs) | 47.313 (100/100 epochs) | 0.914 |
-| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | current | 2722.171 (71/71 epochs) | 770.233 (71/71 epochs) | 33.875 (71/71 epochs) | 0.000 |
-| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | current | 2989.790 (49/49 epochs) | 494.981 (49/49 epochs) | 23.239 (49/49 epochs) | 0.000 |
-| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | 0.000 |
+| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | completed | current | 3834.609 (100/100 epochs) | 1045.757 (100/100 epochs) | 47.191 (100/100 epochs) | 1.409 |
+| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | current | 4514.754 (74/74 epochs) | 783.575 (74/74 epochs) | 34.860 (74/74 epochs) | 0.000 |
+| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | current | 1705.299 (16/16 epochs) | 230.942 (16/16 epochs) | 27.001 (16/16 epochs) | 0.000 |
 
 [Epoch numerical records](epochs.csv) · [Stage invocations, including failures](stage-invocations.csv) · [Comparison](comparison.md)
 
