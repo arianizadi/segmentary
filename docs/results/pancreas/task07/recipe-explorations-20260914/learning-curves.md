@@ -2,7 +2,7 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T02:09:01.904774+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T02:39:05.694984+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 Each row is a completed training epoch. Blank validation cells mean validation was not scheduled. The step count, rather than wall-clock order, is the comparison axis. No values are interpolated.
 
@@ -844,6 +844,7 @@ Each row is a completed training epoch. Blank validation cells mean validation w
 | 97 | 9700 | 0.2826 | 1.277999e-05 | — | — | 60.9920 | 0.0000 | 0.4709 |
 | 98 | 9800 | 0.2597 | 8.872546e-06 | — | — | 60.9841 | 0.0000 | 0.4781 |
 | 99 | 9900 | 0.2552 | 4.75468e-06 | — | — | 60.9865 | 0.0000 | 0.4651 |
+| 100 | 10000 | 0.2719 | 0 | 0.7166 | 0.2270 | 60.9811 | 95.4629 | 0.4692 |
 
 ## swin_unetr-swin48-seed0
 
@@ -879,3 +880,19 @@ Each row is a completed training epoch. Blank validation cells mean validation w
 | 28 | 2800 | 0.4738 | 0.0002232135 | — | — | 106.5242 | 0.0000 | 1.6860 |
 | 29 | 2900 | 0.4582 | 0.0002204214 | — | — | 106.5271 | 0.0000 | 1.6761 |
 | 30 | 3000 | 0.4702 | 0.0002176254 | 0.6552 | 0.1815 | 106.5390 | 115.5843 | 1.8092 |
+| 31 | 3100 | 0.4870 | 0.0002148253 | — | — | 106.5411 | 0.0000 | 1.6102 |
+| 32 | 3200 | 0.4536 | 0.0002120212 | — | — | 106.5892 | 0.0000 | 1.6292 |
+| 33 | 3300 | 0.4412 | 0.000209213 | — | — | 106.6603 | 0.0000 | 1.7037 |
+| 34 | 3400 | 0.4408 | 0.0002064005 | — | — | 106.5991 | 0.0000 | 1.6539 |
+| 35 | 3500 | 0.4177 | 0.0002035838 | — | — | 106.6078 | 0.0000 | 1.7203 |
+| 36 | 3600 | 0.4251 | 0.0002007628 | — | — | 106.6046 | 0.0000 | 1.6583 |
+| 37 | 3700 | 0.3906 | 0.0001979373 | — | — | 106.5841 | 0.0000 | 1.6791 |
+| 38 | 3800 | 0.3965 | 0.0001951074 | — | — | 106.6204 | 0.0000 | 1.6682 |
+| 39 | 3900 | 0.3911 | 0.0001922729 | — | — | 106.5921 | 0.0000 | 1.6641 |
+| 40 | 4000 | 0.3777 | 0.0001894338 | 0.6876 | 0.2272 | 106.6478 | 114.9133 | 1.7651 |
+| 41 | 4100 | 0.4215 | 0.0001865899 | — | — | 106.5552 | 0.0000 | 1.5870 |
+| 42 | 4200 | 0.3988 | 0.0001837412 | — | — | 106.5400 | 0.0000 | 1.9420 |
+| 43 | 4300 | 0.4007 | 0.0001808875 | — | — | 106.6108 | 0.0000 | 1.6881 |
+| 44 | 4400 | 0.3738 | 0.0001780289 | — | — | 106.5865 | 0.0000 | 1.6819 |
+| 45 | 4500 | 0.3704 | 0.0001751651 | — | — | 106.5650 | 0.0000 | 1.5928 |
+| 46 | 4600 | 0.3646 | 0.0001722962 | — | — | 106.6127 | 0.0000 | 1.6527 |
