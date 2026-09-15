@@ -1,0 +1,33 @@
+{
+  "source_commit": "993e6413341dbc5c39ec46cdf5f846e246215b4f",
+  "campaign_id": "task07-cascade-recovery-20260914",
+  "runs": [
+    {
+      "id": "dynunet-control10k-seed0",
+      "first_epoch_step": 100,
+      "validation_cases": 42,
+      "validation_space": "native_full_volume",
+      "checkpoint_committed": true,
+      "cache_builds": 42,
+      "cache_source_verifications": 42
+    },
+    {
+      "id": "dynunet-roi20-seed0",
+      "first_epoch_step": 100,
+      "validation_cases": 42,
+      "validation_space": "native_full_volume",
+      "checkpoint_committed": true,
+      "cache_builds": 42,
+      "cache_source_verifications": 42
+    },
+    {
+      "id": "dynunet-roi40-seed0",
+      "first_epoch_step": 100,
+      "validation_cases": 42,
+      "validation_space": "native_full_volume",
+      "checkpoint_committed": true,
+      "cache_builds": 42,
+      "cache_source_verifications": 42
+    }
+  ]
+}
