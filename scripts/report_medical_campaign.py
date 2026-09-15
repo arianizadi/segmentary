@@ -566,6 +566,7 @@ def _collect_run(
                 "workers",
                 "purpose",
                 "resenc",
+                "architecture",
                 "configuration",
                 "fold",
                 "num_epochs",
@@ -612,6 +613,36 @@ def _collect_run(
     if backend == "nnunet":
         from segmentary.medical_progress import parse_nnunet, tail
 
+        settings = _read(workspace / "trainer-settings.json")
+        plan_binding = _read(workspace / "plan-binding.json")
+        plan_path = (
+            workspace
+            / "nnUNet_preprocessed"
+            / f"Dataset{config.get('dataset_id', 707):03d}_{config.get('dataset_name', 'Pancreas')}"
+            / f"nnUNetResEncUNet{config.get('resenc', 'L')}Plans.json"
+        )
+        plan = _read(plan_path)
+        planned = plan.get("configurations", {}).get(config.get("configuration", "3d_fullres"), {})
+        for key in ("patch_size", "batch_size", "spacing", "batch_dice", "normalization_schemes"):
+            if key in planned:
+                result["recipe"][key] = planned[key]
+        if settings:
+            result["budget_steps"] = settings["num_epochs"] * settings["num_iterations_per_epoch"]
+        if plan_binding.get("runtime"):
+            result["runtime_fingerprint"] = _digest(plan_binding["runtime"])
+        telemetry = _read(workspace / "training-telemetry.json")
+        result["nnunet_training_telemetry"] = {
+            key: telemetry.get(key)
+            for key in (
+                "status",
+                "training_seconds",
+                "validation_seconds",
+                "peak_allocated_gpu_bytes",
+                "peak_reserved_gpu_bytes",
+            )
+        }
+        result["peak_allocated_bytes"] = telemetry.get("peak_allocated_gpu_bytes")
+        result["peak_reserved_bytes"] = telemetry.get("peak_reserved_gpu_bytes")
         logs = sorted(
             workspace.glob("nnUNet_results/**/training_log_*.txt"),
             key=lambda path: path.stat().st_mtime,
@@ -794,7 +825,7 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
                 if epochs and updates:
                     row["budget_steps"] = epochs * updates
                     completed = row.get("nnunet_patch_history", {}).get("epochs", [])
-                    if completed:
+                    if completed and not row.get("training_complete"):
                         row["completed_steps"] = completed[-1]["epoch"] * updates
         except (KeyError, ValueError, TypeError, OSError) as exc:
             row = {

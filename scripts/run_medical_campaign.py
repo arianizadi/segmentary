@@ -104,6 +104,13 @@ def load_recipe(path: Path) -> dict[str, Any]:
     return recipe
 
 
+def nnunet_model_name(recipe: dict[str, Any]) -> str:
+    architecture = recipe.get("architecture", "resenc")
+    if architecture == "resenc":
+        return f"nnunet_resenc_{recipe.get('resenc', 'L').lower()}"
+    return f"nnunet_planned_{architecture}"
+
+
 def load_spec(path: Path) -> dict[str, Any]:
     spec = read_json(path)
     required = {
@@ -170,7 +177,7 @@ def load_spec(path: Path) -> dict[str, Any]:
                 key,
                 {
                     "backend": "nnunet",
-                    "model": f"nnunet_resenc_{recipe.get('resenc', 'L').lower()}",
+                    "model": nnunet_model_name(recipe),
                 }.get(key),
             )
             if key in run and run[key] != expected:
@@ -355,9 +362,7 @@ class Campaign:
                     "status": "queued",
                     "workspace": recipe["workspace"],
                     "backend": recipe.get("backend", "nnunet"),
-                    "model": recipe.get(
-                        "model", f"nnunet_resenc_{recipe.get('resenc', 'L').lower()}"
-                    ),
+                    "model": recipe.get("model", nnunet_model_name(recipe)),
                     "completed_stages": {},
                     "attempts": 0,
                 }
@@ -526,9 +531,11 @@ class Campaign:
         elif stage == "preprocess":
             paths = [root / "plan-binding.json"]
         elif stage == "train":
-            paths = [root / "checkpoint-index.json"]
-            if state["backend"] == "torch":
-                paths += [root / "scratch-origin.json", root / "training-result.json"]
+            paths = [
+                root / "checkpoint-index.json",
+                root / "scratch-origin.json",
+                root / "training-result.json",
+            ]
         elif stage == "predict":
             prediction = Path(state["predictions"])
             paths = sorted(prediction.glob("*.nii.gz"))

@@ -59,6 +59,9 @@ class NNUNetConfig:
     save_probabilities: bool = False
     use_mirroring: bool = False
     tile_step_size: float = 0.5
+    architecture: str = "resenc"
+    reference_workspace: str | None = None
+    reference_plan_binding_sha256: str | None = None
 
     def __post_init__(self):
         for name in ("dataset_id", "fold", "seed", "workers"):
@@ -84,6 +87,25 @@ class NNUNetConfig:
             raise ValueError("Use dataset_id 1..999 and an alphanumeric dataset_name")
         if self.resenc not in {"M", "L", "XL"} or self.configuration not in {"3d_fullres", "2d"}:
             raise ValueError("Supported recipes are ResEnc M/L/XL, 3d_fullres or 2d")
+        if self.architecture not in {"resenc", "plainconv", "dynunet"}:
+            raise ValueError("architecture must be resenc, plainconv, or dynunet")
+        if self.reference_workspace is not None:
+            if not isinstance(self.reference_workspace, str) or not self.reference_workspace:
+                raise ValueError("reference_workspace must be a workspace path string")
+            reference = str(Path(self.reference_workspace).expanduser().resolve())
+            if reference == self.workspace:
+                raise ValueError("Reference and destination workspaces must differ")
+            object.__setattr__(self, "reference_workspace", reference)
+            if not isinstance(self.reference_plan_binding_sha256, str) or not re.fullmatch(
+                r"[0-9a-f]{64}", self.reference_plan_binding_sha256
+            ):
+                raise ValueError("A reference workspace requires its frozen plan-binding SHA256")
+        elif self.reference_plan_binding_sha256 is not None:
+            raise ValueError("reference_plan_binding_sha256 requires reference_workspace")
+        if self.architecture != "resenc" and (
+            self.reference_workspace is None or self.configuration != "3d_fullres"
+        ):
+            raise ValueError("Architecture transfer requires a reference workspace and 3d_fullres")
         if self.fold != 0:
             raise ValueError(
                 "This explicit train/val split is fold 0; use separate workspaces for other splits"
@@ -120,6 +142,14 @@ class NNUNetConfig:
     @property
     def plans(self) -> str:
         return f"nnUNetResEncUNet{self.resenc}Plans"
+
+    @property
+    def model(self) -> str:
+        return (
+            f"nnunet_resenc_{self.resenc.lower()}"
+            if self.architecture == "resenc"
+            else f"nnunet_planned_{self.architecture}"
+        )
 
     @property
     def root(self) -> Path:
@@ -245,6 +275,8 @@ def prepare_dataset(
         "planning_scope": "train_and_val_only",
         "development_cases": [c["case_id"] for c in development],
         "held_out_cases": list(splits["test"]),
+        "initialization": "scratch",
+        "checkpoint_selection": "official_ema_foreground_dice",
     }
     result = {
         "action": "prepare",
@@ -588,7 +620,22 @@ def plan_and_preprocess(config: NNUNetConfig, *, dry_run: bool = False) -> dict:
     # Refuse stale partial caches; never let nnU-Net reuse an unbound fingerprint.
     if set(p.name for p in config.preprocessed.iterdir()) != {"splits_final.json"}:
         raise FileExistsError("Unbound preprocessing outputs exist; create a fresh workspace")
-    state = _run(config, "plan", {})
+    if config.reference_workspace is None:
+        state = _run(config, "plan", {})
+    else:
+        from .nnunet_reference import import_reference
+        from .recipe_plan import transfer_plan
+
+        with _lock(config.root / ".stage.lock"):
+            reference = import_reference(config)
+            plan_path = config.preprocessed / f"{config.plans}.json"
+            transferred, changes = transfer_plan(_json(plan_path), config.architecture)
+            _atomic_json(plan_path, transferred)
+            _atomic_json(
+                config.root / "recipe-transfer.json",
+                {"reference": reference, "architecture": config.architecture, "changes": changes},
+            )
+        state = {"action": "import_reference", "status": "completed"}
     plan = _json(config.preprocessed / f"{config.plans}.json")
     if config.configuration not in plan["configurations"]:
         raise ValueError("Requested configuration was not produced by the planner")
@@ -780,7 +827,16 @@ def predict(
     ):
         original = config.preprocessed / original_name
         _check_hash(original, plan_record["files"][original_name])
-        if _json(config.model_folder / model_name) != _json(original):
+        trained_metadata = _json(config.model_folder / model_name)
+        # nnU-Net's CLI injects this runtime-only flag before the trainer saves
+        # plans.json. It does not alter architecture or preprocessing.
+        if (
+            model_name == "plans.json"
+            and "continue_training" in trained_metadata
+            and type(trained_metadata.pop("continue_training")) is not bool
+        ):
+            raise ValueError("Invalid nnU-Net continue_training metadata")
+        if trained_metadata != _json(original):
             raise ValueError(f"Trained model metadata changed: {model_name}")
     output = config.root / "predictions" / f"{partition}-{time.time_ns()}"
     result = {
@@ -855,6 +911,30 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
         value = getattr(config, name)
         if value is not None:
             setattr(trainer, name, value)
+    # Record actual initialized capacity before any optimization. The official
+    # trainer initializes only once; on_train_start reuses this same network.
+    trainer.initialize()
+    origin_path = config.root / "scratch-origin.json"
+    if payload["resume_checkpoint"] is None:
+        _atomic_json(
+            origin_path,
+            {
+                "initialization": "scratch",
+                "external_weight_loads": 0,
+                "identity": identity,
+                "architecture": config.architecture,
+                "network_class": type(trainer.network).__module__
+                + "."
+                + type(trainer.network).__name__,
+                "parameters": sum(p.numel() for p in trainer.network.parameters()),
+                "trainable_parameters": sum(
+                    p.numel() for p in trainer.network.parameters() if p.requires_grad
+                ),
+                "plan_sha256": _sha(config.preprocessed / f"{config.plans}.json"),
+            },
+        )
+    elif not origin_path.is_file() or _json(origin_path).get("identity") != identity:
+        raise ValueError("Resume requires the matching scratch-origin record")
     original_save = trainer.save_checkpoint
 
     def save_checkpoint(filename: str):
@@ -949,6 +1029,17 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
     try:
         trainer.run_training()
         telemetry["status"] = "training_complete"
+        _atomic_json(
+            config.root / "training-result.json",
+            {
+                "completed": trainer.current_epoch == trainer.num_epochs,
+                "epochs": trainer.current_epoch,
+                "steps": trainer.current_epoch * trainer.num_iterations_per_epoch,
+                "budget_steps": trainer.num_epochs * trainer.num_iterations_per_epoch,
+                "checkpoint_selection": "official_ema_foreground_dice",
+                "identity": identity,
+            },
+        )
     except BaseException as exc:
         telemetry["status"] = "training_failed"
         if (

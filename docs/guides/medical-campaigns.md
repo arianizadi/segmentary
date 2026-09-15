@@ -163,3 +163,9 @@ frozen. Native 3D context differs from adjacent-slice 2.5D context, and query or
 auxiliary objectives differ from dense Dice/CE. The comparison measures complete
 configured pipelines, not the causal effect of architecture alone. Equal update
 counts do not guarantee equal compute or equal tuning effort.
+# Matched nnU-Net recipe transfer
+
+For a controlled architecture comparison using the full official nnU-Net pipeline,
+see [the strong recipe guide](medical-strong-recipe.md). It creates fresh ResEnc L,
+planned PlainConvUNet and planned DynUNet runs from one hash-bound preprocessing
+reference, with the same split, native evaluation and full optimization budget.

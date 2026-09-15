@@ -23,6 +23,61 @@ def write(path: Path, value: dict) -> None:
     path.write_text(json.dumps(value))
 
 
+def test_nnunet_report_uses_actual_plan_and_completed_training_without_private_paths(tmp_path):
+    workspace = tmp_path / "run"
+    config = {
+        "workspace": str(workspace),
+        "backend": "nnunet",
+        "architecture": "dynunet",
+        "reference_workspace": "/private/reference",
+        "seed": 0,
+    }
+    config_path = tmp_path / "config.json"
+    write(config_path, config)
+    write(workspace / "binding.json", {"config": config, "initialization": "scratch"})
+    write(workspace / "training-result.json", {"completed": True, "steps": 250000})
+    write(
+        workspace / "trainer-settings.json",
+        {
+            "num_epochs": 1000,
+            "num_iterations_per_epoch": 250,
+        },
+    )
+    write(workspace / "plan-binding.json", {"runtime": {"packages": {"nnunetv2": "2.8.1"}}})
+    write(
+        workspace / "nnUNet_preprocessed/Dataset707_Pancreas/nnUNetResEncUNetLPlans.json",
+        {
+            "configurations": {
+                "3d_fullres": {
+                    "patch_size": [56, 320, 256],
+                    "batch_size": 2,
+                    "batch_dice": False,
+                }
+            },
+        },
+    )
+    write(
+        workspace / "training-telemetry.json",
+        {
+            "status": "completed",
+            "peak_allocated_gpu_bytes": 1234,
+        },
+    )
+    row = reporter._collect_run(
+        {"id": "dynunet", "model": "nnunet_planned_dynunet", "config": str(config_path)},
+        {"status": "completed"},
+        tmp_path / "state",
+        [],
+        0,
+    )
+    assert row["training_complete"] and row["completed_steps"] == row["budget_steps"] == 250000
+    assert row["recipe"]["patch_size"] == [56, 320, 256]
+    assert row["recipe"]["batch_size"] == 2 and row["recipe"]["batch_dice"] is False
+    assert row["runtime_fingerprint"]
+    assert row["peak_allocated_bytes"] == 1234
+    assert "/private/reference" not in json.dumps(row)
+
+
 def evaluation(dice: float) -> dict:
     summary = {
         "dice": {"mean": dice, "ci": [0.2, 0.9]},
