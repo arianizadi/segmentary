@@ -1,0 +1,426 @@
+{
+  "bootstrap_caveat": "Declared patient groups are dataset-case proxies; their independent patient identity is not verified. Intervals condition on one checkpoint and this repeatedly used validation cohort; no multiple-comparison adjustment.",
+  "checkpoint_sha256": "749773654596a6d24fa0ba61ee3afb1dee030b59d2cfe9da68c1ace3bba046b0",
+  "contrasts": {
+    "centered_padding_minus_high_end": {
+      "mass": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.05214239385599228,
+          0.012325953416841822
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": -0.01235250929818632,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "mass",
+        "seed": 20260915,
+        "unit": "patient"
+      },
+      "pancreas": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.008796039825331477,
+          0.00421895070924766
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": -0.0012086098221612631,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "pancreas",
+        "seed": 20260915,
+        "unit": "patient"
+      }
+    },
+    "logit_gaussian_minus_probability_gaussian": {
+      "mass": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.004309748926626269,
+          0.003260215528650854
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": -0.00024786538342413104,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "mass",
+        "seed": 20260915,
+        "unit": "patient"
+      },
+      "pancreas": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          7.884487840086144e-05,
+          0.0016071098984597545
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": 0.0008477186314471696,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "pancreas",
+        "seed": 20260915,
+        "unit": "patient"
+      }
+    },
+    "logit_gaussian_minus_probability_uniform": {
+      "mass": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.0002052706353857381,
+          0.03930484724648107
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": 0.01947223905398241,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "mass",
+        "seed": 20260915,
+        "unit": "patient"
+      },
+      "pancreas": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.008581176282834438,
+          0.03677434299856955
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": 0.022178624598436152,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "pancreas",
+        "seed": 20260915,
+        "unit": "patient"
+      }
+    },
+    "logit_uniform_minus_probability_uniform": {
+      "mass": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.019128719729742727,
+          0.0016846889413112914
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": -0.007149218731547224,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "mass",
+        "seed": 20260915,
+        "unit": "patient"
+      },
+      "pancreas": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.006574891281796377,
+          -0.001661944330969017
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": -0.0039904266461317965,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "pancreas",
+        "seed": 20260915,
+        "unit": "patient"
+      }
+    },
+    "probability_gaussian_minus_probability_uniform": {
+      "mass": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.0012002476912085548,
+          0.04143933229549624
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": 0.019720104437406544,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "mass",
+        "seed": 20260915,
+        "unit": "patient"
+      },
+      "pancreas": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.007390868427736134,
+          0.036227410827149205
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": 0.021330905966988983,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "pancreas",
+        "seed": 20260915,
+        "unit": "patient"
+      }
+    }
+  },
+  "grouping_status": "dataset_case_unverified",
+  "held_out_test_payloads_accessed": false,
+  "historical_uniform_parity": {
+    "all_prediction_hashes_equal": true,
+    "cases": 42,
+    "maximum_absolute_dice_difference": 0.0,
+    "passed": true
+  },
+  "padding_strata": {
+    "no_padding": {
+      "cases": 21,
+      "centered_mass_mean": 0.3682179806764046,
+      "identical_prediction_hashes": 21,
+      "original_mass_mean": 0.3682179806764046
+    },
+    "padding_required": {
+      "cases": 21,
+      "centered_mass_mean": 0.26674891020913527,
+      "identical_prediction_hashes": 1,
+      "original_mass_mean": 0.29145392880550797
+    }
+  },
+  "private_evidence_sha256": {
+    "centered-padding/comparison.json": "207413fd5ab31186d548f0a35f8f333672df09cc0d2c95664c29b056bee29adb",
+    "logit-blending/comparison.json": "f024c8dab8c9dc89e38675ad13859905f85e11061a6a95c84318201803e7a1fe"
+  },
+  "production_inference_changed": false,
+  "rows": [
+    {
+      "mass_dice": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.25859769260385257,
+          0.4398628382938996
+        ],
+        "confidence": 0.95,
+        "coverage": 1.0,
+        "mean": 0.34930819379493866,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "patients": 42,
+        "seed": 20260915,
+        "undefined_or_infinite_cases": 0,
+        "unit": "patient"
+      },
+      "pancreas_union_dice": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.7442275712253555,
+          0.8068178602000562
+        ],
+        "confidence": 0.95,
+        "coverage": 1.0,
+        "mean": 0.7780731938965123,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "patients": 42,
+        "seed": 20260915,
+        "undefined_or_infinite_cases": 0,
+        "unit": "patient"
+      },
+      "setting": "logit_gaussian",
+      "valid_cases": 42
+    },
+    {
+      "mass_dice": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.2291836510046699,
+          0.4176200296712761
+        ],
+        "confidence": 0.95,
+        "coverage": 1.0,
+        "mean": 0.32268673600940906,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "patients": 42,
+        "seed": 20260915,
+        "undefined_or_infinite_cases": 0,
+        "unit": "patient"
+      },
+      "pancreas_union_dice": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.7139688137993397,
+          0.7853877625558382
+        ],
+        "confidence": 0.95,
+        "coverage": 1.0,
+        "mean": 0.7519041426519443,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "patients": 42,
+        "seed": 20260915,
+        "undefined_or_infinite_cases": 0,
+        "unit": "patient"
+      },
+      "setting": "logit_uniform",
+      "valid_cases": 42
+    },
+    {
+      "mass_dice": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.25975708095166106,
+          0.43957978485558624
+        ],
+        "confidence": 0.95,
+        "coverage": 1.0,
+        "mean": 0.3495560591783628,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "patients": 42,
+        "seed": 20260915,
+        "undefined_or_infinite_cases": 0,
+        "unit": "patient"
+      },
+      "pancreas_union_dice": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.7433734693188225,
+          0.8060849663066794
+        ],
+        "confidence": 0.95,
+        "coverage": 1.0,
+        "mean": 0.777225475265065,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "patients": 42,
+        "seed": 20260915,
+        "undefined_or_infinite_cases": 0,
+        "unit": "patient"
+      },
+      "setting": "probability_gaussian",
+      "valid_cases": 42
+    },
+    {
+      "mass_dice": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.23843441053159148,
+          0.4227284557976583
+        ],
+        "confidence": 0.95,
+        "coverage": 1.0,
+        "mean": 0.3298359547409563,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "patients": 42,
+        "seed": 20260915,
+        "undefined_or_infinite_cases": 0,
+        "unit": "patient"
+      },
+      "pancreas_union_dice": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.7175930699322328,
+          0.7893929703334397
+        ],
+        "confidence": 0.95,
+        "coverage": 1.0,
+        "mean": 0.7558945692980761,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "patients": 42,
+        "seed": 20260915,
+        "undefined_or_infinite_cases": 0,
+        "unit": "patient"
+      },
+      "setting": "probability_uniform",
+      "valid_cases": 42
+    },
+    {
+      "mass_dice": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.22849776308541975,
+          0.41041125910307613
+        ],
+        "confidence": 0.95,
+        "coverage": 1.0,
+        "mean": 0.3174834454427699,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "patients": 42,
+        "seed": 20260915,
+        "undefined_or_infinite_cases": 0,
+        "unit": "patient"
+      },
+      "pancreas_union_dice": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.7161008190087662,
+          0.7890801942993975
+        ],
+        "confidence": 0.95,
+        "coverage": 1.0,
+        "mean": 0.7546859594759148,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "patients": 42,
+        "seed": 20260915,
+        "undefined_or_infinite_cases": 0,
+        "unit": "patient"
+      },
+      "setting": "centered_probability_uniform",
+      "valid_cases": 42
+    }
+  ],
+  "status": "completed"
+}

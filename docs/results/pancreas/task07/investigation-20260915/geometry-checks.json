@@ -1,0 +1,75 @@
+{
+  "manifest_sha256": "9e6c363908beffe4e2feb9544f99552e06220d03af289b6913557870e28931a2",
+  "splits_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
+  "script_sha256": "1b1c64936ebdd82b597c5bcd581345076b71c47115538be37dd1ee7dec3f8fd3",
+  "geometry_source_sha256": "d5ba5def881c63285ae1f79df62d3ed2bdbd95b25e4650fbd3f5298ccb94da66",
+  "scope": "239 development metadata; 42 validation label/prediction payloads only",
+  "method": "Oracle nearest-neighbor label downsampling plus one-hot probabilities linearly restored to native and argmax. An achievable oracle roundtrip, not a mathematical upper bound or model performance. Finer grid reuses Torch resampling and is not the nnU-Net resampler.",
+  "roundtrip_aggregate": {
+    "common_1p5_1p5_2p5": {
+      "mass": {
+        "n": 42,
+        "mean": 0.9598533638591888,
+        "median": 0.9614517346866147,
+        "minimum": 0.9181527206218564,
+        "maximum": 0.9813230793376756,
+        "p10": 0.9457338462485249,
+        "p25": 0.9545566354418655,
+        "p75": 0.9703533149413894,
+        "p90": 0.9737474385752085
+      },
+      "pancreas_union": {
+        "n": 42,
+        "mean": 0.9757281406303223,
+        "median": 0.9761632452010915,
+        "minimum": 0.9452925571850443,
+        "maximum": 0.983793099078779,
+        "p10": 0.9707245562764218,
+        "p25": 0.9730692715547828,
+        "p75": 0.9792649045972325,
+        "p90": 0.9812804222076823
+      }
+    },
+    "finer_0p8125_0p8125_2p5": {
+      "mass": {
+        "n": 42,
+        "mean": 0.9919400668076768,
+        "median": 0.9947705927504296,
+        "minimum": 0.9315502375505895,
+        "maximum": 1.0,
+        "p10": 0.9851628130038933,
+        "p25": 0.9892730492811032,
+        "p75": 0.9983789905734123,
+        "p90": 0.99955374842303
+      },
+      "pancreas_union": {
+        "n": 42,
+        "mean": 0.993894432824234,
+        "median": 0.9956935423786196,
+        "minimum": 0.9530134318669796,
+        "maximum": 1.0,
+        "p10": 0.9898047937295672,
+        "p25": 0.992681003471181,
+        "p75": 0.9973953614857041,
+        "p90": 0.9986149982957809
+      }
+    }
+  },
+  "independent_recompute": {
+    "mass": {
+      "macro_mean_dice": 0.3298359547409563,
+      "pooled_voxel_dice": 0.3266010300828721,
+      "max_abs_difference_from_saved_per_case": 0.0,
+      "zero_overlap_cases": 12,
+      "mean_dice_nonzero_overlap_cases": 0.4617703366373387
+    },
+    "pancreas_union": {
+      "macro_mean_dice": 0.7558945692980761,
+      "pooled_voxel_dice": 0.753144418730612,
+      "max_abs_difference_from_saved_per_case": 0.0,
+      "zero_overlap_cases": 0,
+      "mean_dice_nonzero_overlap_cases": 0.7558945692980761
+    }
+  },
+  "prediction_hashes_match_saved": true
+}

@@ -2,6 +2,12 @@
 
 Validated on all 42 validation scans for six completed Task07 recipe arms. This is exploratory validation, not the reserved test or an external benchmark.
 
+The [September 15 investigation](../investigation-20260915/README.md) extends this
+review with all-training-set inference, independent geometry/metric checks,
+native nnU-Net snapshots, inference ablations and a controlled loss study. Its
+[model table](../investigation-20260915/all-models.md) includes mass and pancreas
+Dice for every completed experiment in that snapshot.
+
 Source: `bbfa5bf19a52506cedf90309618b88cdf1870233`. All 252 case/model records passed native geometry, input hash, checkpoint provenance and primary Dice agreement checks. No diagnostic or panel errors were recorded.
 
 The offline review contains 6 selected cases and 324 synchronized panels: four severity-ranked cases and two sampled from the remainder. This subset is for review, not prevalence estimation. Patient-level artifacts and CT panels are kept outside Git.

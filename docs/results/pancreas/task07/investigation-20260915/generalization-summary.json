@@ -1,0 +1,104 @@
+{
+  "completed": true,
+  "scope": "In-sample training fit and repeated development validation; not reserved test or external evaluation",
+  "checkpoint_sha256": "749773654596a6d24fa0ba61ee3afb1dee030b59d2cfe9da68c1ace3bba046b0",
+  "checkpoint_selection": {
+    "binding_identity": "2505e168686b6f262f96071a2f342934ad05857ae11b84098644032c2a468125",
+    "campaign_sha256": "0b4633b9efad8d091e29c803701380a7766085ae8b87885b0610e78b3dd88ee1",
+    "checkpoint_epoch": 80,
+    "checkpoint_global_step": 8000,
+    "checkpoint_selection": "original_checkpoint_best.pth",
+    "helper_sha256": "eaf5b16f8f40dd96c8fc626c70f93dc3a5d98843e8ce153bf291cfc268aee1d9",
+    "protocol": "original_source_binding_runtime_and_scratch_guards_then_sha256_bound_bytes"
+  },
+  "training_source_commit": "52bb2cd90780989546d5e3f2e5734bdf952d72f2",
+  "manifest_sha256": "9e6c363908beffe4e2feb9544f99552e06220d03af289b6913557870e28931a2",
+  "splits_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
+  "operator_sha256": "2fd8739ba06050b678910ff7ca2fd32e15b0888cf76a51cbef18e7893c16a367",
+  "partitions": {
+    "train": {
+      "cases": 197,
+      "regions": {
+        "mass": {
+          "mean_dice": 0.5852255745117795,
+          "median_dice": 0.6986262966077936,
+          "zero_overlap_cases": 23,
+          "empty_predictions": 11,
+          "cases_at_least_70_percent": 98,
+          "pooled_voxel_dice": 0.6313564744017202,
+          "histogram": {
+            "zero": 23,
+            "above_zero_below_10": 8,
+            "10_to_below_30": 6,
+            "30_to_below_50": 15,
+            "50_to_below_70": 47,
+            "70_plus": 98
+          }
+        },
+        "pancreas": {
+          "mean_dice": 0.7879379344751594,
+          "median_dice": 0.8167423680353233,
+          "zero_overlap_cases": 0,
+          "empty_predictions": 0,
+          "cases_at_least_70_percent": 175,
+          "pooled_voxel_dice": 0.791520025697712,
+          "histogram": {
+            "zero": 0,
+            "above_zero_below_10": 0,
+            "10_to_below_30": 3,
+            "30_to_below_50": 6,
+            "50_to_below_70": 13,
+            "70_plus": 175
+          }
+        }
+      }
+    },
+    "val": {
+      "cases": 42,
+      "regions": {
+        "mass": {
+          "mean_dice": 0.32983595474095634,
+          "median_dice": 0.2765951628810103,
+          "zero_overlap_cases": 12,
+          "empty_predictions": 3,
+          "cases_at_least_70_percent": 7,
+          "pooled_voxel_dice": 0.3266010300828721,
+          "histogram": {
+            "zero": 12,
+            "above_zero_below_10": 4,
+            "10_to_below_30": 5,
+            "30_to_below_50": 5,
+            "50_to_below_70": 9,
+            "70_plus": 7
+          }
+        },
+        "pancreas": {
+          "mean_dice": 0.7558945692980762,
+          "median_dice": 0.7838069931014795,
+          "zero_overlap_cases": 0,
+          "empty_predictions": 0,
+          "cases_at_least_70_percent": 34,
+          "pooled_voxel_dice": 0.753144418730612,
+          "histogram": {
+            "zero": 0,
+            "above_zero_below_10": 0,
+            "10_to_below_30": 0,
+            "30_to_below_50": 2,
+            "50_to_below_70": 6,
+            "70_plus": 34
+          }
+        }
+      }
+    }
+  },
+  "validation_reproduction": {
+    "cases": 42,
+    "maximum_absolute_dice_difference": 0.0,
+    "identical_prediction_sha256": 42,
+    "surface_protocol_comparison": "Not claimed; this diagnostic focuses on same native masks and Dice"
+  },
+  "train_minus_val_mean_dice": {
+    "mass": 0.25538961977082314,
+    "pancreas": 0.03204336517708317
+  }
+}

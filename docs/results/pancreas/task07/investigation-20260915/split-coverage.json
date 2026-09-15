@@ -1,0 +1,187 @@
+{
+  "available_metadata": {
+    "clinical_field_name_matches": {
+      "age": [],
+      "contrast": [],
+      "diagnos": [],
+      "gender": [],
+      "grade": [],
+      "histolog": [],
+      "patholog": [],
+      "phase": [],
+      "scanner": [],
+      "sex": [],
+      "site": [],
+      "stage": [],
+      "subtype": []
+    },
+    "manifest_case_fields": [
+      "affine",
+      "annotation_status",
+      "case_id",
+      "grouping_status",
+      "image",
+      "image_sha256",
+      "image_voxel_sha256",
+      "label",
+      "label_counts",
+      "label_sha256",
+      "patient_id",
+      "shape",
+      "source",
+      "spacing_mm"
+    ],
+    "per_case_histology_or_subtype_available": false,
+    "raw_dataset_top_level_files": [
+      "dataset.json"
+    ],
+    "source_dataset_fields": [
+      "description",
+      "labels",
+      "licence",
+      "modality",
+      "name",
+      "numTest",
+      "numTraining",
+      "reference",
+      "relase",
+      "tensorImageSize",
+      "test",
+      "training"
+    ],
+    "source_ontology": {
+      "0": "background",
+      "1": "pancreas",
+      "2": "cancer"
+    },
+    "source_per_case_fields": [
+      "image",
+      "label"
+    ],
+    "supplied_source_description": "Pancreas and cancer segmentation"
+  },
+  "development_coverage": {
+    "train": {
+      "case_count": 197,
+      "group_count": 196,
+      "mass_fraction_of_pancreas_union_bins": {
+        "10_to_below25percent": 54,
+        "25_to_below50percent": 9,
+        "50percent_plus": 4,
+        "below10percent": 130
+      },
+      "mass_volume_bins_ml": {
+        "10_to_below20": 37,
+        "1_to_below5": 76,
+        "20_to_below50": 10,
+        "50_plus": 7,
+        "5_to_below10": 65,
+        "below1": 2
+      },
+      "mass_volume_ml": {
+        "count": 197,
+        "maximum": 732.38814673648,
+        "median": 6.03837395792411,
+        "minimum": 0.4128820804367273,
+        "p25": 3.077225315873932,
+        "p75": 10.410430835747652
+      },
+      "native_axis_codes_counts": {
+        "RAS": 197
+      },
+      "reference_mass_positive_cases": 197,
+      "superior_inferior_spacing_mm_counts": {
+        "1.25": 2,
+        "1.5": 1,
+        "2.0": 1,
+        "2.5": 156,
+        "3.0": 7,
+        "4.000030040740967": 1,
+        "5.0": 29
+      }
+    },
+    "val": {
+      "case_count": 42,
+      "group_count": 42,
+      "mass_fraction_of_pancreas_union_bins": {
+        "10_to_below25percent": 9,
+        "25_to_below50percent": 5,
+        "50percent_plus": 1,
+        "below10percent": 27
+      },
+      "mass_volume_bins_ml": {
+        "10_to_below20": 7,
+        "1_to_below5": 17,
+        "20_to_below50": 3,
+        "50_plus": 1,
+        "5_to_below10": 13,
+        "below1": 1
+      },
+      "mass_volume_ml": {
+        "count": 42,
+        "maximum": 91.47277482205389,
+        "median": 5.822616261288337,
+        "minimum": 0.6335147067347993,
+        "p25": 3.4110174498860695,
+        "p75": 10.516629951980638
+      },
+      "native_axis_codes_counts": {
+        "RAS": 42
+      },
+      "reference_mass_positive_cases": 42,
+      "superior_inferior_spacing_mm_counts": {
+        "1.25": 1,
+        "1.5": 1,
+        "2.5": 30,
+        "3.75": 1,
+        "5.0": 8,
+        "7.5": 1
+      }
+    }
+  },
+  "duplicate_annotation_audit": {
+    "all_exclusively_train": true,
+    "different_supplied_annotations": true,
+    "identical_ct_inputs": true,
+    "observation": "Highly overlapping annotations with extent and boundary differences. No cross-partition leakage of this known pair; clinical adjudication remains pending.",
+    "private_evidence_sha256": "4d9a1f9f3e15a722d7e8943377fdc9adfe50e0a081958f6d11f7ac767dfcecca",
+    "same_native_geometry": true,
+    "training_duplicate_groups": 1
+  },
+  "scope": "Split membership metadata checked for all partitions. Coverage aggregates use train and validation metadata only. Duplicate annotation payload audit is training only. Reserved test image/label payloads remain unopened.",
+  "source_provenance": {
+    "audit_script_sha256": "9e968402d7d4094afe349b782fc5cb0b28ddf02a5241724adcd5fbf50263561d",
+    "dataset_json_sha256": "6a7467c7377adb8c5d757635940c0cf79b2b4d2094c808b907ec77b44fd548db",
+    "manifest_sha256": "9e6c363908beffe4e2feb9544f99552e06220d03af289b6913557870e28931a2",
+    "metadata_sha_matches_manifest": true,
+    "split_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
+    "validation_source_sha256": "c76bc2f8be09fdddba8e22121a1f4b9a030c6e4e9d1e1eddcfc51a2a1c6c1da6"
+  },
+  "split": {
+    "case_counts": {
+      "test": 42,
+      "train": 197,
+      "val": 42
+    },
+    "clinical_patient_identity_verified": false,
+    "eligible_groups": 280,
+    "eligible_labeled_cases": 281,
+    "excluded_unlabeled_or_partial_count": 139,
+    "group_counts": {
+      "test": 42,
+      "train": 196,
+      "val": 42
+    },
+    "grouping_rule": "Connected patient-ID/file-hash/voxel-hash groups including excluded companions; group-levelseededshuffle. No histology,size,phase orsite stratification.",
+    "grouping_status": "dataset_case_unverified",
+    "requested_group_fractions": {
+      "test": 0.15000000000000005,
+      "train": 0.7,
+      "val": 0.15
+    },
+    "seed": 0,
+    "seeded_group_shuffle_reproduces_all_memberships_exactly": true,
+    "stratification_fields": [],
+    "training_multi_case_groups": 1
+  }
+}

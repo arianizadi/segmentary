@@ -1,0 +1,136 @@
+{
+  "campaign_sha256": "5617a39685ea459fd80a4bfa8130485fdf8877deb8de0ad69ba0e162a777e193",
+  "captured_at": "2026-09-15T17:01:41.833900+00:00",
+  "private_evidence_sha256": "2e53993275e1c6c5c3e24b32b98893f76751d2d1c437d72813e4fd311dfe122d",
+  "rows": [
+    {
+      "binding_sha256": "d12f2b99fc0fef5823d038e72b730f6068bdf2adac86495c6055e7ea5cfb826d",
+      "dice_reduction": "batch",
+      "gpu": "4",
+      "id": "dynunet-batch-seed0",
+      "progress": {
+        "epoch": 6,
+        "epoch_mean_loss": 0.8253161907196045,
+        "learning_rate": 0.00028643847549592017,
+        "loss": 0.8253161907196045,
+        "optimizer_steps_per_second": 4.38306772876816,
+        "phase": "train",
+        "step": 501,
+        "target_steps": 10000,
+        "updated_at": 1789491700.4393265
+      },
+      "recipe_sha256": "8daf8531168aa833557571438db6852ab2ae6e528d3b003e10571dcf5c4bd7c1",
+      "resolved_config_sha256": "8daf8531168aa833557571438db6852ab2ae6e528d3b003e10571dcf5c4bd7c1",
+      "scratch_origin": {
+        "external_weight_loads": 0,
+        "identity": "c5cc409cf9f1fc79e673ce8d639dcd6d553883b998722011dbcd11f9cd021b63",
+        "initial_state_sha256": "b5446a4e8b6991826fb215f12c897e369c8b9a22800156981fe56dcb619aa9a0",
+        "initialization": "scratch",
+        "parameters": 16543683
+      },
+      "seed": 0,
+      "source_binding_verified": true,
+      "stage": "train",
+      "started_at": "2026-09-15T16:57:07.817472+00:00",
+      "status": "running"
+    },
+    {
+      "binding_sha256": "143e47a88c0ba1581126e445bcfb02103ae33d7a903500be3f86eaa34f005a43",
+      "dice_reduction": "per_sample",
+      "gpu": "5",
+      "id": "dynunet-per-sample-seed0",
+      "progress": {
+        "epoch": 6,
+        "epoch_mean_loss": 0.876970648765564,
+        "learning_rate": 0.00028643847549592017,
+        "loss": 0.876970648765564,
+        "optimizer_steps_per_second": 4.382384150063314,
+        "phase": "train",
+        "step": 501,
+        "target_steps": 10000,
+        "updated_at": 1789491700.3027167
+      },
+      "recipe_sha256": "c185c55dc6fccc302612bf950bd573fd684631111d3f2edfe6b1c62269459da1",
+      "resolved_config_sha256": "c185c55dc6fccc302612bf950bd573fd684631111d3f2edfe6b1c62269459da1",
+      "scratch_origin": {
+        "external_weight_loads": 0,
+        "identity": "9d110d90d6d132ff7f8c4fc143579a2d574bfd732b416280a50e1e3032c4ae7f",
+        "initial_state_sha256": "b5446a4e8b6991826fb215f12c897e369c8b9a22800156981fe56dcb619aa9a0",
+        "initialization": "scratch",
+        "parameters": 16543683
+      },
+      "seed": 0,
+      "source_binding_verified": true,
+      "stage": "train",
+      "started_at": "2026-09-15T16:57:07.820299+00:00",
+      "status": "running"
+    },
+    {
+      "binding_sha256": "48758e91f6e8f4406ecdb150569a0c5c81ef08c085289d47d11bbbe90b3a5933",
+      "dice_reduction": "batch",
+      "gpu": "6",
+      "id": "dynunet-batch-seed1",
+      "progress": {
+        "epoch": 5,
+        "epoch_mean_loss": 0.9390626112620036,
+        "learning_rate": 0.0002867369886852377,
+        "loss": 0.929985761642456,
+        "optimizer_steps_per_second": 4.3710847527672,
+        "phase": "train",
+        "step": 490,
+        "target_steps": 10000,
+        "updated_at": 1789491700.1891325
+      },
+      "recipe_sha256": "5f8e29faabaa860cbeac1264a41389035240a24c172130d519ac473c818de058",
+      "resolved_config_sha256": "5f8e29faabaa860cbeac1264a41389035240a24c172130d519ac473c818de058",
+      "scratch_origin": {
+        "external_weight_loads": 0,
+        "identity": "a3ae3e7f4087567a6f5d7669e7c40fb169e053a216a1ad2e60b2b01ee533be2f",
+        "initial_state_sha256": "d3d63db56517890ed1b23dfda43789541c106d2f14317853edbb040c3f7ec0c4",
+        "initialization": "scratch",
+        "parameters": 16543683
+      },
+      "seed": 1,
+      "source_binding_verified": true,
+      "stage": "train",
+      "started_at": "2026-09-15T16:57:07.822173+00:00",
+      "status": "running"
+    },
+    {
+      "binding_sha256": "5687273b85e188881131e9a5ed048e4c238fc47f72cec9a784bca9be199a1714",
+      "dice_reduction": "per_sample",
+      "gpu": "7",
+      "id": "dynunet-per-sample-seed1",
+      "progress": {
+        "epoch": 6,
+        "epoch_mean_loss": 0.9414768815040588,
+        "learning_rate": 0.00028643847549592017,
+        "loss": 0.9414768815040588,
+        "optimizer_steps_per_second": 4.357227546117369,
+        "phase": "train",
+        "step": 501,
+        "target_steps": 10000,
+        "updated_at": 1789491700.7217305
+      },
+      "recipe_sha256": "61ea7396c3e9d6de98b1500d1e40290ff1938895416a90294994f5f4edd2ffd6",
+      "resolved_config_sha256": "61ea7396c3e9d6de98b1500d1e40290ff1938895416a90294994f5f4edd2ffd6",
+      "scratch_origin": {
+        "external_weight_loads": 0,
+        "identity": "e9e31e1d9b37e08926bf008a84bb6c82ff49689dae8f5d7dee1bdc2521392b94",
+        "initial_state_sha256": "d3d63db56517890ed1b23dfda43789541c106d2f14317853edbb040c3f7ec0c4",
+        "initialization": "scratch",
+        "parameters": 16543683
+      },
+      "seed": 1,
+      "source_binding_verified": true,
+      "stage": "train",
+      "started_at": "2026-09-15T16:57:07.824364+00:00",
+      "status": "running"
+    }
+  ],
+  "same_fixed_split_all_four": true,
+  "scope": "Launch and actual optimizer progress only; native model quality is pending completion. Per-case native validation and source mappings remain in the private receipt.",
+  "seeds_change_initialization_sampling_not_split": true,
+  "source_commit": "f9051656be4a9800d415b8e99ba782b23632a968",
+  "split_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9"
+}

@@ -1,0 +1,29 @@
+{
+  "campaign_sha256": "5617a39685ea459fd80a4bfa8130485fdf8877deb8de0ad69ba0e162a777e193",
+  "created_at": "2026-09-15T16:52:06.063378+00:00",
+  "input_audit_sha256": "cebc1beedf5f04ff6c2093f15d1069d8e93880559babe5d0b62210de9bdbe9fb",
+  "meaning": "Training-only input audit and scratch full-batch forward/backward/optimizer preflight; profiler constant LR is not a resumable experiment or quality result",
+  "operator_sha256": "a60c797cf415878eefc7f9ba99ef29d49cd18a843dea2f5b6aec54cb2767d761",
+  "profiles": {
+    "dynunet-batch-seed0": {
+      "completed_full_batch_size": 8,
+      "config_sha256": "8daf8531168aa833557571438db6852ab2ae6e528d3b003e10571dcf5c4bd7c1",
+      "loss_route": "batch",
+      "measured_steps": 5,
+      "peak_allocated_cuda_bytes": 8171400704,
+      "summary_sha256": "499a8ad5fa02f0e5586f63ebfd030a0d95248837e91797a0c284613f8995bbc1",
+      "warmup_steps": 3
+    },
+    "dynunet-per-sample-seed0": {
+      "completed_full_batch_size": 8,
+      "config_sha256": "c185c55dc6fccc302612bf950bd573fd684631111d3f2edfe6b1c62269459da1",
+      "loss_route": "per_sample",
+      "measured_steps": 5,
+      "peak_allocated_cuda_bytes": 8171400704,
+      "summary_sha256": "32786fa91e63619f312c9c4e0ac3be925160e2e40b29ba73696cb4a086b232be",
+      "warmup_steps": 3
+    }
+  },
+  "source_commit": "f9051656be4a9800d415b8e99ba782b23632a968",
+  "status": "passed"
+}
