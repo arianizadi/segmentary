@@ -2,9 +2,9 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T04:09:16.956217+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T04:31:20.590470+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
-**8 completed, 1 running.** GPU queue: 1, 2, 3, 4, 5, 6, 7, 8.
+**9 completed.** GPU queue: 1, 2, 3, 4, 5, 6, 7, 8.
 
 1. Open [comparison.md](comparison.md) for model status and comparable validation results.
 2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.
@@ -71,4 +71,4 @@ are useful within a run; they are not an accuracy ranking across objectives.
 | [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | completed | 10000/10000 | 0.3067 | 0.7045 | final reference-positive mean | 42/42 |
 | [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | completed | 10000/10000 | 0.3483 | 0.7569 | final reference-positive mean | 42/42 |
 | [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | completed | 10000/10000 | 0.2446 | 0.7045 | final reference-positive mean | 42/42 |
-| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | 9090/10000 | 0.2538 | 0.7247 | in-training step 9000 | 42/42 |
+| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | completed | 10000/10000 | 0.2958 | 0.7370 | final reference-positive mean | 42/42 |

@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-15T04:09:16.956217+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T04:31:20.590470+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 ## Native CT prediction
 
@@ -16,7 +16,7 @@ This measures heterogeneous full CT examinations. Case p50/p95 includes CPU work
 | [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | completed | 42/42 | 0 | 120.952 | 0.347 | 8.691 | 10.095 | 4.479 |
 | [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | completed | 42/42 | 0 | 121.889 | 0.345 | 8.618 | 11.162 | 7.406 |
 | [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | completed | 42/42 | 0 | 119.862 | 0.350 | 8.385 | 10.367 | 10.033 |
-| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | completed | 42/42 | 0 | 125.453 | 0.335 | 8.635 | 10.922 | 10.955 |
 
 [Per-case numerical timings](inference-cases.csv) use stable validation case ordinals. They contain preprocessing, tiled inference, reconstruction and export when recorded. Tiled inference includes copies, softmax and CPU blending; it is not model-only forward latency.
 
@@ -26,7 +26,7 @@ B1 synthetic inputs use each model's declared patch, context and precision. Warm
 
 | Model | Benchmark | Patch | Precision | Patches/s | p50 ms | p95 ms | Parameters | Weight MiB | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | [96, 96, 96] | bf16 | 116.092 | 8.609 | 8.639 | 16543683.0 | 126.218 | 0.625 |
 | [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16544265 | — | — |
 | [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
 | [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |

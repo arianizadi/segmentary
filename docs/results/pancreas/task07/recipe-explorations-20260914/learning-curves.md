@@ -2,7 +2,7 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T04:09:16.956217+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T04:31:20.590470+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 Each row is a completed training epoch. Blank validation cells mean validation was not scheduled. The step count, rather than wall-clock order, is the comparison axis. No values are interpolated.
 
@@ -940,3 +940,13 @@ Each row is a completed training epoch. Blank validation cells mean validation w
 | 88 | 8800 | 0.2659 | 4.45025e-05 | — | — | 106.5566 | 0.0000 | 1.6157 |
 | 89 | 8900 | 0.2818 | 4.115046e-05 | — | — | 106.5690 | 0.0000 | 1.6118 |
 | 90 | 9000 | 0.2551 | 3.776776e-05 | 0.7247 | 0.2538 | 106.5785 | 114.4250 | 1.6429 |
+| 91 | 9100 | 0.2648 | 3.435101e-05 | — | — | 106.5385 | 0.0000 | 1.6371 |
+| 92 | 9200 | 0.2699 | 3.0896e-05 | — | — | 106.6177 | 0.0000 | 1.6199 |
+| 93 | 9300 | 0.2649 | 2.739741e-05 | — | — | 106.5679 | 0.0000 | 1.6301 |
+| 94 | 9400 | 0.2637 | 2.38483e-05 | — | — | 106.5699 | 0.0000 | 1.6031 |
+| 95 | 9500 | 0.2434 | 2.023924e-05 | — | — | 106.6221 | 0.0000 | 1.5948 |
+| 96 | 9600 | 0.2655 | 1.655676e-05 | — | — | 106.5579 | 0.0000 | 1.6121 |
+| 97 | 9700 | 0.2719 | 1.277999e-05 | — | — | 106.5530 | 0.0000 | 1.5998 |
+| 98 | 9800 | 0.2511 | 8.872546e-06 | — | — | 106.5744 | 0.0000 | 1.6412 |
+| 99 | 9900 | 0.2411 | 4.75468e-06 | — | — | 106.5629 | 0.0000 | 1.6261 |
+| 100 | 10000 | 0.2570 | 0 | 0.7361 | 0.2766 | 106.5861 | 114.1674 | 1.6460 |
