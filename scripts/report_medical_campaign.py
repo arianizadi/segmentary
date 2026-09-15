@@ -611,7 +611,7 @@ def _collect_run(
         or result.get("performance", {}).get("prediction", {}).get("checkpoint_sha256"),
     )
     if backend == "nnunet":
-        from segmentary.medical_progress import parse_nnunet, tail
+        from segmentary.medical_progress import nnunet_budget, parse_nnunet, tail
 
         settings = _read(workspace / "trainer-settings.json")
         plan_binding = _read(workspace / "plan-binding.json")
@@ -626,8 +626,9 @@ def _collect_run(
         for key in ("patch_size", "batch_size", "spacing", "batch_dice", "normalization_schemes"):
             if key in planned:
                 result["recipe"][key] = planned[key]
-        if settings:
-            result["budget_steps"] = settings["num_epochs"] * settings["num_iterations_per_epoch"]
+        effective = nnunet_budget(result["recipe"], settings=settings)
+        result["recipe"]["effective_training_budget"] = effective
+        result["budget_steps"] = effective["optimizer_steps"]
         if plan_binding.get("runtime"):
             result["runtime_fingerprint"] = _digest(plan_binding["runtime"])
         telemetry = _read(workspace / "training-telemetry.json")
@@ -816,14 +817,15 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
                     or row.get("performance", {}).get("prediction", {}).get("checkpoint_sha256"),
                 )
             if row.get("backend") == "nnunet":
+                from segmentary.medical_progress import nnunet_budget
+
                 protocol = spec.get("protocol", {}).get("nnunet", {})
                 recipe = row.get("recipe", {})
-                epochs = recipe.get("num_epochs") or protocol.get("expected_default_epochs")
-                updates = recipe.get("num_iterations_per_epoch") or protocol.get(
-                    "expected_default_updates_per_epoch"
-                )
-                if epochs and updates:
-                    row["budget_steps"] = epochs * updates
+                effective = nnunet_budget(recipe, protocol=protocol)
+                recipe["effective_training_budget"] = effective
+                updates = effective["num_iterations_per_epoch"]
+                if effective["optimizer_steps"] is not None:
+                    row["budget_steps"] = effective["optimizer_steps"]
                     completed = row.get("nnunet_patch_history", {}).get("epochs", [])
                     if completed and not row.get("training_complete"):
                         row["completed_steps"] = completed[-1]["epoch"] * updates

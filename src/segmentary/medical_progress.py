@@ -24,6 +24,40 @@ from segmentary.campaign_progress import CampaignProgress, duration, number, val
 from segmentary.progress import ScalarPoint
 
 
+def nnunet_budget(recipe, *, settings=None, protocol=None):
+    """Resolve observed trainer settings before recipe or historical defaults.
+
+    Keep raw recipe fields unchanged. The returned aggregate can be embedded in
+    a report recipe and reused by the UI without reopening training artifacts.
+    """
+    effective = recipe.get("effective_training_budget", {})
+    resolved, sources = {}, {}
+    for key, fallback in (
+        ("num_epochs", "expected_default_epochs"),
+        ("num_iterations_per_epoch", "expected_default_updates_per_epoch"),
+    ):
+        candidates = (
+            ((settings or {}).get(key), "trainer-settings"),
+            (effective.get(key), effective.get("sources", {}).get(key, "effective-report")),
+            (recipe.get(key), "recipe"),
+            ((protocol or {}).get(fallback), "campaign-protocol"),
+        )
+        resolved[key] = None
+        for candidate, source in candidates:
+            if candidate is None:
+                continue
+            if type(candidate) is not int or candidate <= 0:
+                raise ValueError(f"nnU-Net {key} must be a positive integer")
+            resolved[key], sources[key] = candidate, source
+            break
+    epochs, updates = resolved["num_epochs"], resolved["num_iterations_per_epoch"]
+    return {
+        **resolved,
+        "optimizer_steps": epochs * updates if epochs is not None and updates is not None else None,
+        "sources": sources,
+    }
+
+
 def locations(root):
     root = Path(root).resolve()
     state = root if (root / "campaign-binding.json").is_file() else root / "state"
@@ -290,12 +324,9 @@ class MedicalTelemetry:
                     key=lambda path: path.stat().st_mtime,
                 )
                 protocol = spec.get("protocol", {}).get("nnunet", {})
-                epochs = row.get("recipe", {}).get("num_epochs") or protocol.get(
-                    "expected_default_epochs"
-                )
-                updates = row.get("recipe", {}).get("num_iterations_per_epoch") or protocol.get(
-                    "expected_default_updates_per_epoch"
-                )
+                effective = nnunet_budget(row.get("recipe", {}), protocol=protocol)
+                epochs = effective["num_epochs"]
+                updates = effective["num_iterations_per_epoch"]
                 if logs:
                     parsed = parse_nnunet(tail(logs[-1]))
                     row["nnunet"] = parsed

@@ -73,6 +73,10 @@ def test_nnunet_report_uses_actual_plan_and_completed_training_without_private_p
     assert row["training_complete"] and row["completed_steps"] == row["budget_steps"] == 250000
     assert row["recipe"]["patch_size"] == [56, 320, 256]
     assert row["recipe"]["batch_size"] == 2 and row["recipe"]["batch_dice"] is False
+    assert row["recipe"]["effective_training_budget"]["optimizer_steps"] == 250000
+    assert set(row["recipe"]["effective_training_budget"]["sources"].values()) == {
+        "trainer-settings"
+    }
     assert row["runtime_fingerprint"]
     assert row["peak_allocated_bytes"] == 1234
     assert "/private/reference" not in json.dumps(row)

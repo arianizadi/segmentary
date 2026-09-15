@@ -13,6 +13,7 @@ from segmentary.campaign_progress import CampaignProgress, visible
 from segmentary.medical_progress import (
     MedicalProgress,
     MedicalTelemetry,
+    nnunet_budget,
     parse_nnunet,
     score_display,
 )
@@ -130,6 +131,65 @@ def test_telemetry_uses_complete_native_metrics_and_keeps_pseudo_separate(medica
     assert by_name["nnunet"]["progress_text"] == "1/1000 ep"
     assert "PATCH" in telemetry.summary
     assert "case-one" not in str(rows)
+
+
+def test_observed_nnunet_budget_drives_report_and_ui_without_protocol_defaults(medical):
+    campaign = medical / "campaign.json"
+    spec = json.loads(campaign.read_text())
+    spec["protocol"] = {"optimizer_steps_per_arm": 250000}
+    write(campaign, spec)
+    config_path = medical / "recipes/nnunet.json"
+    config = json.loads(config_path.read_text())
+    config.update(num_epochs=None, num_iterations_per_epoch=None)
+    write(config_path, config)
+    config_bytes = config_path.read_bytes()
+    settings = medical / "runs/nnunet/trainer-settings.json"
+    write(settings, {"num_epochs": 1000, "num_iterations_per_epoch": 250})
+    settings_bytes = settings.read_bytes()
+    telemetry = MedicalTelemetry(medical, show_gpus=False)
+    snapshot = telemetry.reporter.collect(campaign, medical / "state")
+    report = next(row for row in snapshot["runs"] if row["id"] == "nnunet")
+    assert report["completed_steps"] == 250  # Epoch 1 has started but has not completed.
+    assert report["budget_steps"] == 250000
+    assert report["recipe"]["num_epochs"] is None
+    assert report["recipe"]["num_iterations_per_epoch"] is None
+    assert report["recipe"]["effective_training_budget"]["num_epochs"] == 1000
+    assert report["recipe"]["effective_training_budget"]["optimizer_steps"] == 250000
+    rows, _, errors = telemetry.read()
+    assert not errors
+    row = next(row for row in rows if row["name"] == "nnunet")
+    assert row["progress_text"] == "1/1000 ep"
+    assert row["step"] == 250
+    assert row["scalars"]["train/iteration"].value == 250
+    assert row["scalars"]["train/progress"].value == pytest.approx(0.001)
+    assert row["scalars"]["train/eta_seconds"].value == pytest.approx(999 * 160.5)
+    assert config_path.read_bytes() == config_bytes
+    assert settings.read_bytes() == settings_bytes
+
+
+def test_nnunet_observed_budget_precedes_raw_recipe_and_historical_protocol():
+    raw = {"num_epochs": 10, "num_iterations_per_epoch": 5}
+    protocol = {"expected_default_epochs": 20, "expected_default_updates_per_epoch": 10}
+    effective = nnunet_budget(
+        raw,
+        settings={"num_epochs": 1000, "num_iterations_per_epoch": 250},
+        protocol=protocol,
+    )
+    assert effective["optimizer_steps"] == 250000
+    assert set(effective["sources"].values()) == {"trainer-settings"}
+    assert nnunet_budget(raw, protocol=protocol)["optimizer_steps"] == 50
+    assert nnunet_budget({}, protocol=protocol)["optimizer_steps"] == 200
+    assert nnunet_budget({})["optimizer_steps"] is None
+    assert raw == {"num_epochs": 10, "num_iterations_per_epoch": 5}
+
+
+@pytest.mark.parametrize("invalid", [0, -1, True, 1.5, "1000"])
+def test_malformed_observed_nnunet_budget_is_not_replaced_with_plausible_defaults(invalid):
+    with pytest.raises(ValueError, match="positive integer"):
+        nnunet_budget(
+            {"num_epochs": 1000, "num_iterations_per_epoch": 250},
+            settings={"num_epochs": invalid},
+        )
 
 
 def test_changed_metric_invalidates_cache_and_bad_coverage_withholds_scores(medical):
