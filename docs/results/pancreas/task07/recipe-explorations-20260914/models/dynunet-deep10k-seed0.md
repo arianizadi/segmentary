@@ -2,16 +2,16 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-14T23:58:36.669554+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T00:08:47.221908+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
-Status: **queued**. Stage: **—**. GPU: **None**.
+Status: **running**. Stage: **prepare**. GPU: **2**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | — / — |
-| Last worker update | — |
+| Started / finished | 2026-09-15T00:08:44.942069+00:00 / — |
+| Last worker update | 2026-09-15T00:08:45.025848+00:00 |
 | Completed / budget steps | 0 / 10000 |
 | Live step / phase | — / — |
 | Parameters | — |

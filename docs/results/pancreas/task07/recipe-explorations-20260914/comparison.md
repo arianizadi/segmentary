@@ -2,22 +2,22 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-14T23:58:36.669554+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T00:08:47.221908+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
-**9 queued.**
+**1 queued, 8 running.**
 
 Interim values are shown in campaign order, not sorted by apparent accuracy. Different validated step counts cannot establish a winner.
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [dynunet-window-seed0](models/dynunet-window-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | prepare | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | running | prepare | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | running | prepare | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | running | prepare | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-window-seed0](models/dynunet-window-seed0.md) | running | prepare | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | running | prepare | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | prepare | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | prepare | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
 | [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
 
 - **dynunet_deep_supervision_seed0_control_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
