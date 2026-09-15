@@ -1,0 +1,360 @@
+{
+  "kind": "aggregate_medical_failure_tools_verification",
+  "source_commit": "bbfa5bf19a52506cedf90309618b88cdf1870233",
+  "report_id": "25184d8d472f1450ee368bc36fec3204966e971ea51b3dc4c57695200cbac06f",
+  "report_sha256": "f81cc6dfa318d5cf9e9b8d8709dfb13be4d15c197ccb51a4778a355cb90f3338",
+  "partition": "val",
+  "cases": 42,
+  "patients": 42,
+  "models": [
+    {
+      "model": "dynunet-control10k-seed0",
+      "training_seed": 0,
+      "cases": 42,
+      "mass_dice": 0.3298359547409563,
+      "pancreas_dice": 0.7558945692980761,
+      "reference_lesions": 42,
+      "matched_lesions": 25,
+      "partial_lesions": 5,
+      "zero_overlap_lesions": 12,
+      "unmatched_prediction_components": 45
+    },
+    {
+      "model": "dynunet-deep10k-seed0",
+      "training_seed": 0,
+      "cases": 42,
+      "mass_dice": 0.30687758685858885,
+      "pancreas_dice": 0.7407264999464717,
+      "reference_lesions": 42,
+      "matched_lesions": 20,
+      "partial_lesions": 4,
+      "zero_overlap_lesions": 18,
+      "unmatched_prediction_components": 31
+    },
+    {
+      "model": "dynunet-focal05-seed0",
+      "training_seed": 0,
+      "cases": 42,
+      "mass_dice": 0.317132984397114,
+      "pancreas_dice": 0.7227777122715583,
+      "reference_lesions": 42,
+      "matched_lesions": 21,
+      "partial_lesions": 8,
+      "zero_overlap_lesions": 13,
+      "unmatched_prediction_components": 60
+    },
+    {
+      "model": "dynunet-focal10-seed0",
+      "training_seed": 0,
+      "cases": 42,
+      "mass_dice": 0.3238386434772668,
+      "pancreas_dice": 0.7184810275073324,
+      "reference_lesions": 42,
+      "matched_lesions": 24,
+      "partial_lesions": 7,
+      "zero_overlap_lesions": 11,
+      "unmatched_prediction_components": 47
+    },
+    {
+      "model": "dynunet-window-seed0",
+      "training_seed": 0,
+      "cases": 42,
+      "mass_dice": 0.29526635478318514,
+      "pancreas_dice": 0.711039487879671,
+      "reference_lesions": 42,
+      "matched_lesions": 23,
+      "partial_lesions": 7,
+      "zero_overlap_lesions": 12,
+      "unmatched_prediction_components": 55
+    },
+    {
+      "model": "dynunet-minmax-seed0",
+      "training_seed": 0,
+      "cases": 42,
+      "mass_dice": 0.30665678243611383,
+      "pancreas_dice": 0.7045251311830885,
+      "reference_lesions": 42,
+      "matched_lesions": 21,
+      "partial_lesions": 7,
+      "zero_overlap_lesions": 14,
+      "unmatched_prediction_components": 44
+    }
+  ],
+  "reviewed_case_selection": {
+    "ranked_cases": 4,
+    "random_remainder_cases": 2,
+    "seed": 0,
+    "slices_per_plane": 3,
+    "scope": "selected slices; not full-volume inspection",
+    "cases_with_panels": 6
+  },
+  "panels": 324,
+  "roi_coverage": [
+    {
+      "margin_mm": 20,
+      "cases": 42,
+      "cases_with_excluded_mass": 1,
+      "reference_lesions": 42,
+      "completely_excluded_lesions": 0,
+      "partially_excluded_lesions": 1,
+      "empty_prediction_fallbacks": 0
+    },
+    {
+      "margin_mm": 40,
+      "cases": 42,
+      "cases_with_excluded_mass": 1,
+      "reference_lesions": 42,
+      "completely_excluded_lesions": 0,
+      "partially_excluded_lesions": 1,
+      "empty_prediction_fallbacks": 0
+    }
+  ],
+  "paired_comparisons": [
+    {
+      "baseline": "dynunet-control10k-seed0",
+      "candidate": "dynunet-deep10k-seed0",
+      "metric": "mass_dice",
+      "training_seeds": [
+        0
+      ],
+      "complete_pairs": 42,
+      "conditional_patient_bootstrap": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.06337851714609619,
+          0.016341043676200078
+        ],
+        "confidence": 0.95,
+        "mean": -0.02295836788236741,
+        "method": "paired patient percentile bootstrap after averaging scans within patient and paired deltas across seeds",
+        "patients": 42,
+        "seed": 20260914,
+        "training_seed_count": 1,
+        "unit": "patient"
+      }
+    },
+    {
+      "baseline": "dynunet-control10k-seed0",
+      "candidate": "dynunet-deep10k-seed0",
+      "metric": "pancreas_dice",
+      "training_seeds": [
+        0
+      ],
+      "complete_pairs": 42,
+      "conditional_patient_bootstrap": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.033242823885293656,
+          0.002254493407953722
+        ],
+        "confidence": 0.95,
+        "mean": -0.015168069351604354,
+        "method": "paired patient percentile bootstrap after averaging scans within patient and paired deltas across seeds",
+        "patients": 42,
+        "seed": 20260914,
+        "training_seed_count": 1,
+        "unit": "patient"
+      }
+    },
+    {
+      "baseline": "dynunet-control10k-seed0",
+      "candidate": "dynunet-focal05-seed0",
+      "metric": "mass_dice",
+      "training_seeds": [
+        0
+      ],
+      "complete_pairs": 42,
+      "conditional_patient_bootstrap": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.07247358058722318,
+          0.0411492515873068
+        ],
+        "confidence": 0.95,
+        "mean": -0.012702970343842277,
+        "method": "paired patient percentile bootstrap after averaging scans within patient and paired deltas across seeds",
+        "patients": 42,
+        "seed": 20260914,
+        "training_seed_count": 1,
+        "unit": "patient"
+      }
+    },
+    {
+      "baseline": "dynunet-control10k-seed0",
+      "candidate": "dynunet-focal05-seed0",
+      "metric": "pancreas_dice",
+      "training_seeds": [
+        0
+      ],
+      "complete_pairs": 42,
+      "conditional_patient_bootstrap": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.052369727966149554,
+          -0.01572355425874825
+        ],
+        "confidence": 0.95,
+        "mean": -0.03311685702651778,
+        "method": "paired patient percentile bootstrap after averaging scans within patient and paired deltas across seeds",
+        "patients": 42,
+        "seed": 20260914,
+        "training_seed_count": 1,
+        "unit": "patient"
+      }
+    },
+    {
+      "baseline": "dynunet-control10k-seed0",
+      "candidate": "dynunet-focal10-seed0",
+      "metric": "mass_dice",
+      "training_seeds": [
+        0
+      ],
+      "complete_pairs": 42,
+      "conditional_patient_bootstrap": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.06289033311983132,
+          0.04882979637968246
+        ],
+        "confidence": 0.95,
+        "mean": -0.005997311263689419,
+        "method": "paired patient percentile bootstrap after averaging scans within patient and paired deltas across seeds",
+        "patients": 42,
+        "seed": 20260914,
+        "training_seed_count": 1,
+        "unit": "patient"
+      }
+    },
+    {
+      "baseline": "dynunet-control10k-seed0",
+      "candidate": "dynunet-focal10-seed0",
+      "metric": "pancreas_dice",
+      "training_seeds": [
+        0
+      ],
+      "complete_pairs": 42,
+      "conditional_patient_bootstrap": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.058756697431496696,
+          -0.018191530504403447
+        ],
+        "confidence": 0.95,
+        "mean": -0.03741354179074362,
+        "method": "paired patient percentile bootstrap after averaging scans within patient and paired deltas across seeds",
+        "patients": 42,
+        "seed": 20260914,
+        "training_seed_count": 1,
+        "unit": "patient"
+      }
+    },
+    {
+      "baseline": "dynunet-control10k-seed0",
+      "candidate": "dynunet-minmax-seed0",
+      "metric": "mass_dice",
+      "training_seeds": [
+        0
+      ],
+      "complete_pairs": 42,
+      "conditional_patient_bootstrap": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.08150239434034269,
+          0.03015877736847509
+        ],
+        "confidence": 0.95,
+        "mean": -0.02317917230484247,
+        "method": "paired patient percentile bootstrap after averaging scans within patient and paired deltas across seeds",
+        "patients": 42,
+        "seed": 20260914,
+        "training_seed_count": 1,
+        "unit": "patient"
+      }
+    },
+    {
+      "baseline": "dynunet-control10k-seed0",
+      "candidate": "dynunet-minmax-seed0",
+      "metric": "pancreas_dice",
+      "training_seeds": [
+        0
+      ],
+      "complete_pairs": 42,
+      "conditional_patient_bootstrap": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.0772086338567039,
+          -0.02961726502412591
+        ],
+        "confidence": 0.95,
+        "mean": -0.05136943811498756,
+        "method": "paired patient percentile bootstrap after averaging scans within patient and paired deltas across seeds",
+        "patients": 42,
+        "seed": 20260914,
+        "training_seed_count": 1,
+        "unit": "patient"
+      }
+    },
+    {
+      "baseline": "dynunet-control10k-seed0",
+      "candidate": "dynunet-window-seed0",
+      "metric": "mass_dice",
+      "training_seeds": [
+        0
+      ],
+      "complete_pairs": 42,
+      "conditional_patient_bootstrap": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.08797985523325101,
+          0.012047215177317295
+        ],
+        "confidence": 0.95,
+        "mean": -0.03456959995777111,
+        "method": "paired patient percentile bootstrap after averaging scans within patient and paired deltas across seeds",
+        "patients": 42,
+        "seed": 20260914,
+        "training_seed_count": 1,
+        "unit": "patient"
+      }
+    },
+    {
+      "baseline": "dynunet-control10k-seed0",
+      "candidate": "dynunet-window-seed0",
+      "metric": "pancreas_dice",
+      "training_seeds": [
+        0
+      ],
+      "complete_pairs": 42,
+      "conditional_patient_bootstrap": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.061953394592780195,
+          -0.028960432943169613
+        ],
+        "confidence": 0.95,
+        "mean": -0.04485508141840509,
+        "method": "paired patient percentile bootstrap after averaging scans within patient and paired deltas across seeds",
+        "patients": 42,
+        "seed": 20260914,
+        "training_seed_count": 1,
+        "unit": "patient"
+      }
+    }
+  ],
+  "ci": {
+    "runner": "segmentary-linux",
+    "conclusion": "success",
+    "run_url": "https://github.com/arianizadi/segmentary/actions/runs/34918331598/job/104220691990",
+    "completed_at": "2026-09-15T01:54:03Z"
+  }
+}

@@ -419,7 +419,12 @@ def _model_profile(
     if skip_inference:
         result["native_inference"] = {"status": "explicitly_skipped"}
     else:
-        image_only = {"case_id": case["case_id"], "image": case["image"]}
+        # ROI preprocessing requires the audited case identity and image hash;
+        # retain image geometry too, while excluding every supervision field.
+        image_only = {
+            key: case[key]
+            for key in ("case_id", "image", "image_sha256", "shape", "affine", "spacing_mm")
+        }
         baseline_config = dataclasses.replace(config, inference_batch_size=1)
         sync()
         baseline, first_seconds = _timed(

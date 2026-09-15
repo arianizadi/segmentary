@@ -57,7 +57,12 @@ def _training_case(tmp_path):
     label = np.zeros(image.shape, np.uint8)
     label[2:7, 2:6, 1:5] = 1
     label[3:5, 3:5, 2:4] = 2
-    case = {"case_id": "train", "shape": list(image.shape)}
+    case = {
+        "case_id": "train",
+        "shape": list(image.shape),
+        "affine": np.eye(4).tolist(),
+        "spacing_mm": [1, 1, 1],
+    }
     for key, array in (("image", image), ("label", label)):
         path = tmp_path / f"{key}.nii.gz"
         volume = nib.Nifti1Image(array, np.eye(4))
@@ -149,7 +154,7 @@ def test_model_profile_records_real_updates_trace_and_native_batch_disagreement(
     batches = []
 
     def predict_training_image_only(model, case, config, device):
-        assert set(case) == {"case_id", "image"}
+        assert set(case) == {"case_id", "image", "image_sha256", "shape", "affine", "spacing_mm"}
         batches.append(config.inference_batch_size)
         result = np.zeros((5, 6, 7), np.uint8)
         if config.inference_batch_size == 2:
@@ -166,7 +171,15 @@ def test_model_profile_records_real_updates_trace_and_native_batch_disagreement(
     previous_determinism = torch.are_deterministic_algorithms_enabled()
     try:
         result = profiler._model_profile(
-            {"case_id": "train", "image": "train-only", "label": "forbidden", "shape": [5, 6, 7]},
+            {
+                "case_id": "train",
+                "image": "train-only",
+                "label": "forbidden",
+                "shape": [5, 6, 7],
+                "image_sha256": "a" * 64,
+                "affine": np.eye(4).tolist(),
+                "spacing_mm": [1, 1, 1],
+            },
             data,
             config,
             tmp_path,
@@ -224,3 +237,79 @@ def test_main_publishes_progress_and_final_summary_but_refuses_existing_output(
     assert result["config"]["workspace"] == str(tmp_path / "run")
     with pytest.raises(FileExistsError):
         profiler.main()
+
+
+def test_real_roi_profile_inference_keeps_image_identity_and_never_opens_labels(
+    tmp_path, monkeypatch
+):
+    case = _training_case(tmp_path)
+    roi_path = tmp_path / "roi.json"
+    roi_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "kind": "predicted_pancreas_native_bbox",
+                "reference_labels_used": False,
+                "empty_prediction_policy": "full_ct",
+                "cases": {
+                    case["case_id"]: {
+                        "image_sha256": case["image_sha256"],
+                        "bbox_xyz": [[2, 8], [2, 7], [1, 6]],
+                    }
+                },
+            }
+        )
+    )
+    config = TorchConfig(
+        str(tmp_path / "run"),
+        gpu="cpu",
+        patch_size=(4, 4, 4),
+        workers=1,
+        inference_batch_size=2,
+        spacing_mm=(1, 1, 1),
+        precision="fp32",
+        roi_manifest=str(roi_path),
+        roi_manifest_sha256=sha256_file(roi_path),
+    )
+    data = profiler.preprocess_case(case, config, with_label=True)
+    monkeypatch.setattr(profiler, "build_model", lambda *args, **kwargs: nn.Conv3d(1, 3, 1))
+    actual_predict, actual_load = profiler.predict_case, nib.load
+    predictions = []
+
+    def predict(model, image_case, recipe, device):
+        assert set(image_case) == {
+            "case_id",
+            "image",
+            "image_sha256",
+            "shape",
+            "affine",
+            "spacing_mm",
+        }
+        assert image_case["image_sha256"] == case["image_sha256"]
+        value = actual_predict(model, image_case, recipe, device)
+        predictions.append(value)
+        return value
+
+    def load(path, *args, **kwargs):
+        assert Path(path) != Path(case["label"]), "Inference opened reference payload"
+        return actual_load(path, *args, **kwargs)
+
+    monkeypatch.setattr(profiler, "predict_case", predict)
+    monkeypatch.setattr(nib, "load", load)
+    previous_threads = torch.get_num_threads()
+    previous_determinism = torch.are_deterministic_algorithms_enabled()
+    try:
+        result = profiler._model_profile(
+            case, data, config, tmp_path, trace=False, skip_inference=False
+        )
+    finally:
+        torch.set_num_threads(previous_threads)
+        torch.use_deterministic_algorithms(previous_determinism)
+    assert len(predictions) == 2
+    inside = np.zeros(case["shape"], dtype=bool)
+    inside[2:8, 2:7, 1:6] = True
+    for prediction in predictions:
+        assert prediction.shape == tuple(case["shape"])
+        assert np.all(prediction[~inside] == 0)
+    assert result["native_inference"]["native_voxels"] == np.prod(case["shape"])
+    assert result["native_inference"]["labels_opened_for_inference"] is False

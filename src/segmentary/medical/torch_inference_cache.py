@@ -227,6 +227,13 @@ class InferenceImageCache:
         source = Path(case["image"]).expanduser().absolute()
         reference = _native_reference(case)
         identity = {**self._pipeline, "source": reference}
+        if self.config.roi_manifest is not None:
+            case_id = case.get("case_id")
+            if not isinstance(case_id, str) or not case_id or case_id != case_id.strip():
+                raise ValueError("ROI inference cache requires an audited case_id")
+            # Identical image bytes can belong to distinct manifest case aliases
+            # with different frozen boxes. Never share their cropped cache entry.
+            identity["roi_case_id"] = case_id
         fingerprint = _digest(identity)
         return (str(source), fingerprint), source, identity, reference
 
@@ -270,8 +277,18 @@ class InferenceImageCache:
             if _signature(source) != source_signature or str(source.resolve()) != source_resolved:
                 raise ValueError("Inference source changed before preprocessing")
             # This is the existing arithmetic, including its full CT audit.
-            # Pass a deliberately image-only mapping so supervision is inaccessible.
-            data = preprocess_case({"image": str(source)}, self.config, with_label=False)
+            # Preserve audited image identity/geometry for ROI lookup, while an
+            # explicit allowlist keeps all supervision keys inaccessible.
+            image_case = {
+                "image": str(source),
+                "image_sha256": reference["sha256"],
+                "shape": reference["shape"],
+                "spacing_mm": reference["spacing_mm"],
+                "affine": reference["affine"],
+            }
+            if self.config.roi_manifest is not None:
+                image_case["case_id"] = identity["roi_case_id"]
+            data = preprocess_case(image_case, self.config, with_label=False)
             native = _nibabel().load(str(source))
             actual = {"shape": list(native.shape), "affine": native.affine.tolist()}
             assert_same_geometry(reference, actual, where="inference cache native reference")

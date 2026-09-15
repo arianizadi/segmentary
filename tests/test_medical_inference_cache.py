@@ -329,3 +329,164 @@ def test_export_fails_if_raw_source_changed_after_inference(tmp_path: Path) -> N
         with pytest.raises(ValueError, match="source changed"):
             cache.export_prediction(case, np.zeros(case["shape"], np.uint8), output)
         assert not output.exists()
+
+
+def _roi_config(tmp_path: Path, cases: list[dict], boxes: list[list[list[int]]]) -> TorchConfig:
+    from segmentary.medical.geometry import sha256_file
+
+    document = {
+        "schema_version": 1,
+        "kind": "predicted_pancreas_native_bbox",
+        "reference_labels_used": False,
+        "empty_prediction_policy": "full_ct",
+        "cases": {
+            case["case_id"]: {"image_sha256": case["image_sha256"], "bbox_xyz": box}
+            for case, box in zip(cases, boxes, strict=True)
+        },
+    }
+    path = tmp_path / "predicted-roi.json"
+    path.write_text(json.dumps(document))
+    return dataclasses.replace(
+        _config(tmp_path), roi_manifest=str(path), roi_manifest_sha256=sha256_file(path)
+    )
+
+
+def test_roi_cache_preserves_audited_image_identity_without_supervision(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from segmentary.medical import torch_data
+
+    original = {**_case(tmp_path), "case_id": "case-one"}
+    config = _roi_config(tmp_path, [original], [[[2, 7], [3, 9], [1, 8]]])
+    expected = preprocess_case(original, config, with_label=False)
+    allowed = {"image", "image_sha256", "shape", "spacing_mm", "affine", "case_id"}
+
+    class ImageOnly(dict):
+        def __getitem__(self, key):
+            assert key in allowed, f"Accessed supervision key {key}"
+            return super().__getitem__(key)
+
+        def get(self, key, default=None):
+            assert key in allowed, f"Accessed supervision key {key}"
+            return super().get(key, default)
+
+    original_preprocess, original_load = torch_data.preprocess_case, nib.load
+    passed = []
+
+    def preprocess(case, config, *, with_label):
+        assert set(case) == allowed
+        assert with_label is False
+        passed.append(dict(case))
+        return original_preprocess(case, config, with_label=with_label)
+
+    def image_load(path, *args, **kwargs):
+        assert "label" not in str(path)
+        return original_load(path, *args, **kwargs)
+
+    monkeypatch.setattr(torch_data, "preprocess_case", preprocess)
+    monkeypatch.setattr(nib, "load", image_load)
+    root = tmp_path / "cache"
+    case = ImageOnly(original)
+    with InferenceImageCache(root, config) as cache:
+        data = cache.load(case)
+        np.testing.assert_array_equal(data["image"], expected["image"])
+        np.testing.assert_array_equal(data["affine"], expected["affine"])
+        assert data["native_shape"] == tuple(case["shape"])
+        np.testing.assert_array_equal(data["native_affine"], case["affine"])
+        cache.load(case)
+        assert cache.stats["builds"] == 1
+    with InferenceImageCache(root, config) as cache:
+        cache.load(case)
+        assert cache.stats["builds"] == 0
+    assert len(passed) == 1
+    assert passed[0]["case_id"] == "case-one"
+    assert passed[0]["image_sha256"] == original["image_sha256"]
+
+
+def test_roi_cache_separates_same_image_aliases_with_different_boxes(tmp_path: Path) -> None:
+    original = _case(tmp_path)
+    cases = [{**original, "case_id": "left"}, {**original, "case_id": "right"}]
+    config = _roi_config(tmp_path, cases, [[[0, 3], [0, 4], [0, 4]], [[4, 9], [5, 10], [6, 11]]])
+    root = tmp_path / "cache"
+    with InferenceImageCache(root, config) as cache:
+        first = cache.load(cases[0])
+        second = cache.load(cases[1])
+        assert cache.stats["builds"] == 2
+        for case, cached in zip(cases, (first, second), strict=True):
+            expected = preprocess_case(case, config, with_label=False)
+            np.testing.assert_array_equal(cached["image"], expected["image"])
+            np.testing.assert_array_equal(cached["affine"], expected["affine"])
+        assert not np.array_equal(first["affine"], second["affine"])
+    directories = [path for path in root.iterdir() if path.is_dir()]
+    assert len(directories) == 2
+    assert {
+        json.loads((directory / "cache.json").read_text())["identity"]["roi_case_id"]
+        for directory in directories
+    } == {"left", "right"}
+
+
+def test_roi_inference_cache_requires_case_id_before_building(tmp_path: Path) -> None:
+    case = _case(tmp_path)
+    config = _roi_config(tmp_path, [{**case, "case_id": "one"}], [[[0, 9], [0, 10], [0, 11]]])
+    with InferenceImageCache(tmp_path / "cache", config) as cache:
+        with pytest.raises(ValueError, match="audited case_id"):
+            cache.load(case)
+        assert cache.stats["builds"] == 0
+
+
+def test_roi_cached_prediction_matches_uncached_on_full_native_grid(tmp_path: Path) -> None:
+    import contextlib
+
+    import torch
+
+    from segmentary.medical.torch_data import iter_predictions
+
+    path = tmp_path / "roi-ct.nii.gz"
+    values = np.arange(10 * 11 * 12, dtype=np.float32).reshape(10, 11, 12)
+    image = nib.Nifti1Image(values, np.eye(4))
+    image.header.set_xyzt_units("mm")
+    image.set_qform(np.eye(4), code=1)
+    image.set_sform(np.eye(4), code=1)
+    nib.save(image, path)
+    info = validate_nifti(path)
+    case = {
+        "case_id": "roi-case",
+        "image": str(path),
+        "image_sha256": info["sha256"],
+        "shape": info["shape"],
+        "affine": info["affine"],
+        "spacing_mm": info["spacing_mm"],
+        "label": str(tmp_path / "must-not-read-label.nii.gz"),
+    }
+    config = dataclasses.replace(
+        _roi_config(tmp_path, [case], [[[2, 8], [3, 9], [4, 10]]]),
+        spacing_mm=(1, 1, 1),
+        precision="fp32",
+        mode="3d",
+        context_slices=1,
+    )
+
+    class ConstantMass(torch.nn.Module):
+        def forward(self, tensor):
+            result = torch.zeros((tensor.shape[0], 3, *tensor.shape[2:]), device=tensor.device)
+            result[:, 2] = 5
+            return result
+
+    model = ConstantMass()
+    device = torch.device("cpu")
+    with contextlib.closing(iter_predictions(model, [case], config, device)) as predictions:
+        uncached = next(predictions)
+    with (
+        InferenceImageCache(tmp_path / "cache", config) as cache,
+        contextlib.closing(
+            iter_predictions(model, [case], config, device, cache=cache)
+        ) as predictions,
+    ):
+        cached = next(predictions)
+    assert cached.error is None and uncached.error is None
+    assert cached.prediction is not None and uncached.prediction is not None
+    np.testing.assert_array_equal(cached.prediction, uncached.prediction)
+    assert cached.prediction.shape == (10, 11, 12)
+    expected = np.zeros((10, 11, 12), dtype=np.uint8)
+    expected[2:8, 3:9, 4:10] = 2
+    np.testing.assert_array_equal(cached.prediction, expected)

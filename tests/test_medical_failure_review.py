@@ -402,3 +402,36 @@ def test_browser_import_deduplicates_identical_and_rejects_conflicts():
     )
     assert result.returncode != 0
     assert "Conflicting revision" in result.stderr
+
+
+def test_browser_starts_with_image_case_and_image_filter_preserves_all_cases():
+    value = report()
+    no_panels = copy.deepcopy(value["cases"][0])
+    no_panels["case_key"] = "first-without-panels"
+    for result in no_panels["models"].values():
+        result["panels"] = {}
+    value["cases"].insert(0, no_panels)
+    result = run_browser_validation(
+        value,
+        export(value),
+        "(()=>{let mode='all';global.document={getElementById:id=>"
+        "({value:({search:'',filter:mode,flag:'all',reviewer:''})[id]})};"
+        "const all=filtered().map(c=>c.case_key);mode='panels';"
+        "return {selected,all,panels:filtered().map(c=>c.case_key)}})()",
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == {
+        "selected": "case-opaque-a",
+        "all": ["first-without-panels", "case-opaque-a"],
+        "panels": ["case-opaque-a"],
+    }
+    assert '<option value="panels">Has image panels</option>' in _PAGE
+
+
+def test_browser_without_images_keeps_first_case_selected():
+    value = report()
+    for result in value["cases"][0]["models"].values():
+        result["panels"] = {}
+    result = run_browser_validation(value, export(value), "selected")
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == value["cases"][0]["case_key"]

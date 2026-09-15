@@ -15,6 +15,8 @@ Use this workflow after a run finishes its native validation evaluation. It read
 
 Existing training-input audits, fitting diagnostics, full-batch GPU profiling, inference benchmarking, controlled recipes, checkpoint lineage and retention continue to supply the training infrastructure. See [recipe experiments](medical-recipe-experiments.md) and [architecture study design](medical-architecture-studies.md).
 
+The first [real-data verification and aggregate comparison](../results/pancreas/task07/failure-review-20260914/README.md) covers six completed models on all 42 Task07 validation scans, with 324 review panels and both cascade crop audits.
+
 ## Make a report from a completed campaign
 
 Run inside the new checked-out Segmentary source with its medical dependencies. Use an artifact directory outside the repository. Set `PYTHONPATH=src` if this checkout is not the installed source.
@@ -68,6 +70,8 @@ failure-review/
 ```
 
 Open `review.html` in a local browser with its adjacent files. Images and report data are local; there is no remote analytics or external script. Default model aliases hide identities and scores on the display. This is a convenience for review, not secure blinding: the underlying report includes model names. Revealing identities is tracked for subsequent decisions. Notes include reviewer, case/model scope, category, confidence and revision history; export them to retain a portable copy. Browser storage alone is not a research archive.
+
+The queue retains every case's metrics and initially selects a case with exported panels when available. Use **Has image panels** to filter to the visual-review subset.
 
 Validate an exported review without changing annotations:
 
