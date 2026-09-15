@@ -181,6 +181,10 @@ def test_three_architectures_preserve_full_recipe_without_touching_reference(inp
     ]
     assert stable[0] == stable[1] == stable[2]
     assert spec["protocol"]["optimizer_steps_per_arm"] == 250000
+    assert spec["protocol"]["nnunet"] == {
+        "expected_default_epochs": 1000,
+        "expected_default_updates_per_epoch": 250,
+    }
     assert spec["protocol"]["sampled_patches_per_arm"] == 500000
     assert spec["protocol"]["maximum_concurrent_runs"] == 3
     assert spec["protocol"]["early_stopping"] is False

@@ -235,6 +235,10 @@ def plan_campaign(
             "partition_counts": counts,
             "grouping_status": metadata.get("grouping_status", "unspecified"),
             "reference": reference,
+            "nnunet": {
+                "expected_default_epochs": 1000,
+                "expected_default_updates_per_epoch": 250,
+            },
             "optimizer_steps_per_arm": 250000,
             "batch_size": 2,
             "sampled_patches_per_arm": 500000,
