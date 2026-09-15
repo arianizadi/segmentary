@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-15T00:44:56.329460+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
+Generated: 2026-09-15T01:15:00.545132+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
 
 ## Native CT prediction
 
@@ -20,7 +20,7 @@ B1 synthetic inputs use each model's declared patch, context and precision. Warm
 
 | Model | Benchmark | Patch | Precision | Patches/s | p50 ms | p95 ms | Parameters | Weight MiB | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
 | [dynunet-roi20-seed0](models/dynunet-roi20-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
 | [dynunet-roi40-seed0](models/dynunet-roi40-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
 

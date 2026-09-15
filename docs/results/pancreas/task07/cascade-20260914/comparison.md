@@ -2,7 +2,7 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T00:44:56.329460+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
+Generated: 2026-09-15T01:15:00.545132+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
 
 **2 queued, 1 running.**
 
@@ -10,7 +10,7 @@ Interim values are shown in campaign order, not sorted by apparent accuracy. Dif
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | prepare | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | train | 5600/10000 | 5000 | 42/42 | 0.2729 | 0.7198 | — | — | 0/42 | — |
 | [dynunet-roi20-seed0](models/dynunet-roi20-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
 | [dynunet-roi40-seed0](models/dynunet-roi40-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
 

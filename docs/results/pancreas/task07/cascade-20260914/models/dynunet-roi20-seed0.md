@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-15T00:44:56.329460+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
+Generated: 2026-09-15T01:15:00.545132+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
 
 Status: **queued**. Stage: **—**. GPU: **None**.
 
