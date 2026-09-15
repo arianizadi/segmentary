@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-15T00:08:47.221908+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T00:38:50.653104+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 ## Native CT prediction
 
@@ -26,14 +26,14 @@ B1 synthetic inputs use each model's declared patch, context and precision. Warm
 
 | Model | Benchmark | Patch | Precision | Patches/s | p50 ms | p95 ms | Parameters | Weight MiB | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-window-seed0](models/dynunet-window-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | not_recorded | [160, 96, 96] | bf16 | — | — | — | None | — | — |
-| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16544265 | — | — |
+| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-window-seed0](models/dynunet-window-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | not_recorded | [160, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 15703029 | — | — |
 | [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
 
 [Training cost](training-cost.md) · [Comparison](comparison.md)

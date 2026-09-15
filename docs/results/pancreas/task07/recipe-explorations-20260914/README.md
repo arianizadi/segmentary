@@ -2,7 +2,7 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T00:08:47.221908+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T00:38:50.653104+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 **1 queued, 8 running.** GPU queue: 1, 2, 3, 4, 5, 6, 7, 8.
 
@@ -63,12 +63,12 @@ are useful within a run; they are not an accuracy ranking across objectives.
 
 | Model | Status | Steps / budget | Native mass Dice | Native pancreas Dice | Score scope | Cases |
 | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-window-seed0](models/dynunet-window-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
-| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | 5550/10000 | 0.2729 | 0.7198 | in-training step 5000 | 42/42 |
+| [dynunet-deep10k-seed0](models/dynunet-deep10k-seed0.md) | running | 5410/10000 | 0.2585 | 0.6899 | in-training step 5000 | 42/42 |
+| [dynunet-focal05-seed0](models/dynunet-focal05-seed0.md) | running | 5501/10000 | 0.3013 | 0.7020 | in-training step 5000 | 42/42 |
+| [dynunet-focal10-seed0](models/dynunet-focal10-seed0.md) | running | 5530/10000 | 0.3238 | 0.7185 | in-training step 5000 | 42/42 |
+| [dynunet-window-seed0](models/dynunet-window-seed0.md) | running | 5501/10000 | 0.2953 | 0.7110 | in-training step 5000 | 42/42 |
+| [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | running | 5490/10000 | 0.2649 | 0.6717 | in-training step 5000 | 42/42 |
+| [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | running | 3430/10000 | 0.3296 | 0.6866 | in-training step 3000 | 42/42 |
+| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | 2330/10000 | 0.1845 | 0.4764 | in-training step 2000 | 42/42 |
 | [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | queued | 0/10000 | — | — | in-training step — | 0/42 |
