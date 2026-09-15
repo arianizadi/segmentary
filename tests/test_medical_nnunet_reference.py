@@ -31,11 +31,24 @@ def _freeze(config):
     )
 
 
+def _pin_reference(original, target):
+    target = dataclasses.replace(
+        target, reference_plan_binding_sha256=b._sha(original.root / "plan-binding.json")
+    )
+    binding = b._json(target.root / "binding.json")
+    binding["config"] = dataclasses.asdict(target)
+    b._atomic_json(target.root / "binding.json", binding)
+    return target
+
+
 @pytest.fixture
 def prepared_reference(tmp_path):
     original = b.NNUNetConfig(str(tmp_path / "original"))
     target = b.NNUNetConfig(
-        str(tmp_path / "transfer"), reference_workspace=str(original.root), architecture="plainconv"
+        str(tmp_path / "transfer"),
+        reference_workspace=str(original.root),
+        reference_plan_binding_sha256="0" * 64,
+        architecture="plainconv",
     )
     manifest = tmp_path / "manifest.json"
     splits = tmp_path / "splits.json"
@@ -123,6 +136,7 @@ def prepared_reference(tmp_path):
     original.fold_folder.mkdir(parents=True)
     (original.fold_folder / "checkpoint_latest.pth").write_bytes(b"never read weights")
     _freeze(original)
+    target = _pin_reference(original, target)
     return original, target
 
 
@@ -160,6 +174,7 @@ def test_rejects_even_indexed_unknown_payload_without_reading_it(
     unsafe = original.preprocessed / "nnUNetPlans_3d_fullres" / extra
     unsafe.write_bytes(b"must not inspect held-out or weight payload")
     _freeze(original)
+    target = _pin_reference(original, target)
     original_sha = b._sha
 
     def guarded_sha(path):
@@ -244,6 +259,18 @@ def test_reference_binding_digest_must_match(prepared_reference):
     b._atomic_json(path, binding)
     with pytest.raises(ValueError, match="plan binding"):
         reference.import_reference(target)
+
+
+def test_reference_pin_rejects_rebinding_after_campaign_planning(prepared_reference):
+    original, target = prepared_reference
+    plan_path = original.preprocessed / f"{original.plans}.json"
+    plan = b._json(plan_path)
+    plan["configurations"]["3d_fullres"]["spacing"] = [1.0, 1.0, 1.0]
+    b._atomic_json(plan_path, plan)
+    _freeze(original)
+    with pytest.raises(ValueError, match="frozen campaign reference"):
+        reference.import_reference(target)
+    assert reference._inventory(target.preprocessed) == {"splits_final.json"}
 
 
 @pytest.mark.parametrize("copy_problem", ["hardlink", "corrupt", "metadata_edit"])

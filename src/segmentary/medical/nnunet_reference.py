@@ -128,6 +128,8 @@ def import_reference(config: NNUNetConfig) -> dict[str, Any]:
     source_record_path = reference / "plan-binding.json"
     source_binding_sha = b._sha(source_binding_path)
     source_record_sha = b._sha(source_record_path)
+    if source_record_sha != config.reference_plan_binding_sha256:
+        raise ValueError("Reference plan binding differs from the frozen campaign reference")
     source_binding = b._json(source_binding_path)
     record = b._json(source_record_path)
     destination = b._json(target / "binding.json")
