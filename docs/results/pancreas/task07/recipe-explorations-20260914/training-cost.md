@@ -1,6 +1,6 @@
 # Recorded training cost
 
-Generated: 2026-09-15T04:31:20.590470+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T04:44:00.800219+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 All models remain visible. Seconds are sums of retained committed epoch measurements; coverage shows recorded timings / retained epochs in that segment. Missing legacy checkpoint timings are unknown, never zero. Parent segments describe the same training lineage, not additional seeds. Current stage GPU-hours include failed/cancelled invocations and startup; they are allocation time, not GPU utilization.
 

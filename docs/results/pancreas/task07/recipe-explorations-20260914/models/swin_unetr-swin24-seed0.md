@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-15T04:31:20.590470+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T04:44:00.800219+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 Status: **completed**. Stage: **—**. GPU: **8**.
 
@@ -208,8 +208,8 @@ HD95 excludes undefined/infinite distances; use its coverage alongside Dice so m
 | Complete-cohort scans per second | 0.350 |
 | Recorded case latency mean / p50 / p95 seconds | 8.284 / 8.385 / 10.367 |
 | Prediction allocated / reserved peak GiB | 8.141 / 10.033 |
-| Standardized model-only benchmark | not_recorded |
-| Model-only patches/s; p50 / p95 ms | —; — / — |
+| Standardized model-only benchmark | completed |
+| Model-only patches/s; p50 / p95 ms | 33.081; 30.225 / 30.270 |
 
 Case latency includes preprocessing, tiled inference, native reconstruction and export; in overlapped runs it also includes queue time. It is neither model-only latency nor an additive stage wall time. No speed is inferred from GPU utilization snapshots.
 
