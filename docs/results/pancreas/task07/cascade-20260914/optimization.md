@@ -1,6 +1,6 @@
 # Training throughput and resource checks
 
-Generated: 2026-09-15T01:15:00.545132+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
+Generated: 2026-09-15T01:44:03.651744+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
 
 The throughput investigation checks data loading, CPU work, GPU training, full-volume validation and durable result writing separately. The aim is to reduce repeated work while preserving the split, physical image geometry, objective and scratch initialization.
 

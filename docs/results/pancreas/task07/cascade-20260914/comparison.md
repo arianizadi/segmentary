@@ -2,19 +2,19 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T01:15:00.545132+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
+Generated: 2026-09-15T01:44:03.651744+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
 
-**2 queued, 1 running.**
+**1 completed, 2 failed.**
 
 Interim values are shown in campaign order, not sorted by apparent accuracy. Different validated step counts cannot establish a winner.
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | train | 5600/10000 | 5000 | 42/42 | 0.2729 | 0.7198 | — | — | 0/42 | — |
-| [dynunet-roi20-seed0](models/dynunet-roi20-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [dynunet-roi40-seed0](models/dynunet-roi40-seed0.md) | queued | — | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2986 | 0.7607 | 0.3298 | 0.7559 | 42/42 | — |
+| [dynunet-roi20-seed0](models/dynunet-roi20-seed0.md) | failed | train | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [dynunet-roi40-seed0](models/dynunet-roi40-seed0.md) | failed | train | 0/10000 | — | 0/42 | — | — | — | — | 0/42 | — |
 
-- **dynunet_deep_supervision_seed0_control_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
+- **dynunet_deep_supervision_seed0_control_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
 - **recipe_cascade_roi20** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
 - **recipe_cascade_roi40** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group; Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
 

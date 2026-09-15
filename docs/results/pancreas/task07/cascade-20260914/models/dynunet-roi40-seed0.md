@@ -2,23 +2,25 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-15T01:15:00.545132+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
+Generated: 2026-09-15T01:44:03.651744+00:00. Source: `8fd7fe0dc773a9d60d333e4cdb663e3c255f9868`.
 
-Status: **queued**. Stage: **—**. GPU: **None**.
+Status: **failed**. Stage: **train**. GPU: **9**.
+
+**Needs investigation.** A worker failure or invalid result record was recorded. Its full diagnostic log remains on the training server; this page does not expose scan names or server paths.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | — / — |
-| Last worker update | — |
+| Started / finished | 2026-09-15T01:42:10.963583+00:00 / 2026-09-15T01:43:17.673165+00:00 |
+| Last worker update | 2026-09-15T01:43:17.673181+00:00 |
 | Completed / budget steps | 0 / 10000 |
-| Live step / phase | — / — |
-| Parameters | — |
-| Objective | — |
-| Checkpoint selection | — |
+| Live step / phase | — / validation |
+| Parameters | 16543683 |
+| Objective | dense_ce_dice_no_auxiliary_heads |
+| Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | — |
+| Finished-stage allocated GPU-hours | 0.0092 |
 | Active-stage allocated hours (estimate) | — |
 | Peak allocated / reserved GiB | — / — |
 
