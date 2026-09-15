@@ -2,7 +2,7 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T03:09:09.543688+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T03:39:13.422594+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 Each row is a completed training epoch. Blank validation cells mean validation was not scheduled. The step count, rather than wall-clock order, is the comparison axis. No values are interpolated.
 
@@ -910,3 +910,19 @@ Each row is a completed training epoch. Blank validation cells mean validation w
 | 58 | 5800 | 0.3625 | 0.0001374186 | — | — | 106.5892 | 0.0000 | 1.6486 |
 | 59 | 5900 | 0.3527 | 0.0001344704 | — | — | 106.5991 | 0.0000 | 1.6247 |
 | 60 | 6000 | 0.3812 | 0.000131515 | 0.6923 | 0.2786 | 106.5698 | 114.6354 | 1.7537 |
+| 61 | 6100 | 0.3526 | 0.0001285522 | — | — | 106.5279 | 0.0000 | 1.5707 |
+| 62 | 6200 | 0.3390 | 0.0001255817 | — | — | 106.5923 | 0.0000 | 1.6304 |
+| 63 | 6300 | 0.3314 | 0.0001226035 | — | — | 106.5718 | 0.0000 | 1.6707 |
+| 64 | 6400 | 0.3534 | 0.0001196172 | — | — | 106.6349 | 0.0000 | 1.5983 |
+| 65 | 6500 | 0.3291 | 0.0001166225 | — | — | 106.5826 | 0.0000 | 1.6442 |
+| 66 | 6600 | 0.3350 | 0.0001136193 | — | — | 106.5889 | 0.0000 | 1.6184 |
+| 67 | 6700 | 0.3246 | 0.0001106073 | — | — | 106.6102 | 0.0000 | 1.6429 |
+| 68 | 6800 | 0.3546 | 0.0001075861 | — | — | 106.5956 | 0.0000 | 1.6169 |
+| 69 | 6900 | 0.3121 | 0.0001045555 | — | — | 106.6352 | 0.0000 | 1.6218 |
+| 70 | 7000 | 0.3181 | 0.000101515 | 0.7116 | 0.2694 | 106.5575 | 113.6418 | 1.6628 |
+| 71 | 7100 | 0.3032 | 9.846445e-05 | — | — | 106.5979 | 0.0000 | 1.6212 |
+| 72 | 7200 | 0.3062 | 9.540332e-05 | — | — | 106.5762 | 0.0000 | 1.6609 |
+| 73 | 7300 | 0.2942 | 9.233123e-05 | — | — | 106.5711 | 0.0000 | 1.6574 |
+| 74 | 7400 | 0.3010 | 8.924775e-05 | — | — | 106.6353 | 0.0000 | 1.6468 |
+| 75 | 7500 | 0.2936 | 8.615238e-05 | — | — | 106.5821 | 0.0000 | 1.6288 |
+| 76 | 7600 | 0.2739 | 8.30446e-05 | — | — | 106.5793 | 0.0000 | 1.6409 |
