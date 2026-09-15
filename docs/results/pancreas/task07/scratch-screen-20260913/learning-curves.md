@@ -1,6 +1,6 @@
 # Training and native validation curves
 
-Generated: 2026-09-15T07:30:28.676821+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-15T08:00:34.574319+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Each row is a completed training epoch. Blank validation cells mean validation was not scheduled. The step count, rather than wall-clock order, is the comparison axis. No values are interpolated.
 
