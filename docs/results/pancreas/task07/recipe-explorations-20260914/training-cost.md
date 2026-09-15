@@ -1,6 +1,6 @@
 # Recorded training cost
 
-Generated: 2026-09-15T02:39:05.694984+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T03:09:09.543688+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 All models remain visible. Seconds are sums of retained committed epoch measurements; coverage shows recorded timings / retained epochs in that segment. Missing legacy checkpoint timings are unknown, never zero. Parent segments describe the same training lineage, not additional seeds. Current stage GPU-hours include failed/cancelled invocations and startup; they are allocation time, not GPU utilization.
 
@@ -14,7 +14,7 @@ All models remain visible. Seconds are sums of retained committed epoch measurem
 | [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | completed | current | 2287.721 (100/100 epochs) | 814.350 (100/100 epochs) | 47.313 (100/100 epochs) | 0.914 |
 | [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | completed | current | 3834.609 (100/100 epochs) | 1045.757 (100/100 epochs) | 47.191 (100/100 epochs) | 1.409 |
 | [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | completed | current | 6100.750 (100/100 epochs) | 1074.097 (100/100 epochs) | 47.055 (100/100 epochs) | 2.045 |
-| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | current | 4902.528 (46/46 epochs) | 576.479 (46/46 epochs) | 77.483 (46/46 epochs) | 0.000 |
+| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | current | 6394.717 (60/60 epochs) | 807.222 (60/60 epochs) | 100.657 (60/60 epochs) | 0.000 |
 
 [Epoch numerical records](epochs.csv) · [Stage invocations, including failures](stage-invocations.csv) · [Comparison](comparison.md)
 
