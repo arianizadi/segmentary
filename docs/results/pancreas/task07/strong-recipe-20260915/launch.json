@@ -1,0 +1,76 @@
+{
+  "source_commit": "63a108f8b7a65a98b11ccae0e8883c54955b2099",
+  "verified_at_utc": "2026-09-15T17:57:27.022742+00:00",
+  "rows": [
+    {
+      "id": "nnunet_resenc_l-seed0",
+      "model": "nnunet_resenc_l",
+      "gpu": "1",
+      "status": "running",
+      "started_at": "2026-09-15T17:50:25.433820+00:00",
+      "completed_epochs": 2,
+      "latest_epoch": {
+        "epoch": 2,
+        "loss": 0.0184,
+        "pancreas_pseudo": 0.0,
+        "mass_pseudo": 0.0,
+        "seconds": 156.67
+      },
+      "scratch_initialization": "scratch",
+      "parameters": 140989042,
+      "best_checkpoint_sha256": "32641483687b0bb62bdd308c26c773099886442272149a28f33844c098b839b1",
+      "native_prediction_dry_run_cases": 42,
+      "prediction_metadata_guard_passed": true
+    },
+    {
+      "id": "nnunet_planned_plainconv-seed0",
+      "model": "nnunet_planned_plainconv",
+      "gpu": "2",
+      "status": "running",
+      "started_at": "2026-09-15T17:50:25.435566+00:00",
+      "completed_epochs": 3,
+      "latest_epoch": {
+        "epoch": 3,
+        "loss": -0.1424,
+        "pancreas_pseudo": 0.4373,
+        "mass_pseudo": 0.0,
+        "seconds": 105.46
+      },
+      "scratch_initialization": "scratch",
+      "parameters": 44943026,
+      "best_checkpoint_sha256": "06e9376ef28478b886d0ec2069364d80145cf2d1472f048f0ebb6407d7f26b7a",
+      "native_prediction_dry_run_cases": 42,
+      "prediction_metadata_guard_passed": true
+    },
+    {
+      "id": "nnunet_planned_dynunet-seed0",
+      "model": "nnunet_planned_dynunet",
+      "gpu": "3",
+      "status": "running",
+      "started_at": "2026-09-15T17:50:25.436938+00:00",
+      "completed_epochs": 3,
+      "latest_epoch": {
+        "epoch": 3,
+        "loss": -0.1125,
+        "pancreas_pseudo": 0.4686,
+        "mass_pseudo": 0.0,
+        "seconds": 104.66
+      },
+      "scratch_initialization": "scratch",
+      "parameters": 44992082,
+      "best_checkpoint_sha256": "d2ebecc0d0d701cd8f1ce83cabd0ff5f29569f65dbd75d2c603b9ac2fbf24b44",
+      "native_prediction_dry_run_cases": 42,
+      "prediction_metadata_guard_passed": true
+    }
+  ],
+  "dashboard_session": "state-controller-768704e68f",
+  "ci": {
+    "conclusion": "success",
+    "headSha": "63a108f8b7a65a98b11ccae0e8883c54955b2099",
+    "status": "completed",
+    "url": "https://github.com/arianizadi/segmentary/actions/runs/35002397500"
+  },
+  "finite_operator_sha256": "ea5b40717d88035bf79d111afde904a934ad5a31715c69dc9ebaa777bcf0c073",
+  "native_accuracy_available": false,
+  "full_training_completed": false
+}

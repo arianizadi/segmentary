@@ -1,0 +1,356 @@
+{
+  "campaign_training_started": false,
+  "gpu_feasibility": {
+    "checkpoint_scope": "temporary scratch checkpoint strict reload into inference constructor; exact AMP logits, optimizer/scaler restore and finite resumed update",
+    "clinical_accuracy_evaluated": false,
+    "input_scope": "synthetic tensors only",
+    "rows": [
+      {
+        "amp_scales": [
+          65536,
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        "architecture": "resenc",
+        "architecture_changes": {
+          "convolution_bias": true,
+          "decoder_convolutions_per_stage": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "encoder_block_counts": [
+            1,
+            3,
+            4,
+            6,
+            6,
+            6,
+            6
+          ],
+          "encoder_convolutions_per_stage": null,
+          "network_class": "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet",
+          "nonarchitecture_plan_fields_unchanged": true,
+          "prepared_architecture_equals_profiled_architecture": true
+        },
+        "batch_size": 2,
+        "gpu": "NVIDIA L40S",
+        "loss": "unmodified nnUNetTrainer._build_loss",
+        "median_step_seconds_excluding_warmup": 0.5896134469658136,
+        "operator_sha256": "437a902ac03556ea12fa54357a45287ac962936c095744a7e830a101b7fcc264",
+        "optimizer": "unmodified nnUNetTrainer.configure_optimizers",
+        "parameter_count": 140989042,
+        "patch_size": [
+          56,
+          320,
+          256
+        ],
+        "private_receipt_sha256": "801891bf4f512c9ac7f8e5624277303bd252de3dfd497660ef16aed9683db00f",
+        "reference_plan_sha256": "466d8a391aa63e2f866fcf0cc09c92fc131e9dc5f2897c1a3b64ec52df24625c",
+        "resumed_loss": 0.8702728152275085,
+        "status": "passed",
+        "step_seconds": [
+          18.80143515393138,
+          0.5934145376086235,
+          0.5890348181128502,
+          0.5901920758187771,
+          0.5889468900859356
+        ],
+        "strict_checkpoint_restore": "exact AMP inference logits; optimizer/scaler restored; resumed step finite",
+        "synthetic_initialization_seed": 20260915,
+        "synthetic_inputs_only": true,
+        "train_step": "unmodified nnUNetTrainer.train_step",
+        "trainable_parameter_count": 140989042,
+        "training_losses": [
+          1.1650956869125366,
+          1.1311907768249512,
+          1.0823498964309692,
+          1.0208009481430054,
+          0.9491333961486816
+        ],
+        "training_peak_allocated_gib": 24.302794456481934,
+        "training_peak_reserved_gib": 27.859375,
+        "validation_loss": 0.8702728152275085,
+        "validation_step": "unmodified nnUNetTrainer.validation_step"
+      },
+      {
+        "amp_scales": [
+          65536,
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        "architecture": "plainconv",
+        "architecture_changes": {
+          "convolution_bias": true,
+          "decoder_convolutions_per_stage": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "encoder_block_counts": null,
+          "encoder_convolutions_per_stage": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "network_class": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
+          "nonarchitecture_plan_fields_unchanged": true,
+          "prepared_architecture_equals_profiled_architecture": true
+        },
+        "batch_size": 2,
+        "gpu": "NVIDIA L40S",
+        "loss": "unmodified nnUNetTrainer._build_loss",
+        "median_step_seconds_excluding_warmup": 0.39394856058061123,
+        "operator_sha256": "437a902ac03556ea12fa54357a45287ac962936c095744a7e830a101b7fcc264",
+        "optimizer": "unmodified nnUNetTrainer.configure_optimizers",
+        "parameter_count": 44943026,
+        "patch_size": [
+          56,
+          320,
+          256
+        ],
+        "private_receipt_sha256": "9eb55f5ce8b3ee1e52108119209f45c0123213d6d2eabeccb95d6cf0e49a97b3",
+        "reference_plan_sha256": "466d8a391aa63e2f866fcf0cc09c92fc131e9dc5f2897c1a3b64ec52df24625c",
+        "resumed_loss": 0.7459099292755127,
+        "status": "passed",
+        "step_seconds": [
+          17.06804197281599,
+          0.3985521271824837,
+          0.3938882425427437,
+          0.3939856179058552,
+          0.3939115032553673
+        ],
+        "strict_checkpoint_restore": "exact AMP inference logits; optimizer/scaler restored; resumed step finite",
+        "synthetic_initialization_seed": 20260915,
+        "synthetic_inputs_only": true,
+        "train_step": "unmodified nnUNetTrainer.train_step",
+        "trainable_parameter_count": 44943026,
+        "training_losses": [
+          0.984788179397583,
+          0.9569682478904724,
+          0.917011022567749,
+          0.8668381571769714,
+          0.8090221881866455
+        ],
+        "training_peak_allocated_gib": 19.61906623840332,
+        "training_peak_reserved_gib": 22.185546875,
+        "validation_loss": 0.7459099888801575,
+        "validation_step": "unmodified nnUNetTrainer.validation_step"
+      },
+      {
+        "amp_scales": [
+          65536,
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        "architecture": "dynunet",
+        "architecture_changes": {
+          "convolution_bias": false,
+          "decoder_convolutions_per_stage": null,
+          "encoder_block_counts": null,
+          "encoder_convolutions_per_stage": null,
+          "network_class": "segmentary.medical.nnunet_architectures.PlannedDynUNet",
+          "nonarchitecture_plan_fields_unchanged": true,
+          "prepared_architecture_equals_profiled_architecture": true
+        },
+        "batch_size": 2,
+        "gpu": "NVIDIA L40S",
+        "loss": "unmodified nnUNetTrainer._build_loss",
+        "median_step_seconds_excluding_warmup": 0.39312157966196537,
+        "operator_sha256": "437a902ac03556ea12fa54357a45287ac962936c095744a7e830a101b7fcc264",
+        "optimizer": "unmodified nnUNetTrainer.configure_optimizers",
+        "parameter_count": 44992082,
+        "patch_size": [
+          56,
+          320,
+          256
+        ],
+        "private_receipt_sha256": "cca8ec30070ae2291e8d9194cd8c76bcf6383037e9802c3388b8c1fafdea0e0d",
+        "reference_plan_sha256": "466d8a391aa63e2f866fcf0cc09c92fc131e9dc5f2897c1a3b64ec52df24625c",
+        "resumed_loss": 1.2671070098876953,
+        "status": "passed",
+        "step_seconds": [
+          18.139325723052025,
+          0.397198673337698,
+          0.393207173794508,
+          0.3930065557360649,
+          0.39303598552942276
+        ],
+        "strict_checkpoint_restore": "exact AMP inference logits; optimizer/scaler restored; resumed step finite",
+        "synthetic_initialization_seed": 20260915,
+        "synthetic_inputs_only": true,
+        "train_step": "unmodified nnUNetTrainer.train_step",
+        "trainable_parameter_count": 44992082,
+        "training_losses": [
+          1.7176867723464966,
+          1.6666030883789062,
+          1.592968225479126,
+          1.499403715133667,
+          1.3891838788986206
+        ],
+        "training_peak_allocated_gib": 19.62101697921753,
+        "training_peak_reserved_gib": 22.666015625,
+        "validation_loss": 1.2671070098876953,
+        "validation_step": "unmodified nnUNetTrainer.validation_step"
+      }
+    ],
+    "status": "passed",
+    "timing_scope": "five synchronized optimizer steps; first excluded, four retained; not end-to-end throughput"
+  },
+  "planned_completion_diagnostics": {
+    "auc_available": false,
+    "connectivity": 26,
+    "finite_run": true,
+    "lesion_iou_threshold": 0.1,
+    "lesion_matching": "maximum_cardinality_one_to_one_then_maximum_total_iou",
+    "metrics": [
+      "patient_sensitivity",
+      "tumor_sensitivity",
+      "mass_dsc"
+    ],
+    "minimum_prediction_volume_mm3": 10.0,
+    "operator_sha256": "ea5b40717d88035bf79d111afde904a934ad5a31715c69dc9ebaa777bcf0c073",
+    "partition": "val",
+    "patient_prediction_rule": "any_retained_class2_component_in_case_group_regardless_of_location",
+    "publication": "once after runner completion and diagnostic attempts",
+    "recurring_monitor": false,
+    "specificity_available": false,
+    "status": "configured_not_yet_run",
+    "unavailable_reason": "all 42 validation cases are reference-positive"
+  },
+  "planned_training": {
+    "architectures": [
+      "resenc",
+      "plainconv",
+      "dynunet"
+    ],
+    "batch_size": 2,
+    "checkpoint_selection": "official EMA foreground patch Dice; final native report uses selected best",
+    "early_stopping": false,
+    "ensemble": false,
+    "epochs": 1000,
+    "grouping_status": "dataset_case_unverified",
+    "mirroring": false,
+    "optimizer_steps_per_arm": 250000,
+    "patch_zyx": [
+      56,
+      320,
+      256
+    ],
+    "planning_scope": "239 training plus validation cases; 42 reserved test cases excluded",
+    "pretrained_weights": false,
+    "sampled_patches_per_arm": 500000,
+    "seed": 0,
+    "spacing_zyx_mm": [
+      2.5,
+      0.8125,
+      0.8125
+    ],
+    "updates_per_epoch": 250
+  },
+  "preparation": {
+    "campaign_sha256": "70766243fc1f9e4f18ff8cba0418de2610afe059370ba0d9966fa2f71f2a18d7",
+    "captured_at_utc": "2026-09-15T17:44:41.257001+00:00",
+    "full_payload_verification": "already completed by mandatory backend import; recorded indexed hashes independently compared in this audit",
+    "independent_inodes_verified_for_original_and_all_three_caches": true,
+    "inode_check_file_count": 960,
+    "manifest_sha256": "9e6c363908beffe4e2feb9544f99552e06220d03af289b6913557870e28931a2",
+    "metadata_audit_payloads_read": 0,
+    "partition_counts": {
+      "test": 42,
+      "train": 197,
+      "val": 42
+    },
+    "reference_plan_binding_sha256": "86a4a200cf14c94ad931ca3521a7e33c66fe223f6df360d8ed4b56138aa985b9",
+    "reference_plan_sha256": "466d8a391aa63e2f866fcf0cc09c92fc131e9dc5f2897c1a3b64ec52df24625c",
+    "rows": [
+      {
+        "allocated_gpu": "1",
+        "architecture": "resenc",
+        "cache_copy_policy": "independent_inodes_reflink_when_available_else_copy",
+        "cache_index_matches_reference_except_architecture_plan": true,
+        "copied_bytes": 8369666295,
+        "copied_file_count": 960,
+        "nonarchitecture_plan_matches_reference": true,
+        "plan_binding_sha256": "0da8fb901bbdc55d138c395857b5d329d1877c0fa6d98faf4458731017f9fd22",
+        "plan_sha256": "bd1a4c42fc9b2cfc973868ffecd30256fb4f6dea271194c8a22b46fc204788d7",
+        "recipe_sha256": "a3d81f795ca16fa429252693ef0e44cc853422970efca6cc75d7387bf50a88b6",
+        "resolved_config_sha256": "e490f42285dff968d825b59d8ec68a6449e6e1b1f5e19ae5961dbf1b98e8b1cc",
+        "status": "prepared_training_pending",
+        "weights_imported": false
+      },
+      {
+        "allocated_gpu": "2",
+        "architecture": "plainconv",
+        "cache_copy_policy": "independent_inodes_reflink_when_available_else_copy",
+        "cache_index_matches_reference_except_architecture_plan": true,
+        "copied_bytes": 8369666295,
+        "copied_file_count": 960,
+        "nonarchitecture_plan_matches_reference": true,
+        "plan_binding_sha256": "ef36bf1a0fbe1be5e013b6a42249806a5ad6fa4696a19d6ddf9f8d01d7d44a77",
+        "plan_sha256": "f9c11f7ad65a9d2a73dda4f7d6c21bc6d5875e03e8dee55c285d5ffb5a1a833f",
+        "recipe_sha256": "4a9a31a16cb2cd1e756212df61f66ea19f75f93d63cc60ddf4007856e5a42251",
+        "resolved_config_sha256": "8a269b1fa244990cf331727aa286aae7a7b633e700f24f7bd64807a55fb2f9ee",
+        "status": "prepared_training_pending",
+        "weights_imported": false
+      },
+      {
+        "allocated_gpu": "3",
+        "architecture": "dynunet",
+        "cache_copy_policy": "independent_inodes_reflink_when_available_else_copy",
+        "cache_index_matches_reference_except_architecture_plan": true,
+        "copied_bytes": 8369666295,
+        "copied_file_count": 960,
+        "nonarchitecture_plan_matches_reference": true,
+        "plan_binding_sha256": "00824d65d4dd77907a866b080160f5e9ff176166c2dd8bb09ad33ab685c07ca2",
+        "plan_sha256": "da74cf28db74ee79c48922c2bda95518b8fe503fe487968d796571b53aab05a2",
+        "recipe_sha256": "0fc39357ee008146186b972dc5defb3d6cbb2ecfc0b68b077d43cd0b98737198",
+        "resolved_config_sha256": "87721d9b38a43339694725dddddf361567e78e9249c1b41f3e3bcfc8c4205b3b",
+        "status": "prepared_training_pending",
+        "weights_imported": false
+      }
+    ],
+    "runtime_package_differences_from_reference": {
+      "monai": {
+        "campaign": "1.6.0",
+        "reference": null
+      }
+    },
+    "runtime_packages": {
+      "batchgenerators": "0.25.3",
+      "batchgeneratorsv2": "0.3.5",
+      "dynamic_network_architectures": "0.4.4",
+      "monai": "1.6.0",
+      "nnunetv2": "2.8.1",
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "torch": "2.11.0+cu128"
+    },
+    "runtime_sha256": "c7d1b43d615255b79dd20aa07041bd74c3d865d42eda3cb766bdecbe5f2e9495",
+    "same_verified_runtime_all_three": true,
+    "source_clean": true,
+    "source_code_binding_sha256": "ab869c36d761df3a89f421a24718e6b4542239ff9a07ebcb0d9ebf47e0b04b08",
+    "source_commit": "63a108f8b7a65a98b11ccae0e8883c54955b2099",
+    "splits_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
+    "status": "prepared_training_pending"
+  },
+  "schema_version": 1,
+  "scope": "Aggregate preparation and synthetic feasibility evidence; not native segmentation accuracy. Status is a captured preparation snapshot.",
+  "status": "preflight_passed_campaign_prepared_training_pending"
+}
