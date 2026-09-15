@@ -2,7 +2,7 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T01:38:58.142087+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
+Generated: 2026-09-15T02:09:01.904774+00:00. Source: `52bb2cd90780989546d5e3f2e5734bdf952d72f2`.
 
 **7 completed, 2 running.**
 
@@ -17,8 +17,8 @@ Interim values are shown in campaign order, not sorted by apparent accuracy. Dif
 | [dynunet-window-seed0](models/dynunet-window-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2886 | 0.7341 | 0.2953 | 0.7110 | 42/42 | — |
 | [dynunet-minmax-seed0](models/dynunet-minmax-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2978 | 0.7492 | 0.3067 | 0.7045 | 42/42 | — |
 | [dynunet-isotropic-seed0](models/dynunet-isotropic-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3093 | 0.7606 | 0.3483 | 0.7569 | 42/42 | — |
-| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | train | 7400/10000 | 7000 | 42/42 | 0.1898 | 0.6885 | — | — | 0/42 | — |
-| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | train | 1600/10000 | 1000 | 42/42 | 0.0608 | 0.5145 | — | — | 0/42 | — |
+| [swin_unetr-swin24-seed0](models/swin_unetr-swin24-seed0.md) | running | train | 9900/10000 | 9000 | 42/42 | 0.2446 | 0.7045 | — | — | 0/42 | — |
+| [swin_unetr-swin48-seed0](models/swin_unetr-swin48-seed0.md) | running | train | 3000/10000 | 3000 | 42/42 | 0.1815 | 0.6552 | — | — | 0/42 | — |
 
 - **dynunet_deep_supervision_seed0_control_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
 - **dynunet_deep_supervision_seed0_auxiliary_10000_steps** (1 planned runs): No ranking: Declared recipe follow-up experiments are reported as planned contrasts, not a ranked architecture group.
