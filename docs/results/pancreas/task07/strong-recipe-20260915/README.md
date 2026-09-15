@@ -1,8 +1,8 @@
 # Pancreas Task07: model comparison
 
-Generated: 2026-09-15T17:42:40.743272+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
+Generated: 2026-09-15T17:54:02.711912+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
 
-**3 prepared.** GPU queue: 1, 2, 3.
+**3 running.** GPU queue: 1, 2, 3.
 
 1. Open [comparison.md](comparison.md) for model status and comparable validation results.
 2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.
@@ -36,24 +36,14 @@ Frozen split counts: 197 training, 42 validation, 42 held-out test. Grouping sta
 The scheduler runs one job on each available GPU and advances through the explicit queue. A completed run means its training, native validation prediction and evaluation have finished. Queued, failed and incomplete runs remain visible. No pretrained weights are allowed; resuming an existing scratch-origin run is allowed.
 
 All scores are on a 0-1 scale; — means unavailable, never zero. This is an
-exploratory seed-0 screening study, with no claim of a clinical or publishable
+exploratory single-seed architecture comparison, with no claim of a clinical or publishable
 winner. Dataset case grouping has not independently established patient identity.
 Task07 mass masks are segmentation targets; they do not establish PDAC diagnosis.
 The held-out test partition and 139 unannotated Task07 scans are not scored here.
 
-In-training Dice is a mean over complete native validation examinations, counting
-both-empty mass masks as 1. Final evaluation instead averages patient means over
-reference-positive cases and excludes both-empty masks. These two columns answer
-different questions and must not be substituted. A completed screening rank uses
-the final evaluator's mass Dice only, after every planned run in that group has
-finished on matching references, native evaluation protocol, source, split,
-seed, optimizer-step budget, batch size, and checkpoint-selection rule.
+Training logs contain official nnU-Net patch loss and pseudo-Dice. These are not native full-volume Dice, so the native score columns remain unavailable until the full 42-case evaluation finishes. Every arm uses the same official EMA foreground patch-Dice checkpoint-selection rule.
 
-Models use their declared objectives, including query and auxiliary losses.
-Therefore the comparison tests architecture and objective together. 2.5D and 3D
-inputs also have different spatial context. Equal optimizer steps are not equal
-GPU-hours, voxels seen, or an architecture-specific tuning budget. Loss magnitudes
-are useful within a run; they are not an accuracy ranking across objectives.
+All three arms share the complete nnU-Net preprocessing, augmentation, SGD schedule, deep-supervised CE plus per-sample foreground Dice, patch geometry, batch size and 250,000-update budget. The network topology and scratch initializer differ. Equal updates and sampled patches do not equal parameter count, FLOPs or GPU-hours. The selected-best native mass Dice is the primary comparison; this is not an official MSD test result or evidence of SOTA.
 
 [Medical model guide](../../../../guides/medical-models.md) · [Results by dataset](../../../README.md)
 
@@ -61,6 +51,6 @@ are useful within a run; they are not an accuracy ranking across objectives.
 
 | Model | Status | Steps / budget | Native mass Dice | Native pancreas Dice | Score scope | Cases |
 | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | prepared | 0/— | — | — | in-training step — | 0/42 |
-| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | prepared | 0/— | — | — | in-training step — | 0/42 |
-| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | prepared | 0/— | — | — | in-training step — | 0/42 |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | 0/250000 | — | — | in-training step — | 0/42 |
+| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | running | 0/250000 | — | — | in-training step — | 0/42 |
+| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | running | 0/250000 | — | — | in-training step — | 0/42 |

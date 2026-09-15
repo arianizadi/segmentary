@@ -4,21 +4,21 @@
   "scientific_recipe_sha256": "2b31dfaf2e63ec561d55d1cefd564d18e7b4cf7f6120317205387ae15bc303f9",
   "backend": "nnunet",
   "comparison_group": "nnunet_frozen_plan_scratch_seed0_250000_steps",
-  "status": "prepared",
-  "stage": null,
+  "status": "running",
+  "stage": "train",
   "gpu": "3",
-  "started_at": "2026-09-15T17:38:21.352477+00:00",
-  "finished_at": "2026-09-15T17:38:59.822188+00:00",
-  "last_update": "2026-09-15T17:38:59.822200+00:00",
+  "started_at": "2026-09-15T17:50:25.436938+00:00",
+  "finished_at": null,
+  "last_update": "2026-09-15T17:50:39.474644+00:00",
   "seed": 0,
   "initialization": "scratch",
-  "scratch_origin_verified": false,
-  "parameters": null,
+  "scratch_origin_verified": true,
+  "parameters": 44992082,
   "training_complete": false,
   "completed_steps": 0,
   "live_step": null,
   "live_phase": null,
-  "budget_steps": null,
+  "budget_steps": 250000,
   "recipe": {
     "architecture": "dynunet",
     "configuration": "3d_fullres",
@@ -109,9 +109,9 @@
   "latest_validation": null,
   "resources": {
     "finished_stage_gpu_hours": null,
-    "active_stage_allocated_hours_estimate": null,
+    "active_stage_allocated_hours_estimate": 0.05348275555504693,
     "recorded_stage_invocations": 0,
-    "active_stage_status": null,
+    "active_stage_status": "running",
     "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
   },
   "evaluation": {},
@@ -181,7 +181,19 @@
     "peak_allocated_gpu_bytes": null,
     "peak_reserved_gpu_bytes": null
   },
-  "nnunet_patch_history": {},
+  "nnunet_patch_history": {
+    "current_epoch": 2,
+    "epochs": [
+      {
+        "epoch": 1,
+        "loss": 0.1031,
+        "pancreas_pseudo": 0.0,
+        "mass_pseudo": 0.0,
+        "seconds": 121.93
+      }
+    ],
+    "errors": []
+  },
   "expected_validation_cases": 42,
   "display_name": "nnunet_planned_dynunet"
 }

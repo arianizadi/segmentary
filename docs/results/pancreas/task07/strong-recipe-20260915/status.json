@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign_id": "task07-strong-recipe-20260915",
-  "generated_at": "2026-09-15T17:42:40.743272+00:00",
+  "generated_at": "2026-09-15T17:54:02.711912+00:00",
   "source_commit": "63a108f8b7a65a98b11ccae0e8883c54955b2099",
   "split_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
   "split_counts": {
@@ -31,7 +31,7 @@
     }
   },
   "status_counts": {
-    "prepared": 3
+    "running": 3
   },
   "optimization": {
     "pipeline": {
@@ -56,21 +56,21 @@
       "scientific_recipe_sha256": "7d46abaf2947a1c6fa43da834f78434b35b8c1f0539fe06b712c9dbd04056452",
       "backend": "nnunet",
       "comparison_group": "nnunet_frozen_plan_scratch_seed0_250000_steps",
-      "status": "prepared",
-      "stage": null,
+      "status": "running",
+      "stage": "train",
       "gpu": "1",
-      "started_at": "2026-09-15T17:38:21.348484+00:00",
-      "finished_at": "2026-09-15T17:39:01.913309+00:00",
-      "last_update": "2026-09-15T17:39:01.913327+00:00",
+      "started_at": "2026-09-15T17:50:25.433820+00:00",
+      "finished_at": null,
+      "last_update": "2026-09-15T17:50:40.402216+00:00",
       "seed": 0,
       "initialization": "scratch",
-      "scratch_origin_verified": false,
-      "parameters": null,
+      "scratch_origin_verified": true,
+      "parameters": 140989042,
       "training_complete": false,
       "completed_steps": 0,
       "live_step": null,
       "live_phase": null,
-      "budget_steps": null,
+      "budget_steps": 250000,
       "recipe": {
         "architecture": "resenc",
         "configuration": "3d_fullres",
@@ -161,9 +161,9 @@
       "latest_validation": null,
       "resources": {
         "finished_stage_gpu_hours": null,
-        "active_stage_allocated_hours_estimate": null,
+        "active_stage_allocated_hours_estimate": 0.05317089398701986,
         "recorded_stage_invocations": 0,
-        "active_stage_status": null,
+        "active_stage_status": "running",
         "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
       },
       "evaluation": {},
@@ -233,7 +233,19 @@
         "peak_allocated_gpu_bytes": null,
         "peak_reserved_gpu_bytes": null
       },
-      "nnunet_patch_history": {},
+      "nnunet_patch_history": {
+        "current_epoch": 2,
+        "epochs": [
+          {
+            "epoch": 1,
+            "loss": 0.0897,
+            "pancreas_pseudo": 0.0,
+            "mass_pseudo": 0.0,
+            "seconds": 174.65
+          }
+        ],
+        "errors": []
+      },
       "expected_validation_cases": 42,
       "display_name": "nnunet_resenc_l"
     },
@@ -243,21 +255,21 @@
       "scientific_recipe_sha256": "9f646f181b4d071fa6271f99d03e8ae6d8c33165afd973dbd85c5a9a4bb4d174",
       "backend": "nnunet",
       "comparison_group": "nnunet_frozen_plan_scratch_seed0_250000_steps",
-      "status": "prepared",
-      "stage": null,
+      "status": "running",
+      "stage": "train",
       "gpu": "2",
-      "started_at": "2026-09-15T17:38:21.350681+00:00",
-      "finished_at": "2026-09-15T17:39:01.611308+00:00",
-      "last_update": "2026-09-15T17:39:01.611314+00:00",
+      "started_at": "2026-09-15T17:50:25.435566+00:00",
+      "finished_at": null,
+      "last_update": "2026-09-15T17:50:39.609745+00:00",
       "seed": 0,
       "initialization": "scratch",
-      "scratch_origin_verified": false,
-      "parameters": null,
+      "scratch_origin_verified": true,
+      "parameters": 44943026,
       "training_complete": false,
       "completed_steps": 0,
       "live_step": null,
       "live_phase": null,
-      "budget_steps": null,
+      "budget_steps": 250000,
       "recipe": {
         "architecture": "plainconv",
         "configuration": "3d_fullres",
@@ -348,9 +360,9 @@
       "latest_validation": null,
       "resources": {
         "finished_stage_gpu_hours": null,
-        "active_stage_allocated_hours_estimate": null,
+        "active_stage_allocated_hours_estimate": 0.053332104484240216,
         "recorded_stage_invocations": 0,
-        "active_stage_status": null,
+        "active_stage_status": "running",
         "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
       },
       "evaluation": {},
@@ -420,7 +432,19 @@
         "peak_allocated_gpu_bytes": null,
         "peak_reserved_gpu_bytes": null
       },
-      "nnunet_patch_history": {},
+      "nnunet_patch_history": {
+        "current_epoch": 2,
+        "epochs": [
+          {
+            "epoch": 1,
+            "loss": 0.081,
+            "pancreas_pseudo": 0.0,
+            "mass_pseudo": 0.0,
+            "seconds": 122.47
+          }
+        ],
+        "errors": []
+      },
       "expected_validation_cases": 42,
       "display_name": "nnunet_planned_plainconv"
     },
@@ -430,21 +454,21 @@
       "scientific_recipe_sha256": "2b31dfaf2e63ec561d55d1cefd564d18e7b4cf7f6120317205387ae15bc303f9",
       "backend": "nnunet",
       "comparison_group": "nnunet_frozen_plan_scratch_seed0_250000_steps",
-      "status": "prepared",
-      "stage": null,
+      "status": "running",
+      "stage": "train",
       "gpu": "3",
-      "started_at": "2026-09-15T17:38:21.352477+00:00",
-      "finished_at": "2026-09-15T17:38:59.822188+00:00",
-      "last_update": "2026-09-15T17:38:59.822200+00:00",
+      "started_at": "2026-09-15T17:50:25.436938+00:00",
+      "finished_at": null,
+      "last_update": "2026-09-15T17:50:39.474644+00:00",
       "seed": 0,
       "initialization": "scratch",
-      "scratch_origin_verified": false,
-      "parameters": null,
+      "scratch_origin_verified": true,
+      "parameters": 44992082,
       "training_complete": false,
       "completed_steps": 0,
       "live_step": null,
       "live_phase": null,
-      "budget_steps": null,
+      "budget_steps": 250000,
       "recipe": {
         "architecture": "dynunet",
         "configuration": "3d_fullres",
@@ -535,9 +559,9 @@
       "latest_validation": null,
       "resources": {
         "finished_stage_gpu_hours": null,
-        "active_stage_allocated_hours_estimate": null,
+        "active_stage_allocated_hours_estimate": 0.05348275555504693,
         "recorded_stage_invocations": 0,
-        "active_stage_status": null,
+        "active_stage_status": "running",
         "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
       },
       "evaluation": {},
@@ -607,7 +631,19 @@
         "peak_allocated_gpu_bytes": null,
         "peak_reserved_gpu_bytes": null
       },
-      "nnunet_patch_history": {},
+      "nnunet_patch_history": {
+        "current_epoch": 2,
+        "epochs": [
+          {
+            "epoch": 1,
+            "loss": 0.1031,
+            "pancreas_pseudo": 0.0,
+            "mass_pseudo": 0.0,
+            "seconds": 121.93
+          }
+        ],
+        "errors": []
+      },
       "expected_validation_cases": 42,
       "display_name": "nnunet_planned_dynunet"
     }
