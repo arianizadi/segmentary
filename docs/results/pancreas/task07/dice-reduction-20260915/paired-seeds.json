@@ -1,0 +1,201 @@
+{
+  "all_four_verified_complete": true,
+  "campaign_id": "task07-dice-reduction-20260915",
+  "campaign_sha256": "5617a39685ea459fd80a4bfa8130485fdf8877deb8de0ad69ba0e162a777e193",
+  "contrasts": [
+    {
+      "candidate": "dynunet-per-sample-seed0",
+      "control": "dynunet-batch-seed0",
+      "mass": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          -0.03405454457771682,
+          0.02775349403787748
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": -0.003167320437310496,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "mass",
+        "seed": 0,
+        "unit": "patient"
+      },
+      "pancreas": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.010116366908084356,
+          0.03240426203749639
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": 0.020931088130661073,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "pancreas",
+        "seed": 0,
+        "unit": "patient"
+      },
+      "seed": 0,
+      "status": "available"
+    },
+    {
+      "candidate": "dynunet-per-sample-seed1",
+      "control": "dynunet-batch-seed1",
+      "mass": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.010551083911397124,
+          0.11374461921308063
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": 0.05635735329760318,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "mass",
+        "seed": 0,
+        "unit": "patient"
+      },
+      "pancreas": {
+        "bootstrap_samples": 10000,
+        "cases": 42,
+        "ci": [
+          0.023250790341305554,
+          0.05925416965846192
+        ],
+        "confidence": 0.95,
+        "difference": "B minus A",
+        "eligible_cases": 42,
+        "excluded_case_count": 0,
+        "interpretation": "Positive differences favor B for Dice; negative differences favor B for HD95",
+        "mean": 0.04023400475170081,
+        "method": "percentile bootstrap of equal-weight patient means",
+        "metric": "dice",
+        "patients": 42,
+        "region": "pancreas",
+        "seed": 0,
+        "unit": "patient"
+      },
+      "seed": 1,
+      "status": "available"
+    }
+  ],
+  "grouping_status": "dataset_case_unverified",
+  "manifest_sha256": "9e6c363908beffe4e2feb9544f99552e06220d03af289b6913557870e28931a2",
+  "operator_sha256": {
+    "operate_campaign.py": "a60c797cf415878eefc7f9ba99ef29d49cd18a843dea2f5b6aec54cb2767d761",
+    "plan_campaign.py": "55e671975ce0f55abdbaa45d29315506f9253714671ea346756a3702d3763b42",
+    "run_and_publish.py": "e4fda9b1effb8f2cc89a7e4a65e4b6600503fd2fdb70cd2dba2073e2155b8f05"
+  },
+  "rows": [
+    {
+      "binding_sha256": "d12f2b99fc0fef5823d038e72b730f6068bdf2adac86495c6055e7ea5cfb826d",
+      "checkpoint_sha256": "2ce58a5a96482a4f7502ed27f2729abd38c27959eb43c4b382782fd18e78cc1b",
+      "code_identity_sha256": "23e6717af6fc914dba111f7d8a152fb4b3011fefa924e9284313879ea239dac7",
+      "complete_pair_eligible": true,
+      "dice_reduction": "batch",
+      "endpoint_mass_dice": 0.2985828250356692,
+      "endpoint_pancreas_union_dice": 0.7607042808516026,
+      "endpoint_record_sha256": "467f40e43af07ace669764bede0e0efaa8bba543b27f16ab993639cb8925df66",
+      "evaluation_sha256": "94b311c9aa91ef596fd9d9d26bdf8234d681f852e07bce6986623110105016ee",
+      "id": "dynunet-batch-seed0",
+      "mass_dice": 0.3298359547409563,
+      "native_valid_cases": 42,
+      "pancreas_union_dice": 0.7558945692980761,
+      "prediction_record_sha256": "cc0d60a7c56bccc5ffb74fa60da7ee52e4e5c574392fdc2d4f9f9682f5176583",
+      "recipe_sha256": "8daf8531168aa833557571438db6852ab2ae6e528d3b003e10571dcf5c4bd7c1",
+      "resolved_config_sha256": "8daf8531168aa833557571438db6852ab2ae6e528d3b003e10571dcf5c4bd7c1",
+      "scratch_origin_sha256": "dd966a04aed5dd5d1dd36ce43afbc89708cc4eb63dfeee4070b4a7f10bb4215b",
+      "seed": 0,
+      "status": "completed"
+    },
+    {
+      "binding_sha256": "143e47a88c0ba1581126e445bcfb02103ae33d7a903500be3f86eaa34f005a43",
+      "checkpoint_sha256": "595e6ba0c23474d73afbc0c023d0541be9d316b09947fe40e7085da5d7e12bf4",
+      "code_identity_sha256": "23e6717af6fc914dba111f7d8a152fb4b3011fefa924e9284313879ea239dac7",
+      "complete_pair_eligible": true,
+      "dice_reduction": "per_sample",
+      "endpoint_mass_dice": 0.3266686343036458,
+      "endpoint_pancreas_union_dice": 0.7768256574287372,
+      "endpoint_record_sha256": "a153e42f4d57538da5c0490ee9b92d8535540aa26eda1b53c40494a0482af8e0",
+      "evaluation_sha256": "9370e2f3865d1e517c2a522d13f3a2534bbf37288e0162b7a8047b8a99c80b50",
+      "id": "dynunet-per-sample-seed0",
+      "mass_dice": 0.3266686343036458,
+      "native_valid_cases": 42,
+      "pancreas_union_dice": 0.7768256574287372,
+      "prediction_record_sha256": "e4f75a9fb091952e631184fa5c273bb4e1aae0efaf58502ef8a77b7c8348e835",
+      "recipe_sha256": "c185c55dc6fccc302612bf950bd573fd684631111d3f2edfe6b1c62269459da1",
+      "resolved_config_sha256": "c185c55dc6fccc302612bf950bd573fd684631111d3f2edfe6b1c62269459da1",
+      "scratch_origin_sha256": "7718f878e96df7ca6cee1b98ae806febb4274f95fe3d474542cbaaab72ced3d8",
+      "seed": 0,
+      "status": "completed"
+    },
+    {
+      "binding_sha256": "48758e91f6e8f4406ecdb150569a0c5c81ef08c085289d47d11bbbe90b3a5933",
+      "checkpoint_sha256": "322d9134dd439c9e699ce17e3401a54fce89a3e10eb7e7a46bf27b0854b17ebd",
+      "code_identity_sha256": "23e6717af6fc914dba111f7d8a152fb4b3011fefa924e9284313879ea239dac7",
+      "complete_pair_eligible": true,
+      "dice_reduction": "batch",
+      "endpoint_mass_dice": 0.28591131823517335,
+      "endpoint_pancreas_union_dice": 0.7355898774983377,
+      "endpoint_record_sha256": "14d7859ff2181c25b3bf7b39db8e622937edddfc4edbff85154e73c1ddc190ec",
+      "evaluation_sha256": "efbcd92b06f56293778569d7a436cf2647d45953cd2c905b0cf1d1ed80b362ba",
+      "id": "dynunet-batch-seed1",
+      "mass_dice": 0.30462820458507567,
+      "native_valid_cases": 42,
+      "pancreas_union_dice": 0.7323507419604933,
+      "prediction_record_sha256": "2aea53474c4928bedd8a8b504ad85bcdb79fca8276116ff98ab6e697dd3c3b57",
+      "recipe_sha256": "5f8e29faabaa860cbeac1264a41389035240a24c172130d519ac473c818de058",
+      "resolved_config_sha256": "5f8e29faabaa860cbeac1264a41389035240a24c172130d519ac473c818de058",
+      "scratch_origin_sha256": "f71e68d86874d2f064eb07cf639a5ca23e45f3ddb1bf1c0e104ba1049c9e0cf0",
+      "seed": 1,
+      "status": "completed"
+    },
+    {
+      "binding_sha256": "5687273b85e188881131e9a5ed048e4c238fc47f72cec9a784bca9be199a1714",
+      "checkpoint_sha256": "e8dee2d7e50a3246b288a5ca059f1356d04bd5f3f9d8c774d938d43640e34e0c",
+      "code_identity_sha256": "23e6717af6fc914dba111f7d8a152fb4b3011fefa924e9284313879ea239dac7",
+      "complete_pair_eligible": true,
+      "dice_reduction": "per_sample",
+      "endpoint_mass_dice": 0.36098555788267883,
+      "endpoint_pancreas_union_dice": 0.7725847467121941,
+      "endpoint_record_sha256": "18447aa27718138fbf8dd95627e7e7747a9ef8d70b3a6e2e18641dac42a557b7",
+      "evaluation_sha256": "fbb18122326838674235a685c4792a0e9630b50dff75a389a1063814f2a5afdc",
+      "id": "dynunet-per-sample-seed1",
+      "mass_dice": 0.36098555788267883,
+      "native_valid_cases": 42,
+      "pancreas_union_dice": 0.7725847467121941,
+      "prediction_record_sha256": "304540a594aca5a69fdcbb558eb817d4517681e17fe66c1d34f3069f4decee12",
+      "recipe_sha256": "61ea7396c3e9d6de98b1500d1e40290ff1938895416a90294994f5f4edd2ffd6",
+      "resolved_config_sha256": "61ea7396c3e9d6de98b1500d1e40290ff1938895416a90294994f5f4edd2ffd6",
+      "scratch_origin_sha256": "00e3137ab46d9bbc2987a9e3cb661d76214cf16a3ea4af77149bdfcf7126e91b",
+      "seed": 1,
+      "status": "completed"
+    }
+  ],
+  "schema_version": 1,
+  "source_commit": "f9051656be4a9800d415b8e99ba782b23632a968",
+  "splits_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
+  "test_payloads_accessed": false,
+  "two_seed_mass_difference_spread": {
+    "max": 0.05635735329760318,
+    "min": -0.003167320437310496
+  },
+  "uncertainty": "Grouping is dataset_case_unverified: bootstrap units are dataset-case proxies, not independently verified patients. Each interval conditions on one trained control/candidate pair. The same 42 dataset cases recur across seeds and are not 84 independent cases. Two seeds supply descriptive replication, not a reliable estimate of training-seed uncertainty."
+}

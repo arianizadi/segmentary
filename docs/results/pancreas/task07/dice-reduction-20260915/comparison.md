@@ -1,19 +1,19 @@
 # Task07 model comparison
 
-Generated: 2026-09-15T17:02:29.840722+00:00. Source: `f9051656be4a9800d415b8e99ba782b23632a968`.
+Generated: 2026-09-15T17:54:41.384912+00:00. Source: `f9051656be4a9800d415b8e99ba782b23632a968`.
 
-**4 running.**
+**4 completed.**
 
 Interim values are shown in campaign order, not sorted by apparent accuracy. Different validated step counts cannot establish a winner.
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-batch-seed0](models/dynunet-batch-seed0.md) | running | train | 700/10000 | 100 | 42/42 | 0.0000 | 0.1619 | — | — | 0/42 | — |
-| [dynunet-per-sample-seed0](models/dynunet-per-sample-seed0.md) | running | train | 700/10000 | 100 | 42/42 | 0.0000 | 0.1037 | — | — | 0/42 | — |
-| [dynunet-batch-seed1](models/dynunet-batch-seed1.md) | running | train | 700/10000 | 100 | 42/42 | 0.0000 | 0.0000 | — | — | 0/42 | — |
-| [dynunet-per-sample-seed1](models/dynunet-per-sample-seed1.md) | running | train | 700/10000 | 100 | 42/42 | 0.0000 | 0.0000 | — | — | 0/42 | — |
+| [dynunet-batch-seed0](models/dynunet-batch-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2986 | 0.7607 | 0.3298 | 0.7559 | 42/42 | — |
+| [dynunet-per-sample-seed0](models/dynunet-per-sample-seed0.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3267 | 0.7768 | 0.3267 | 0.7768 | 42/42 | — |
+| [dynunet-batch-seed1](models/dynunet-batch-seed1.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.2859 | 0.7356 | 0.3046 | 0.7324 | 42/42 | — |
+| [dynunet-per-sample-seed1](models/dynunet-per-sample-seed1.md) | completed | — | 10000/10000 | 10000 | 42/42 | 0.3610 | 0.7726 | 0.3610 | 0.7726 | 42/42 | — |
 
-- **dice_reduction_by_patch_two_seeds** (4 planned runs): No ranking: Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Cohort, protocol, source, split, seed, budget, batch, or selection differs; Mass Dice is unavailable.
+- **dice_reduction_by_patch_two_seeds** (4 planned runs): No ranking: Cohort, protocol, source, split, seed, budget, batch, or selection differs.
 
 All scores are on a 0-1 scale; — means unavailable, never zero. This is an
 exploratory two-seed Dice-reduction study, with no claim of a clinical or publishable

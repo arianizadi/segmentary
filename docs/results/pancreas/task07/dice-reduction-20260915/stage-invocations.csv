@@ -1,5 +1,13 @@
 run_id,model,invocation_number,action,status,wall_seconds,allocated_gpu_hours
-dynunet-batch-seed0,dynunet,1,preprocess,completed,30.20711088180542,0.0
-dynunet-per-sample-seed0,dynunet,1,preprocess,completed,30.36043667793274,0.0
-dynunet-batch-seed1,dynunet,1,preprocess,completed,30.23620057106018,0.0
-dynunet-per-sample-seed1,dynunet,1,preprocess,completed,30.50288200378418,0.0
+dynunet-batch-seed0,dynunet,1,predict,completed,126.27966833114624,0.03507768564754062
+dynunet-batch-seed0,dynunet,2,preprocess,completed,30.20711088180542,0.0
+dynunet-batch-seed0,dynunet,3,train,completed,3130.1570127010345,0.8694880590836207
+dynunet-per-sample-seed0,dynunet,1,predict,completed,128.34080004692078,0.03565022223525577
+dynunet-per-sample-seed0,dynunet,2,preprocess,completed,30.36043667793274,0.0
+dynunet-per-sample-seed0,dynunet,3,train,completed,3136.400111913681,0.8712222533093559
+dynunet-batch-seed1,dynunet,1,predict,completed,130.5138168334961,0.03625383800930447
+dynunet-batch-seed1,dynunet,2,preprocess,completed,30.23620057106018,0.0
+dynunet-batch-seed1,dynunet,3,train,completed,3155.1909036636353,0.8764419176843431
+dynunet-per-sample-seed1,dynunet,1,predict,completed,130.5394411087036,0.03626095586352878
+dynunet-per-sample-seed1,dynunet,2,preprocess,completed,30.50288200378418,0.0
+dynunet-per-sample-seed1,dynunet,3,train,completed,3135.0793516635895,0.8708553754621082

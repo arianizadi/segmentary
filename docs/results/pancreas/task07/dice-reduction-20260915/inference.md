@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-15T17:02:29.840722+00:00. Source: `f9051656be4a9800d415b8e99ba782b23632a968`.
+Generated: 2026-09-15T17:54:41.384912+00:00. Source: `f9051656be4a9800d415b8e99ba782b23632a968`.
 
 ## Native CT prediction
 
@@ -8,10 +8,10 @@ This measures heterogeneous full CT examinations. Case p50/p95 includes CPU work
 
 | Model | Status | Cases | Failed | Pipeline wall s | Scans/s | Case p50 s | Case p95 s | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-batch-seed0](models/dynunet-batch-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-per-sample-seed0](models/dynunet-per-sample-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-batch-seed1](models/dynunet-batch-seed1.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-per-sample-seed1](models/dynunet-per-sample-seed1.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [dynunet-batch-seed0](models/dynunet-batch-seed0.md) | completed | 42/42 | 0 | 119.781 | 0.351 | 8.723 | 10.297 | 4.479 |
+| [dynunet-per-sample-seed0](models/dynunet-per-sample-seed0.md) | completed | 42/42 | 0 | 121.969 | 0.344 | 8.646 | 11.656 | 4.479 |
+| [dynunet-batch-seed1](models/dynunet-batch-seed1.md) | completed | 42/42 | 0 | 124.381 | 0.338 | 9.256 | 11.633 | 4.479 |
+| [dynunet-per-sample-seed1](models/dynunet-per-sample-seed1.md) | completed | 42/42 | 0 | 124.159 | 0.338 | 8.729 | 10.984 | 4.479 |
 
 [Per-case numerical timings](inference-cases.csv) use stable validation case ordinals. They contain preprocessing, tiled inference, reconstruction and export when recorded. Tiled inference includes copies, softmax and CPU blending; it is not model-only forward latency.
 
