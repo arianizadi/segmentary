@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-15T02:59:40.101931+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-15T03:29:46.430613+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 Status: **running**. Stage: **train**. GPU: **0**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **0**.
 | --- | --- |
 | Started / finished | 2026-09-13T23:17:33.231143+00:00 / — |
 | Last worker update | 2026-09-13T23:24:13.342583+00:00 |
-| Completed / budget steps | 152500 / 250000 |
+| Completed / budget steps | 155500 / 250000 |
 | Live step / phase | — / — |
 | Parameters | — |
 | Objective | — |
 | Checkpoint selection | — |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | 0.0000 |
-| Active-stage allocated hours (estimate) | 27.5877 |
+| Active-stage allocated hours (estimate) | 28.0894 |
 | Peak allocated / reserved GiB | — / — |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -680,3 +680,15 @@ These patch pseudo-Dice values are not native full-volume Dice and are never sub
 | 608 | -0.8218 | 0.6237 | 0.8072 | 160.8200 |
 | 609 | -0.8179 | 0.6752 | 0.8133 | 160.9400 |
 | 610 | -0.8177 | 0.6124 | 0.8147 | 160.8900 |
+| 611 | -0.8188 | 0.5375 | 0.8106 | 160.9300 |
+| 612 | -0.8132 | 0.5770 | 0.8175 | 160.8700 |
+| 613 | -0.8318 | 0.6353 | 0.8127 | 160.8600 |
+| 614 | -0.8237 | 0.6435 | 0.8145 | 160.8700 |
+| 615 | -0.8135 | 0.4921 | 0.8103 | 160.8000 |
+| 616 | -0.8208 | 0.4947 | 0.8091 | 160.9600 |
+| 617 | -0.8341 | 0.6884 | 0.8166 | 161.0300 |
+| 618 | -0.8166 | 0.6688 | 0.8237 | 160.9600 |
+| 619 | -0.8156 | 0.3765 | 0.8074 | 160.9900 |
+| 620 | -0.8148 | 0.4989 | 0.8193 | 161.0400 |
+| 621 | -0.8393 | 0.6773 | 0.8270 | 161.0300 |
+| 622 | -0.8348 | 0.6465 | 0.8067 | 160.8900 |
