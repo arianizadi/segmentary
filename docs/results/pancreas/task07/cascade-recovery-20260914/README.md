@@ -2,7 +2,7 @@
 
 **Controlled recipe explorations:** fresh scratch runs, 10,000 updates each, using the same development partition. The frozen campaign lists exact changes in loss, normalization, spacing, architecture or predicted-organ cropping. Compare each candidate with its control using full-native per-patient metrics. These are one-seed validation experiments, not equal-compute architecture rankings or independent test results. Cascade misses outside the crop still count.
 
-Generated: 2026-09-15T02:11:52.838064+00:00. Source: `993e6413341dbc5c39ec46cdf5f846e246215b4f`.
+Generated: 2026-09-15T02:41:56.708661+00:00. Source: `993e6413341dbc5c39ec46cdf5f846e246215b4f`.
 
 **3 running.** GPU queue: 2, 3, 4.
 
@@ -63,6 +63,6 @@ are useful within a run; they are not an accuracy ranking across objectives.
 
 | Model | Status | Steps / budget | Native mass Dice | Native pancreas Dice | Score scope | Cases |
 | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-roi20-seed0](models/dynunet-roi20-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-roi40-seed0](models/dynunet-roi40-seed0.md) | running | 0/10000 | — | — | in-training step — | 0/42 |
+| [dynunet-control10k-seed0](models/dynunet-control10k-seed0.md) | running | 5480/10000 | 0.2729 | 0.7198 | in-training step 5000 | 42/42 |
+| [dynunet-roi20-seed0](models/dynunet-roi20-seed0.md) | running | 6740/10000 | 0.3189 | 0.6948 | in-training step 6000 | 42/42 |
+| [dynunet-roi40-seed0](models/dynunet-roi40-seed0.md) | running | 6670/10000 | 0.3259 | 0.7312 | in-training step 6000 | 42/42 |
