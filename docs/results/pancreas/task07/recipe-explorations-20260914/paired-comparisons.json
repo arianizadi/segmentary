@@ -1,0 +1,609 @@
+{
+  "schema_version": 1,
+  "source_commit": "52bb2cd90780989546d5e3f2e5734bdf952d72f2",
+  "partition": "val",
+  "comparison_type": "declared_recipe_explorations_selected_best",
+  "arm_recipes": {
+    "dynunet-control10k-seed0": {
+      "arm": "control10k",
+      "changes_from_control": {},
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Fresh 10,000-update DynUNet without auxiliary decoder losses",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "60ffcca5f8131b8b4af3ccc35c101dcefd0a7de9f32de360a70c9f79ec0889b3",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    },
+    "dynunet-deep10k-seed0": {
+      "arm": "deep10k",
+      "changes_from_control": {
+        "model_options": {
+          "deep_supervision": true,
+          "filters": [
+            32,
+            64,
+            128,
+            256,
+            320
+          ],
+          "res_block": false
+        }
+      },
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Matched 10,000-update DynUNet with two native decoder auxiliary losses",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "663a3272f96ac3717caff2c2e774440fdfe602e754294ccfded577fc06b7b4d5",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    },
+    "dynunet-focal05-seed0": {
+      "arm": "focal05",
+      "changes_from_control": {
+        "focal_coefficient": 0.5,
+        "loss": "dice_focal"
+      },
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Foreground Dice + 0.5 times multiclass focal, gamma 2",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "6a142dbd68e98c52b7c807f55ef480956295eeb230f7505cd80cee0fd7008893",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    },
+    "dynunet-focal10-seed0": {
+      "arm": "focal10",
+      "changes_from_control": {
+        "loss": "dice_focal"
+      },
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Foreground Dice + 1.0 times multiclass focal, gamma 2",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "53dc38af6069545f1d64f9daf631710a67b779a6a6f0bb25308f09e4d1892964",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    },
+    "dynunet-window-seed0": {
+      "arm": "window",
+      "changes_from_control": {
+        "hu_window": [
+          -175.0,
+          250.0
+        ]
+      },
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Wider fixed HU window [-175,250], scaled to [0,1]",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "f2eb3893069e066615cff7c8d3887c487d1d1f9e40beab4859016c4ac085cccc",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    },
+    "dynunet-minmax-seed0": {
+      "arm": "minmax",
+      "changes_from_control": {
+        "normalization": "volume_minmax"
+      },
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Full-volume image-only raw min/max to [0,1], without HU clipping",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "d71bc3de876e30cc8893bb143a4634f2fd0d8a54adf160c865257ea12bd47d55",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    },
+    "dynunet-isotropic-seed0": {
+      "arm": "isotropic",
+      "changes_from_control": {
+        "patch_size": [
+          160,
+          96,
+          96
+        ],
+        "spacing_mm": [
+          1.5,
+          1.5,
+          1.5
+        ]
+      },
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Isotropic 1.5 mm grid, matched 144x144x240 mm nominal crop",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "5a4ac7a1003aa580d902b4832bebf328edac9d79c4e8c780cb9bc9ea19d62e9d",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    },
+    "swin_unetr-swin24-seed0": {
+      "arm": "swin24",
+      "changes_from_control": {
+        "model": "swin_unetr",
+        "model_options": {
+          "feature_size": 24
+        }
+      },
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Scratch shifted-window Swin UNETR, feature width 24",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "34e2db801aff5c84c9c7844960237712b5c83a4832c7efcfdfeca8e645ff257b",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    },
+    "swin_unetr-swin48-seed0": {
+      "arm": "swin48",
+      "changes_from_control": {
+        "model": "swin_unetr",
+        "model_options": {
+          "feature_size": 48,
+          "use_checkpoint": true
+        }
+      },
+      "control_run_id": "dynunet-control10k-seed0",
+      "description": "Scratch shifted-window Swin UNETR, feature width 48",
+      "nominal_crop_extent_mm_xyz": [
+        144.0,
+        144.0,
+        240.0
+      ],
+      "optimizer_steps": 10000,
+      "sampled_patches": 80000,
+      "scientific_recipe_sha256": "e36fc334ae4dc01eb8f6c30cbd8b5051e326ef74ece562211f08cab483301474",
+      "validation_epochs": [
+        1,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    }
+  },
+  "comparisons": [
+    {
+      "candidate": "dynunet-deep10k-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Matched 10,000-update DynUNet with two native decoder auxiliary losses",
+      "mean_difference": -0.02295836788236741,
+      "ci95": [
+        -0.06323007117483968,
+        0.017282241910015858
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-deep10k-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Matched 10,000-update DynUNet with two native decoder auxiliary losses",
+      "mean_difference": -0.015168069351604354,
+      "ci95": [
+        -0.03271665180908489,
+        0.002426760359428237
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-focal05-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Foreground Dice + 0.5 times multiclass focal, gamma 2",
+      "mean_difference": -0.012702970343842277,
+      "ci95": [
+        -0.07103371080551243,
+        0.042382694797168136
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-focal05-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Foreground Dice + 0.5 times multiclass focal, gamma 2",
+      "mean_difference": -0.033116857026517794,
+      "ci95": [
+        -0.05303828513529678,
+        -0.015440030446908684
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-focal10-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Foreground Dice + 1.0 times multiclass focal, gamma 2",
+      "mean_difference": -0.005997311263689419,
+      "ci95": [
+        -0.06279160260465817,
+        0.05055096943763417
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-focal10-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Foreground Dice + 1.0 times multiclass focal, gamma 2",
+      "mean_difference": -0.037413541790743625,
+      "ci95": [
+        -0.058571521949068055,
+        -0.01848103782849464
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-window-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Wider fixed HU window [-175,250], scaled to [0,1]",
+      "mean_difference": -0.03456959995777111,
+      "ci95": [
+        -0.0871962745629844,
+        0.012040338689525103
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-window-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Wider fixed HU window [-175,250], scaled to [0,1]",
+      "mean_difference": -0.0448550814184051,
+      "ci95": [
+        -0.061516860494958206,
+        -0.0289747095957912
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-minmax-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Full-volume image-only raw min/max to [0,1], without HU clipping",
+      "mean_difference": -0.02317917230484246,
+      "ci95": [
+        -0.07976728964966022,
+        0.029706752403202
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-minmax-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Full-volume image-only raw min/max to [0,1], without HU clipping",
+      "mean_difference": -0.051369438114987544,
+      "ci95": [
+        -0.07677146685815026,
+        -0.029441111383284986
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-isotropic-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Isotropic 1.5 mm grid, matched 144x144x240 mm nominal crop",
+      "mean_difference": 0.018504880454707176,
+      "ci95": [
+        -0.023989878872476538,
+        0.06655285483028069
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "dynunet-isotropic-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Isotropic 1.5 mm grid, matched 144x144x240 mm nominal crop",
+      "mean_difference": 0.0010023156016973319,
+      "ci95": [
+        -0.013176417154161445,
+        0.016617710582190193
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "swin_unetr-swin24-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Scratch shifted-window Swin UNETR, feature width 24",
+      "mean_difference": -0.0852349339248162,
+      "ci95": [
+        -0.14825237664495622,
+        -0.0300754076880376
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "swin_unetr-swin24-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Scratch shifted-window Swin UNETR, feature width 24",
+      "mean_difference": -0.05137891998816749,
+      "ci95": [
+        -0.0768517562217228,
+        -0.027798542704792897
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "swin_unetr-swin48-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "mass",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Scratch shifted-window Swin UNETR, feature width 48",
+      "mean_difference": -0.03405136605289483,
+      "ci95": [
+        -0.081093487703633,
+        0.008628980481254373
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    },
+    {
+      "candidate": "swin_unetr-swin48-seed0",
+      "control": "dynunet-control10k-seed0",
+      "region": "pancreas",
+      "metric": "dice",
+      "difference": "candidate minus control",
+      "checkpoint_selection": "each arms own best validation checkpoint",
+      "factor": "Scratch shifted-window Swin UNETR, feature width 48",
+      "mean_difference": -0.018845104135159267,
+      "ci95": [
+        -0.037603423135718364,
+        -0.0004205666961147782
+      ],
+      "groups": 42,
+      "cases": 42,
+      "bootstrap_samples": 10000,
+      "seed": 20260914
+    }
+  ],
+  "grouping": "provided dataset-case groups; independent patient linkage remains unverified",
+  "limitations": [
+    "Exploratory same-seed validation comparisons, not held-out or external confirmation.",
+    "Validation selected the checkpoints and may select an arm; intervals do not correct selection optimism.",
+    "Pointwise 95% bootstrap intervals are not adjusted for multiple comparisons.",
+    "Intervals resample provided case/patient groups and do not include training-seed uncertainty.",
+    "All runs use 10,000 updates; compute and voxel exposure can differ. See each frozen arm declaration.",
+    "Cascade training crops use in-sample stage-one predictions; out-of-fold confirmation remains future work. Full-native evaluation retains stage-one misses.",
+    "Each arm selects its own best validation checkpoint; selected-best differences are exploratory and not an independent test.",
+    "Mass labels do not establish pancreatic cancer diagnosis."
+  ],
+  "primary_report_sha256": {
+    "dynunet-control10k-seed0": "085e30d619cc9bc504c0d6223ec039336d06df20c1a40f2b139e67dabf8c5980",
+    "dynunet-deep10k-seed0": "d82fb1f1d88a76fb979dfd39c40f688002336cec827bbb8394beaece0a06822f",
+    "dynunet-focal05-seed0": "616891e07c1e2e05db1d0fb01ec5de4d602171c1aa6354622daeafd4a2cad39b",
+    "dynunet-focal10-seed0": "6a2afea5bfd8a9db0283e3a7e1c621ae3cbe63049aaec72eb021d552ba330a44",
+    "dynunet-window-seed0": "c102dc4f424fe4a1f68ec5c3a1592d7ad7ebc65cf0290cda40cc0c90b055f602",
+    "dynunet-minmax-seed0": "0494d84f75cc0e1b204cd45c6acaca9258eb354463637ebe4cdd4e3caefaa775",
+    "dynunet-isotropic-seed0": "dba06977060c840ba398684c5c40f8c4cee4fae3ae57580e8f3cfdaebf65d214",
+    "swin_unetr-swin24-seed0": "3847b9b17d7fea3792245410e01d6b1af73978caae69814cb04b24bb1ef59c01",
+    "swin_unetr-swin48-seed0": "895cf9b97d11c546114f68ae45375900590a997a8a35005c30f3cfa3c358d2db"
+  }
+}
