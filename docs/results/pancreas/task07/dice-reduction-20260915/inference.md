@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-15T16:57:01.231228+00:00. Source: `f9051656be4a9800d415b8e99ba782b23632a968`.
+Generated: 2026-09-15T17:02:29.840722+00:00. Source: `f9051656be4a9800d415b8e99ba782b23632a968`.
 
 ## Native CT prediction
 
@@ -8,10 +8,10 @@ This measures heterogeneous full CT examinations. Case p50/p95 includes CPU work
 
 | Model | Status | Cases | Failed | Pipeline wall s | Scans/s | Case p50 s | Case p95 s | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-batch-seed0](models/dynunet-batch-seed0.md) | queued | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-per-sample-seed0](models/dynunet-per-sample-seed0.md) | queued | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-batch-seed1](models/dynunet-batch-seed1.md) | queued | 0/42 | 0 | — | — | — | — | — |
-| [dynunet-per-sample-seed1](models/dynunet-per-sample-seed1.md) | queued | 0/42 | 0 | — | — | — | — | — |
+| [dynunet-batch-seed0](models/dynunet-batch-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [dynunet-per-sample-seed0](models/dynunet-per-sample-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [dynunet-batch-seed1](models/dynunet-batch-seed1.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [dynunet-per-sample-seed1](models/dynunet-per-sample-seed1.md) | running | 0/42 | 0 | — | — | — | — | — |
 
 [Per-case numerical timings](inference-cases.csv) use stable validation case ordinals. They contain preprocessing, tiled inference, reconstruction and export when recorded. Tiled inference includes copies, softmax and CPU blending; it is not model-only forward latency.
 
@@ -21,9 +21,9 @@ B1 synthetic inputs use each model's declared patch, context and precision. Warm
 
 | Model | Benchmark | Patch | Precision | Patches/s | p50 ms | p95 ms | Parameters | Weight MiB | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-batch-seed0](models/dynunet-batch-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-per-sample-seed0](models/dynunet-per-sample-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-batch-seed1](models/dynunet-batch-seed1.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
-| [dynunet-per-sample-seed1](models/dynunet-per-sample-seed1.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | None | — | — |
+| [dynunet-batch-seed0](models/dynunet-batch-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-per-sample-seed0](models/dynunet-per-sample-seed0.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-batch-seed1](models/dynunet-batch-seed1.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
+| [dynunet-per-sample-seed1](models/dynunet-per-sample-seed1.md) | not_recorded | [96, 96, 96] | bf16 | — | — | — | 16543683 | — | — |
 
 [Training cost](training-cost.md) · [Comparison](comparison.md)

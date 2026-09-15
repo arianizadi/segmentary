@@ -1,8 +1,8 @@
 # Pancreas Task07: model comparison
 
-Generated: 2026-09-15T16:57:01.231228+00:00. Source: `f9051656be4a9800d415b8e99ba782b23632a968`.
+Generated: 2026-09-15T17:02:29.840722+00:00. Source: `f9051656be4a9800d415b8e99ba782b23632a968`.
 
-**4 queued.** GPU queue: 4, 5, 6, 7.
+**4 running.** GPU queue: 4, 5, 6, 7.
 
 1. Open [comparison.md](comparison.md) for model status and comparable validation results.
 2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.
@@ -61,7 +61,7 @@ are useful within a run; they are not an accuracy ranking across objectives.
 
 | Model | Status | Steps / budget | Native mass Dice | Native pancreas Dice | Score scope | Cases |
 | --- | --- | --- | --- | --- | --- | --- |
-| [dynunet-batch-seed0](models/dynunet-batch-seed0.md) | queued | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-per-sample-seed0](models/dynunet-per-sample-seed0.md) | queued | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-batch-seed1](models/dynunet-batch-seed1.md) | queued | 0/10000 | — | — | in-training step — | 0/42 |
-| [dynunet-per-sample-seed1](models/dynunet-per-sample-seed1.md) | queued | 0/10000 | — | — | in-training step — | 0/42 |
+| [dynunet-batch-seed0](models/dynunet-batch-seed0.md) | running | 710/10000 | 0.0000 | 0.1619 | in-training step 100 | 42/42 |
+| [dynunet-per-sample-seed0](models/dynunet-per-sample-seed0.md) | running | 710/10000 | 0.0000 | 0.1037 | in-training step 100 | 42/42 |
+| [dynunet-batch-seed1](models/dynunet-batch-seed1.md) | running | 701/10000 | 0.0000 | 0.0000 | in-training step 100 | 42/42 |
+| [dynunet-per-sample-seed1](models/dynunet-per-sample-seed1.md) | running | 710/10000 | 0.0000 | 0.0000 | in-training step 100 | 42/42 |

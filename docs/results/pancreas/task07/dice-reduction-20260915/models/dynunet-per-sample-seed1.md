@@ -2,25 +2,25 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-15T16:57:01.231228+00:00. Source: `f9051656be4a9800d415b8e99ba782b23632a968`.
+Generated: 2026-09-15T17:02:29.840722+00:00. Source: `f9051656be4a9800d415b8e99ba782b23632a968`.
 
-Status: **queued**. Stage: **—**. GPU: **None**.
+Status: **running**. Stage: **train**. GPU: **7**.
 
 ## Recipe and resources
 
 | Setting | Value |
 | --- | --- |
-| Started / finished | — / — |
-| Last worker update | — |
-| Completed / budget steps | 0 / 10000 |
-| Live step / phase | — / — |
-| Parameters | — |
-| Objective | — |
-| Checkpoint selection | — |
+| Started / finished | 2026-09-15T16:57:07.824364+00:00 / — |
+| Last worker update | 2026-09-15T16:57:50.187479+00:00 |
+| Completed / budget steps | 700 / 10000 |
+| Live step / phase | 710 / train |
+| Parameters | 16543683 |
+| Objective | dense_ce_plus_per_sample_foreground_dice |
+| Checkpoint selection | maximum validation mean per-case mass Dice; empty/empty=1 |
 | Selected checkpoint SHA256 | — |
-| Finished-stage allocated GPU-hours | — |
-| Active-stage allocated hours (estimate) | — |
-| Peak allocated / reserved GiB | — / — |
+| Finished-stage allocated GPU-hours | 0.0000 |
+| Active-stage allocated hours (estimate) | 0.0740 |
+| Peak allocated / reserved GiB | 7.61 / 10.50 |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
 
@@ -92,6 +92,13 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
 
 | Epoch | Step | Training loss | Learning rate | Native pancreas Dice | Native mass Dice | Training s | Validation s | Checkpoint s |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 100 | 1.4266 | 0.0002972986 | 0.0000 | 0.0000 | 23.1135 | 86.9243 | 0.4300 |
+| 2 | 200 | 1.1605 | 0.0002945946 | — | — | 22.6846 | 0.0000 | 0.4103 |
+| 3 | 300 | 1.0753 | 0.0002918877 | — | — | 22.7582 | 0.0000 | 0.4393 |
+| 4 | 400 | 1.0269 | 0.0002891781 | — | — | 22.9609 | 0.0000 | 0.4393 |
+| 5 | 500 | 0.9818 | 0.0002864656 | — | — | 22.8108 | 0.0000 | 0.4559 |
+| 6 | 600 | 0.9435 | 0.0002837503 | — | — | 22.8133 | 0.0000 | 0.4333 |
+| 7 | 700 | 0.9089 | 0.0002810321 | — | — | 22.8004 | 0.0000 | 0.4521 |
 
 ## Final validation evaluation
 
