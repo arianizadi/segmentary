@@ -62,3 +62,9 @@ and boundary heads retain their documented objectives. State-space recipes use
 the portable exact Torch scan by default, which can be much slower than fused
 CUDA. GPU memory, time, model capacity, physical context and loss must accompany
 an accuracy comparison.
+
+For a controlled dense-loss experiment, `dice_reduction: per_sample` changes
+foreground Dice from batch pooling to equal weighting of sampled patches. The
+default remains `batch`; model-native objectives are preserved. See the
+[Dice reduction guide](../../../docs/guides/medical-dice-reduction.md) for supported
+combinations, empty-class behavior, and fresh-workspace requirements.

@@ -80,6 +80,19 @@ def prepare_dataset(
     from .model_registry import model_metadata
 
     metadata = model_metadata(config.model, model_options=config.model_options)
+    if config.dice_reduction == "per_sample":
+        if metadata.get("training_loss", {}).get("custom_training_loss") or metadata.get(
+            "deep_supervision"
+        ):
+            raise ValueError("Per-sample Dice cannot replace a model-native training loss")
+        metadata["objective"] = "dense_ce_plus_per_sample_foreground_dice"
+        metadata["dice_reduction"] = {
+            "mode": "per_sample",
+            "unit": "sampled patch, not necessarily a distinct patient",
+            "classes": [1, 2],
+            "reference_empty_classes": "included with unchanged 1e-5 smoothing",
+            "cross_entropy_reduction": "mean over all voxels including background",
+        }
     if config.loss == "dice_focal":
         metadata["objective"] = "batch_foreground_dice_plus_multiclass_focal"
         metadata["focal_loss"] = {

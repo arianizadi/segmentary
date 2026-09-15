@@ -494,13 +494,29 @@ def iter_predictions(
         reconstruction.shutdown(wait=True, cancel_futures=True)
 
 
-def dice_ce(logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+def dice_ce(
+    logits: torch.Tensor, targets: torch.Tensor, *, dice_reduction: str = "batch"
+) -> torch.Tensor:
+    """CE plus foreground Dice, pooling the batch or equally weighting patches.
+
+    Per-sample reduction averages Dice over each foreground class in each patch;
+    it does not identify patients or exclude reference-empty classes. The default
+    preserves the historical batch reduction and smoothing arithmetic exactly.
+    """
+    if dice_reduction not in ("batch", "per_sample"):
+        raise ValueError("dice_reduction must be batch or per_sample")
     probabilities = logits.float().softmax(1)
     truth = torch.nn.functional.one_hot(targets, 3).movedim(-1, 1).float()
-    axes = (0, *range(2, logits.ndim))
+    axes = (
+        (0, *range(2, logits.ndim)) if dice_reduction == "batch" else tuple(range(2, logits.ndim))
+    )
     intersection = (probabilities * truth).sum(axes)
     denominator = (probabilities + truth).sum(axes)
-    dice = (2 * intersection[1:] + 1e-5) / (denominator[1:] + 1e-5)
+    if dice_reduction == "per_sample":
+        intersection, denominator = intersection[:, 1:], denominator[:, 1:]
+    else:
+        intersection, denominator = intersection[1:], denominator[1:]
+    dice = (2 * intersection + 1e-5) / (denominator + 1e-5)
     return torch.nn.functional.cross_entropy(logits.float(), targets) + 1 - dice.mean()
 
 
@@ -537,4 +553,9 @@ def training_loss(
         return dice_focal(
             model(images), labels, coefficient=config.focal_coefficient, gamma=config.focal_gamma
         )
-    return native(images, labels) if native is not None else dice_ce(model(images), labels)
+    reduction = config.dice_reduction if config is not None else "batch"
+    if native is not None:
+        if reduction != "batch":
+            raise ValueError("Per-sample Dice cannot replace a model-native training loss")
+        return native(images, labels)
+    return dice_ce(model(images), labels, dice_reduction=reduction)

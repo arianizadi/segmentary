@@ -24,6 +24,8 @@ class TorchConfig:
     hu_window: tuple[float, float] = (-100.0, 240.0)
     normalization: str = "fixed_window"
     loss: str = "dice_ce"
+    # Training samples are patches, not necessarily distinct patients.
+    dice_reduction: str = "batch"
     focal_coefficient: float = 1.0
     focal_gamma: float = 2.0
     roi_manifest: str | None = None
@@ -109,6 +111,19 @@ class TorchConfig:
             raise ValueError("normalization must be fixed_window or volume_minmax")
         if self.loss not in {"dice_ce", "dice_focal"}:
             raise ValueError("loss must be dice_ce or dice_focal")
+        if not isinstance(self.dice_reduction, str) or self.dice_reduction not in {
+            "batch",
+            "per_sample",
+        }:
+            raise ValueError("dice_reduction must be batch or per_sample")
+        if self.dice_reduction == "per_sample" and (
+            self.loss != "dice_ce"
+            or (
+                isinstance(self.model_options, dict)
+                and self.model_options.get("deep_supervision", False)
+            )
+        ):
+            raise ValueError("Per-sample Dice supports only dense dice_ce without deep supervision")
         for name in ("focal_coefficient", "focal_gamma"):
             value = getattr(self, name)
             if (
