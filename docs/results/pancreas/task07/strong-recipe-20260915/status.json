@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign_id": "task07-strong-recipe-20260915",
-  "generated_at": "2026-09-15T17:54:02.711912+00:00",
+  "generated_at": "2026-09-15T18:04:55.064097+00:00",
   "source_commit": "63a108f8b7a65a98b11ccae0e8883c54955b2099",
   "split_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
   "split_counts": {
@@ -67,7 +67,7 @@
       "scratch_origin_verified": true,
       "parameters": 140989042,
       "training_complete": false,
-      "completed_steps": 0,
+      "completed_steps": 1250,
       "live_step": null,
       "live_phase": null,
       "budget_steps": 250000,
@@ -96,7 +96,16 @@
         "batch_dice": false,
         "normalization_schemes": [
           "CTNormalization"
-        ]
+        ],
+        "effective_training_budget": {
+          "num_epochs": 1000,
+          "num_iterations_per_epoch": 250,
+          "optimizer_steps": 250000,
+          "sources": {
+            "num_epochs": "trainer-settings",
+            "num_iterations_per_epoch": "trainer-settings"
+          }
+        }
       },
       "objective": null,
       "checkpoint_selection": "official_ema_foreground_dice",
@@ -161,7 +170,7 @@
       "latest_validation": null,
       "resources": {
         "finished_stage_gpu_hours": null,
-        "active_stage_allocated_hours_estimate": 0.05317089398701986,
+        "active_stage_allocated_hours_estimate": 0.23437983420160083,
         "recorded_stage_invocations": 0,
         "active_stage_status": "running",
         "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
@@ -234,7 +243,7 @@
         "peak_reserved_gpu_bytes": null
       },
       "nnunet_patch_history": {
-        "current_epoch": 2,
+        "current_epoch": 6,
         "epochs": [
           {
             "epoch": 1,
@@ -242,6 +251,34 @@
             "pancreas_pseudo": 0.0,
             "mass_pseudo": 0.0,
             "seconds": 174.65
+          },
+          {
+            "epoch": 2,
+            "loss": 0.0184,
+            "pancreas_pseudo": 0.0,
+            "mass_pseudo": 0.0,
+            "seconds": 156.67
+          },
+          {
+            "epoch": 3,
+            "loss": -0.0326,
+            "pancreas_pseudo": 0.0,
+            "mass_pseudo": 0.0,
+            "seconds": 157.07
+          },
+          {
+            "epoch": 4,
+            "loss": -0.1373,
+            "pancreas_pseudo": 0.4386,
+            "mass_pseudo": 0.0,
+            "seconds": 157.3
+          },
+          {
+            "epoch": 5,
+            "loss": -0.1818,
+            "pancreas_pseudo": 0.4535,
+            "mass_pseudo": 0.0,
+            "seconds": 157.41
           }
         ],
         "errors": []
@@ -266,7 +303,7 @@
       "scratch_origin_verified": true,
       "parameters": 44943026,
       "training_complete": false,
-      "completed_steps": 0,
+      "completed_steps": 1750,
       "live_step": null,
       "live_phase": null,
       "budget_steps": 250000,
@@ -295,7 +332,16 @@
         "batch_dice": false,
         "normalization_schemes": [
           "CTNormalization"
-        ]
+        ],
+        "effective_training_budget": {
+          "num_epochs": 1000,
+          "num_iterations_per_epoch": 250,
+          "optimizer_steps": 250000,
+          "sources": {
+            "num_epochs": "trainer-settings",
+            "num_iterations_per_epoch": "trainer-settings"
+          }
+        }
       },
       "objective": null,
       "checkpoint_selection": "official_ema_foreground_dice",
@@ -360,7 +406,7 @@
       "latest_validation": null,
       "resources": {
         "finished_stage_gpu_hours": null,
-        "active_stage_allocated_hours_estimate": 0.053332104484240216,
+        "active_stage_allocated_hours_estimate": 0.23454104469882117,
         "recorded_stage_invocations": 0,
         "active_stage_status": "running",
         "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
@@ -433,7 +479,7 @@
         "peak_reserved_gpu_bytes": null
       },
       "nnunet_patch_history": {
-        "current_epoch": 2,
+        "current_epoch": 8,
         "epochs": [
           {
             "epoch": 1,
@@ -441,6 +487,48 @@
             "pancreas_pseudo": 0.0,
             "mass_pseudo": 0.0,
             "seconds": 122.47
+          },
+          {
+            "epoch": 2,
+            "loss": -0.0242,
+            "pancreas_pseudo": 0.3681,
+            "mass_pseudo": 0.0,
+            "seconds": 105.27
+          },
+          {
+            "epoch": 3,
+            "loss": -0.1424,
+            "pancreas_pseudo": 0.4373,
+            "mass_pseudo": 0.0,
+            "seconds": 105.46
+          },
+          {
+            "epoch": 4,
+            "loss": -0.1877,
+            "pancreas_pseudo": 0.4846,
+            "mass_pseudo": 0.0,
+            "seconds": 105.53
+          },
+          {
+            "epoch": 5,
+            "loss": -0.2162,
+            "pancreas_pseudo": 0.5603,
+            "mass_pseudo": 0.0484,
+            "seconds": 105.52
+          },
+          {
+            "epoch": 6,
+            "loss": -0.2694,
+            "pancreas_pseudo": 0.5271,
+            "mass_pseudo": 0.1494,
+            "seconds": 105.55
+          },
+          {
+            "epoch": 7,
+            "loss": -0.3029,
+            "pancreas_pseudo": 0.4943,
+            "mass_pseudo": 0.2072,
+            "seconds": 105.66
           }
         ],
         "errors": []
@@ -465,7 +553,7 @@
       "scratch_origin_verified": true,
       "parameters": 44992082,
       "training_complete": false,
-      "completed_steps": 0,
+      "completed_steps": 1750,
       "live_step": null,
       "live_phase": null,
       "budget_steps": 250000,
@@ -494,7 +582,16 @@
         "batch_dice": false,
         "normalization_schemes": [
           "CTNormalization"
-        ]
+        ],
+        "effective_training_budget": {
+          "num_epochs": 1000,
+          "num_iterations_per_epoch": 250,
+          "optimizer_steps": 250000,
+          "sources": {
+            "num_epochs": "trainer-settings",
+            "num_iterations_per_epoch": "trainer-settings"
+          }
+        }
       },
       "objective": null,
       "checkpoint_selection": "official_ema_foreground_dice",
@@ -559,7 +656,7 @@
       "latest_validation": null,
       "resources": {
         "finished_stage_gpu_hours": null,
-        "active_stage_allocated_hours_estimate": 0.05348275555504693,
+        "active_stage_allocated_hours_estimate": 0.2346916957696279,
         "recorded_stage_invocations": 0,
         "active_stage_status": "running",
         "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
@@ -632,7 +729,7 @@
         "peak_reserved_gpu_bytes": null
       },
       "nnunet_patch_history": {
-        "current_epoch": 2,
+        "current_epoch": 8,
         "epochs": [
           {
             "epoch": 1,
@@ -640,6 +737,48 @@
             "pancreas_pseudo": 0.0,
             "mass_pseudo": 0.0,
             "seconds": 121.93
+          },
+          {
+            "epoch": 2,
+            "loss": -0.0132,
+            "pancreas_pseudo": 0.3088,
+            "mass_pseudo": 0.0,
+            "seconds": 104.38
+          },
+          {
+            "epoch": 3,
+            "loss": -0.1125,
+            "pancreas_pseudo": 0.4686,
+            "mass_pseudo": 0.0,
+            "seconds": 104.66
+          },
+          {
+            "epoch": 4,
+            "loss": -0.1985,
+            "pancreas_pseudo": 0.5264,
+            "mass_pseudo": 0.0,
+            "seconds": 104.64
+          },
+          {
+            "epoch": 5,
+            "loss": -0.2217,
+            "pancreas_pseudo": 0.5694,
+            "mass_pseudo": 0.0,
+            "seconds": 104.63
+          },
+          {
+            "epoch": 6,
+            "loss": -0.2587,
+            "pancreas_pseudo": 0.6034,
+            "mass_pseudo": 0.0,
+            "seconds": 104.66
+          },
+          {
+            "epoch": 7,
+            "loss": -0.27,
+            "pancreas_pseudo": 0.5846,
+            "mass_pseudo": 0.0,
+            "seconds": 104.69
           }
         ],
         "errors": []

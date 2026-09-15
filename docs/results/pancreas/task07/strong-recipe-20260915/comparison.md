@@ -1,6 +1,6 @@
 # Task07 model comparison
 
-Generated: 2026-09-15T17:54:02.711912+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
+Generated: 2026-09-15T18:04:55.064097+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
 
 **3 running.**
 
@@ -8,9 +8,9 @@ Interim values are shown in campaign order, not sorted by apparent accuracy. Dif
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | train | 0/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | running | train | 0/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | running | train | 0/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | train | 1250/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | running | train | 1750/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | running | train | 1750/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
 
 - **nnunet_frozen_plan_scratch_seed0_250000_steps** (3 planned runs): No ranking: Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
 

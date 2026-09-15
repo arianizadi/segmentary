@@ -2,7 +2,7 @@
 
 [All models](../comparison.md) · [Reading guide](../README.md)
 
-Generated: 2026-09-15T17:54:02.711912+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
+Generated: 2026-09-15T18:04:55.064097+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
 
 Status: **running**. Stage: **train**. GPU: **2**.
 
@@ -12,14 +12,14 @@ Status: **running**. Stage: **train**. GPU: **2**.
 | --- | --- |
 | Started / finished | 2026-09-15T17:50:25.435566+00:00 / — |
 | Last worker update | 2026-09-15T17:50:39.609745+00:00 |
-| Completed / budget steps | 0 / 250000 |
+| Completed / budget steps | 1750 / 250000 |
 | Live step / phase | — / — |
 | Parameters | 44943026 |
 | Objective | — |
 | Checkpoint selection | official_ema_foreground_dice |
 | Selected checkpoint SHA256 | — |
 | Finished-stage allocated GPU-hours | — |
-| Active-stage allocated hours (estimate) | 0.0533 |
+| Active-stage allocated hours (estimate) | 0.2345 |
 | Peak allocated / reserved GiB | — / — |
 
 Allocation time measures time reserved for a stage, not hardware utilization. Peaks are Torch allocator high-water marks, not total device memory. Missing official-backend timing remains unknown.
@@ -50,7 +50,16 @@ Allocation time measures time reserved for a stage, not hardware utilization. Pe
   "batch_dice": false,
   "normalization_schemes": [
     "CTNormalization"
-  ]
+  ],
+  "effective_training_budget": {
+    "num_epochs": 1000,
+    "num_iterations_per_epoch": 250,
+    "optimizer_steps": 250000,
+    "sources": {
+      "num_epochs": "trainer-settings",
+      "num_iterations_per_epoch": "trainer-settings"
+    }
+  }
 }
 ```
 
@@ -87,3 +96,9 @@ These patch pseudo-Dice values are not native full-volume Dice and are never sub
 | Completed epoch | Training loss | Mass PATCH pseudo-Dice | Pancreas CLASS PATCH pseudo-Dice | Epoch seconds |
 | --- | --- | --- | --- | --- |
 | 1 | 0.0810 | 0.0000 | 0.0000 | 122.4700 |
+| 2 | -0.0242 | 0.0000 | 0.3681 | 105.2700 |
+| 3 | -0.1424 | 0.0000 | 0.4373 | 105.4600 |
+| 4 | -0.1877 | 0.0000 | 0.4846 | 105.5300 |
+| 5 | -0.2162 | 0.0484 | 0.5603 | 105.5200 |
+| 6 | -0.2694 | 0.1494 | 0.5271 | 105.5500 |
+| 7 | -0.3029 | 0.2072 | 0.4943 | 105.6600 |
