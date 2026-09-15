@@ -1,6 +1,6 @@
 # Why this next set of experiments
 
-[Experiment recipes and reading guide](../../../../guides/medical-recipe-experiments.md) · [Earlier follow-up](../followup-20260914/README.md)
+[Experiment recipes and reading guide](../../../../guides/medical-recipe-experiments.md) · [Earlier follow-up](../followup-20260914/README.md) · [GPU feasibility](preflight.md)
 
 This note records the interpretation before results from the new recipe/cascade experiments are available. It is not a leaderboard for those new runs.
 
