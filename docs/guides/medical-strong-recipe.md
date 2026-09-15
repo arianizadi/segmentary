@@ -47,6 +47,8 @@ python scripts/plan_medical_strong_recipe.py \
 
 The planner verifies the original bound 197/42/42 cohort, planning scope, ontology, four small preprocessing metadata files, fold membership and exact audited geometry. It records their hashes in `campaign.json`. It reads no CT, mask or large preprocessing-array payloads. **Full cache verification happens in the backend import and is required before training.** The imported cache belongs to the new experiment; it must not be writable through links to the original run.
 
+Every generated recipe also freezes `reference_plan_binding_sha256`, the SHA-256 of the verified reference plan-binding file. This file binds the prepared experiment and its cache hashes. The backend must require the same digest at import, so replacing the reference with a newly consistent but different plan after campaign planning cannot silently change the experiment. Hand-authored recipes with a `reference_workspace` must supply this digest; recipes without a reference must leave both fields unset.
+
 Before a full launch, verify the copied arrays and transformed plan, scratch initialization, full-batch forward/backward loss and gradients, decoder-grid alignment, inference output shape and feasible GPU memory for all three architectures. Any failed architecture remains a documented failure until its explicitly versioned fix passes; the runner does not silently resize its recipe.
 
 The normal runner supports preprocessing without optimization:
@@ -71,5 +73,7 @@ Keep every arm in the table, including failures. Record pancreas union Dice, zer
 The normal runner automatically evaluates the selected-best checkpoint. The terminal checkpoint is retained and can support a separately named native endpoint comparison; do not claim that second evaluation occurred just because training finished. Do not choose between best and terminal checkpoints by whichever native validation score is higher after inspection.
 
 Only named latest, selected-best and terminal checkpoints are needed. Resume the same recipe from its own latest committed checkpoint with its training state; a changed recipe gets a new workspace. Do not extend a completed short polynomial schedule at zero learning rate and call it an uninterrupted 250k run.
+
+The runner hashes `scratch-origin.json` and `training-result.json` alongside the checkpoint index when recording a completed training stage for both backends. Missing or changed origin/completion evidence cannot be accepted as a verified completed stage.
 
 Task07 validation contains annotated masses and cannot estimate clean-scan specificity or patient-level ROC AUC. Mass masks do not establish malignant pathology. Repeated inspection of this small validation cohort makes final independent confirmation important, but the reserved test stays untouched until the study protocol and patient/source audit are settled.

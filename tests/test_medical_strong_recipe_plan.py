@@ -168,6 +168,9 @@ def test_three_architectures_preserve_full_recipe_without_touching_reference(inp
     for config, run in zip(configs, spec["runs"], strict=True):
         assert config["seed"] == 0 and config["purpose"] == "baseline"
         assert config["reference_workspace"] == str(reference)
+        assert config["reference_plan_binding_sha256"] == planner.sha256_file(
+            reference / "plan-binding.json"
+        )
         assert config["use_mirroring"] is False and config["tile_step_size"] == 0.5
         assert config["num_epochs"] is None and config["num_iterations_per_epoch"] is None
         assert config["backend_python"] == str(inputs["nnunet_python"])
@@ -242,3 +245,27 @@ def test_existing_output_dirty_source_and_inherited_gpu_restriction(inputs, monk
     with pytest.raises(FileExistsError):
         planner.plan_campaign(**inputs)
     assert marker.read_text() == "preserve"
+
+
+@pytest.mark.parametrize("backend", ["torch", "nnunet"])
+def test_completed_training_binds_origin_and_result_for_every_backend(tmp_path, backend):
+    runner_spec = importlib.util.spec_from_file_location(
+        "strong_recipe_artifact_runner_test", ROOT / "scripts/run_medical_campaign.py"
+    )
+    assert runner_spec is not None and runner_spec.loader is not None
+    runner = importlib.util.module_from_spec(runner_spec)
+    runner_spec.loader.exec_module(runner)
+    names = ("checkpoint-index.json", "scratch-origin.json", "training-result.json")
+    for name in names:
+        write(tmp_path / name, {"identity": "scratch-run", "artifact": name})
+    state = {"workspace": str(tmp_path), "backend": backend}
+    instance = object.__new__(runner.Campaign)
+    artifacts = instance.stage_artifacts(state, "train")
+    assert artifacts == {
+        str(tmp_path / name): planner.sha256_file(tmp_path / name) for name in names
+    }
+    write(tmp_path / "scratch-origin.json", {"identity": "different-run"})
+    assert instance.stage_artifacts(state, "train") != artifacts
+    (tmp_path / "training-result.json").unlink()
+    with pytest.raises(FileNotFoundError):
+        instance.stage_artifacts(state, "train")

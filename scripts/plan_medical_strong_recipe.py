@@ -89,6 +89,7 @@ def reference_metadata(
         any(config.get(key) != value for key, value in required.items())
         or config.get("architecture", "resenc") != "resenc"
         or config.get("reference_workspace") is not None
+        or config.get("reference_plan_binding_sha256") is not None
         or any(
             config.get(key) is not None
             for key in ("num_epochs", "num_iterations_per_epoch", "num_val_iterations_per_epoch")
@@ -190,6 +191,7 @@ def plan_campaign(
             backend_python=official,
             architecture=architecture,
             reference_workspace=str(reference_workspace),
+            reference_plan_binding_sha256=reference["plan_binding_sha256"],
             resenc="L",
             configuration="3d_fullres",
             dataset_id=707,
