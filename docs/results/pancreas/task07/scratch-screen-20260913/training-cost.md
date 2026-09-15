@@ -1,12 +1,12 @@
 # Recorded training cost
 
-Generated: 2026-09-15T20:02:52.824709+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
+Generated: 2026-09-15T20:32:58.680549+00:00. Source: `9f7615bd1f6035d65aca3f848a263b67c49f531f`.
 
 All models remain visible. Seconds are sums of retained committed epoch measurements; coverage shows recorded timings / retained epochs in that segment. Missing legacy checkpoint timings are unknown, never zero. Parent segments describe the same training lineage, not additional seeds. Current stage GPU-hours include failed/cancelled invocations and startup; they are allocation time, not GPU utilization.
 
 | Model | Status | History segment | Training seconds (coverage) | Validation seconds (coverage) | Checkpoint seconds (coverage) | Current finished-stage GPU-h |
 | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | 0.000 |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | 45.119 |
 | [umamba_enc](models/umamba_enc-seed0.md) | completed | current | 14558.491 (100/100 epochs) | 3077.751 (100/100 epochs) | — (0/100 epochs) | 5.019 |
 | [segmamba](models/segmamba-seed0.md) | completed | current | 13410.504 (100/100 epochs) | 3264.442 (100/100 epochs) | — (0/100 epochs) | 4.800 |
 | [umamba_bot](models/umamba_bot-seed0.md) | completed | current | 5611.393 (100/100 epochs) | 2420.435 (100/100 epochs) | — (0/100 epochs) | 2.342 |

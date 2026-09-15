@@ -1,5 +1,6 @@
 run_id,model,invocation_number,action,status,wall_seconds,allocated_gpu_hours
 nnunet_resenc_l-seed0,nnunet_resenc_l,1,other,completed,384.15498399734497,0.0
+nnunet_resenc_l-seed0,nnunet_resenc_l,2,train,completed,162428.3673169613,45.118990921378135
 umamba_enc-seed0,umamba_enc,1,predict,completed,351.62375712394714,0.09767326586776309
 umamba_enc-seed0,umamba_enc,2,preprocess,completed,30.23946261405945,0.0
 umamba_enc-seed0,umamba_enc,3,train,completed,17716.652747392654,4.921292429831293
