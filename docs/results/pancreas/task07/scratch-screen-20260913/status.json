@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign_id": "task07-scratch-screen-20260913",
-  "generated_at": "2026-09-15T03:29:46.430613+00:00",
+  "generated_at": "2026-09-15T03:59:50.798271+00:00",
   "source_commit": "9f7615bd1f6035d65aca3f848a263b67c49f531f",
   "split_sha256": "7f4308aaea49910334b6aa900a998b4ff94623d25cc630c9dd2704d7513b25f9",
   "split_counts": {
@@ -639,7 +639,7 @@
       "scratch_origin_verified": false,
       "parameters": null,
       "training_complete": false,
-      "completed_steps": 155500,
+      "completed_steps": 158250,
       "live_step": null,
       "live_phase": null,
       "budget_steps": 250000,
@@ -724,7 +724,7 @@
       "latest_validation": null,
       "resources": {
         "finished_stage_gpu_hours": 0,
-        "active_stage_allocated_hours_estimate": 28.0894086766243,
+        "active_stage_allocated_hours_estimate": 28.590621914996042,
         "recorded_stage_invocations": 1,
         "active_stage_status": "running",
         "timing_definition": "Finished stage allocation plus separately shown active-stage wall estimate; not GPU utilization"
@@ -790,7 +790,7 @@
         }
       },
       "nnunet_patch_history": {
-        "current_epoch": 623,
+        "current_epoch": 634,
         "epochs": [
           {
             "epoch": 1,
@@ -5145,6 +5145,83 @@
             "pancreas_pseudo": 0.8067,
             "mass_pseudo": 0.6465,
             "seconds": 160.89
+          },
+          {
+            "epoch": 623,
+            "loss": -0.8195,
+            "pancreas_pseudo": 0.8225,
+            "mass_pseudo": 0.547,
+            "seconds": 160.9
+          },
+          {
+            "epoch": 624,
+            "loss": -0.7967,
+            "pancreas_pseudo": 0.8094,
+            "mass_pseudo": 0.4537,
+            "seconds": 160.88
+          },
+          {
+            "epoch": 625,
+            "loss": -0.8095,
+            "pancreas_pseudo": 0.8238,
+            "mass_pseudo": 0.4764,
+            "seconds": 160.89
+          },
+          {
+            "epoch": 626,
+            "loss": -0.8354,
+            "pancreas_pseudo": 0.8251,
+            "mass_pseudo": 0.5385,
+            "seconds": 160.86
+          },
+          {
+            "epoch": 627,
+            "loss": -0.8122,
+            "pancreas_pseudo": 0.8174,
+            "mass_pseudo": 0.5526,
+            "seconds": 160.91
+          },
+          {
+            "epoch": 628,
+            "loss": -0.8128,
+            "pancreas_pseudo": 0.8281,
+            "mass_pseudo": 0.573,
+            "seconds": 160.89
+          },
+          {
+            "epoch": 629,
+            "loss": -0.8213,
+            "pancreas_pseudo": 0.823,
+            "mass_pseudo": 0.464,
+            "seconds": 160.97
+          },
+          {
+            "epoch": 630,
+            "loss": -0.8301,
+            "pancreas_pseudo": 0.8252,
+            "mass_pseudo": 0.456,
+            "seconds": 160.99
+          },
+          {
+            "epoch": 631,
+            "loss": -0.8159,
+            "pancreas_pseudo": 0.8158,
+            "mass_pseudo": 0.5459,
+            "seconds": 161.0
+          },
+          {
+            "epoch": 632,
+            "loss": -0.8294,
+            "pancreas_pseudo": 0.8173,
+            "mass_pseudo": 0.5185,
+            "seconds": 161.09
+          },
+          {
+            "epoch": 633,
+            "loss": -0.8218,
+            "pancreas_pseudo": 0.815,
+            "mass_pseudo": 0.5658,
+            "seconds": 161.04
           }
         ],
         "errors": []
