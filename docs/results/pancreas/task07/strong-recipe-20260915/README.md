@@ -1,8 +1,8 @@
 # Pancreas Task07: model comparison
 
-Generated: 2026-09-16T05:51:49.404320+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
+Generated: 2026-09-17T14:07:35.290606+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
 
-**3 running.** GPU queue: 1, 2, 3.
+**3 completed.** GPU queue: 1, 2, 3.
 
 1. Open [comparison.md](comparison.md) for model status and comparable validation results.
 2. Open [learning-curves.md](learning-curves.md) to check whether each model is learning.
@@ -51,6 +51,6 @@ All three arms share the complete nnU-Net preprocessing, augmentation, SGD sched
 
 | Model | Status | Steps / budget | Native mass Dice | Native pancreas Dice | Score scope | Cases |
 | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | 67750/250000 | — | — | in-training step — | 0/42 |
-| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | running | 101250/250000 | — | — | in-training step — | 0/42 |
-| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | running | 102000/250000 | — | — | in-training step — | 0/42 |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | completed | 250000/250000 | 0.5841 | 0.8522 | final reference-positive mean | 42/42 |
+| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | completed | 250000/250000 | 0.5186 | 0.8450 | final reference-positive mean | 42/42 |
+| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | completed | 250000/250000 | 0.5398 | 0.8251 | final reference-positive mean | 42/42 |

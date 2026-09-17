@@ -1,6 +1,6 @@
 # Native CT pipeline and standardized model inference
 
-Generated: 2026-09-16T05:51:49.404320+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
+Generated: 2026-09-17T14:07:35.290606+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
 
 ## Native CT prediction
 
@@ -8,9 +8,9 @@ This measures heterogeneous full CT examinations. Case p50/p95 includes CPU work
 
 | Model | Status | Cases | Failed | Pipeline wall s | Scans/s | Case p50 s | Case p95 s | Peak reserved GiB |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
-| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | running | 0/42 | 0 | — | — | — | — | — |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | completed | 0/42 | 0 | — | — | — | — | — |
+| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | completed | 0/42 | 0 | — | — | — | — | — |
+| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | completed | 0/42 | 0 | — | — | — | — | — |
 
 [Per-case numerical timings](inference-cases.csv) use stable validation case ordinals. They contain preprocessing, tiled inference, reconstruction and export when recorded. Tiled inference includes copies, softmax and CPU blending; it is not model-only forward latency.
 

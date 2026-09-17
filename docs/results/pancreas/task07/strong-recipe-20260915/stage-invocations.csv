@@ -1,1 +1,7 @@
 run_id,model,invocation_number,action,status,wall_seconds,allocated_gpu_hours
+nnunet_resenc_l-seed0,nnunet_resenc_l,1,predict,completed,177.2285029888153,0.049230139719115364
+nnunet_resenc_l-seed0,nnunet_resenc_l,2,train,completed,158881.03936839104,44.13362204677529
+nnunet_planned_plainconv-seed0,nnunet_planned_plainconv,1,predict,completed,138.4916398525238,0.03846989995903439
+nnunet_planned_plainconv-seed0,nnunet_planned_plainconv,2,train,completed,106829.79788041115,29.674943855669763
+nnunet_planned_dynunet-seed0,nnunet_planned_dynunet,1,predict,completed,163.4296519756317,0.04539712554878659
+nnunet_planned_dynunet-seed0,nnunet_planned_dynunet,2,train,completed,105888.64845848083,29.41351346068912

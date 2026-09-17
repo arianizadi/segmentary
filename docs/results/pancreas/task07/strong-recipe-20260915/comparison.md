@@ -1,25 +1,36 @@
 # Task07 model comparison
 
-Generated: 2026-09-16T05:51:49.404320+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
+Generated: 2026-09-17T14:07:35.290606+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
 
-**3 running.**
+**3 completed.**
 
 Interim values are shown in campaign order, not sorted by apparent accuracy. Different validated step counts cannot establish a winner.
 
 | Model | Status | Stage | Committed steps / budget | Validated step | Interim cases | Interim mass Dice | Interim pancreas Dice | Final mass Dice | Final pancreas Dice | Final cases | Screening rank |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | train | 67750/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | running | train | 101250/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
-| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | running | train | 102000/250000 | — | 0/42 | — | — | — | — | 0/42 | — |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | completed | — | 250000/250000 | — | 0/42 | — | — | 0.5841 | 0.8522 | 42/42 | 1 |
+| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | completed | — | 250000/250000 | — | 0/42 | — | — | 0.5186 | 0.8450 | 42/42 | 3 |
+| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | completed | — | 250000/250000 | — | 0/42 | — | — | 0.5398 | 0.8251 | 42/42 | 2 |
 
-- **nnunet_frozen_plan_scratch_seed0_250000_steps** (3 planned runs): No ranking: Not all planned runs have completed; Native validation coverage is incomplete; Complete scratch training evidence is unavailable; Required source, split or checkpoint provenance is unavailable; Evaluation is not bound to the declared best validation checkpoint; Declared optimization budget has not been completed; Mass Dice is unavailable.
+- **nnunet_frozen_plan_scratch_seed0_250000_steps** (3 planned runs): Completed exploratory ranking available; seed replication and external evaluation remain outstanding.
 
 All scores are on a 0-1 scale; — means unavailable, never zero. This is an
-exploratory single-seed architecture comparison, with no claim of a clinical or publishable
+exploratory seed-0 screening study, with no claim of a clinical or publishable
 winner. Dataset case grouping has not independently established patient identity.
 Task07 mass masks are segmentation targets; they do not establish PDAC diagnosis.
 The held-out test partition and 139 unannotated Task07 scans are not scored here.
 
-Training logs contain official nnU-Net patch loss and pseudo-Dice, not native full-volume Dice. Native scores remain unavailable until evaluation of all 42 validation cases. Every arm selects its checkpoint with the same official EMA foreground patch-Dice rule; selected-best native mass Dice is the primary comparison. Pancreas Dice measures the pancreas union.
+In-training Dice is a mean over complete native validation examinations, counting
+both-empty mass masks as 1. Final evaluation instead averages patient means over
+reference-positive cases and excludes both-empty masks. These two columns answer
+different questions and must not be substituted. A completed screening rank uses
+the final evaluator's mass Dice only, after every planned run in that group has
+finished on matching references, native evaluation protocol, source, split,
+seed, optimizer-step budget, batch size, and checkpoint-selection rule.
 
-All three arms share native 3D inputs, preprocessing, augmentation, sampling, SGD schedule, CE plus per-sample foreground Dice with deep supervision, patch geometry, batch size and 250,000-update budget. Architectures and their default scratch initializers differ. Equal sampled patches do not imply equal parameter counts, FLOPs or GPU-hours. This is an exploratory single-seed comparison; see [launch notes](launch-notes.md) for the fixed protocol and limitations.
+Models use their declared objectives, including query and auxiliary losses.
+Therefore the comparison tests architecture and objective together. 2.5D and 3D
+inputs also have different spatial context. Equal optimizer steps are not equal
+GPU-hours, voxels seen, or an architecture-specific tuning budget. Loss magnitudes
+are useful within a run; they are not an accuracy ranking across objectives.
+

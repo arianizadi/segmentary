@@ -1,14 +1,14 @@
 # Exploratory mass detection and segmentation metrics
 
-Generated: 2026-09-16T05:51:49.404320+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
+Generated: 2026-09-17T14:07:35.290606+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
 
 All metrics use a 0-1 scale. P-Sen flags a positive group when any retained mass component is predicted, even at the wrong location. T-Sen requires one-to-one localization matches to reference connected components. Spe is the true-negative fraction among fully annotated negative groups. AUC requires continuous image-only scores and both reference classes. DSC is segmentation overlap. These definitions are separate from clinical diagnosis.
 
 | Model | Status | Complete cohort | P-Sen (group proxy) | T-Sen | Spe | AUC | Mass DSC | Pancreas DSC | Unavailable reasons |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | False | — | — | — | — | — | — | Diagnostic has not run yet. |
-| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | running | False | — | — | — | — | — | — | Diagnostic has not run yet. |
-| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | running | False | — | — | — | — | — | — | Diagnostic has not run yet. |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | completed | True | 0.976 | 0.833 | — | — | 0.584 | 0.852 | No fully annotated reference-negative groups.; ROC AUC requires positive and negative reference groups. |
+| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | completed | True | 1.000 | 0.810 | — | — | 0.519 | 0.845 | No fully annotated reference-negative groups.; ROC AUC requires positive and negative reference groups. |
+| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | completed | True | 1.000 | 0.786 | — | — | 0.540 | 0.825 | No fully annotated reference-negative groups.; ROC AUC requires positive and negative reference groups. |
 
 **Task07 limitations:** the current frozen 42-case validation cohort contains 42 mass-positive examinations and no fully annotated mass-negative examinations. Specificity and ROC AUC therefore cannot be estimated on this cohort. Unlabeled scans and organ-only labels are not verified negative controls. Dataset-case grouping is not established patient linkage, so P-Sen is a case/group proxy; connected components are not independently annotated lesion identities.
 

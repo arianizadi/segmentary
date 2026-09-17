@@ -1,14 +1,14 @@
 # Recorded training cost
 
-Generated: 2026-09-16T05:51:49.404320+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
+Generated: 2026-09-17T14:07:35.290606+00:00. Source: `63a108f8b7a65a98b11ccae0e8883c54955b2099`.
 
 All models remain visible. Seconds are sums of retained committed epoch measurements; coverage shows recorded timings / retained epochs in that segment. Missing legacy checkpoint timings are unknown, never zero. Parent segments describe the same training lineage, not additional seeds. Current stage GPU-hours include failed/cancelled invocations and startup; they are allocation time, not GPU utilization.
 
 | Model | Status | History segment | Training seconds (coverage) | Validation seconds (coverage) | Checkpoint seconds (coverage) | Current finished-stage GPU-h |
 | --- | --- | --- | --- | --- | --- | --- |
-| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | running | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | — |
-| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | running | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | — |
-| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | running | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | — |
+| [nnunet_resenc_l](models/nnunet_resenc_l-seed0.md) | completed | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | 44.183 |
+| [nnunet_planned_plainconv](models/nnunet_planned_plainconv-seed0.md) | completed | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | 29.713 |
+| [nnunet_planned_dynunet](models/nnunet_planned_dynunet-seed0.md) | completed | current | — (0/0 epochs) | — (0/0 epochs) | — (0/0 epochs) | 29.459 |
 
 [Epoch numerical records](epochs.csv) · [Stage invocations, including failures](stage-invocations.csv) · [Comparison](comparison.md)
 
