@@ -88,6 +88,20 @@ def fake_python(tmp_path: Path, body: str | None = None) -> str:
     return str(path)
 
 
+GPU_VARS = ("CUDA_VISIBLE_DEVICES", "CUDA_DEVICE_ORDER", "NVIDIA_VISIBLE_DEVICES")
+
+
+def base_environ(home: Path) -> dict[str, str]:
+    """The real environment minus GPU selection, so child interpreters still start.
+
+    A bare PATH-only environment drops LD_LIBRARY_PATH, which CI's setup-python
+    interpreter needs to load libpython.
+    """
+    env = {k: v for k, v in os.environ.items() if k not in GPU_VARS}
+    env["HOME"] = str(home)
+    return env
+
+
 def make_host(tmp_path: Path, smi: FakeSmi | None = None, **overrides) -> Host:
     lock_dir = tmp_path / "locks"
     lock_dir.mkdir(exist_ok=True)
@@ -95,7 +109,7 @@ def make_host(tmp_path: Path, smi: FakeSmi | None = None, **overrides) -> Host:
         "smi": smi or FakeSmi(),
         "process_table": ps_table,
         "lock_dir": lock_dir,
-        "environ": {"PATH": os.environ.get("PATH", ""), "HOME": str(tmp_path)},
+        "environ": base_environ(tmp_path),
         "subreaper": lambda: False,  # tests run in-process; the real prctl is tested below
         "idle_pause_seconds": 0.0,
         "watchdog_seconds": 0.1,
@@ -244,13 +258,15 @@ def test_launch_passes_exact_env_records_assignment_and_propagates_exit_code(tmp
     assert env["CUDA_VISIBLE_DEVICES"] == f"{ALLOWED[2][0]},{ALLOWED[3][0]}"
     assert env["CUDA_DEVICE_ORDER"] == "PCI_BUS_ID"
     assert env["OMP_NUM_THREADS"] == "2"
-    assert set(env) - {"__CF_USER_TEXT_ENCODING", "LC_CTYPE"} == {
-        "PATH",
-        "HOME",
-        "CUDA_VISIBLE_DEVICES",
-        "CUDA_DEVICE_ORDER",
-        "OMP_NUM_THREADS",
+    # The child gets the launcher's environment plus exactly the three GPU/thread keys.
+    expected = set(host.environ) | {"CUDA_VISIBLE_DEVICES", "CUDA_DEVICE_ORDER", "OMP_NUM_THREADS"}
+    assert set(env) - {"__CF_USER_TEXT_ENCODING", "LC_CTYPE"} == expected - {
+        "__CF_USER_TEXT_ENCODING",
+        "LC_CTYPE",
     }
+    assert {
+        k: env[k] for k in host.environ if k not in ("__CF_USER_TEXT_ENCODING", "LC_CTYPE")
+    } == {k: v for k, v in host.environ.items() if k not in ("__CF_USER_TEXT_ENCODING", "LC_CTYPE")}
     record = json.loads((run_dir / "gpu-assignment.json").read_text())
     assert record["gpus"] == [
         {"index": 2, "uuid": ALLOWED[2][0], "pci_bus_id": ALLOWED[2][1]},
@@ -428,7 +444,9 @@ def test_orphan_in_its_own_session_is_terminated_before_locks_are_released(tmp_p
         "from test_paul_forks import FakeSmi, ps_table\n"
         "host = f.Host(smi=FakeSmi(), process_table=f.read_proc_table, "
         f"lock_dir=__import__('pathlib').Path({str(tmp_path)!r}), "
-        "environ={'PATH': '/usr/bin:/bin'}, idle_pause_seconds=0.0, watchdog_seconds=0.1, "
+        "environ={k: v for k, v in __import__('os').environ.items() "
+        "if k not in ('CUDA_VISIBLE_DEVICES', 'CUDA_DEVICE_ORDER', 'NVIDIA_VISIBLE_DEVICES')}, "
+        "idle_pause_seconds=0.0, watchdog_seconds=0.1, "
         "kill_grace_seconds=3.0)\n"
         f"py = {fake_python(tmp_path)!r}\n"
         f"sys.exit(f.main(['--gpus', '2', '--run-dir', {str(tmp_path / 'run')!r}, '--python', py,"
