@@ -31,6 +31,10 @@ checkpoint we did not train and have no pin for, i.e. ``paper-sfnet__rs19-paul``
 refused). The reference label ``paul-reference__rr22-0.8964`` is refused: that model may
 have trained on these images.
 
+Beside ``--out`` it writes ``<out>-per-image-confusion.json.gz`` (``results-test.json`` ->
+``results-test-per-image-confusion.json.gz``): every image's confusion matrix in the format of
+the campaign's ``per-image-confusion.json.gz``, read by ``scripts/rad_subset_metrics.py``.
+
 The predictions are tied to the run that made them (all fail closed):
 
 - ``--provenance`` is the ``dump-provenance.json`` next to ``--pred-dir`` and its command's
@@ -49,6 +53,7 @@ The predictions are tied to the run that made them (all fail closed):
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import json
 import os
@@ -402,6 +407,7 @@ def score(
     split: str,
     provenance_path: Path,
     allow_multi_scale: bool = False,
+    confusion_out: Path | None = None,
 ) -> dict[str, Any]:
     arm_root = arm_root.resolve()
     arm = arm_of(arm_root)
@@ -426,7 +432,7 @@ def score(
         )
     total = np.zeros((NUM_CLASSES, NUM_CLASSES), np.int64)
     expected_support = np.zeros(NUM_CLASSES, np.int64)
-    per_image, pred_hashes = [], {}
+    per_image, pred_hashes, matrices = [], {}, {}
     mud = names.index(MUD)
     for name, key in sorted(wanted.items()):
         row = audit[key]
@@ -453,6 +459,7 @@ def score(
                 expected_support[int(value)] += int(n)
         pred_hashes[name] = sha256_file(pred_dir / name)
         per_image.append({"key": key, "mud": mud_counts(matrix, mud)})
+        matrices[key] = matrix.tolist()
     support = total.sum(axis=1)
     if not np.array_equal(support, expected_support):
         raise ScoreError(
@@ -462,6 +469,9 @@ def score(
     if recorded.get("split") != split or recorded.get("class_pixel_counts") != support.tolist():
         raise ScoreError(f"support differs from {support_json}")
     metrics = matrix_metrics(total, names)
+    confusion_record = None
+    if confusion_out is not None:
+        confusion_record = write_per_image_confusion(confusion_out, matrices)
     return {
         "schema_version": 2,
         "label": provenance["label"],
@@ -478,6 +488,7 @@ def score(
         "fixed_gt_class_miou": fixed_miou(metrics),
         "mud": mud_counts(total, mud),
         "per_image": per_image,
+        "per_image_confusion": confusion_record,
         "support": support.tolist(),
         "support_check": {"audit_samples": True, str(support_json): True},
         "predictions": {"dir": str(pred_dir.resolve()), "sha256": pred_hashes},
@@ -492,6 +503,23 @@ def score(
         "provenance_sha256": sha256_file(provenance_path),
         "provenance": provenance,
         "scored_at": time.time(),
+    }
+
+
+def per_image_confusion_path(out: Path) -> Path:
+    """``results-val.json`` -> ``results-val-per-image-confusion.json.gz`` beside it."""
+    return out.with_name(out.name.removesuffix(".json") + "-per-image-confusion.json.gz")
+
+
+def write_per_image_confusion(path: Path, matrices: dict[str, list]) -> dict[str, Any]:
+    """Same bytes format as the campaign's ``per-image-confusion.json.gz``."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = gzip.compress(json.dumps(matrices, separators=(",", ":")).encode(), mtime=0)
+    path.write_bytes(data)
+    return {
+        "path": str(path.resolve()),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "format": "gzip JSON {key: 21x21 confusion, rows ground truth, columns prediction}",
     }
 
 
@@ -536,16 +564,30 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args(argv)
-    if args.out.exists():
-        raise SystemExit(f"score_predictions: refusing to overwrite {args.out}")
+    confusion_out = per_image_confusion_path(args.out)
+    for path in (args.out, confusion_out):
+        if path.exists():
+            raise SystemExit(f"score_predictions: refusing to overwrite {path}")
     try:
         result = score(
-            args.pred_dir, args.arm_root, args.split, args.provenance, args.allow_multi_scale
+            args.pred_dir,
+            args.arm_root,
+            args.split,
+            args.provenance,
+            args.allow_multi_scale,
+            confusion_out,
         )
     except ScoreError as error:
         raise SystemExit(f"score_predictions: {error}") from error
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n")
+    try:
+        text = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(text)
+    except BaseException:
+        # Never leave a per-image file without its result: it would block a rescore.
+        args.out.unlink(missing_ok=True)
+        confusion_out.unlink(missing_ok=True)
+        raise
     print(
         json.dumps(
             {

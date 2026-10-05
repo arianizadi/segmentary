@@ -203,6 +203,14 @@ CUDA_VISIBLE_DEVICES="" SEGMENTARY_REPO=$RUN/tools/segmentary-<commit> \
   --provenance $D/dump-provenance.json --out <run_dir>/results-test.json
 ```
 
+`scripts/rad_report.py` reads only `<run_dir>/results-val.json` (the same command with a
+`val-single-best_mud_epoch_N` dump, `--split val --out <run_dir>/results-val.json`) and needs the
+`results-val-per-image-confusion.json.gz` that only this branch's scorer writes. The snapshot
+above is `git archive HEAD`, so the scorer change must be committed before snapshotting. To
+rescore a run scored with an older scorer, move both its old `results-val.json` and any
+`results-val-per-image-confusion.json.gz` aside first: the scorer refuses to overwrite either.
+If writing the result fails, the scorer removes the per-image file it just wrote.
+
 **Metric code location.** The metric code is imported from `$SEGMENTARY_REPO` (default: the
 checkout the script sits in). A directory without `src/segmentary/engine/metrics.py`,
 `scripts/collect_rtis_statistics.py` and `scripts/publish_rtis_results.py` is refused, so a
@@ -227,7 +235,10 @@ The mIoU rule is the mean over classes with non-zero union, which is what the ca
 - Inference: whole-image single-scale only; `--allow-multi-scale` scores a `native` dump and labels it as a secondary number.
 - Data: the adapter `manifest.json` matches the run's provenance, was built from `rad_9_24_2026-<arm>` (`arm_name`), and the arm's `splits.json`, `classes.json` and `audit/samples.json` are unchanged since; ground-truth masks match the audit's SHA-256; the confusion matrix's ground-truth row sums equal the audit's `class_pixels` and the adapter's `validation-support.json` / `test-support.json` (mandatory).
 
-**Output.** It writes `results.json` with the label, the inference mode, the embedded provenance, the dump/manifest/coverage records and the prediction hashes.
+**Output.** It writes `results.json` with the label, the inference mode, the embedded provenance, the dump/manifest/coverage records and the prediction hashes. Beside it, `<out>-per-image-confusion.json.gz` (for `--out results-val.json`:
+`results-val-per-image-confusion.json.gz`) holds every image's 21x21 confusion matrix in the
+campaign's `per-image-confusion.json.gz` format; `per_image_confusion` in the result records its
+path and SHA-256. `scripts/rad_subset_metrics.py` and `scripts/rad_report.py` read it.
 
 ## Deviations from Paul's protocol
 

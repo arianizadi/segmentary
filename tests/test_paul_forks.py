@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 import os
@@ -921,6 +922,70 @@ def test_score_predictions_equals_segmentary_metric_code(tmp_path):
     assert code["repo"] == str(PAUL_FORKS.parents[1].resolve())
     assert set(code["sha256"]) == set(score_predictions.METRIC_FILES)
     assert result["dump"]["training_provenance_sha256"] == sha_of(made["run"] / "provenance.json")
+
+    # Per-image confusion beside --out, in the campaign's per-image-confusion.json.gz format.
+    confusion = tmp_path / "results-per-image-confusion.json.gz"
+    assert score_predictions.per_image_confusion_path(out) == confusion
+    assert result["per_image_confusion"]["path"] == str(confusion.resolve())
+    assert result["per_image_confusion"]["sha256"] == sha_of(confusion)
+    assert confusion.read_bytes()[4:8] == b"\0\0\0\0"  # gzip mtime=0, reproducible bytes
+    matrices = json.loads(gzip.decompress(confusion.read_bytes()))
+    assert sorted(matrices) == sorted(preds)
+    for key, pred in preds.items():
+        target = np.array(Image.open(arm / "masks" / "val" / f"{key}.png"))
+        one = ConfusionMatrix(21, 255, device="cpu")
+        one.update(torch.from_numpy(pred.astype(np.int64)), torch.from_numpy(target))
+        assert matrices[key] == one.mat.tolist()
+    assert (np.sum([matrices[k] for k in matrices], axis=0) == mat).all()
+    out.unlink()
+    with pytest.raises(SystemExit, match=r"refusing to overwrite .*per-image-confusion"):
+        score_predictions.main(
+            [
+                "--pred-dir",
+                str(made["pred"]),
+                "--arm-root",
+                str(arm),
+                "--split",
+                "val",
+                "--provenance",
+                str(made["prov"]),
+                "--out",
+                str(out),
+            ]
+        )
+
+
+def test_score_predictions_removes_per_image_file_when_result_write_fails(tmp_path, monkeypatch):
+    arm = make_arm(tmp_path, arm="paul", grouped=False)
+    made = make_scored_run(tmp_path, arm)
+    out = tmp_path / "results-val.json"
+    argv = [
+        "--pred-dir",
+        str(made["pred"]),
+        "--arm-root",
+        str(arm),
+        "--split",
+        "val",
+        "--provenance",
+        str(made["prov"]),
+        "--out",
+        str(out),
+    ]
+    write_text = Path.write_text
+
+    def failing(self, *args, **kwargs):
+        if self == out:
+            raise OSError("disk full")
+        return write_text(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "write_text", failing)
+    with pytest.raises(OSError, match="disk full"):
+        score_predictions.main(argv)
+    assert not out.exists()
+    assert not score_predictions.per_image_confusion_path(out).exists()
+    monkeypatch.undo()
+    assert score_predictions.main(argv) == 0  # a rerun is not blocked
+    assert out.is_file() and score_predictions.per_image_confusion_path(out).is_file()
 
 
 @pytest.mark.parametrize(
