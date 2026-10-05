@@ -6,10 +6,10 @@ Primary selection and early stopping: **mud-pumping validation IoU**. A job is c
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| eomt_large | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| eomt_large | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| eomt_large | rtis_only | 0 | training | 1999 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_rtis | 0 | training | 1949 | — | — | — | — | — | — | — |
+| eomt_large | railsem19_to_rtis | 0 | training | 2073 | — | — | — | — | — | — | — |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | training | 1999 | — | — | — | — | — | — | — |
 
 Training: 217 images. Validation: 37 images. Test: 60 held out. Seeds: [0]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -17,7 +17,7 @@ Training code: `d864b72bd90706260965bb1a48398d01167b6d5c`. Split SHA-256: `12d7b
 
 ## rtis_only — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-10-05T18:34:42.380144+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
@@ -87,6 +87,13 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 258 | 27.33 | 0.39 |
+| 518 | 37.54 | 4.41 |
+| 777 | 41.39 | 9.00 |
+| 1036 | 46.15 | 12.64 |
+| 1295 | 48.19 | 12.48 |
+| 1555 | 47.87 | 12.72 |
+| 1814 | 49.36 | 12.38 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -261,7 +268,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-10-05T18:34:45.629520+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
@@ -331,6 +338,13 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 258 | 24.09 | 0.00 |
+| 518 | 47.77 | 1.81 |
+| 777 | 49.01 | 8.24 |
+| 1036 | 49.92 | 8.91 |
+| 1295 | 47.92 | 9.20 |
+| 1555 | 51.05 | 8.72 |
+| 1814 | 52.76 | 8.79 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -505,7 +519,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-10-05T18:34:45.505978+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
@@ -575,6 +589,14 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 258 | 31.93 | 0.00 |
+| 518 | 52.20 | 2.71 |
+| 777 | 49.71 | 3.31 |
+| 1036 | 49.40 | 3.13 |
+| 1295 | 49.33 | 3.25 |
+| 1555 | 49.02 | 2.96 |
+| 1814 | 48.22 | 3.26 |
+| 2073 | 48.31 | 3.14 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -749,7 +771,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-10-05T18:34:45.456583+00:00. Finished: —.
 
 Recipe pretrained initializer: `tue-mps/coco_panoptic_eomt_large_640 (DINOv2-based ViT-L, COCO panoptic)`.
 
@@ -819,6 +841,13 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 258 | 35.63 | 0.50 |
+| 518 | 55.87 | 10.66 |
+| 777 | 55.15 | 15.68 |
+| 1036 | 55.50 | 14.07 |
+| 1295 | 55.66 | 13.05 |
+| 1555 | 55.77 | 13.60 |
+| 1814 | 55.88 | 13.45 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
