@@ -9,30 +9,41 @@ from pathlib import Path
 
 import yaml
 
+from segmentary import gpu_policy
 from segmentary.config import load_experiment, to_dict
 from segmentary.curriculum import validate_training_contract
 
+DEFAULT_CAVEATS = [
+    "Original recording groups need confirmation.",
+    "Only FPN-ResNet50 and SegFormer-B2 have RTIS diagnostics so far.",
+    "Source checkpoint existence checked here; hashes must be verified before launch.",
+    "Transfer uses the existing raw/EMA-safe warm-start policy; inference diagnostics use raw.",
+]
 
-def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--manifest", type=Path, default=Path("configs/campaigns/paul-test-rtis.yaml"))
-    ap.add_argument("--checkpoints", type=Path, required=True)
-    ap.add_argument("--dataset-root", type=Path, required=True)
-    ap.add_argument("--out", type=Path, required=True)
-    args = ap.parse_args()
-    spec = yaml.safe_load(args.manifest.read_text())
-    catalog = yaml.safe_load(Path(spec["model_catalog"]).read_text())
-    sources = json.loads(args.checkpoints.read_text())
-    lookup = {(r["model"], r["protocol"]): r for r in sources}
-    if len(lookup) != len(sources):
-        raise ValueError("Ambiguous duplicate source checkpoints")
-    root = args.dataset_root.resolve()
-    split_hash = hashlib.sha256((root / "splits.json").read_bytes()).hexdigest()
-    args.out.mkdir(parents=True, exist_ok=False)
+
+def dataset_name(spec) -> str:
+    """Manifest ``dataset`` wins; otherwise the data name in the dataset config."""
+    if spec.get("dataset"):
+        return str(spec["dataset"])
+    config = yaml.safe_load(Path(spec["dataset_config"]).read_text())
+    return str(config["stages"][0]["data"][0]["name"])
+
+
+def select_models(catalog, spec):
+    models = [m for m in catalog["models"] if "alias_of" not in m]
+    wanted = spec.get("models")
+    if wanted is None:
+        return models
+    known = {m["id"]: m for m in models}
+    unknown = [m for m in wanted if m not in known]
+    if unknown or len(set(wanted)) != len(wanted):
+        raise ValueError(f"Manifest models unknown to the catalog or duplicated: {unknown}")
+    return [known[m] for m in wanted]
+
+
+def build_jobs(models, spec, lookup, root, out):
     jobs = []
-    for model in catalog["models"]:
-        if "alias_of" in model:
-            continue
+    for model in models:
         layers = [Path("configs/base.yaml"), Path(model["config"])]
         if model.get("campaign_config"):
             layers.append(Path(model["campaign_config"]))
@@ -48,7 +59,7 @@ def main() -> None:
                 cfg = load_experiment(layers)
                 cfg.name = name
                 cfg.taxonomy_root = str(Path("taxonomy").resolve())
-                cfg.output_root = str(args.out.resolve() / "future-runs")
+                cfg.output_root = str(out.resolve() / "future-runs")
                 cfg.train.seed = seed
                 cfg.train.iters = spec["target_steps"]
                 cfg.train.batch_size = spec["batch_size"]
@@ -70,7 +81,7 @@ def main() -> None:
                 stage.lr_scale = 1.0 if source is None else 0.1
                 stage.head_group_lr_scale = 1.0
                 validate_training_contract(cfg)
-                target = args.out / "configs" / (name + ".yaml")
+                target = out / "configs" / (name + ".yaml")
                 target.parent.mkdir(exist_ok=True)
                 target.write_text(yaml.safe_dump(to_dict(cfg), sort_keys=False))
                 # Parse the serialized final config, not only the input layers.
@@ -88,22 +99,47 @@ def main() -> None:
                         "status": "prepared_not_launched",
                     }
                 )
+    return jobs
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--manifest", type=Path, required=True)
+    ap.add_argument("--checkpoints", type=Path, required=True)
+    ap.add_argument("--dataset-root", type=Path, required=True)
+    ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument(
+        "--gpus",
+        required=True,
+        type=gpu_policy.parse_gpus,
+        help="GPU indices this campaign may ever use, e.g. 2,3,4,5,6,7,8,9; frozen into plan.json",
+    )
+    args = ap.parse_args()
+    spec = yaml.safe_load(args.manifest.read_text())
+    catalog = yaml.safe_load(Path(spec["model_catalog"]).read_text())
+    sources = json.loads(args.checkpoints.read_text())
+    lookup = {(r["model"], r["protocol"]): r for r in sources}
+    if len(lookup) != len(sources):
+        raise ValueError("Ambiguous duplicate source checkpoints")
+    root = args.dataset_root.resolve()
+    split_hash = hashlib.sha256((root / "splits.json").read_bytes()).hexdigest()
+    dataset = dataset_name(spec)
+    models = select_models(catalog, spec)
+    args.out.mkdir(parents=True, exist_ok=False)
+    jobs = build_jobs(models, spec, lookup, root, args.out)
     result = {
-        "dataset": "paul-test-rtis",
+        "dataset": dataset,
         "collection_contract": spec.get("collection_contract"),
         "selection_metric": spec.get("selection_metric", "val/miou"),
+        "smoke": bool(spec.get("smoke", False)),
+        "gpu_allowlist": sorted(args.gpus),
         "split_sha256": split_hash,
         "grouping_status": json.loads((root / "splits.json").read_text())["_grouping_status"],
         "target_steps_per_job": spec["target_steps"],
         "publisher": None,
         "launch_status": "not_launched",
         "jobs": jobs,
-        "caveats": [
-            "Original recording groups need confirmation.",
-            "Only FPN-ResNet50 and SegFormer-B2 have RTIS diagnostics so far.",
-            "Source checkpoint existence checked here; hashes must be verified before launch.",
-            "Transfer uses the existing raw/EMA-safe warm-start policy; inference diagnostics use raw.",
-        ],
+        "caveats": list(spec.get("caveats", DEFAULT_CAVEATS)),
     }
     (args.out / "plan.json").write_text(json.dumps(result, indent=2) + "\n")
     print(f"Prepared {len(jobs)} configs. Training and publisher processes started: 0.")

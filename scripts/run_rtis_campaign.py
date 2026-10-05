@@ -21,6 +21,9 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from segmentary import gpu_policy
+
 REPORT = Path("docs/results/paul-test-rtis/live")
 TERMINAL = {"completed", "failed"}
 
@@ -80,7 +83,23 @@ def verify_frozen(root, repo):
         raise RuntimeError("Tracked training source changed")
     if digest(root / "plan.json") != campaign["plan_sha256"]:
         raise RuntimeError("Campaign plan changed")
+    plan = read(root / "plan.json")
+    # ``smoke`` relaxes the launch preflight, so it must come from the hashed plan.
+    if bool(campaign.get("smoke")) != bool(plan.get("smoke")):
+        raise RuntimeError("Campaign smoke flag disagrees with the frozen plan")
+    verify_policy(campaign, plan)
     return campaign
+
+
+def verify_policy(campaign, plan):
+    """The frozen allowlist must match the plan, its hash and the live hardware."""
+    policy = gpu_policy.load(campaign)
+    if list(gpu_policy.allowed_indices(policy)) != sorted(plan.get("gpu_allowlist", [])):
+        raise gpu_policy.GpuPolicyError("Campaign gpu_policy disagrees with plan gpu_allowlist")
+    if gpu_policy.policy_sha256(policy) != campaign.get("gpu_policy_sha256"):
+        raise gpu_policy.GpuPolicyError("Campaign gpu_policy was edited after initialization")
+    gpu_policy.verify_inventory(policy)
+    return policy
 
 
 def verify_samples(data_root, samples):
@@ -107,12 +126,21 @@ def initialize(root, repo):
     if git(repo, "status", "--porcelain"):
         raise RuntimeError("Initialize from a clean frozen checkout")
     plan = read(root / "plan.json")
+    if not plan.get("gpu_allowlist"):
+        raise gpu_policy.GpuPolicyError("plan.json has no gpu_allowlist; re-plan with --gpus")
+    policy = gpu_policy.freeze(plan["gpu_allowlist"], gpu_policy.inventory(), gpu_policy.hostname())
     from segmentary.config import load_experiment
 
     data_cfg = load_experiment([Path(plan["jobs"][0]["config"])])
     data_root = Path(data_cfg.stages[0].data[0].root)
     samples = read(data_root / "audit/samples.json")
     verify_samples(data_root, samples)
+    splits = read(data_root / "splits.json")
+    dataset_sizes = {
+        split: len(keys)
+        for split, keys in splits.items()
+        if isinstance(keys, list) and not split.startswith("_")
+    }
     verified = {}
     for job in plan["jobs"]:
         if digest(job["config"]) != job["config_sha256"]:
@@ -140,8 +168,12 @@ def initialize(root, repo):
         "plan_sha256": digest(root / "plan.json"),
         "selection_metric": plan.get("selection_metric", "val/miou"),
         "collection_contract": plan.get("collection_contract"),
+        "smoke": bool(plan.get("smoke")),
+        "gpu_policy": policy,
+        "gpu_policy_sha256": gpu_policy.policy_sha256(policy),
         "split_sha256": plan["split_sha256"],
         "grouping_status": plan["grouping_status"],
+        "dataset_sizes": dataset_sizes,
         "source_checkpoints": verified,
         "dataset_samples_verified": len(samples),
         "dataset_audit_sha256": digest(data_root / "audit/samples.json"),
@@ -245,24 +277,30 @@ def run_job(root, repo, job, gpu, campaign):
     log_dir = root / "logs"
     log_dir.mkdir(exist_ok=True)
     state_path = root / "state" / f"{job['name']}.json"
+    entry = gpu_policy.require_allowed(gpu_policy.load(campaign), gpu)
     state = {
         "name": job["name"],
         "status": "training",
         "gpu": gpu,
+        "gpu_uuid": entry["uuid"],
         "started_at": now(),
         "config_sha256": job["config_sha256"],
         "code_sha": campaign["code_sha"],
     }
     write(state_path, state)
-    env = {
-        **os.environ,
-        "CUDA_VISIBLE_DEVICES": str(gpu),
-        "OMP_NUM_THREADS": "4",
-        "HF_HUB_OFFLINE": "1",
-        "TRANSFORMERS_OFFLINE": "1",
-        "PYTHONUNBUFFERED": "1",
-        "PYTHONPATH": str(repo / "src"),
-    }
+    env = gpu_policy.child_env(
+        {
+            **os.environ,
+            "OMP_NUM_THREADS": "4",
+            "HF_HUB_OFFLINE": "1",
+            "TRANSFORMERS_OFFLINE": "1",
+            "PYTHONUNBUFFERED": "1",
+            "PYTHONPATH": str(repo / "src"),
+        },
+        gpu_policy.load(campaign),
+        gpu,
+        root / "campaign.json",
+    )
     command = [sys.executable, "-m", "segmentary.train", job["config"], "--devices", "1"]
     candidates = list(run.glob("step-*.ckpt")) + list(run.glob("best*.ckpt"))
     if (run / "last.ckpt").exists():
@@ -287,6 +325,7 @@ def run_job(root, repo, job, gpu, campaign):
                 stdout=log,
                 records=root / "attempts" / job["name"],
                 phase="training",
+                expected_gpu_uuid=entry["uuid"],
             )
         else:
             subprocess.run(
@@ -352,6 +391,10 @@ def run_job(root, repo, job, gpu, campaign):
 
 def worker(root, repo, gpu, run=None):
     campaign = verify_frozen(root, repo)
+    # The worker parent itself must only see its one allowed GPU, before any lock.
+    policy = gpu_policy.load(campaign)
+    gpu_policy.require_allowed(policy, gpu)
+    gpu_policy.assert_env(policy, gpu, os.environ)
     with lock(root / "locks" / f"gpu-{gpu}.lock") as acquired:
         if not acquired:
             raise RuntimeError("This campaign already has a worker on that GPU")
@@ -366,6 +409,13 @@ def worker(root, repo, gpu, run=None):
                     continue
                 try:
                     verify_frozen(root, repo)
+                except gpu_policy.GpuInspectionError:
+                    # nvidia-smi was unavailable even after retries: this says
+                    # nothing about the job, so leave its state untouched and
+                    # let the worker die; the launcher restarts it.
+                    print(f"GPU inventory unavailable before {job['name']}; exiting", flush=True)
+                    raise
+                try:
                     (run or run_job)(root, repo, job, gpu, campaign)
                 except Exception as error:
                     state = read(state_path)
@@ -506,13 +556,20 @@ def publisher(root, checkout, once=False):
             time.sleep(30)
 
 
-def launch(root, repo, checkout, gpus, *, dashboard=True):
-    verify_frozen(root, repo)
-    processes = subprocess.check_output(
-        ["nvidia-smi", "--query-compute-apps=pid", "--format=csv,noheader"], text=True
-    ).strip()
-    if processes:
-        raise RuntimeError("GPU compute processes already active; inspect before launch")
+def launch(root, repo, checkout, gpus=None, *, dashboard=True):
+    campaign = verify_frozen(root, repo)
+    policy = gpu_policy.load(campaign)
+    allowed = gpu_policy.allowed_indices(policy)
+    gpus = list(allowed) if gpus is None else list(gpus)
+    for gpu in gpus:
+        gpu_policy.require_allowed(policy, gpu)
+    uuids = {gpu: gpu_policy.require_allowed(policy, gpu)["uuid"] for gpu in gpus}
+    # Only the GPUs this campaign may use need to be idle; other users' work on
+    # forbidden GPUs is none of our business.
+    busy = {gpu_policy.normalize_uuid(uuid) for _, uuid in gpu_policy.compute_apps()}
+    occupied = [gpu for gpu, uuid in uuids.items() if gpu_policy.normalize_uuid(uuid) in busy]
+    if occupied:
+        raise RuntimeError(f"GPU compute processes already active on {occupied}; inspect first")
     if not checkout or checkout.resolve() == repo:
         raise RuntimeError("A separate publisher checkout is required")
     logdir = root / "service-logs"
@@ -523,11 +580,16 @@ def launch(root, repo, checkout, gpus, *, dashboard=True):
 
         ensure_dashboard(root, repo, sys.executable)
     sessions = []
-    commands = [("publisher", ["publish", "--checkout", str(checkout)])]
-    commands += [(f"gpu-{gpu}", ["worker", "--gpu", str(gpu)]) for gpu in gpus]
-    for suffix, arguments in commands:
+    commands = [("publisher", ["publish", "--checkout", str(checkout)], gpu_policy.no_gpu_prefix())]
+    commands += [
+        (f"gpu-{gpu}", ["worker", "--gpu", str(gpu)], gpu_policy.shell_prefix(policy, gpu))
+        for gpu in gpus
+    ]
+    for suffix, arguments, prefix in commands:
         session = f"rtis-{root.name}-{suffix}"
         command = [
+            *prefix,
+            f"PYTHONPATH={repo / 'src'}",
             sys.executable,
             "-u",
             str(repo / "scripts/run_rtis_campaign.py"),
@@ -537,7 +599,6 @@ def launch(root, repo, checkout, gpus, *, dashboard=True):
         ]
         shell = (
             f"cd {shlex.quote(str(repo))} && "
-            f"PYTHONPATH={shlex.quote(str(repo / 'src'))} "
             f"{shlex.join(command)} >> {shlex.quote(str(logdir / (suffix + '.log')))} 2>&1"
         )
         subprocess.run(["tmux", "new-session", "-d", "-s", session, shell], check=True)
@@ -549,6 +610,8 @@ def launch(root, repo, checkout, gpus, *, dashboard=True):
                 "sessions": sessions,
                 "publisher_checkout": str(checkout),
                 "gpus": gpus,
+                "gpu_uuids": {str(gpu): uuid for gpu, uuid in uuids.items()},
+                "gpu_policy_sha256": campaign.get("gpu_policy_sha256"),
             },
         )
 
@@ -558,7 +621,11 @@ def main():
     ap.add_argument("action", choices=["init", "launch", "worker", "publish"])
     ap.add_argument("--campaign", type=Path, required=True)
     ap.add_argument("--gpu", type=int)
-    ap.add_argument("--gpus", default="0,1,2,3,4,5,6,7,8,9")
+    ap.add_argument(
+        "--gpus",
+        default=None,
+        help="launch: subset of the campaign's frozen allowlist (default: the whole allowlist)",
+    )
     ap.add_argument("--checkout", type=Path)
     ap.add_argument("--once", action="store_true")
     ap.add_argument(
@@ -576,7 +643,7 @@ def main():
             root,
             repo,
             args.checkout,
-            [int(gpu) for gpu in args.gpus.split(",")],
+            None if args.gpus is None else gpu_policy.parse_gpus(args.gpus),
             dashboard=not args.no_dashboard,
         )
     elif args.action == "worker":

@@ -80,6 +80,232 @@ def test_failed_subprocess_still_has_durable_full_timing(tmp_path, monkeypatch, 
     assert record["wall_clock_s"] > 0
 
 
+def test_run_recorded_kills_child_on_foreign_gpu_context_and_records_uuid(tmp_path, monkeypatch):
+    import json
+    import os
+    import sys
+
+    from segmentary.gpu_policy import GpuPolicyError
+    from segmentary.utils import resource_tracking
+
+    monkeypatch.setattr(subprocess, "check_output", lambda *a, **k: "100, 50, 90, 40")
+    seen = []
+
+    def on_wrong_gpu(pid, uuid):
+        seen.append((pid, uuid))
+        raise GpuPolicyError(f"Process {pid} has a context on GPU-bad, not {uuid}")
+
+    monkeypatch.setattr(resource_tracking, "assert_pid_on_uuid", on_wrong_gpu)
+    records = tmp_path / "attempts"
+    with (tmp_path / "log.txt").open("w") as log:
+        with pytest.raises(GpuPolicyError, match="GPU-bad"):
+            resource_tracking.run_recorded(
+                [sys.executable, "-c", "import time; time.sleep(60)"],
+                cwd=tmp_path,
+                env={**os.environ, "CUDA_VISIBLE_DEVICES": "2"},
+                stdout=log,
+                records=records,
+                phase="training",
+                expected_gpu_uuid="GPU-good",
+            )
+    record = json.loads(next(records.glob("*.json")).read_text())
+    assert seen == [(record["pid"], "GPU-good")]
+    assert record["gpu_uuid"] == "GPU-good"
+    assert record["status"] == "failed"
+    assert record["returncode"] not in (None, 0)
+    assert "GPU-bad" in record["gpu_policy_violation"]
+    assert record["wall_clock_s"] < 30
+
+
+def test_run_recorded_keeps_child_alive_through_transient_inspection_failures(
+    tmp_path, monkeypatch
+):
+    """A slow nvidia-smi/ps is not a violation: record it and keep polling."""
+    import json
+    import os
+    import sys
+
+    from segmentary.gpu_policy import GpuInspectionError
+    from segmentary.utils import resource_tracking
+
+    monkeypatch.setattr(subprocess, "check_output", lambda *a, **k: "100, 50, 90, 40")
+    checks = []
+
+    def flaky(pid, uuid):
+        checks.append(pid)
+        if len(checks) <= 2:
+            raise GpuInspectionError("Could not list GPU compute processes: timeout")
+
+    monkeypatch.setattr(resource_tracking, "assert_pid_on_uuid", flaky)
+    records = tmp_path / "attempts"
+    with (tmp_path / "log.txt").open("w") as log:
+        resource_tracking.run_recorded(
+            [sys.executable, "-c", "import time; time.sleep(12)"],
+            cwd=tmp_path,
+            env={**os.environ, "CUDA_VISIBLE_DEVICES": "2"},
+            stdout=log,
+            records=records,
+            phase="training",
+            expected_gpu_uuid="GPU-good",
+        )
+    record = json.loads(next(records.glob("*.json")).read_text())
+    assert record["status"] == "completed" and record["returncode"] == 0
+    assert "gpu_policy_violation" not in record
+    assert len(record["policy_check_errors"]) == 2
+    assert len(checks) >= 3
+
+
+def test_run_recorded_fails_closed_after_sustained_inspection_outage(tmp_path, monkeypatch):
+    import json
+    import os
+    import sys
+
+    from segmentary.gpu_policy import GpuInspectionError, GpuPolicyError
+    from segmentary.utils import resource_tracking
+
+    monkeypatch.setattr(subprocess, "check_output", lambda *a, **k: "100, 50, 90, 40")
+
+    def down(pid, uuid):
+        raise GpuInspectionError("Could not list processes: ps missing")
+
+    monkeypatch.setattr(resource_tracking, "assert_pid_on_uuid", down)
+    records = tmp_path / "attempts"
+    with (tmp_path / "log.txt").open("w") as log:
+        with pytest.raises(GpuPolicyError, match="could not be verified for 2 consecutive"):
+            resource_tracking.run_recorded(
+                [sys.executable, "-c", "import time; time.sleep(60)"],
+                cwd=tmp_path,
+                env={**os.environ, "CUDA_VISIBLE_DEVICES": "2"},
+                stdout=log,
+                records=records,
+                phase="training",
+                expected_gpu_uuid="GPU-good",
+                max_unverified_checks=2,
+            )
+    record = json.loads(next(records.glob("*.json")).read_text())
+    assert record["status"] == "failed" and record["returncode"] not in (None, 0)
+    assert "ps missing" in record["gpu_policy_violation"]
+    assert len(record["policy_check_errors"]) == 2
+    assert record["wall_clock_s"] < 30
+
+
+def test_run_recorded_queries_telemetry_by_uuid_when_known(tmp_path, monkeypatch):
+    import os
+    import sys
+
+    from segmentary.utils import resource_tracking
+
+    commands = []
+    monkeypatch.setattr(
+        subprocess, "check_output", lambda cmd, *a, **k: commands.append(cmd) or "1, 2, 3, 4"
+    )
+    monkeypatch.setattr(resource_tracking, "assert_pid_on_uuid", lambda pid, uuid: None)
+    with (tmp_path / "log.txt").open("w") as log:
+        resource_tracking.run_recorded(
+            [sys.executable, "-c", "pass"],
+            cwd=tmp_path,
+            env={**os.environ, "CUDA_VISIBLE_DEVICES": "2"},
+            stdout=log,
+            records=tmp_path / "attempts",
+            phase="training",
+            expected_gpu_uuid="GPU-good",
+        )
+    assert all("--id=GPU-good" in cmd for cmd in commands)
+
+
+def test_collect_job_child_env_comes_from_policy(tmp_path, monkeypatch):
+    import os
+    import sys
+    from types import SimpleNamespace
+
+    from scripts import run_rtis_full_campaign as full
+
+    from helpers_gpu_policy import uuid_of, write_campaign
+    from segmentary import gpu_policy
+
+    campaign = write_campaign(tmp_path, jobs=["job"], collection_contract="x")
+    config = tmp_path / "job.yaml"
+    config.write_text("job")
+    job = {"name": "job", "config": str(config)}
+    monkeypatch.setitem(
+        sys.modules,
+        "scripts.collect_rtis_statistics",
+        SimpleNamespace(validate_dataset=lambda *a: None),
+    )
+    monkeypatch.setitem(
+        sys.modules, "segmentary.config", SimpleNamespace(load_experiment=lambda layers: None)
+    )
+    monkeypatch.setattr(full.runtime, "run_job", lambda *a: None)
+    full.runtime.write(tmp_path / "state/job.json", {"name": "job", "status": "collecting"})
+    (tmp_path / "logs").mkdir()
+    monkeypatch.setattr(os, "environ", {"CUDA_VISIBLE_DEVICES": "0,1,2,3", "HOME": "/h"})
+    captured = []
+
+    def recorded(command, **kwargs):
+        captured.append(kwargs)
+        raise RuntimeError("stop")
+
+    monkeypatch.setattr(full, "run_recorded", recorded)
+    with pytest.raises(RuntimeError, match="stop"):
+        full.collect_job(tmp_path, tmp_path, job, 3, campaign)
+    expected = gpu_policy.child_env(
+        {
+            **os.environ,
+            "PYTHONPATH": str(tmp_path / "src"),
+            "HF_HUB_OFFLINE": "1",
+            "TRANSFORMERS_OFFLINE": "1",
+            "OMP_NUM_THREADS": "4",
+        },
+        campaign["gpu_policy"],
+        3,
+        tmp_path / "campaign.json",
+    )
+    assert captured[0]["env"] == expected
+    assert captured[0]["expected_gpu_uuid"] == uuid_of(3)
+    assert full.runtime.read(tmp_path / "state/job.json")["gpu_uuid"] == uuid_of(3)
+    with pytest.raises(gpu_policy.GpuPolicyError):
+        full.collect_job(tmp_path, tmp_path, job, 1, campaign)
+    with pytest.raises(gpu_policy.GpuPolicyError):
+        full.run_job(tmp_path, tmp_path, job, 0, campaign)
+    assert not (tmp_path / "job-attempts").exists()
+
+
+def test_profile_watch_only_locks_and_measures_allowed_gpus(tmp_path, monkeypatch):
+    import os
+
+    from scripts import profile_rtis_campaign as profile
+
+    from helpers_gpu_policy import patch_live, uuid_of, write_campaign
+
+    campaign = write_campaign(tmp_path, jobs=["job"])
+    (tmp_path / "state/job.json").write_text('{"name": "job", "status": "completed"}')
+    monkeypatch.setattr(profile.runtime, "verify_frozen", lambda *a: campaign)
+    patch_live(monkeypatch, compute_apps=[(1, uuid_of(2)), (2, uuid_of(0))])
+    monkeypatch.setattr(os, "environ", {"CUDA_VISIBLE_DEVICES": "0,1,2,3"})
+    locked, runs = [], []
+    original = profile.runtime.lock
+
+    def lock(path):
+        locked.append(path.name)
+        return original(path)
+
+    def run(command, **kwargs):
+        runs.append(kwargs["env"])
+        (tmp_path / "STOP_PERFORMANCE").touch()
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(profile.runtime, "lock", lock)
+    monkeypatch.setattr(profile.subprocess, "run", run)
+    monkeypatch.setattr(profile.time, "sleep", lambda s: None)
+    (tmp_path / "service-logs").mkdir()
+    profile.watch(tmp_path, tmp_path)
+    assert "gpu-0.lock" not in locked and "gpu-1.lock" not in locked
+    assert locked == ["performance.lock", "gpu-2.lock", "gpu-3.lock"]
+    assert len(runs) == 1
+    assert runs[0]["CUDA_VISIBLE_DEVICES"] == "3"
+    assert runs[0]["CUDA_DEVICE_ORDER"] == "PCI_BUS_ID"
+
+
 def test_partial_diagnostics_cannot_be_called_complete():
     with pytest.raises(RuntimeError, match="Incomplete"):
         validate_collection({}, {"test_evaluated": False, "smoke_limit": 2}, {}, [])

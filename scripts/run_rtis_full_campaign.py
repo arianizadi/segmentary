@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts import run_rtis_campaign as runtime
 
+from segmentary import gpu_policy
 from segmentary.utils.resource_tracking import run_recorded
 
 
@@ -60,15 +61,21 @@ def collect_job(root, repo, job, gpu, campaign):
     if state["status"] != "collecting":
         raise RuntimeError("Full collection contract is required")
     state.pop("finished_at", None)
+    policy = gpu_policy.load(campaign)
+    state["gpu_uuid"] = gpu_policy.require_allowed(policy, gpu)["uuid"]
     runtime.write(state_path, state)
-    env = {
-        **os.environ,
-        "CUDA_VISIBLE_DEVICES": str(gpu),
-        "PYTHONPATH": str(repo / "src"),
-        "HF_HUB_OFFLINE": "1",
-        "TRANSFORMERS_OFFLINE": "1",
-        "OMP_NUM_THREADS": "4",
-    }
+    env = gpu_policy.child_env(
+        {
+            **os.environ,
+            "PYTHONPATH": str(repo / "src"),
+            "HF_HUB_OFFLINE": "1",
+            "TRANSFORMERS_OFFLINE": "1",
+            "OMP_NUM_THREADS": "4",
+        },
+        policy,
+        gpu,
+        root / "campaign.json",
+    )
     commands = [
         (
             "diagnostics",
@@ -109,6 +116,7 @@ def collect_job(root, repo, job, gpu, campaign):
                 stdout=log,
                 records=root / "attempts" / job["name"],
                 phase=phase,
+                expected_gpu_uuid=state["gpu_uuid"],
             )
     run = Path(state["checkpoints"]["best"]["path"]).parent
     diagnostics = runtime.read(run / "diagnostics/summary.json")
@@ -203,11 +211,12 @@ def collect_job(root, repo, job, gpu, campaign):
 
 
 def run_job(root, repo, job, gpu, campaign):
+    gpu_uuid = gpu_policy.require_allowed(gpu_policy.load(campaign), gpu)["uuid"]
     records = root / "job-attempts" / job["name"]
     records.mkdir(parents=True, exist_ok=True)
     path = records / f"{len(list(records.glob('*.json'))):04d}.json"
     started = time.monotonic()
-    record = {"started_at": runtime.now(), "status": "running", "gpu": gpu}
+    record = {"started_at": runtime.now(), "status": "running", "gpu": gpu, "gpu_uuid": gpu_uuid}
     runtime.write(path, record)
     try:
         collect_job(root, repo, job, gpu, campaign)

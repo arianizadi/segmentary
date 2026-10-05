@@ -51,6 +51,7 @@ from .engine.ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma, ema_evaluation_
 from .engine.losses import LossConfig, SegmentationLoss
 from .engine.module import SegLitModule
 from .engine.query_loss import QuerySegmentationLoss
+from .gpu_policy import POLICY_ENV, enforce_from_env
 from .models.factory import build_model
 from .models.tuning import apply_tuning, count_trainable
 from .models.wrappers import SegmentationModel
@@ -199,6 +200,17 @@ def validate_resume_checkpoint(
                 f"but global_step={step}"
             )
     return step
+
+
+class _GpuPolicyCheck(Callback):
+    """Re-verify the torch-visible GPU UUID once CUDA is up under a campaign policy."""
+
+    def on_fit_start(self, trainer, pl_module) -> None:
+        enforce_from_env(init_cuda=True)
+
+
+def _gpu_policy_callbacks() -> list[Callback]:
+    return [_GpuPolicyCheck()] if os.environ.get(POLICY_ENV) else []
 
 
 def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[Callback]:
@@ -586,7 +598,7 @@ def run_stage(
         gradient_clip_val=optim_cfg.grad_clip,
         val_check_interval=_validation_batch_interval(train_cfg),
         check_val_every_n_epoch=None,  # iteration-based validation
-        callbacks=checkpoint_callbacks,
+        callbacks=[*checkpoint_callbacks, *_gpu_policy_callbacks()],
         logger=tensorboard_logger,
         log_every_n_steps=min(50, train_cfg.iters),
         num_sanity_val_steps=1,

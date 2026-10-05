@@ -1,0 +1,35 @@
+# GPU preflight for the rad_9_24_2026 arms: three families covering the slow
+# paths (FPN, EoMT, HRNet-OCR; all in the top-10 list) on the paul arm's data for a few steps. Its completed
+# states feed scripts/validate_rtis_launch.py; it never produces results.
+name: rad_9_24_2026-smoke
+smoke: true
+dataset: rad_9_24_2026-paul
+dataset_config: configs/datasets/rad_9_24_2026-paul.yaml
+model_catalog: configs/campaigns/all_models_cityscapes_railsem19.yaml
+status: smoke
+publisher: false
+models:
+- smp_fpn_resnet50
+- eomt_dinov3_large
+- hrnet_w48_ocr
+seeds:
+- 0
+target_steps: 40
+batch_size: 2
+accumulation: 8
+validation_interval: 20
+checkpoint_interval: 20
+early_stopping_patience: 5
+early_stopping_min_delta: 0.001
+num_workers: 2
+protocols:
+  rtis_only:
+    label: Recipe pretrained initialization -> RTIS
+    source_protocol: null
+  cityscapes_to_rtis:
+    label: Cityscapes -> RTIS
+    source_protocol: cityscapes
+collection_contract: rtis-full-statistics-v1
+selection_metric: val_iou/mud-pumping
+caveats:
+- Smoke campaign; results are execution evidence only.

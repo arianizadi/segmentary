@@ -112,9 +112,11 @@ def ensure_dashboard(
                 timeout=15,
             )
             log.parent.mkdir(parents=True, exist_ok=True)
+            # The dashboard never needs a GPU: hide them all from its process so a
+            # future dependency that imports torch cannot create a context.
             command = (
                 f"cd {shlex.quote(str(repo))} && "
-                f"PYTHONPATH={shlex.quote(source_path)} "
+                f"CUDA_VISIBLE_DEVICES= PYTHONPATH={shlex.quote(source_path)} "
                 + shlex.join([str(python), "-m", "segmentary.progress", str(root)])
                 # Textual renders to stderr. Both streams must stay attached to
                 # the tmux PTY; only a separate exit-status line goes to the log.
@@ -278,7 +280,8 @@ def cleanup_dashboard(root: Path, session: str) -> list[str]:
 def start_cleanup(root: Path, repo: Path, python: str | Path, session: str) -> None:
     log = root / "service-logs" / "dashboard-cleanup.log"
     log.parent.mkdir(parents=True, exist_ok=True)
-    environment = dict(os.environ, PYTHONPATH=str(repo / "src"))
+    # Display-only helper: it must never see a GPU.
+    environment = dict(os.environ, PYTHONPATH=str(repo / "src"), CUDA_VISIBLE_DEVICES="")
     with log.open("a") as stream:
         subprocess.Popen(
             [str(python), "-m", "segmentary.campaign_dashboard", str(root), session],

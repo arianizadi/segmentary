@@ -38,6 +38,7 @@ import torch
 
 from .config import ExperimentConfig, config_hash, from_dict, load_yaml, to_dict
 from .eval import load_configured_checkpoint
+from .gpu_policy import enforce_from_env, normalize_uuid
 from .models.factory import build_model
 from .taxonomy import load_space
 from .utils.provenance import collect_env, discover_git_root, git_sha, peak_vram, reset_peak_vram
@@ -280,6 +281,16 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
             f"could not resolve a non-empty GPU UUID for CUDA_VISIBLE_DEVICES={physical_gpu}"
         )
     properties = torch.cuda.get_device_properties(device)
+    # nvidia-smi --id=<token> names a card by enumeration order; the context must
+    # actually be on that card, and under a campaign policy on the frozen one.
+    torch_uuid = getattr(properties, "uuid", None)
+    if torch_uuid is not None and normalize_uuid(str(torch_uuid)) != normalize_uuid(gpu_uuid):
+        raise PerformanceError(
+            f"torch runs on GPU {torch_uuid} but CUDA_VISIBLE_DEVICES={physical_gpu} is {gpu_uuid}"
+        )
+    policy = enforce_from_env(init_cuda=True)
+    if policy is not None and normalize_uuid(policy["uuid"]) != normalize_uuid(gpu_uuid):
+        raise PerformanceError(f"GPU policy assigned {policy['uuid']} but benchmark saw {gpu_uuid}")
     gpu_name = str(properties.name)
     if args.required_gpu_name not in gpu_name:
         raise PerformanceError(

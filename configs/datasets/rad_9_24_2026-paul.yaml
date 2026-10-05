@@ -1,0 +1,17 @@
+name: rad_9_24_2026-paul
+space: paul-test-rtis
+taxonomy_root: taxonomy
+output_root: runs/rad_9_24_2026-paul
+stages:
+- name: rtis
+  data:
+  - name: rad_9_24_2026-paul
+    root: data/rad_9_24_2026-paul
+    loader: folder
+    mapping: paul-test-rtis
+    train_split: train
+    val_split: val
+    split_file: splits.json
+    loader_options:
+      require_groups: false
+  init_from: pretrained

@@ -47,6 +47,7 @@ from .engine.boundary import BoundaryConfig, BoundaryF1
 from .engine.ema import EMA_CHECKPOINT_KEY, EmaConfig, ModelEma, ema_evaluation_safe
 from .engine.inference import InferenceConfig, inference, prediction_from_inference
 from .engine.metrics import ConfusionMatrix
+from .gpu_policy import GpuPolicyError, enforce_from_env
 from .models.factory import build_model
 from .models.tuning import apply_tuning
 from .models.wrappers import SegmentationModel
@@ -204,6 +205,7 @@ def main(argv: list[str] | None = None) -> int:
         merged = deep_merge(merged, {"train": {"seed": args.seed}})
     cfg = from_dict(ExperimentConfig, merged)
     validate_task_configuration(cfg)
+    policy = enforce_from_env(init_cuda=False)
     seed_everything(cfg.train.seed, deterministic=args.deterministic)
 
     space = load_space(cfg.taxonomy_root, cfg.space)
@@ -240,6 +242,14 @@ def main(argv: list[str] | None = None) -> int:
         if args.limit is not None:
             data = DataConfig(**{**to_dict(data), "limit": args.limit})
 
+    if policy is not None:
+        # Never silently evaluate on the CPU, or on any device but the pinned one.
+        if torch.device(args.device).type != "cuda" or torch.device(args.device).index not in (
+            None,
+            0,
+        ):
+            raise GpuPolicyError(f"A GPU policy requires --device cuda:0, got {args.device!r}")
+        enforce_from_env(init_cuda=True)
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     model = build_model(cfg.model, space.num_classes)
     use_ema = bool(args.ema or (args.auto_weights and ema_evaluation_safe(model)))

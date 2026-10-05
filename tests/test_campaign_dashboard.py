@@ -76,6 +76,7 @@ def test_dashboard_is_idempotent_uses_shared_entrypoint_and_quotes_paths(tmp_pat
     assert "Dashboard exited with status" in exit_logger
     assert "'/some python'" in starts[0][-1]
     assert f"'{root}'" in starts[0][-1]
+    assert "&& CUDA_VISIBLE_DEVICES= PYTHONPATH=" in ui_command  # display-only, never a GPU
     assert not [call for call in tmux.calls if "kill" in call[0] or call[0] == "respawn-pane"]
     assert tmux.sessions[session]["windows"] == ["training", "gpu-monitor"]
     registered = [

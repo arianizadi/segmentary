@@ -15,6 +15,7 @@ from pathlib import Path
 
 from .config import ExperimentConfig, config_hash, deep_merge, from_dict, load_yaml, to_dict
 from .curriculum import run_curriculum
+from .gpu_policy import GpuPolicyError, enforce_from_env
 from .utils.provenance import discover_git_root
 from .utils.seed import seed_everything
 
@@ -92,8 +93,13 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(to_dict(cfg), indent=2, sort_keys=True))
         return 0
 
-    seed_everything(cfg.train.seed, deterministic=args.deterministic)
+    # Under a campaign GPU policy fail before seeding or touching CUDA; the
+    # policy callback in curriculum re-checks the torch-visible UUID at fit start.
+    policy = enforce_from_env(init_cuda=False)
     devices = resolve_devices(args.devices if args.devices is not None else cfg.train.devices)
+    if policy is not None and devices != 1 and devices != [0]:
+        raise GpuPolicyError(f"A GPU policy requires exactly one device, got devices={devices!r}")
+    seed_everything(cfg.train.seed, deterministic=args.deterministic)
 
     print(f"experiment : {cfg.name}  (hash {config_hash(cfg)})")
     print(f"space      : {cfg.space}")

@@ -845,12 +845,15 @@ def main():
     args = ap.parse_args()
     if args.interval_seconds < 1:
         ap.error("--interval-seconds must be positive")
+    # One directory per campaign dataset so parallel or chained arms never
+    # overwrite each other's reports (docs/results/<dataset>/live).
     if (
         args.report_dir.is_absolute()
         or ".." in args.report_dir.parts
-        or not args.report_dir.is_relative_to("docs/results/paul-test-rtis")
+        or not args.report_dir.is_relative_to("docs/results")
+        or args.report_dir == Path("docs/results")
     ):
-        ap.error("--report-dir must be inside docs/results/paul-test-rtis")
+        ap.error("--report-dir must be a relative path inside docs/results")
     REPORT = args.report_dir
     with runtime.lock(args.campaign / "locks/publisher.lock") as acquired:
         if not acquired:

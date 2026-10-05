@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import os
 import subprocess
 import sys
 import time
@@ -75,6 +76,12 @@ def main():
         parser.error("--gpu is required for a worker")
     if Path(args.stop_file).name != args.stop_file:
         parser.error("--stop-file must be a filename within the campaign")
+    from segmentary import gpu_policy
+
+    # This worker parent may only see its one allowed GPU, before any lock.
+    policy = gpu_policy.load(campaign)
+    gpu_policy.require_allowed(policy, args.gpu)
+    gpu_policy.assert_env(policy, args.gpu, os.environ)
     stop = root / args.stop_file
     original_train = runtime.run_job
     original_recorded = full.run_recorded
@@ -147,6 +154,13 @@ def main():
                         runtime.verify_frozen(root, repo)
                         cfg = load_experiment([Path(job["config"])])
                         collector.validate_dataset(root, job, cfg, campaign)
+                    except gpu_policy.GpuInspectionError:
+                        # A tool outage is not a preflight failure of the job:
+                        # leave its state and the stop file alone and exit.
+                        print(
+                            f"GPU inventory unavailable before {job['name']}; exiting", flush=True
+                        )
+                        raise
                     except Exception as exc:
                         message = f"PREFLIGHT FAILED {job['name']}: {exc}"
                         state.update(status="failed", error=message, finished_at=runtime.now())

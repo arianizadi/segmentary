@@ -1,0 +1,115 @@
+# Scene group and split for the 22 rad_9_24_2026 images that are not in paul-test-rtis
+# (v1 or v2). Consumed by scripts/make_rad_splits.py grouped, keyed by the sha256 of the
+# delivered image file; `stem` is informational and is verified against the delivery.
+#
+# Evidence level: VISUAL ONLY. Recording provenance is unconfirmed by the annotator.
+# Markers used: a black curved cab cowl in the top corners, a "Vmax: NN Km/h" overlay
+# bottom-right, a pig watermark bottom-left, and scenery. Each of the 22 images was
+# inspected by eye against the reference frames of the groups named below.
+#
+# Decisions:
+# - 0251, 0253-0261: cowl + Vmax overlay + sunny alpine scenery, the same recording
+#   signature as the ten held-out test frames of sunny-mountain-cab-view (0114-0123).
+#   Assigned to that group and therefore to TEST, so that test does not share a
+#   recording with train. Note that train image 0252 (sunny-mountain-stations, v1 key
+#   no_anomalies_0749) carries the same cowl and sits between 0251 and 0253 in the
+#   delivery order; that pre-existing v1/v2 leak is left as is.
+# - 0250: large urban terminus platform, no cowl, no overlay; sort neighbour of 0252 ->
+#   sunny-mountain-stations, train.
+# - 0174: dark green roadside with the pig watermark seen only in
+#   green-roadside-cab-view (train).
+# - 0179, 0180, 0181, 0182, 0184: Vmax overlay without a cowl, a signature seen only in
+#   train (sunny-mainline-cab-view) -> that group, train.
+# - 0175, 0176, 0177, 0178, 0183: no marker shared with any val/test image; 0183 looks
+#   like the same station as train 0228 (sunny-mountain-stations). Kept together as a
+#   new train group rather than guessed into existing ones.
+status: provisional_until_recording_provenance_confirmed
+images:
+  ac8756b81048f48af6d2c3fee710b8b43f34a4e658cde8c09bb9f690902790e5:
+    stem: "0174"
+    group: green-roadside-cab-view
+    split: train
+  c81bc0c590d9bd6563e2e11176cfe441dc0920a5f9cdbbea9d32b36a51347b86:
+    stem: "0175"
+    group: new-unmatched-2026
+    split: train
+  fdfba692303712b2119a1d725763d74b54fa20defdb3415916105955f503bd9b:
+    stem: "0176"
+    group: new-unmatched-2026
+    split: train
+  92fdd6e752f0a8493a8a0114320f0d3adb209985cc28a17efef842ce5c887b26:
+    stem: "0177"
+    group: new-unmatched-2026
+    split: train
+  bcfbb199baa79a77d97dfe9e368490306a1c84afc0dabca15e0dae262f2a945e:
+    stem: "0178"
+    group: new-unmatched-2026
+    split: train
+  2980bdd5ac578120cb35ad4b8b8f5798eb1663f505b1d628312365558c8e6637:
+    stem: "0179"
+    group: sunny-mainline-cab-view
+    split: train
+  11d2b9c079ad57dd8e7e64839160cd7b1d1b689d42720e385bbae214ae1ce4e2:
+    stem: "0180"
+    group: sunny-mainline-cab-view
+    split: train
+  961d4dc340edb778535bf1a91b174154c09e8c3bf2814a05efe15d66cfa809cb:
+    stem: "0181"
+    group: sunny-mainline-cab-view
+    split: train
+  2b635f17ddb2ba61b77fdcac0499ec5c3d70dea1323a289937212955ea815653:
+    stem: "0182"
+    group: sunny-mainline-cab-view
+    split: train
+  60f737c273e283351acc6efb1ba0704e0827f47b77fdd8695a5bd891f5dbab4e:
+    stem: "0183"
+    group: new-unmatched-2026
+    split: train
+  fce720c8ba60a17547f87e487d475b7dfc8130e8e3f6de1eb655de80095dd9d4:
+    stem: "0184"
+    group: sunny-mainline-cab-view
+    split: train
+  0956dd0c21f6af0a1387e957effd77c906124754c421ea783a885ae3ce8cf3f2:
+    stem: "0250"
+    group: sunny-mountain-stations
+    split: train
+  aad562df6009953778cb9dff9d20017306b172423b3048045d7075007454e144:
+    stem: "0251"
+    group: sunny-mountain-cab-view
+    split: test
+  e7783e56f279d39cd7bd7290d05da53a477bd864ffc3137b30bc05d962176634:
+    stem: "0253"
+    group: sunny-mountain-cab-view
+    split: test
+  894016b1cd34242641d03b1e60f84d320a5fef1107813f9d45d43e3c77279bfb:
+    stem: "0254"
+    group: sunny-mountain-cab-view
+    split: test
+  0255dda3dea077491f3d1ea3685abea083122dcb6a7cfcfec7f931dd8bf33c61:
+    stem: "0255"
+    group: sunny-mountain-cab-view
+    split: test
+  ef44ddfdd8dd428bc6d4711e781a3acfab6551a4e271113972f2f9f4c5be9d0b:
+    stem: "0256"
+    group: sunny-mountain-cab-view
+    split: test
+  92ee9060e9af4c102a639559aace1bb2646cdc84e4eda9f46917fcf4fa36b689:
+    stem: "0257"
+    group: sunny-mountain-cab-view
+    split: test
+  ecb31c61f1c477f36a5340fe767db50b1f149adaffc2af007aaae1d5134fff0c:
+    stem: "0258"
+    group: sunny-mountain-cab-view
+    split: test
+  40c4d08494b370ed9b2c47cf3957c3cf0f558a22009eafee581dd73a00829562:
+    stem: "0259"
+    group: sunny-mountain-cab-view
+    split: test
+  d269ec5abb041480939a115b70098c6b899559455a79121a6fcadfc4db68d848:
+    stem: "0260"
+    group: sunny-mountain-cab-view
+    split: test
+  c907f3894e962844d9db2c4ac28771860d430f48f3489ad03b70394d0429251d:
+    stem: "0261"
+    group: sunny-mountain-cab-view
+    split: test

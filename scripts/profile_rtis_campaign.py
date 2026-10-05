@@ -12,15 +12,16 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts import run_rtis_campaign as runtime
 
+from segmentary import gpu_policy
+
 
 def occupied_uuids():
-    output = subprocess.check_output(
-        ["nvidia-smi", "--query-compute-apps=gpu_uuid", "--format=csv,noheader"], text=True
-    )
-    return set(output.strip().splitlines())
+    return {gpu_policy.normalize_uuid(uuid) for _, uuid in gpu_policy.compute_apps()}
 
 
 def measure(root, name):
+    # Cheap gate before any model code; run_benchmark repeats it with CUDA up.
+    gpu_policy.enforce_from_env(init_cuda=False)
     from segmentary.performance import build_parser, run_benchmark
 
     campaign = runtime.read(root / "campaign.json")
@@ -79,23 +80,25 @@ def watch(root, repo):
                 and not (root / "performance" / f"{j['name']}.json").exists()
             ]
             if pending:
-                gpu_lines = subprocess.check_output(
-                    ["nvidia-smi", "--query-gpu=index,uuid", "--format=csv,noheader"], text=True
-                ).splitlines()
-                for line in gpu_lines:
-                    index, uuid = [s.strip() for s in line.split(",")]
+                policy = gpu_policy.load(runtime.verify_frozen(root, repo))
+                for entry in policy["allowed"]:
+                    index, uuid = int(entry["index"]), gpu_policy.normalize_uuid(entry["uuid"])
                     with runtime.lock(root / "locks" / f"gpu-{index}.lock") as available:
                         if not available or uuid in occupied_uuids():
                             continue
                         job = pending[0]
-                        env = {
-                            **os.environ,
-                            "CUDA_VISIBLE_DEVICES": index,
-                            "PYTHONPATH": str(repo / "src"),
-                            "HF_HUB_OFFLINE": "1",
-                            "TRANSFORMERS_OFFLINE": "1",
-                            "OMP_NUM_THREADS": "4",
-                        }
+                        env = gpu_policy.child_env(
+                            {
+                                **os.environ,
+                                "PYTHONPATH": str(repo / "src"),
+                                "HF_HUB_OFFLINE": "1",
+                                "TRANSFORMERS_OFFLINE": "1",
+                                "OMP_NUM_THREADS": "4",
+                            },
+                            policy,
+                            index,
+                            root / "campaign.json",
+                        )
                         log = root / "service-logs/performance.log"
                         with log.open("a") as stream:
                             result = subprocess.run(

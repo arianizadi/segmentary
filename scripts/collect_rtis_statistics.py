@@ -18,6 +18,7 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts import run_rtis_campaign as runtime
 
+from segmentary import gpu_policy
 from segmentary.config import load_experiment
 from segmentary.data.loaders import aug_from_spec
 from segmentary.data.transforms import build_eval_transform
@@ -328,6 +329,8 @@ def main():
     ap.add_argument("--job", required=True)
     ap.add_argument("--limit-per-split", type=int)
     args = ap.parse_args()
+    # Fail closed before any model touches CUDA; verifies the torch-visible UUID.
+    gpu_policy.enforce_from_env(init_cuda=True)
     root = args.campaign
     state = runtime.read(root / "state" / (args.job + ".json"))
     job = next(j for j in runtime.read(root / "plan.json")["jobs"] if j["name"] == args.job)

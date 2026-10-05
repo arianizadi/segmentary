@@ -68,8 +68,14 @@ Regenerate into a new directory from the HDRFS checkout:
 python scripts/plan_rtis_campaign.py \
   --checkpoints /data/izadia1/projects/segmentary-runs/paul-test-rtis/diagnostics/all-source-checkpoints.json \
   --dataset-root /data/izadia1/datasets/paul-test-rtis \
-  --out /path/to/new/rtis-plan
+  --out /path/to/new/rtis-plan \
+  --manifest configs/campaigns/<campaign>.yaml \
+  --gpus 2,3,4,5,6,7,8,9
 ```
+
+`--gpus` is required and becomes the plan's `gpu_allowlist`; `init` freezes the
+live `nvidia-smi` inventory of every GPU into `campaign.json` `gpu_policy`, and
+no worker, launcher or child process can use a GPU outside that allowlist.
 
 ## Historical preparation status
 
@@ -99,7 +105,7 @@ loader workers per run limit contention across the ten GPUs.
 # First generate a new plan with the preparation command above.
 python scripts/run_rtis_campaign.py init --campaign /path/to/new/rtis-plan
 python scripts/run_rtis_campaign.py launch --campaign /path/to/new/rtis-plan \
-  --checkout /path/to/separate/publisher --gpus 0,1,2,3,4,5,6,7,8,9
+  --checkout /path/to/separate/publisher            # optional: --gpus 2,3 (allowlist subset)
 ```
 
 The launcher starts independent tmux workers, a publisher, and the

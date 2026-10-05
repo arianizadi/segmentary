@@ -1,9 +1,21 @@
 """Exercise checkpoint retention boundaries and real isolated Git publishing."""
 
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 from scripts import run_rtis_campaign as rtis
+
+from helpers_gpu_policy import (
+    INVENTORY,
+    make_policy,
+    patch_live,
+    pinned_env,
+    uuid_of,
+    write_campaign,
+)
+from segmentary.gpu_policy import GpuPolicyError
 
 
 def test_cleanup_keeps_anchors_and_unrelated_files(tmp_path):
@@ -128,11 +140,9 @@ def test_publisher_real_git_updates_only_report_and_retries(tmp_path, monkeypatc
 
 
 def test_worker_records_failure_and_continues(tmp_path, monkeypatch):
-    jobs = [{"name": "bad"}, {"name": "good"}]
-    rtis.write(tmp_path / "plan.json", {"jobs": jobs})
-    for job in jobs:
-        rtis.write(tmp_path / "state" / f"{job['name']}.json", {"status": "queued"})
-    monkeypatch.setattr(rtis, "verify_frozen", lambda *_: {})
+    campaign = write_campaign(tmp_path, jobs=["bad", "good"])
+    monkeypatch.setattr(rtis, "verify_frozen", lambda *_: campaign)
+    monkeypatch.setattr(rtis.os, "environ", pinned_env(2))
 
     def run_job(root, repo, job, gpu, campaign):
         if job["name"] == "bad":
@@ -140,9 +150,267 @@ def test_worker_records_failure_and_continues(tmp_path, monkeypatch):
         rtis.write(root / "state/good.json", {"status": "completed"})
 
     monkeypatch.setattr(rtis, "run_job", run_job)
-    rtis.worker(tmp_path, Path.cwd(), 0)
+    rtis.worker(tmp_path, Path.cwd(), 2)
     assert rtis.read(tmp_path / "state/bad.json")["status"] == "failed"
     assert rtis.read(tmp_path / "state/good.json")["status"] == "completed"
+
+
+def test_worker_exits_without_failing_a_job_when_inventory_is_unavailable(tmp_path, monkeypatch):
+    """A transient nvidia-smi outage must not terminalise a queued job."""
+    from segmentary.gpu_policy import GpuInspectionError
+
+    campaign = write_campaign(tmp_path, jobs=["job"])
+    calls = []
+
+    def verify(*_):
+        calls.append(1)
+        if len(calls) > 1:
+            raise GpuInspectionError("Could not read the GPU inventory after 3 attempt(s)")
+        return campaign
+
+    monkeypatch.setattr(rtis, "verify_frozen", verify)
+    monkeypatch.setattr(rtis.os, "environ", pinned_env(2))
+    monkeypatch.setattr(rtis, "run_job", lambda *a: pytest.fail("must not run"))
+    with pytest.raises(GpuInspectionError):
+        rtis.worker(tmp_path, Path.cwd(), 2)
+    assert rtis.read(tmp_path / "state/job.json") == {"name": "job", "status": "queued"}
+
+
+def test_verify_frozen_checks_smoke_against_the_hashed_plan(tmp_path, monkeypatch):
+    campaign = write_campaign(tmp_path)
+    patch_live(monkeypatch)
+    monkeypatch.setattr(rtis, "git", lambda repo, *args: "code" if args[0] == "rev-parse" else "")
+    rtis.verify_frozen(tmp_path, tmp_path)
+    rtis.write(tmp_path / "campaign.json", {**campaign, "smoke": True})
+    with pytest.raises(RuntimeError, match="smoke flag disagrees"):
+        rtis.verify_frozen(tmp_path, tmp_path)
+
+
+@pytest.mark.parametrize("gpu,visible", [(0, "0"), (1, "1"), (2, "3"), (2, "0,1,2"), (2, None)])
+def test_worker_refuses_forbidden_or_unpinned_gpu_before_locking(
+    tmp_path, monkeypatch, gpu, visible
+):
+    campaign = write_campaign(tmp_path, jobs=["job"])
+    monkeypatch.setattr(rtis, "verify_frozen", lambda *_: campaign)
+    env = pinned_env(gpu)
+    if visible is None:
+        del env["CUDA_VISIBLE_DEVICES"]
+    else:
+        env["CUDA_VISIBLE_DEVICES"] = visible
+    monkeypatch.setattr(rtis.os, "environ", env)
+    monkeypatch.setattr(rtis, "run_job", lambda *a: pytest.fail("must not run"))
+    with pytest.raises(GpuPolicyError):
+        rtis.worker(tmp_path, Path.cwd(), gpu)
+    assert not (tmp_path / "locks").exists()
+    assert rtis.read(tmp_path / "state/job.json")["status"] == "queued"
+
+
+def test_verify_frozen_requires_matching_untouched_policy(tmp_path, monkeypatch):
+    campaign = write_campaign(tmp_path)
+    patch_live(monkeypatch)
+    monkeypatch.setattr(rtis, "git", lambda repo, *args: "code" if args[0] == "rev-parse" else "")
+    assert rtis.verify_frozen(tmp_path, tmp_path)["gpu_policy"] == campaign["gpu_policy"]
+    edited = {**campaign, "gpu_policy": make_policy(range(0, 10))}
+    rtis.write(tmp_path / "campaign.json", edited)
+    with pytest.raises(GpuPolicyError, match="disagrees with plan"):
+        rtis.verify_frozen(tmp_path, tmp_path)
+    plan = rtis.read(tmp_path / "plan.json")
+    plan_bytes = (tmp_path / "plan.json").read_bytes()
+    rtis.write(tmp_path / "plan.json", {**plan, "gpu_allowlist": list(range(10))})
+    edited["plan_sha256"] = rtis.digest(tmp_path / "plan.json")
+    rtis.write(tmp_path / "campaign.json", edited)
+    with pytest.raises(GpuPolicyError, match="edited after initialization"):
+        rtis.verify_frozen(tmp_path, tmp_path)
+    rtis.write(tmp_path / "campaign.json", {k: v for k, v in campaign.items() if k != "gpu_policy"})
+    (tmp_path / "plan.json").write_bytes(plan_bytes)
+    with pytest.raises(GpuPolicyError, match="no frozen gpu_policy"):
+        rtis.verify_frozen(tmp_path, tmp_path)
+    rtis.write(tmp_path / "campaign.json", campaign)
+    monkeypatch.setattr(rtis.gpu_policy, "inventory", lambda: INVENTORY[:9])
+    with pytest.raises(GpuPolicyError, match="now has 9"):
+        rtis.verify_frozen(tmp_path, tmp_path)
+
+
+def _initialize_fixture(tmp_path, monkeypatch, plan):
+    from types import SimpleNamespace
+
+    data_root = tmp_path / "data"
+    (data_root / "audit").mkdir(parents=True)
+    (data_root / "audit/samples.json").write_text("[]")
+    rtis.write(
+        data_root / "splits.json",
+        {"train": ["a", "b"], "val": ["c"], "test": [], "groups": {}, "_grouping_status": "x"},
+    )
+    config = tmp_path / "job.yaml"
+    config.write_text("job")
+    plan = {
+        "dataset": "ds",
+        "split_sha256": rtis.digest(data_root / "splits.json"),
+        "grouping_status": "x",
+        "target_steps_per_job": 4,
+        "jobs": [
+            {
+                "name": "job",
+                "config": str(config),
+                "config_sha256": rtis.digest(config),
+                "source_checkpoint": None,
+            }
+        ],
+        **plan,
+    }
+    root = tmp_path / "campaign"
+    root.mkdir()
+    rtis.write(root / "plan.json", plan)
+    cfg = SimpleNamespace(
+        stages=[SimpleNamespace(data=[SimpleNamespace(root=str(data_root))])],
+        output_root=str(root / "future-runs"),
+    )
+    monkeypatch.setitem(
+        sys.modules, "segmentary.config", SimpleNamespace(load_experiment=lambda layers: cfg)
+    )
+    monkeypatch.setattr(rtis, "git", lambda repo, *args: "code" if args[0] == "rev-parse" else "")
+    patch_live(monkeypatch)
+    return root
+
+
+def test_initialize_freezes_policy_sizes_and_smoke_from_plan(tmp_path, monkeypatch):
+    root = _initialize_fixture(tmp_path, monkeypatch, {"gpu_allowlist": [9, 2], "smoke": True})
+    rtis.initialize(root, tmp_path)
+    campaign = rtis.read(root / "campaign.json")
+    assert campaign["gpu_policy"] == make_policy([2, 9])
+    assert campaign["gpu_policy_sha256"] == rtis.gpu_policy.policy_sha256(make_policy([2, 9]))
+    assert [e["uuid"] for e in campaign["gpu_policy"]["forbidden"]] == [
+        uuid_of(i) for i in range(10) if i not in (2, 9)
+    ]
+    assert campaign["smoke"] is True
+    assert campaign["dataset_sizes"] == {"train": 2, "val": 1, "test": 0}
+    assert rtis.read(root / "state/job.json")["status"] == "queued"
+    assert rtis.verify_frozen(root, tmp_path)["gpu_policy_sha256"] == campaign["gpu_policy_sha256"]
+
+
+def test_initialize_refuses_plan_without_allowlist(tmp_path, monkeypatch):
+    root = _initialize_fixture(tmp_path, monkeypatch, {})
+    with pytest.raises(GpuPolicyError, match="gpu_allowlist"):
+        rtis.initialize(root, tmp_path)
+    assert not (root / "campaign.json").exists()
+
+
+def test_run_job_child_env_is_pinned_even_when_parent_sees_everything(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    campaign = write_campaign(tmp_path, jobs=["job"], collection_contract="rtis-full-statistics-v1")
+    campaign.update(split_sha256="split", target_steps=4)
+    data_root = tmp_path / "data"
+    data_root.mkdir()
+    (data_root / "splits.json").write_text("s")
+    campaign["split_sha256"] = rtis.digest(data_root / "splits.json")
+    config = tmp_path / "job.yaml"
+    config.write_text("job")
+    job = {
+        "name": "job",
+        "config": str(config),
+        "config_sha256": rtis.digest(config),
+        "source_checkpoint": None,
+    }
+    cfg = SimpleNamespace(
+        stages=[SimpleNamespace(data=[SimpleNamespace(root=str(data_root))])],
+        output_root=str(tmp_path / "future-runs"),
+        name="job",
+        train=SimpleNamespace(seed=0),
+    )
+    monkeypatch.setitem(
+        sys.modules, "segmentary.config", SimpleNamespace(load_experiment=lambda layers: cfg)
+    )
+    monkeypatch.setattr(rtis.os, "environ", {"CUDA_VISIBLE_DEVICES": "0,1,2", "HOME": "/h"})
+    captured = {}
+
+    def recorded(command, **kwargs):
+        captured.update(kwargs)
+        raise RuntimeError("stop after launch")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "segmentary.utils.resource_tracking",
+        SimpleNamespace(run_recorded=recorded),
+    )
+    with pytest.raises(RuntimeError, match="stop after launch"):
+        rtis.run_job(tmp_path, tmp_path, job, 2, campaign)
+    env = captured["env"]
+    assert env["CUDA_VISIBLE_DEVICES"] == "2"
+    assert env["CUDA_DEVICE_ORDER"] == "PCI_BUS_ID"
+    assert env[rtis.gpu_policy.POLICY_ENV] == str(tmp_path / "campaign.json")
+    assert env[rtis.gpu_policy.ASSIGNED_ENV] == "2"
+    assert env["HOME"] == "/h"
+    assert captured["expected_gpu_uuid"] == uuid_of(2)
+    assert rtis.read(tmp_path / "state/job.json")["gpu_uuid"] == uuid_of(2)
+    with pytest.raises(GpuPolicyError):
+        rtis.run_job(tmp_path, tmp_path, job, 0, campaign)
+
+
+def _launch_fixture(tmp_path, monkeypatch, compute_apps=()):
+    campaign = write_campaign(tmp_path)
+    monkeypatch.setattr(rtis, "verify_frozen", lambda *_: campaign)
+    patch_live(monkeypatch, compute_apps)
+    calls = []
+    monkeypatch.setattr(
+        rtis.subprocess,
+        "run",
+        lambda *a, **k: calls.append(a[0]) or subprocess.CompletedProcess(a, 0, "", ""),
+    )
+    return calls
+
+
+def test_launch_defaults_to_allowlist_and_pins_every_tmux_command(tmp_path, monkeypatch):
+    calls = _launch_fixture(tmp_path, monkeypatch, compute_apps=[(7, uuid_of(0))])
+    rtis.launch(tmp_path, tmp_path / "repo", tmp_path / "publisher", dashboard=False)
+    sessions = {call[4]: call[5] for call in calls}
+    assert set(sessions) == {f"rtis-{tmp_path.name}-publisher"} | {
+        f"rtis-{tmp_path.name}-gpu-{g}" for g in range(2, 10)
+    }
+    for name, shell in sessions.items():
+        if name.endswith("publisher"):
+            assert "env CUDA_VISIBLE_DEVICES= " in shell
+        else:
+            gpu = name.rsplit("-", 1)[1]
+            assert f"&& env CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES={gpu} " in shell
+            assert f"--gpu {gpu} " in shell
+    services = rtis.read(tmp_path / "services.json")
+    assert services["gpus"] == list(range(2, 10))
+    assert services["gpu_uuids"]["2"] == uuid_of(2)
+
+
+def test_launch_rejects_gpus_outside_allowlist_and_busy_allowed_gpus(tmp_path, monkeypatch):
+    calls = _launch_fixture(tmp_path, monkeypatch)
+    with pytest.raises(GpuPolicyError):
+        rtis.launch(tmp_path, tmp_path / "repo", tmp_path / "publisher", [0, 2], dashboard=False)
+    assert calls == []
+    rtis.launch(tmp_path, tmp_path / "repo", tmp_path / "publisher", [3], dashboard=False)
+    assert [c[4] for c in calls] == [
+        f"rtis-{tmp_path.name}-publisher",
+        f"rtis-{tmp_path.name}-gpu-3",
+    ]
+    calls = _launch_fixture(tmp_path, monkeypatch, compute_apps=[(5, uuid_of(3))])
+    with pytest.raises(RuntimeError, match=r"active on \[3\]"):
+        rtis.launch(tmp_path, tmp_path / "repo", tmp_path / "publisher", dashboard=False)
+    assert calls == []
+
+
+def test_cli_has_no_gpu_default_and_parses_launch_subset(monkeypatch, tmp_path):
+    captured = {}
+    monkeypatch.setattr(rtis, "launch", lambda *a, **k: captured.update(gpus=a[3]))
+    monkeypatch.setattr(sys, "argv", ["runner", "launch", "--campaign", str(tmp_path)])
+    rtis.main()
+    assert captured["gpus"] is None
+    monkeypatch.setattr(
+        sys, "argv", ["runner", "launch", "--campaign", str(tmp_path), "--gpus", "3,2"]
+    )
+    rtis.main()
+    assert captured["gpus"] == (3, 2)
+    monkeypatch.setattr(
+        sys, "argv", ["runner", "launch", "--campaign", str(tmp_path), "--gpus", "2,2"]
+    )
+    with pytest.raises(GpuPolicyError):
+        rtis.main()
 
 
 def test_dataset_audit_uses_decoded_mask_hash(tmp_path):

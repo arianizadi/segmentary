@@ -5,7 +5,22 @@ original pilot and starts each run from the declared pretrained/source endpoint,
 not from a partially trained RTIS checkpoint. Labels and the 220/37/50 grouped
 train/validation/test split are unchanged. The test split stays held out.
 
-For newly launched campaigns, `scripts/launch_rtis_full_campaign.py` uses the
+For newly launched campaigns, `scripts/launch_rtis_full_campaign.py` starts one
+pinned worker per GPU in the campaign's frozen allowlist (`campaign.json`
+`gpu_policy`, recorded by `init` from the plan's `--gpus`); it never iterates
+any other GPU. Unless `campaign.json` carries `smoke: true` (itself checked
+against the hashed plan), it requires a `launch-validation.json` from
+`scripts/validate_rtis_launch.py` that matches the code revision and the policy
+hash. `--previous-campaign` is optional: a GPU is taken over only after the old
+worker released its `locks/gpu-N.lock`, and the old launcher must be stopped
+(its `STOP` file) or gone (its `locks/launcher.lock` is taken and held). The
+publisher starts only with `--checkout`, once the previous campaign has nothing
+active or queued, and writes to `--report-dir` (default
+`docs/results/<dataset>/live`, so chained arms do not overwrite each other). A
+worker whose tmux session died with an active job is restarted and resumes it.
+The idle check uses `nvidia-smi` compute processes, so a foreign process that
+has not yet created a CUDA context is invisible at launch; inspect the host
+before launching. The launcher also uses the
 [shared campaign dashboard](medical-campaigns.md#live-dashboard), the same UI and
 automatic startup helper as the medical and RTIS pilot runners. Its preferred
 session name is `rtis-fullstats-controller`; an occupied session belonging to a
@@ -100,7 +115,7 @@ all detailed evidence into a single oversized JSON file.
 The publisher runs from its own tools checkout and writes only the RTIS report
 paths. The previous pilot stays accessible through its immutable Git commit and
 its original HDRFS campaign directory. Training code and plans are frozen per
-campaign. There is only one live report publisher.
+campaign. There is only one live report publisher per report directory.
 
 Periodic checkpoints are deleted only after the complete collection contract
 passes. Selected and final checkpoints are retained. A failed collection retains
