@@ -137,13 +137,27 @@ def test_curriculum_adds_torch_uuid_check_only_under_a_policy(tmp_path, monkeypa
     assert "_gpu_policy_callbacks()" in inspect.getsource(curriculum.run_stage)
 
 
+def test_deterministic_seeding_after_uuid_check_is_refused(monkeypatch):
+    import torch
+
+    from segmentary.utils.seed import seed_everything
+
+    monkeypatch.setattr(torch.cuda, "is_initialized", lambda: True)
+    with pytest.raises(RuntimeError, match="before the first CUDA"):
+        seed_everything(0, deterministic=True)
+
+
 def test_collector_and_profiler_verify_before_touching_cuda():
     from scripts import collect_rtis_statistics, profile_rtis_campaign
 
     from segmentary import performance
 
     collector = inspect.getsource(collect_rtis_statistics.main)
-    assert collector.index("enforce_from_env(init_cuda=True)") < collector.index("load_experiment")
+    assert collector.index("enforce_from_env(init_cuda=False)") < collector.index("load_experiment")
+    # Deterministic seeding refuses to run once CUDA is initialized, so the UUID check
+    # (which initializes CUDA) must come after it. The 2026-10-05 smoke failed on this.
+    seeded = collector.index("seed_everything(cfg.train.seed, deterministic=True)")
+    assert seeded < collector.index("enforce_from_env(init_cuda=True)")
     assert "enforce_from_env(init_cuda=False)" in inspect.getsource(profile_rtis_campaign.measure)
     benchmark = inspect.getsource(performance.run_benchmark)
     assert benchmark.index("enforce_from_env(init_cuda=True)") < benchmark.index("load_yaml")

@@ -329,8 +329,9 @@ def main():
     ap.add_argument("--job", required=True)
     ap.add_argument("--limit-per-split", type=int)
     args = ap.parse_args()
-    # Fail closed before any model touches CUDA; verifies the torch-visible UUID.
-    gpu_policy.enforce_from_env(init_cuda=True)
+    # Fail closed before any model touches CUDA. The torch-visible UUID is checked
+    # after deterministic seeding, which must precede the first CUDA call.
+    gpu_policy.enforce_from_env(init_cuda=False)
     root = args.campaign
     state = runtime.read(root / "state" / (args.job + ".json"))
     job = next(j for j in runtime.read(root / "plan.json")["jobs"] if j["name"] == args.job)
@@ -350,6 +351,7 @@ def main():
     results = {}
     torch.set_num_threads(4)
     seed_everything(cfg.train.seed, deterministic=True)
+    gpu_policy.enforce_from_env(init_cuda=True)
     for anchor, mode, splits in [
         ("best", "auto", ["train", "val"]),
         ("best", "alternate", ["val"]),
