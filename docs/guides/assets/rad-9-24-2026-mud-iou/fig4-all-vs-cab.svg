@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" width="720" height="520" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-labelledby="t d">
+<title id="t">Mud-pumping IoU per run: all val images vs cab-view val images</title>
+<desc id="d">40 runs of the paul arm. Median all-image 89.2, median cab-view 42.7.</desc>
+<style>
+.bg{fill:#fcfcfb}.grid{stroke:#e4e3df;stroke-width:1}.axis{stroke:#c3c2b7;stroke-width:1}.ref{stroke:#8a8983;stroke-width:1.5}.med{stroke:#8a8983;stroke-width:1}.t1{fill:#0b0b0b}.t2{fill:#52514e}.dot{fill:#2a78d6;stroke:#fcfcfb;stroke-width:2}.hit{fill:transparent}
+@media (prefers-color-scheme: dark){.bg{fill:#1a1a19}.grid{stroke:#2e2e2b}.axis{stroke:#4a4a46}.ref,.med{stroke:#8f8e86}.t1{fill:#ffffff}.t2{fill:#c3c2b7}.dot{fill:#3987e5;stroke:#1a1a19}}
+</style>
+<rect class="bg" width="720" height="520" rx="8"/>
+<text class="t1" x="64" y="24" font-size="15" font-weight="600">Mud-pumping IoU, all val images vs cab-view val images (40 runs, paul arm)</text>
+<line class="grid" x1="64" x2="696" y1="464.0" y2="464.0"/>
+<line class="grid" y1="464" y2="48" x1="64.0" x2="64.0"/>
+<text class="t2" x="56" y="468.0" font-size="12" text-anchor="end">0</text>
+<text class="t2" x="64.0" y="482" font-size="12" text-anchor="middle">0</text>
+<line class="grid" x1="64" x2="696" y1="380.8" y2="380.8"/>
+<line class="grid" y1="464" y2="48" x1="190.4" x2="190.4"/>
+<text class="t2" x="56" y="384.8" font-size="12" text-anchor="end">20</text>
+<text class="t2" x="190.4" y="482" font-size="12" text-anchor="middle">20</text>
+<line class="grid" x1="64" x2="696" y1="297.6" y2="297.6"/>
+<line class="grid" y1="464" y2="48" x1="316.8" x2="316.8"/>
+<text class="t2" x="56" y="301.6" font-size="12" text-anchor="end">40</text>
+<text class="t2" x="316.8" y="482" font-size="12" text-anchor="middle">40</text>
+<line class="grid" x1="64" x2="696" y1="214.4" y2="214.4"/>
+<line class="grid" y1="464" y2="48" x1="443.2" x2="443.2"/>
+<text class="t2" x="56" y="218.4" font-size="12" text-anchor="end">60</text>
+<text class="t2" x="443.2" y="482" font-size="12" text-anchor="middle">60</text>
+<line class="grid" x1="64" x2="696" y1="131.2" y2="131.2"/>
+<line class="grid" y1="464" y2="48" x1="569.6" x2="569.6"/>
+<text class="t2" x="56" y="135.2" font-size="12" text-anchor="end">80</text>
+<text class="t2" x="569.6" y="482" font-size="12" text-anchor="middle">80</text>
+<line class="grid" x1="64" x2="696" y1="48.0" y2="48.0"/>
+<line class="grid" y1="464" y2="48" x1="696.0" x2="696.0"/>
+<text class="t2" x="56" y="52.0" font-size="12" text-anchor="end">100</text>
+<text class="t2" x="696.0" y="482" font-size="12" text-anchor="middle">100</text>
+<line class="axis" x1="64" x2="696" y1="464" y2="464"/>
+<line class="ref" x1="64" y1="464" x2="696" y2="48"/>
+<text class="t2" x="506.4" y="156.2" font-size="12" transform="rotate(-33.4 506.4 156.2)">y = x (cab-view as good as all images)</text>
+<line class="med" x1="627.7" x2="627.7" y1="464" y2="48"/>
+<line class="med" x1="64" x2="696" y1="286.5" y2="286.5"/>
+<text class="t2" x="621.7" y="451.5" font-size="12" text-anchor="end">median all 89.2</text>
+<text class="t2" x="70.3" y="280.5" font-size="12">median cab-view 42.7</text>
+<text class="t1" x="380.0" y="504" font-size="13" text-anchor="middle">mud IoU, all 37 val images (%)</text>
+<text class="t1" transform="translate(18 256.0) rotate(-90)" font-size="13" text-anchor="middle">mud IoU, cab-view val images (%)</text>
+<g><title>eomt_dinov3_large cityscapes_to_railsem19_to_rtis: all 89.1, cab-view 38.9</title><circle class="hit" cx="626.9" cy="302.2" r="10"/><circle class="dot" cx="626.9" cy="302.2" r="5"/></g>
+<g><title>eomt_dinov3_large cityscapes_to_rtis: all 85.8, cab-view 26.4</title><circle class="hit" cx="606.2" cy="354.3" r="10"/><circle class="dot" cx="606.2" cy="354.3" r="5"/></g>
+<g><title>eomt_dinov3_large railsem19_to_rtis: all 89.9, cab-view 39.7</title><circle class="hit" cx="631.9" cy="299.0" r="10"/><circle class="dot" cx="631.9" cy="299.0" r="5"/></g>
+<g><title>eomt_dinov3_large rtis_only: all 90.8, cab-view 41.9</title><circle class="hit" cx="638.1" cy="289.9" r="10"/><circle class="dot" cx="638.1" cy="289.9" r="5"/></g>
+<g><title>eomt_large cityscapes_to_railsem19_to_rtis: all 93.5, cab-view 46.0</title><circle class="hit" cx="654.9" cy="272.8" r="10"/><circle class="dot" cx="654.9" cy="272.8" r="5"/></g>
+<g><title>eomt_large cityscapes_to_rtis: all 92.7, cab-view 40.3</title><circle class="hit" cx="649.7" cy="296.5" r="10"/><circle class="dot" cx="649.7" cy="296.5" r="5"/></g>
+<g><title>eomt_large railsem19_to_rtis: all 95.0, cab-view 50.7</title><circle class="hit" cx="664.2" cy="252.9" r="10"/><circle class="dot" cx="664.2" cy="252.9" r="5"/></g>
+<g><title>eomt_large rtis_only: all 92.5, cab-view 42.6</title><circle class="hit" cx="648.3" cy="286.7" r="10"/><circle class="dot" cx="648.3" cy="286.7" r="5"/></g>
+<g><title>hrnet_w48_ocr cityscapes_to_railsem19_to_rtis: all 75.5, cab-view 34.1</title><circle class="hit" cx="541.1" cy="322.0" r="10"/><circle class="dot" cx="541.1" cy="322.0" r="5"/></g>
+<g><title>hrnet_w48_ocr cityscapes_to_rtis: all 85.8, cab-view 33.9</title><circle class="hit" cx="606.4" cy="323.2" r="10"/><circle class="dot" cx="606.4" cy="323.2" r="5"/></g>
+<g><title>hrnet_w48_ocr railsem19_to_rtis: all 76.7, cab-view 46.3</title><circle class="hit" cx="548.5" cy="271.3" r="10"/><circle class="dot" cx="548.5" cy="271.3" r="5"/></g>
+<g><title>hrnet_w48_ocr rtis_only: all 90.8, cab-view 49.3</title><circle class="hit" cx="638.2" cy="258.8" r="10"/><circle class="dot" cx="638.2" cy="258.8" r="5"/></g>
+<g><title>native_convnext_tiny_uper cityscapes_to_railsem19_to_rtis: all 90.5, cab-view 45.0</title><circle class="hit" cx="635.8" cy="276.9" r="10"/><circle class="dot" cx="635.8" cy="276.9" r="5"/></g>
+<g><title>native_convnext_tiny_uper cityscapes_to_rtis: all 89.4, cab-view 45.2</title><circle class="hit" cx="629.1" cy="275.9" r="10"/><circle class="dot" cx="629.1" cy="275.9" r="5"/></g>
+<g><title>native_convnext_tiny_uper railsem19_to_rtis: all 88.4, cab-view 48.5</title><circle class="hit" cx="622.9" cy="262.3" r="10"/><circle class="dot" cx="622.9" cy="262.3" r="5"/></g>
+<g><title>native_convnext_tiny_uper rtis_only: all 88.8, cab-view 47.5</title><circle class="hit" cx="625.5" cy="266.6" r="10"/><circle class="dot" cx="625.5" cy="266.6" r="5"/></g>
+<g><title>segformer_b2 cityscapes_to_railsem19_to_rtis: all 89.2, cab-view 42.7</title><circle class="hit" cx="627.8" cy="286.4" r="10"/><circle class="dot" cx="627.8" cy="286.4" r="5"/></g>
+<g><title>segformer_b2 cityscapes_to_rtis: all 87.3, cab-view 29.7</title><circle class="hit" cx="615.7" cy="340.6" r="10"/><circle class="dot" cx="615.7" cy="340.6" r="5"/></g>
+<g><title>segformer_b2 railsem19_to_rtis: all 93.2, cab-view 57.0</title><circle class="hit" cx="653.1" cy="226.8" r="10"/><circle class="dot" cx="653.1" cy="226.8" r="5"/></g>
+<g><title>segformer_b2 rtis_only: all 93.1, cab-view 58.7</title><circle class="hit" cx="652.6" cy="219.7" r="10"/><circle class="dot" cx="652.6" cy="219.7" r="5"/></g>
+<g><title>segformer_b5 cityscapes_to_railsem19_to_rtis: all 91.2, cab-view 61.9</title><circle class="hit" cx="640.7" cy="206.4" r="10"/><circle class="dot" cx="640.7" cy="206.4" r="5"/></g>
+<g><title>segformer_b5 cityscapes_to_rtis: all 91.3, cab-view 46.8</title><circle class="hit" cx="641.3" cy="269.4" r="10"/><circle class="dot" cx="641.3" cy="269.4" r="5"/></g>
+<g><title>segformer_b5 railsem19_to_rtis: all 90.4, cab-view 55.2</title><circle class="hit" cx="635.2" cy="234.5" r="10"/><circle class="dot" cx="635.2" cy="234.5" r="5"/></g>
+<g><title>segformer_b5 rtis_only: all 93.1, cab-view 53.4</title><circle class="hit" cx="652.3" cy="241.9" r="10"/><circle class="dot" cx="652.3" cy="241.9" r="5"/></g>
+<g><title>smp_deeplabv3plus_resnet101 cityscapes_to_railsem19_to_rtis: all 85.4, cab-view 39.9</title><circle class="hit" cx="604.0" cy="298.1" r="10"/><circle class="dot" cx="604.0" cy="298.1" r="5"/></g>
+<g><title>smp_deeplabv3plus_resnet101 cityscapes_to_rtis: all 89.6, cab-view 45.6</title><circle class="hit" cx="630.5" cy="274.2" r="10"/><circle class="dot" cx="630.5" cy="274.2" r="5"/></g>
+<g><title>smp_deeplabv3plus_resnet101 railsem19_to_rtis: all 87.7, cab-view 47.2</title><circle class="hit" cx="618.2" cy="267.6" r="10"/><circle class="dot" cx="618.2" cy="267.6" r="5"/></g>
+<g><title>smp_deeplabv3plus_resnet101 rtis_only: all 85.9, cab-view 12.1</title><circle class="hit" cx="606.6" cy="413.8" r="10"/><circle class="dot" cx="606.6" cy="413.8" r="5"/></g>
+<g><title>smp_fpn_resnet50 cityscapes_to_railsem19_to_rtis: all 74.0, cab-view 38.7</title><circle class="hit" cx="531.8" cy="302.9" r="10"/><circle class="dot" cx="531.8" cy="302.9" r="5"/></g>
+<g><title>smp_fpn_resnet50 cityscapes_to_rtis: all 85.3, cab-view 18.4</title><circle class="hit" cx="602.8" cy="387.6" r="10"/><circle class="dot" cx="602.8" cy="387.6" r="5"/></g>
+<g><title>smp_fpn_resnet50 railsem19_to_rtis: all 89.9, cab-view 47.4</title><circle class="hit" cx="632.2" cy="266.7" r="10"/><circle class="dot" cx="632.2" cy="266.7" r="5"/></g>
+<g><title>smp_fpn_resnet50 rtis_only: all 89.2, cab-view 38.1</title><circle class="hit" cx="627.6" cy="305.5" r="10"/><circle class="dot" cx="627.6" cy="305.5" r="5"/></g>
+<g><title>smp_upernet_resnet101 cityscapes_to_railsem19_to_rtis: all 87.6, cab-view 28.1</title><circle class="hit" cx="617.9" cy="347.2" r="10"/><circle class="dot" cx="617.9" cy="347.2" r="5"/></g>
+<g><title>smp_upernet_resnet101 cityscapes_to_rtis: all 85.2, cab-view 24.9</title><circle class="hit" cx="602.2" cy="360.6" r="10"/><circle class="dot" cx="602.2" cy="360.6" r="5"/></g>
+<g><title>smp_upernet_resnet101 railsem19_to_rtis: all 86.0, cab-view 42.7</title><circle class="hit" cx="607.8" cy="286.2" r="10"/><circle class="dot" cx="607.8" cy="286.2" r="5"/></g>
+<g><title>smp_upernet_resnet101 rtis_only: all 87.5, cab-view 37.5</title><circle class="hit" cx="617.2" cy="308.0" r="10"/><circle class="dot" cx="617.2" cy="308.0" r="5"/></g>
+<g><title>upernet_convnext cityscapes_to_railsem19_to_rtis: all 92.6, cab-view 42.3</title><circle class="hit" cx="649.2" cy="287.9" r="10"/><circle class="dot" cx="649.2" cy="287.9" r="5"/></g>
+<g><title>upernet_convnext cityscapes_to_rtis: all 89.2, cab-view 38.3</title><circle class="hit" cx="627.5" cy="304.6" r="10"/><circle class="dot" cx="627.5" cy="304.6" r="5"/></g>
+<g><title>upernet_convnext railsem19_to_rtis: all 88.3, cab-view 40.1</title><circle class="hit" cx="622.2" cy="297.1" r="10"/><circle class="dot" cx="622.2" cy="297.1" r="5"/></g>
+<g><title>upernet_convnext rtis_only: all 91.7, cab-view 50.6</title><circle class="hit" cx="643.3" cy="253.6" r="10"/><circle class="dot" cx="643.3" cy="253.6" r="5"/></g>
+<line class="med" x1="511.8" y1="206.4" x2="633.7" y2="206.4"/>
+<text class="t1" x="507.8" y="210.4" font-size="12" text-anchor="end">#1 cab-view: segformer_b5 cityscapes_to_railsem19_to_rtis: 61.9</text>
+<line class="med" x1="511.8" y1="224.4" x2="645.6" y2="219.7"/>
+<text class="t1" x="507.8" y="228.4" font-size="12" text-anchor="end">#2 cab-view: segformer_b2 rtis_only: 58.7</text>
+<line class="med" x1="511.8" y1="242.4" x2="646.1" y2="226.8"/>
+<text class="t1" x="507.8" y="246.4" font-size="12" text-anchor="end">#3 cab-view: segformer_b2 railsem19_to_rtis: 57.0</text>
+<line class="med" x1="511.8" y1="260.4" x2="657.2" y2="252.9"/>
+<text class="t1" x="507.8" y="264.4" font-size="12" text-anchor="end">reference: eomt_large railsem19_to_rtis: 50.7</text>
+</svg>
