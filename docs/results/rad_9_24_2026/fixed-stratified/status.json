@@ -1,0 +1,610 @@
+{
+  "campaign": {
+    "schema_version": 1,
+    "dataset": "rad_9_24_2026-fixed-stratified",
+    "created_at": "2026-10-05T03:14:24.593779+00:00",
+    "code_sha": "d864b72bd90706260965bb1a48398d01167b6d5c",
+    "plan_sha256": "604f61a171307fe266d365d0c70cb7458b3ec28d35b12e97038d511b061d70ad",
+    "selection_metric": "val_iou/mud-pumping",
+    "collection_contract": "rtis-full-statistics-v1",
+    "smoke": false,
+    "gpu_policy": {
+      "schema_version": 1,
+      "hostname": "hdrfs-app-001",
+      "device_order": "PCI_BUS_ID",
+      "allowed": [
+        {
+          "index": 6,
+          "uuid": "GPU-804aea8b-5f62-423e-72c6-49e1ed15c4e4",
+          "pci_bus_id": "00000000:87:00.0"
+        },
+        {
+          "index": 7,
+          "uuid": "GPU-a5ad49e5-0536-5229-ba8a-f8a902808f53",
+          "pci_bus_id": "00000000:C3:00.0"
+        },
+        {
+          "index": 8,
+          "uuid": "GPU-e2e96741-aec9-e90b-5c46-d0d58be90a56",
+          "pci_bus_id": "00000000:C4:00.0"
+        },
+        {
+          "index": 9,
+          "uuid": "GPU-c76642eb-64c1-b0ac-b051-d2efd47b32c4",
+          "pci_bus_id": "00000000:C5:00.0"
+        }
+      ],
+      "forbidden": [
+        {
+          "index": 0,
+          "uuid": "GPU-84f5ca4d-68db-ae98-d056-40654d859dd9",
+          "pci_bus_id": "00000000:07:00.0"
+        },
+        {
+          "index": 1,
+          "uuid": "GPU-d411d86a-6d1d-1967-55e7-9f9ec85d13f5",
+          "pci_bus_id": "00000000:08:00.0"
+        },
+        {
+          "index": 2,
+          "uuid": "GPU-931d0911-fc78-1638-e3d7-1ba868cbd286",
+          "pci_bus_id": "00000000:45:00.0"
+        },
+        {
+          "index": 3,
+          "uuid": "GPU-2f8008a1-9b67-11f6-987b-b393a672322c",
+          "pci_bus_id": "00000000:46:00.0"
+        },
+        {
+          "index": 4,
+          "uuid": "GPU-fc5dde96-210d-0afa-ac74-7f88477d622b",
+          "pci_bus_id": "00000000:47:00.0"
+        },
+        {
+          "index": 5,
+          "uuid": "GPU-1c9b612f-e0b5-fbbc-150f-8c2ef13453c9",
+          "pci_bus_id": "00000000:85:00.0"
+        }
+      ],
+      "host_gpu_count": 10
+    },
+    "gpu_policy_sha256": "31a73754831f437b9543968333111ff393addf1a4e0f1e6ebfe1531d3c02d013",
+    "split_sha256": "8c6e28a3881cfed27c8ba52dc80c5637b72de4bd43c7b0f5b65113102d74de46",
+    "grouping_status": "none_stratified_random_per_paul_stanik_2026-09-23_same_recording_frames_may_cross_splits",
+    "dataset_sizes": {
+      "test": 50,
+      "train": 227,
+      "val": 37
+    },
+    "source_checkpoints": {
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_large--cityscapes--seed-0/attempt-001/train/eomt_large--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "2651e4743a617a9b4939dd5fbaaf4a643d7988f028adc18ac9d6027a084b7bdd",
+        "size": 5065997178
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_large--railsem19--seed-0/attempt-001/train/eomt_large--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "bb69373c9ee71051db4f35323b5f398f57e3ef71a71a88f23286df71fe0a0dbd",
+        "size": 5066029946
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "a856595b513f6081fbfc534aa777b1cbad824f19e565f3f3b9861bebf79f6e1e",
+        "size": 5066030074
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_dinov3_large--cityscapes--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "070ecbb50465dee5614b17a02ca2afc5fda4bd15063608708d2eb06bdd4bf5f9",
+        "size": 5039340794
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/eomt_dinov3_large--railsem19--seed-0/attempt-001/train/eomt_dinov3_large--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "8ea5ae97baade3b62637a42dfc27240dc0a49ca21cad3cc317ea4b05d1919220",
+        "size": 5039373562
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/eomt_dinov3_large--cityscapes_to_railsem19--seed-0/attempt-001/train/eomt_dinov3_large--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "08d1d4d82d6f8c0e5f0e5ffe53944d13d5a492bafe5dfec76f5ea064b6fa2a46",
+        "size": 5039373690
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b5--cityscapes--seed-0/attempt-001/train/segformer_b5--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "303e1dd639de11fd66defadcba0eea5a2179ca0b1a8d768c1dde8f8e1f135b85",
+        "size": 1355686906
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b5--railsem19--seed-0/attempt-001/train/segformer_b5--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "7ecee01e5337241e3e2d864a36e5ad717ac57365a8fa50747fd19ff25d7debe1",
+        "size": 1355711482
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b5--cityscapes_to_railsem19--seed-0/attempt-001/train/segformer_b5--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "1a5f4c144fb89fea0250bbd390739f7e210be0bbb899acc2b64b6c0b2885051b",
+        "size": 1355711610
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/hrnet_w48_ocr--cityscapes--seed-0/train/hrnet_w48_ocr--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "38fb6ca68c932ae2a8224708568d0825f3d188f076da708d6eca79932cde4e84",
+        "size": 1173508223
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/hrnet_w48_ocr--railsem19--seed-0/attempt-001/train/hrnet_w48_ocr--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "0331c7ee6a029ad5e05837084fbb02cfe48f29dcf82ae3d4edef249af3990510",
+        "size": 1173541055
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/hrnet_w48_ocr--cityscapes_to_railsem19--seed-0/attempt-001/train/hrnet_w48_ocr--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "35f0c4ae7228f09da7b511df61a84d5a379d8f28830f8f91149fde0a44b6f3d3",
+        "size": 1173541247
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b2--cityscapes--seed-0/attempt-001/train/segformer_b2--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "d0f4f619c4d1200c143ff218ddb7e8693decd082345af09049cc50b8f8c42977",
+        "size": 438420722
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/segformer_b2--railsem19--seed-0/attempt-001/train/segformer_b2--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "a017480f6fc66e45651f83f3103f582591fa2f5f82b7dc048429508393ccfc20",
+        "size": 438445298
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/segformer_b2--cityscapes_to_railsem19--seed-0/attempt-001/train/segformer_b2--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "2917e287b856d7b272db0d1edd93bd31e4d79e045ff37648653c6cdcf0929bd7",
+        "size": 438445426
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--cityscapes--seed-0/attempt-001/train/upernet_convnext--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "fb45ace4437433d1713d6afef5ee260284b053b7301e6be003f89249012dc698",
+        "size": 1294946243
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/upernet_convnext--railsem19--seed-0/attempt-001/train/upernet_convnext--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "6e246e8e61f02c4359f944d776168359392cec5c1c750d4ba29c6637f80b9f3a",
+        "size": 1294962563
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/upernet_convnext--cityscapes_to_railsem19--seed-0/attempt-001/train/upernet_convnext--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "34bf26bec67bfd5835de6d65f89d12653539ddf276166dc985cfdf5103bb27eb",
+        "size": 1294962691
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/smp_deeplabv3plus_resnet101--cityscapes--seed-0/train/smp_deeplabv3plus_resnet101--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "01074c9ac3f2b84d122c8a23d07d26a31d2ff58d5d23740b077bdc998d70363b",
+        "size": 732423213
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3plus_resnet101--railsem19--seed-0/attempt-001/train/smp_deeplabv3plus_resnet101--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "0984e2ea375e4355ac7def36d6d5d344a28807e3c0f9bd46a724214d69db0c31",
+        "size": 732431533
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_deeplabv3plus_resnet101--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_deeplabv3plus_resnet101--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "d7620fd163c6aecb70b2243b119a888adc02a33dc123dc454a41395f235e9654",
+        "size": 732431661
+      },
+      "/data/izadia1/projects/segmentary-runs/current-main-fill-v2/jobs/smp_fpn_resnet50--cityscapes--seed-0/train/smp_fpn_resnet50--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "556c5d27ea6d8d034aa1d6c86a7defd74bcdd36b3e3962cc39034d22d32628d6",
+        "size": 418721249
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_fpn_resnet50--railsem19--seed-0/attempt-001/train/smp_fpn_resnet50--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "3937cfdc1cbd07489ea1eaf7771f305d8a2c6ccc6a141373c1d8f2142f0a9248",
+        "size": 418725537
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/smp_fpn_resnet50--cityscapes_to_railsem19--seed-0/attempt-001/train/smp_fpn_resnet50--cityscapes_to_railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "985c7a6172c91f8abb1b11d51bfe5522f1ab8168e096f824699e7bcb49c5aa4f",
+        "size": 418725665
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/smp_upernet_resnet101--cityscapes--seed-0/attempt-001/train/smp_upernet_resnet101--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "18a79d5ff0e4b11842213d5546a334f1e7e30b81c87679fab1659eecb12bcb7a",
+        "size": 902178591
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/smp_upernet_resnet101--railsem19--seed-0/attempt-001/train/smp_upernet_resnet101--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "786e3d81df9181457bb198b058bfd34662540be50b92ea3c4a9c4a3f361f8087",
+        "size": 902186783
+      },
+      "/data/izadia1/projects/segmentary-runs/city-rail-transfer-rail20/smp_upernet_resnet101/railsem19/last.ckpt": {
+        "sha256": "bf38a8644b50069166169dc4cbbf1f86c68fa67b2ee40952131b104c44c9c103",
+        "size": 902209823
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-a7c0b67/jobs/native_convnext_tiny_uper--cityscapes--seed-0/attempt-001/train/native_convnext_tiny_uper--cityscapes_seed0/cityscapes/last.ckpt": {
+        "sha256": "5b371ccbb1c2f1ad354d205d07f867135039dd82de6fffac6c27c76b1cbc88ea",
+        "size": 589942734
+      },
+      "/data/izadia1/projects/segmentary-runs/all-model-city-rail-seed0-rail20-b9eb3e1/jobs/native_convnext_tiny_uper--railsem19--seed-0/attempt-001/train/native_convnext_tiny_uper--railsem19_seed0/railsem19/last.ckpt": {
+        "sha256": "c9d8b86e7010fbe8b3f53c0683701f659ed08d6326c16e1de022bfdb51de7a79",
+        "size": 589950990
+      },
+      "/data/izadia1/projects/segmentary-runs/city-rail-transfer-rail20/native_convnext_tiny_uper/railsem19/last.ckpt": {
+        "sha256": "4c64ebd37d92449a029c1a9161c4a35cdd0453c05d49baea6d23458e21ff4c30",
+        "size": 589961358
+      }
+    },
+    "dataset_samples_verified": 314,
+    "target_steps": 4000,
+    "selection": "best validation checkpoint; auto raw/EMA-safe weights; no TTA",
+    "test": "held out; not evaluated",
+    "retention": "Keep best and final; delete periodic snapshots only after successful validation. Keep failed-run checkpoints for recovery.",
+    "dataset_manifest_sha256": "048ba308159fd9919315c6e11d23a658149272f3af6a5de3e80f3c9b46855851"
+  },
+  "jobs": [
+    {
+      "name": "eomt_large--rtis_only--seed-0",
+      "model": "eomt_large",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "status": "completed",
+      "final_step": 4000,
+      "observed_step": null,
+      "record": "models/eomt_large/record.json"
+    },
+    {
+      "name": "eomt_large--cityscapes_to_rtis--seed-0",
+      "model": "eomt_large",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "status": "completed",
+      "final_step": 3451,
+      "observed_step": null,
+      "record": "models/eomt_large/record.json"
+    },
+    {
+      "name": "eomt_large--railsem19_to_rtis--seed-0",
+      "model": "eomt_large",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "status": "completed",
+      "final_step": 4000,
+      "observed_step": null,
+      "record": "models/eomt_large/record.json"
+    },
+    {
+      "name": "eomt_large--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "eomt_large",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "status": "completed",
+      "final_step": 4000,
+      "observed_step": null,
+      "record": "models/eomt_large/record.json"
+    },
+    {
+      "name": "eomt_dinov3_large--rtis_only--seed-0",
+      "model": "eomt_dinov3_large",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "status": "training",
+      "final_step": null,
+      "observed_step": 2123,
+      "record": "models/eomt_dinov3_large/record.json"
+    },
+    {
+      "name": "eomt_dinov3_large--cityscapes_to_rtis--seed-0",
+      "model": "eomt_dinov3_large",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "status": "training",
+      "final_step": null,
+      "observed_step": 1399,
+      "record": "models/eomt_dinov3_large/record.json"
+    },
+    {
+      "name": "eomt_dinov3_large--railsem19_to_rtis--seed-0",
+      "model": "eomt_dinov3_large",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "status": "training",
+      "final_step": null,
+      "observed_step": 1349,
+      "record": "models/eomt_dinov3_large/record.json"
+    },
+    {
+      "name": "eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "eomt_dinov3_large",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "status": "training",
+      "final_step": null,
+      "observed_step": 1299,
+      "record": "models/eomt_dinov3_large/record.json"
+    },
+    {
+      "name": "segformer_b5--rtis_only--seed-0",
+      "model": "segformer_b5",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/segformer_b5/record.json"
+    },
+    {
+      "name": "segformer_b5--cityscapes_to_rtis--seed-0",
+      "model": "segformer_b5",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/segformer_b5/record.json"
+    },
+    {
+      "name": "segformer_b5--railsem19_to_rtis--seed-0",
+      "model": "segformer_b5",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/segformer_b5/record.json"
+    },
+    {
+      "name": "segformer_b5--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "segformer_b5",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/segformer_b5/record.json"
+    },
+    {
+      "name": "hrnet_w48_ocr--rtis_only--seed-0",
+      "model": "hrnet_w48_ocr",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/hrnet_w48_ocr/record.json"
+    },
+    {
+      "name": "hrnet_w48_ocr--cityscapes_to_rtis--seed-0",
+      "model": "hrnet_w48_ocr",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/hrnet_w48_ocr/record.json"
+    },
+    {
+      "name": "hrnet_w48_ocr--railsem19_to_rtis--seed-0",
+      "model": "hrnet_w48_ocr",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/hrnet_w48_ocr/record.json"
+    },
+    {
+      "name": "hrnet_w48_ocr--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "hrnet_w48_ocr",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/hrnet_w48_ocr/record.json"
+    },
+    {
+      "name": "segformer_b2--rtis_only--seed-0",
+      "model": "segformer_b2",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/segformer_b2/record.json"
+    },
+    {
+      "name": "segformer_b2--cityscapes_to_rtis--seed-0",
+      "model": "segformer_b2",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/segformer_b2/record.json"
+    },
+    {
+      "name": "segformer_b2--railsem19_to_rtis--seed-0",
+      "model": "segformer_b2",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/segformer_b2/record.json"
+    },
+    {
+      "name": "segformer_b2--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "segformer_b2",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/segformer_b2/record.json"
+    },
+    {
+      "name": "upernet_convnext--rtis_only--seed-0",
+      "model": "upernet_convnext",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/upernet_convnext/record.json"
+    },
+    {
+      "name": "upernet_convnext--cityscapes_to_rtis--seed-0",
+      "model": "upernet_convnext",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/upernet_convnext/record.json"
+    },
+    {
+      "name": "upernet_convnext--railsem19_to_rtis--seed-0",
+      "model": "upernet_convnext",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/upernet_convnext/record.json"
+    },
+    {
+      "name": "upernet_convnext--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "upernet_convnext",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/upernet_convnext/record.json"
+    },
+    {
+      "name": "smp_deeplabv3plus_resnet101--rtis_only--seed-0",
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_deeplabv3plus_resnet101/record.json"
+    },
+    {
+      "name": "smp_deeplabv3plus_resnet101--cityscapes_to_rtis--seed-0",
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_deeplabv3plus_resnet101/record.json"
+    },
+    {
+      "name": "smp_deeplabv3plus_resnet101--railsem19_to_rtis--seed-0",
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_deeplabv3plus_resnet101/record.json"
+    },
+    {
+      "name": "smp_deeplabv3plus_resnet101--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_deeplabv3plus_resnet101/record.json"
+    },
+    {
+      "name": "smp_fpn_resnet50--rtis_only--seed-0",
+      "model": "smp_fpn_resnet50",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_fpn_resnet50/record.json"
+    },
+    {
+      "name": "smp_fpn_resnet50--cityscapes_to_rtis--seed-0",
+      "model": "smp_fpn_resnet50",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_fpn_resnet50/record.json"
+    },
+    {
+      "name": "smp_fpn_resnet50--railsem19_to_rtis--seed-0",
+      "model": "smp_fpn_resnet50",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_fpn_resnet50/record.json"
+    },
+    {
+      "name": "smp_fpn_resnet50--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_fpn_resnet50",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_fpn_resnet50/record.json"
+    },
+    {
+      "name": "smp_upernet_resnet101--rtis_only--seed-0",
+      "model": "smp_upernet_resnet101",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_upernet_resnet101/record.json"
+    },
+    {
+      "name": "smp_upernet_resnet101--cityscapes_to_rtis--seed-0",
+      "model": "smp_upernet_resnet101",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_upernet_resnet101/record.json"
+    },
+    {
+      "name": "smp_upernet_resnet101--railsem19_to_rtis--seed-0",
+      "model": "smp_upernet_resnet101",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_upernet_resnet101/record.json"
+    },
+    {
+      "name": "smp_upernet_resnet101--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "smp_upernet_resnet101",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/smp_upernet_resnet101/record.json"
+    },
+    {
+      "name": "native_convnext_tiny_uper--rtis_only--seed-0",
+      "model": "native_convnext_tiny_uper",
+      "protocol": "rtis_only",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/native_convnext_tiny_uper/record.json"
+    },
+    {
+      "name": "native_convnext_tiny_uper--cityscapes_to_rtis--seed-0",
+      "model": "native_convnext_tiny_uper",
+      "protocol": "cityscapes_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/native_convnext_tiny_uper/record.json"
+    },
+    {
+      "name": "native_convnext_tiny_uper--railsem19_to_rtis--seed-0",
+      "model": "native_convnext_tiny_uper",
+      "protocol": "railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/native_convnext_tiny_uper/record.json"
+    },
+    {
+      "name": "native_convnext_tiny_uper--cityscapes_to_railsem19_to_rtis--seed-0",
+      "model": "native_convnext_tiny_uper",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "seed": 0,
+      "status": "queued",
+      "final_step": null,
+      "observed_step": null,
+      "record": "models/native_convnext_tiny_uper/record.json"
+    }
+  ]
+}
