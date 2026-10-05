@@ -20,7 +20,7 @@ Pixel-aggregated mud IoU sums true positives, false positives and false negative
 
 ## 3. Evidence A: where the val mud pixels are
 
-Every val image with mud ground truth on the stratified split (`paul` arm masks; the `fixed-stratified` arm uses the same val images, checked by key and image SHA-256). Per-image mud IoU is shown for the best cab-view run, **segformer_b5 cityscapes_to_railsem19_to_rtis**, and for the reference run **eomt_large railsem19_to_rtis**. `share` is the image's share of all 7,435,760 val mud pixels; `frame` is the share of the image covered by mud.
+Every val image with mud ground truth on the stratified split (`paul` arm masks). Per-image mud IoU is shown for the best cab-view run, **segformer_b5 cityscapes_to_railsem19_to_rtis**, and for the reference run **eomt_large railsem19_to_rtis**. `share` is the image's share of all 7,435,760 val mud pixels; `frame` is the share of the image covered by mud.
 
 | image | viewpoint | scene group | mud px | share | frame | IoU segformer_b5 | IoU eomt_large |
 |---|---|---|---:|---:|---:|---:|---:|
@@ -128,11 +128,11 @@ Top 10 runs by cab-view mud IoU (percent):
 
 ## 6. Evidence D: split overlap
 
-Scene groups are the directory layout names of the prepared arms. A val group "in train" has at least one train image in the same group.
+Scene groups are the directory layout names of the prepared arms. A val group "in train" has at least one train image in the same group. The stratified column is the `paul` arm (Paul's masks), the scene-grouped column the `fixed-grouped` arm (re-rendered masks), so the mud pixel counts also differ by the label render.
 
 |  | stratified | scene-grouped |
 |---|---:|---:|
-| masks | `fixed-stratified` (same val images as `paul`) | `fixed-grouped` |
+| arm (masks) | `paul` (masks_machine) | `fixed-grouped` (re-rendered) |
 | val images | 37 | 37 |
 | train images | 227 | 217 |
 | val scene groups that also have train images | 17 of 17 | 0 of 3 |
@@ -142,19 +142,18 @@ Scene groups are the directory layout names of the prepared arms. A val group "i
 | track-level share of val mud pixels | 95.1% | 1.1% |
 | other val images (with mud) | 1 (0) | 1 (0) |
 | other share of val mud pixels | 0.0% | 0.0% |
-| val mud pixels | 7,436,590 | 1,226,250 |
+| val mud pixels | 7,435,760 | 1,226,250 |
 
 On the grouped split the cab-view val mud sits in 1 scene group: `rural-overcast-cab-view` (17 images).
 
 ## 7. What the scene-grouped arm will tell us
 
-The `fixed-grouped` arm keeps every val scene group out of train. If the stratified numbers are inflated by same-scene frames, its mud IoU should fall to (or below) the stratified cab-view numbers rather than near the stratified all-image numbers. Two things are not separated by this test: the grouped arm also changes the training set (227 vs 217 train images) and its val mud is 17 of 17 cab-view images from one camera setup (`rural-overcast-cab-view`), so it is a different and narrower val set, not the same val set with same-group frames removed.
+The `fixed-grouped` arm keeps every val scene group out of train. If the stratified numbers are inflated by same-scene frames, its mud IoU should fall to (or below) the stratified cab-view numbers rather than near the stratified all-image numbers. Three things are not separated by this test: the grouped arm also uses the re-rendered labels (a small effect on average, see section 9), it changes the training set (227 vs 217 train images) and its val mud is 17 of 17 cab-view images from one camera setup (`rural-overcast-cab-view`), so it is a different and narrower val set, not the same val set with same-group frames removed.
 
 | arm | completed jobs | other statuses |
 |---|---:|---|
 | `paul` | 40 / 40 | — |
-| `fixed-stratified` | 4 / 40 | queued 32, training 4 |
-| `fixed-grouped` | 0 / 40 | queued 40 |
+| `fixed-grouped` | 0 / 40 | evaluating 1, queued 36, training 3 |
 
 Pending: 40 of 40 `fixed-grouped` jobs are not completed. Regenerate this document with `scripts/make_rad_mud_case.py` when they are.
 
@@ -181,8 +180,7 @@ All three published models, including the older FRRN-B baseline, score 84-89 on 
 - **Small cab-view subset.** On the stratified split the cab-view mud numbers rest on 7 images (363,290 mud pixels); one image can move them by many points.
 - **Viewpoints are AI-assisted visual judgements.** `configs/datasets/rad_9_24_2026-viewpoints.yaml` comes from two labelling passes by the same AI model with adjudication of disagreements; not independent human annotation.
 - **Scene groups are layout names,** assigned from visual evidence, not confirmed recording provenance. The similarity in figure 3 is a generic ImageNet appearance score.
-- **Mask-conversion differences in the delivered `masks_machine/` masks** (used by the `paul` arm). The conversion labels pixels covered by no polygon as `person` and ignores polygon holes (see the guide); this is mechanical, not an annotation judgement. The figures use those masks because the runs were scored against them. On val the mud total differs by 830 px (7,435,760 `paul` vs 7,436,590 `fixed-stratified`, 0.01%).
-- **The `fixed-stratified` arm** has 4 of 40 jobs completed, so the label-fix comparison on the same val images is not shown here.
+- **Mask-conversion differences in the delivered `masks_machine/` masks** (used by the `paul` arm). The conversion labels pixels covered by no polygon as `person` and ignores polygon holes (see the guide); this is mechanical, not an annotation judgement. The figures use those masks because the runs were scored against them. A third arm with our re-rendered masks on the stratified split was stopped on 2026-10-05 at 8 of 40 jobs: over 8 matched eomt runs the label fix changed cab-view mud IoU on stratified val by -3.3 to +4.7 points, -0.1 on average.
 
 ## 10. Reproduce
 
@@ -204,7 +202,6 @@ Inputs used for this version:
 
 - viewpoints: `rad_9_24_2026-viewpoints.yaml` (sha256 `7dfc4f730cbe`)
 - samples `paul`: sha256 `2338c1e5cd84`
-- samples `fixed-stratified`: sha256 `048ba308159f`
 - samples `fixed-grouped`: sha256 `46e5b404cb1e`
 - similarity weights: torchvision `resnet50-11ad3fa6.pth`
-- campaigns: `paul-seed0-20261005-r2`, `fixed-stratified-seed0-20261005-r2`, `fixed-grouped-seed0-20261005-r2`
+- campaigns: `paul-seed0-20261005-r2`, `fixed-grouped-seed0-20261005-r2`
