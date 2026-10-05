@@ -211,9 +211,9 @@
       "model": "eomt_large",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1999,
+      "status": "completed",
+      "final_step": 2333,
+      "observed_step": null,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -221,9 +221,9 @@
       "model": "eomt_large",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1949,
+      "status": "completed",
+      "final_step": 3370,
+      "observed_step": null,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -231,9 +231,9 @@
       "model": "eomt_large",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 2073,
+      "status": "completed",
+      "final_step": 2074,
+      "observed_step": null,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -241,9 +241,9 @@
       "model": "eomt_large",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "training",
-      "final_step": null,
-      "observed_step": 1999,
+      "status": "completed",
+      "final_step": 2074,
+      "observed_step": null,
       "record": "models/eomt_large/record.json"
     },
     {
@@ -251,8 +251,8 @@
       "model": "eomt_dinov3_large",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "queued",
-      "final_step": null,
+      "status": "completed",
+      "final_step": 3111,
       "observed_step": null,
       "record": "models/eomt_dinov3_large/record.json"
     },
@@ -261,8 +261,8 @@
       "model": "eomt_dinov3_large",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "queued",
-      "final_step": null,
+      "status": "completed",
+      "final_step": 3370,
       "observed_step": null,
       "record": "models/eomt_dinov3_large/record.json"
     },
@@ -271,8 +271,8 @@
       "model": "eomt_dinov3_large",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
-      "final_step": null,
+      "status": "completed",
+      "final_step": 4000,
       "observed_step": null,
       "record": "models/eomt_dinov3_large/record.json"
     },
@@ -281,8 +281,8 @@
       "model": "eomt_dinov3_large",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
-      "final_step": null,
+      "status": "completed",
+      "final_step": 2074,
       "observed_step": null,
       "record": "models/eomt_dinov3_large/record.json"
     },
@@ -291,8 +291,8 @@
       "model": "segformer_b5",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "queued",
-      "final_step": null,
+      "status": "completed",
+      "final_step": 2333,
       "observed_step": null,
       "record": "models/segformer_b5/record.json"
     },
@@ -301,9 +301,9 @@
       "model": "segformer_b5",
       "protocol": "cityscapes_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 3349,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -311,9 +311,9 @@
       "model": "segformer_b5",
       "protocol": "railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 3199,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -321,9 +321,9 @@
       "model": "segformer_b5",
       "protocol": "cityscapes_to_railsem19_to_rtis",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 2299,
       "record": "models/segformer_b5/record.json"
     },
     {
@@ -331,9 +331,9 @@
       "model": "hrnet_w48_ocr",
       "protocol": "rtis_only",
       "seed": 0,
-      "status": "queued",
+      "status": "training",
       "final_step": null,
-      "observed_step": null,
+      "observed_step": 799,
       "record": "models/hrnet_w48_ocr/record.json"
     },
     {

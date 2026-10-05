@@ -9,7 +9,7 @@ The `rad_9_24_2026` delivery (314 rail images with polygon labels) trained two w
 | arm | labels | split; train/val/test | completed | other jobs | code |
 | --- | --- | --- | --- | --- | --- |
 | [`paul`](paul/README.md) | Paul's delivered `masks_machine` copies | stratified random (seed 0); 227/37/50 | 40/40 | — | `d864b72bd907` |
-| [`fixed-grouped`](fixed-grouped/README.md) | re-rendered from the polygon JSONs | scene-grouped (from v1/v2); 217/37/60 | 0/40 | queued 36, training 4 | `d864b72bd907` |
+| [`fixed-grouped`](fixed-grouped/README.md) | re-rendered from the polygon JSONs | scene-grouped (from v1/v2); 217/37/60 | 9/40 | queued 27, training 4 | `d864b72bd907` |
 
 Each arm page has the per-model reports, `results.csv`, `status.json` and the downloadable evidence exactly as for [RTIS v2](../paul-test-rtis/v2/README.md). Fork progress is in the [paper-recipe section](#paper-recipe-fork-runs).
 
@@ -61,14 +61,14 @@ Percent; columns per arm: P = `paul`, FG = `fixed-grouped`. Selected checkpoint 
 
 | model | protocol | GT-class mIoU P | GT-class mIoU FG | mud IoU P (n=13) | mud IoU FG (n=18) | mud IoU cab P (n=7) | mud IoU cab FG (n=17) | img-mean mud IoU cab P (n=7) | img-mean mud IoU cab FG (n=17) |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | 70.2 |  | 89.1 |  | 38.9 |  | 48.0 |  |
-| eomt_dinov3_large | cityscapes_to_rtis | 65.9 |  | 85.8 |  | 26.4 |  | 37.2 |  |
-| eomt_dinov3_large | railsem19_to_rtis | 70.6 |  | 89.9 |  | 39.7 |  | 53.3 |  |
-| eomt_dinov3_large | rtis_only | 68.3 |  | 90.8 |  | 41.9 |  | 49.2 |  |
-| eomt_large | cityscapes_to_railsem19_to_rtis | 72.2 |  | 93.5 |  | 46.0 |  | 51.9 |  |
-| eomt_large | cityscapes_to_rtis | 71.0 |  | 92.7 |  | 40.3 |  | 50.5 |  |
-| eomt_large | railsem19_to_rtis | 72.8 |  | 95.0 |  | 50.7 |  | 49.3 |  |
-| eomt_large | rtis_only | 70.3 |  | 92.5 |  | 42.6 |  | 51.3 |  |
+| eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | 70.2 | 52.3 | 89.1 | 8.2 | 38.9 | 12.1 | 48.0 | 11.5 |
+| eomt_dinov3_large | cityscapes_to_rtis | 65.9 | 51.4 | 85.8 | 10.6 | 26.4 | 42.3 | 37.2 | 41.4 |
+| eomt_dinov3_large | railsem19_to_rtis | 70.6 | 58.3 | 89.9 | 18.8 | 39.7 | 37.2 | 53.3 | 34.2 |
+| eomt_dinov3_large | rtis_only | 68.3 | 48.7 | 90.8 | 8.7 | 41.9 | 40.7 | 49.2 | 39.1 |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 72.2 | 58.2 | 93.5 | 15.7 | 46.0 | 34.6 | 51.9 | 36.5 |
+| eomt_large | cityscapes_to_rtis | 71.0 | 56.4 | 92.7 | 9.4 | 40.3 | 25.3 | 50.5 | 28.7 |
+| eomt_large | railsem19_to_rtis | 72.8 | 58.0 | 95.0 | 3.3 | 50.7 | 10.4 | 49.3 | 10.3 |
+| eomt_large | rtis_only | 70.3 | 53.2 | 92.5 | 12.7 | 42.6 | 33.6 | 51.3 | 34.6 |
 | hrnet_w48_ocr | cityscapes_to_railsem19_to_rtis | 55.4 |  | 75.5 |  | 34.1 |  | 45.5 |  |
 | hrnet_w48_ocr | cityscapes_to_rtis | 56.9 |  | 85.8 |  | 33.9 |  | 39.9 |  |
 | hrnet_w48_ocr | railsem19_to_rtis | 61.1 |  | 76.7 |  | 46.3 |  | 42.4 |  |
@@ -84,7 +84,7 @@ Percent; columns per arm: P = `paul`, FG = `fixed-grouped`. Selected checkpoint 
 | segformer_b5 | cityscapes_to_railsem19_to_rtis | 65.1 |  | 91.2 |  | 61.9 |  | 60.0 |  |
 | segformer_b5 | cityscapes_to_rtis | 59.1 |  | 91.3 |  | 46.8 |  | 51.9 |  |
 | segformer_b5 | railsem19_to_rtis | 69.5 |  | 90.4 |  | 55.2 |  | 50.6 |  |
-| segformer_b5 | rtis_only | 59.1 |  | 93.1 |  | 53.4 |  | 60.0 |  |
+| segformer_b5 | rtis_only | 59.1 | 41.7 | 93.1 | 5.2 | 53.4 | 14.9 | 60.0 | 12.4 |
 | smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 56.9 |  | 85.4 |  | 39.9 |  | 47.2 |  |
 | smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 55.7 |  | 89.6 |  | 45.6 |  | 38.2 |  |
 | smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 62.4 |  | 87.7 |  | 47.2 |  | 36.3 |  |
@@ -106,7 +106,17 @@ Percent; columns per arm: P = `paul`, FG = `fixed-grouped`. Selected checkpoint 
 
 Differences in IoU points for model x protocol pairs completed in both arms, single seed, no uncertainty. Split = FG - P: different labels, val images and train images (the label part is small on average but up to about 5 points per run; see How to read this).
 
-No pair completed yet.
+| model | protocol | effect | GT-class mIoU | mud IoU | mud IoU cab | img-mean mud IoU cab |
+|---|---|---:|---:|---:|---:|---:|
+| eomt_dinov3_large | cityscapes_to_railsem19_to_rtis | split | -17.9 | -80.9 | -26.8 | -36.5 |
+| eomt_dinov3_large | cityscapes_to_rtis | split | -14.4 | -75.2 | +16.0 | +4.2 |
+| eomt_dinov3_large | railsem19_to_rtis | split | -12.3 | -71.0 | -2.5 | -19.2 |
+| eomt_dinov3_large | rtis_only | split | -19.6 | -82.2 | -1.1 | -10.1 |
+| eomt_large | cityscapes_to_railsem19_to_rtis | split | -14.0 | -77.8 | -11.3 | -15.3 |
+| eomt_large | cityscapes_to_rtis | split | -14.6 | -83.3 | -15.0 | -21.7 |
+| eomt_large | railsem19_to_rtis | split | -14.8 | -91.6 | -40.3 | -39.1 |
+| eomt_large | rtis_only | split | -17.2 | -79.7 | -9.0 | -16.7 |
+| segformer_b5 | rtis_only | split | -17.5 | -87.9 | -38.5 | -47.6 |
 
 ### Validation composition (labels only)
 
@@ -136,7 +146,7 @@ Paul Stanik's two paper recipes (HRNet-OCR-Mscale `pauls3/semantic-segmentation@
 
 | label | arm | checkpoint owners | status | scored: GT-class mIoU / mud IoU / mud IoU cab / img-mean mud IoU cab | fork's own in-training best (not comparable) |
 | --- | --- | --- | --- | --- | --- |
-| `paper-hrnet__rs19-paul__arm-paul` | paul | map_city:nvidia -> rs19:paul -> rad:ours | training, epoch 750 (0-based, of 1000) | — | mud IoU 93.8 @ epoch 460; mIoU 70.3 @ epoch 607 |
+| `paper-hrnet__rs19-paul__arm-paul` | paul | map_city:nvidia -> rs19:paul -> rad:ours | training, epoch 897 (0-based, of 1000) | — | mud IoU 93.8 @ epoch 460; mIoU 70.4 @ epoch 878 |
 | `hrnet-rs19-ours` | — (RS19 stage) | — | queue: pending | — | — |
 | `paper-hrnet__mapcity-direct__arm-fixed-grouped` | fixed-grouped | — | queue: pending | — | — |
 | `paper-hrnet__mapcity-direct__arm-paul` | paul | — | queue: pending | — | — |
@@ -159,4 +169,4 @@ Paul Stanik's two paper recipes (HRNet-OCR-Mscale `pauls3/semantic-segmentation@
 Generated by `scripts/publish_rad_results.py` from the HDRFS campaign records, the prepared datasets and the fork run directories, which it only reads. Absolute paths are provenance on HDRFS, not links. Prediction masks are not published.
 
 - Publisher code: `e29c74ade580`
-- Campaign records last changed: 2026-10-05 18:34 UTC
+- Campaign records last changed: 2026-10-05 22:00 UTC
