@@ -104,7 +104,7 @@ from segmentary.engine.metrics import ConfusionMatrix
 NUM_CLASSES = 21
 IGNORE = 255
 MUD = "mud-pumping"
-ARMS = ("paul", "fixed-stratified", "fixed-grouped")
+ARMS = ("paul", "fixed-grouped")
 ARM_DATASET = "rad_9_24_2026-{arm}"
 STAGES = ("map_city", "rs19", "rad")
 OWNERS = ("paul", "nvidia", "ours", "public-sfnet-authors")

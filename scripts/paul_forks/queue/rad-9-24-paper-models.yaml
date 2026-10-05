@@ -1,9 +1,8 @@
 # Paul paper-model runs still to do for RAD 9/24, in priority order (fork_queue.py).
 #
-# Deploy into its OWN tools directory, never over tools/paul_forks: the running
-# pf-paper-hrnet-rs19-paul session starts tools/paul_forks/recipes/paper-hrnet.sh afresh for
-# each arm (a sync there would give arms 2 and 3 different script hashes), and the running
-# arm's bash is executing that file (an in-place cp/scp/--inplace would break it). The /tmp GPU
+# Deploy into its OWN tools directory, never over tools/paul_forks: the
+# pf-paper-hrnet-rs19-paul session runs tools/paul_forks/recipes/paper-hrnet.sh, and a running
+# bash executes that file (an in-place cp/scp/--inplace would break it). The /tmp GPU
 # locks of fork_gpu_run.py are shared by every copy; each copy's recipes only accept the
 # fork_gpu_run.py next to them.
 #
@@ -14,12 +13,15 @@
 #   $P $Q/fork_queue.py check --queue $Q/queue/rad-9-24-paper-models.yaml
 #   tmux new-session -d -s pf-queue "$P $Q/fork_queue.py run --queue $Q/queue/rad-9-24-paper-models.yaml >> $RUN/logs/fork-queue.log 2>&1"
 #
-# Order: our own RS19 retraining first (SFNet, then HRNet), then RAD from those RS19
-# checkpoints (SFNet first), then the optional comparisons: (a) Map->City -> RAD directly and
+# Arms: paul and fixed-grouped only. A third arm (fixed labels on the stratified split) was
+# stopped on 2026-10-05 at 8/40 jobs: over 8 matched eomt runs the label fix changed cab-view mud
+# IoU by -3.3..+4.7 points, -0.1 on average, so the GPUs go to the split comparison instead.
+# Order: Paul's HRNet on fixed-grouped first, then our own RS19 retraining (SFNet, then HRNet),
+# then RAD from those RS19 checkpoints (SFNet first), then the optional comparisons: (a) Map->City -> RAD directly and
 # (b) the HRNet RAD recipe stored in Paul's 0.8964 checkpoint. A job waiting on a dependency
 # does not hold back later jobs, so the optional ones use GPUs the RS19 stages leave free.
 #
-# Not in this file: paper-hrnet --rs19 paul with the default recipe (already running in tmux
+# Not in this file: paper-hrnet --rs19 paul --arm paul with the default recipe (run by tmux
 # session pf-paper-hrnet-rs19-paul on GPUs 2-5), paper-sfnet --rs19 paul (reserved until
 # Paul's SFNet RS19 checkpoint is pinned), SFNET_RAD_RECIPE=train_2 (from Paul's git history,
 # not stored in a checkpoint) and HRNET_RS19_RECIPE variants (RS19 labels carry no recipe).
@@ -42,11 +44,19 @@ holds:
 # deviation) so every arm and chain has the same layout.
 
 jobs:
+  # 0. Paul's HRNet from his RS19 checkpoint on the fixed-grouped arm (default recipe); the
+  #    pf-paper-hrnet-rs19-paul session runs only the paul arm.
+  - name: hrnet-rs19paul-fixed-grouped
+    label: paper-hrnet__rs19-paul__arm-fixed-grouped
+    recipe: paper-hrnet.sh
+    args: [--rs19, paul, --arm, fixed-grouped]
+    gpu_groups: &quads [[2, 3, 4, 5], [6, 7, 8, 9]]
+
   # 1. Our SFNet RS19 stage (Paul's layout 4 x 8)
   - name: sfnet-rs19-ours
     label: sfnet-rs19-ours
     recipe: sfnet-rs19-ours.sh
-    gpu_groups: &quads [[2, 3, 4, 5], [6, 7, 8, 9]]
+    gpu_groups: *quads
 
   # 2. Our HRNet RS19 stage (Paul's shared train_rs19.yml)
   - name: hrnet-rs19-ours
@@ -62,13 +72,6 @@ jobs:
     depends_on: [sfnet-rs19-ours]
     rs19_ckpt_from: sfnet-rs19-ours
     gpu_groups: &pairs [[2, 3], [4, 5], [6, 7], [8, 9]]
-  - name: sfnet-rs19ours-fixed-stratified
-    label: paper-sfnet__rs19-ours__arm-fixed-stratified
-    recipe: paper-sfnet.sh
-    args: [--rs19, ours, --arm, fixed-stratified]
-    depends_on: [sfnet-rs19-ours]
-    rs19_ckpt_from: sfnet-rs19-ours
-    gpu_groups: *pairs
   - name: sfnet-rs19ours-fixed-grouped
     label: paper-sfnet__rs19-ours__arm-fixed-grouped
     recipe: paper-sfnet.sh
@@ -82,13 +85,6 @@ jobs:
     label: paper-hrnet__rs19-ours__arm-paul
     recipe: paper-hrnet.sh
     args: [--rs19, ours, --arm, paul]
-    depends_on: [hrnet-rs19-ours]
-    rs19_ckpt_from: hrnet-rs19-ours
-    gpu_groups: *quads
-  - name: hrnet-rs19ours-fixed-stratified
-    label: paper-hrnet__rs19-ours__arm-fixed-stratified
-    recipe: paper-hrnet.sh
-    args: [--rs19, ours, --arm, fixed-stratified]
     depends_on: [hrnet-rs19-ours]
     rs19_ckpt_from: hrnet-rs19-ours
     gpu_groups: *quads
@@ -106,11 +102,6 @@ jobs:
     recipe: paper-sfnet.sh
     args: [--rs19, none, --arm, paul]
     gpu_groups: *pairs
-  - name: sfnet-direct-fixed-stratified
-    label: paper-sfnet__mapcity-direct__arm-fixed-stratified
-    recipe: paper-sfnet.sh
-    args: [--rs19, none, --arm, fixed-stratified]
-    gpu_groups: *pairs
   - name: sfnet-direct-fixed-grouped
     label: paper-sfnet__mapcity-direct__arm-fixed-grouped
     recipe: paper-sfnet.sh
@@ -122,12 +113,6 @@ jobs:
     label: paper-hrnet__rs19-paul__arm-paul__recipe-train_2
     recipe: paper-hrnet.sh
     args: [--rs19, paul, --arm, paul]
-    env: {HRNET_RAD_RECIPE: train_2}
-    gpu_groups: *quads
-  - name: hrnet-rs19paul-train2-fixed-stratified
-    label: paper-hrnet__rs19-paul__arm-fixed-stratified__recipe-train_2
-    recipe: paper-hrnet.sh
-    args: [--rs19, paul, --arm, fixed-stratified]
     env: {HRNET_RAD_RECIPE: train_2}
     gpu_groups: *quads
   - name: hrnet-rs19paul-train2-fixed-grouped
@@ -142,11 +127,6 @@ jobs:
     label: paper-hrnet__mapcity-direct__arm-paul
     recipe: paper-hrnet.sh
     args: [--rs19, none, --arm, paul]
-    gpu_groups: *quads
-  - name: hrnet-direct-fixed-stratified
-    label: paper-hrnet__mapcity-direct__arm-fixed-stratified
-    recipe: paper-hrnet.sh
-    args: [--rs19, none, --arm, fixed-stratified]
     gpu_groups: *quads
   - name: hrnet-direct-fixed-grouped
     label: paper-hrnet__mapcity-direct__arm-fixed-grouped

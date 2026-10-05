@@ -50,7 +50,7 @@ RECIPES = FORKS / "recipes"
 PATCHES = FORKS / "patches"
 LAUNCHER = FORKS / "fork_gpu_run.py"
 SCRIPTS = ["hrnet-rs19-ours.sh", "sfnet-rs19-ours.sh", "paper-hrnet.sh", "paper-sfnet.sh"]
-ARMS = ["paul", "fixed-stratified", "fixed-grouped"]
+ARMS = ["paul", "fixed-grouped"]
 SERIES = {
     "hrnet": [
         "P0-september-baseline",
@@ -748,9 +748,18 @@ def test_dump_provenance_satisfies_the_scorer_contract(fake_root, monkeypatch):
     assert score_predictions.check_provenance(prov, "paul") == ("paper-sfnet__rs19-ours", "paul")
 
 
+def test_dropped_label_fix_arm_is_refused(fake_root):
+    """The RAD 9/24 study has only the paul and fixed-grouped arms (fixed-stratified dropped)."""
+    run_dir = fake_root["tmp"] / "dropped-arm"
+    args = ["--rs19", "paul", "--arm", "fixed-stratified", "--gpus", "2,3,4,5"]
+    result = run_recipe(fake_root, "paper-hrnet.sh", *args, "--run-dir", str(run_dir), "--dry-run")
+    assert result.returncode != 0 and "--arm must be one of: paul fixed-grouped" in result.stderr
+    assert not (run_dir / "provenance.json").exists()
+
+
 def test_dump_of_a_recipe_variant_run_keeps_its_label(fake_root):
     run_dir = fake_root["tmp"] / "variant-run"
-    args = ["--rs19", "paul", "--arm", "fixed-stratified", "--gpus", "2,3,4,5"]
+    args = ["--rs19", "paul", "--arm", "fixed-grouped", "--gpus", "2,3,4,5"]
     env = {"HRNET_RAD_RECIPE": "train_2"}
     trained = run_recipe(
         fake_root, "paper-hrnet.sh", *args, "--run-dir", str(run_dir), "--dry-run", extra_env=env
@@ -763,12 +772,12 @@ def test_dump_of_a_recipe_variant_run_keeps_its_label(fake_root):
     ckpt.parent.mkdir(parents=True)
     ckpt.write_bytes(b"w")
     assert dump(fake_root, "paper-hrnet.sh", ckpt, "paul", run_dir).returncode != 0
-    result = dump(fake_root, "paper-hrnet.sh", ckpt, "fixed-stratified", run_dir)
+    result = dump(fake_root, "paper-hrnet.sh", ckpt, "fixed-grouped", run_dir)
     assert result.returncode == 0, result.stderr
     prov = json.loads(
         (run_dir / "dumps" / "test-single-best_mud_epoch_3" / "dump-provenance.json").read_text()
     )
-    assert prov["label"] == "paper-hrnet__rs19-paul__arm-fixed-stratified__recipe-train_2"
+    assert prov["label"] == "paper-hrnet__rs19-paul__arm-fixed-grouped__recipe-train_2"
 
 
 def test_mapcity_direct_chain_provenance(fake_root):
@@ -986,7 +995,7 @@ def test_adapter_must_come_from_the_requested_arm_and_be_current(fake_root):
     manifest_path = fake_root["root"] / "adapters" / "paul" / "manifest.json"
     original = manifest_path.read_text()
     swapped = json.loads(original)
-    swapped["arm_name"] = "rad_9_24_2026-fixed-stratified"
+    swapped["arm_name"] = "rad_9_24_2026-fixed-grouped"
     manifest_path.write_text(json.dumps(swapped))
     wrong_arm = attempt("wrong-arm")
     assert wrong_arm.returncode != 0 and "arm_name" in wrong_arm.stderr

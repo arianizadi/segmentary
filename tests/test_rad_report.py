@@ -256,8 +256,7 @@ def make_fork(tmp: Path, audit: str) -> Path:
 def fixture(tmp_path: Path) -> list[str]:
     datasets = tmp_path / "datasets"
     paul = make_campaign(tmp_path, datasets, "paul")
-    fixed = make_campaign(tmp_path, datasets, "fixed-stratified", scale=2)
-    make_arm(datasets, "fixed-grouped")
+    fixed = make_campaign(tmp_path, datasets, "fixed-grouped", scale=2)
     audit = hashlib.sha256((datasets / "rad_9_24_2026-paul/audit/samples.json").read_bytes())
     forks = make_fork(tmp_path, audit.hexdigest())
     vp = tmp_path / "viewpoints.yaml"
@@ -289,19 +288,22 @@ def test_report_renders_tables_csv_and_coverage(tmp_path):
     assert "map_city:nvidia -> rs19:paul -> rad:ours" in fork_all
     assert f",{96 / 110:.6f}," in fork_all
 
-    # headline: P and FS cells for m1, FG empty; cab-view mud IoU 60.0 (P) vs 80.0 (FS)
+    # headline: P and FG cells for m1; cab-view mud IoU 60.0 (P) vs 80.0 (FG); m2 not completed
     headline = next(line for line in readme.splitlines() if line.startswith("| m1 |"))
     cells = [c.strip() for c in headline.strip("|").split("|")]
     assert cells[:2] == ["m1", "rtis_only"]
-    assert cells[2 + 6 : 2 + 9] == ["60.0", "80.0", ""]
-    effect = next(line for line in readme.splitlines() if "| label fix |" in line)
+    assert cells[2 + 4 : 2 + 6] == ["60.0", "80.0"]
+    assert not any(line.startswith("| m2 |") for line in readme.splitlines())
+    effect = next(line for line in readme.splitlines() if "| split |" in line)
     assert "+20.0" in effect  # cab-view mud IoU 0.6 -> 0.8
-    assert "| split |" not in readme  # no fixed-grouped job completed
+    assert "| label fix |" not in readme and "fixed-stratified" not in readme
+    assert "FS" not in readme
     assert "## How to read this" in readme and "deployment-relevant" in readme
     assert "| `paper-hrnet__rs19-paul__arm-paul` | map_city:nvidia -> rs19:paul -> rad:ours |" in (
         readme
     )
     assert "| segmentary | paul | 1/2 | queued 1 |" in readme
+    assert "| segmentary | fixed-grouped | 1/2 | queued 1 |" in readme
     assert "excluded (probe_epochs)" in readme and "fixed-grouped` " in readme
     assert "running" in readme
     assert "best-auto-test" not in readme and "results-test" not in readme
@@ -309,7 +311,10 @@ def test_report_renders_tables_csv_and_coverage(tmp_path):
     assert "These val numbers are optimistic" in readme and "`val_iou/mud-pumping`" in readme
     assert "Every campaign result is seed 0" in readme
     assert "`paul` = Paul's delivered masks" in readme and "trained by us" in readme
-    assert "same val images (keys and image SHA-256 checked)" in readme
+    assert "changes **both** the labels and the split policy" in readme
+    assert "stopped on 2026-10-05 at 8 of 40 jobs" in readme and "-0.1 on average" in readme
+    assert "cannot be attributed to the split" in readme
+    assert "Split = FG - P" in readme
     assert "mud IoU cab P (n=1)" in readme and "mud IoU P (n=2)" in readme
     assert "1 track-level close-ups from the `trackside-maintenance` scene group" in readme
     assert "one maintenance sequence" not in readme and "shares recordings" not in readme
@@ -442,6 +447,7 @@ def test_fork_without_owner_record_fails_cleanly(tmp_path):
 
 def test_unparseable_fork_label_and_missing_arm_are_reported(tmp_path):
     args = fixture(tmp_path)
+    del args[2:4]  # no fixed-grouped campaign either
     forks = Path(args[args.index("--fork-runs") + 1])
     write_json(forks / "odd-run/provenance.json", {"label": "not-a-label"})
     datasets = Path(args[args.index("--datasets-root") + 1])
@@ -453,29 +459,6 @@ def test_unparseable_fork_label_and_missing_arm_are_reported(tmp_path):
     assert "| fixed-grouped | dataset not found |" in readme
     assert "Prepared dataset not found for `fixed-grouped`" in readme
     assert "samples fixed-grouped: `not found under" in readme
-
-
-def test_different_label_fix_val_images_are_flagged(tmp_path):
-    args = fixture(tmp_path)
-    datasets = Path(args[args.index("--datasets-root") + 1])
-    # fixed-stratified's sample set no longer matches its campaign; re-pin the campaign too.
-    path = datasets / "rad_9_24_2026-fixed-stratified/audit/samples.json"
-    rows = json.loads(path.read_text())
-    for row in rows:  # swap split membership of a val and the train image
-        if row["stem"] in ("0003", "0004"):
-            row["split"] = "val" if row["split"] == "train" else "train"
-    path.write_text(json.dumps(rows))
-    campaign = Path(args[3]) / "campaign.json"
-    record = json.loads(campaign.read_text())
-    record["dataset_audit_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
-    campaign.write_text(json.dumps(record))
-    # its completed job no longer covers the changed split, so drop it to queued
-    state_path(args, 3).write_text(json.dumps({"status": "queued"}))
-    out = tmp_path / "out"
-    assert rad_report.main([*args, "--out", str(out)]) == 0
-    readme = (out / "README.md").read_text()
-    assert "**the two val sets differ**" in readme and "(val images differ)" in readme
-    assert "same images for `paul` and `fixed-stratified`" not in readme
 
 
 def test_out_inside_datasets_root_is_refused(tmp_path):

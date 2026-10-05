@@ -5,8 +5,8 @@
         [--campaign <root> ...] [--fork-runs <dir>] [--datasets-root <dir>] \\
         [--viewpoints configs/datasets/rad_9_24_2026-viewpoints.yaml] [--path-map OLD=NEW ...]
 
-Scans the three Segmentary campaign roots (defaults: the HDRFS ``*-seed0-20261005-r2``
-campaigns) and the Paul-fork run directory, computes ``scripts/rad_subset_metrics.py``
+Scans the Segmentary campaign roots of the two arms, ``paul`` and ``fixed-grouped`` (defaults:
+the HDRFS ``*-seed0-20261005-r2`` campaigns) and the Paul-fork run directory, computes ``scripts/rad_subset_metrics.py``
 subsets for every completed job and writes ``<out>/rad-comparison.csv`` and
 ``<out>/README.md``. Read-only on every input; ``--out`` must lie outside the campaign and
 fork roots.
@@ -44,8 +44,14 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts import rad_subset_metrics as subsets
 
-ARMS = ("paul", "fixed-stratified", "fixed-grouped")
-SHORT = {"paul": "P", "fixed-stratified": "FS", "fixed-grouped": "FG"}
+ARMS = ("paul", "fixed-grouped")
+SHORT = {"paul": "P", "fixed-grouped": "FG"}
+# Why the study has no arm with our labels on the stratified split (shown in the report).
+LABEL_ARM_STOPPED = (
+    "A third arm with our re-rendered masks on the stratified split was stopped on 2026-10-05 "
+    "at 8 of 40 jobs: over 8 matched eomt runs the label fix changed cab-view mud IoU on "
+    "stratified val by -3.3 to +4.7 points, -0.1 on average."
+)
 DATASET = "rad_9_24_2026-{arm}"
 SELECTED = "best-auto-val"
 SPLIT = "val"
@@ -492,14 +498,9 @@ def share(part: int, whole: int) -> str:
     return pct(part / whole) if whole else "—"
 
 
-def same_images(a: dict | None, b: dict | None, which: str) -> bool | None:
-    return None if a is None or b is None else a[which] == b[which]
-
-
 def how_to_read(report: Report) -> list[str]:
     comp = report.composition
-    paul, stratified, grouped = (comp.get(a) for a in ARMS)
-    same_val = same_images(paul, stratified, "val_images")
+    stratified, grouped = (comp.get(a) for a in ARMS)
     selections = sorted({r.selection for r in report.results if r.source == "segmentary"})
     seeds = sorted({r.seed for r in report.results if r.source == "segmentary"})
     lines = [
@@ -520,10 +521,9 @@ def how_to_read(report: Report) -> list[str]:
         "behind that arm's mud IoU.",
         "",
         "**Arms.** All campaign models are trained by us. `paul` = Paul's delivered masks "
-        "(the `masks_machine` copies) with the stratified split; `fixed-stratified` = our "
-        "re-rendered masks with the same stratified split; `fixed-grouped` = our re-rendered "
-        "masks with the scene-grouped split. P / FS / FG below name these label/split arms, not "
-        "who trained the model.",
+        "(the `masks_machine` copies) with the stratified split; `fixed-grouped` = our "
+        "re-rendered masks with the scene-grouped split. P / FG below name these label/split "
+        "arms, not who trained the model. " + LABEL_ARM_STOPPED,
         "",
         "**Caveats.**",
         "",
@@ -559,13 +559,8 @@ def how_to_read(report: Report) -> list[str]:
             lead = "- **The stratified split's pixel-aggregated mud IoU is dominated by track-level images.** "
         else:
             lead = "- "
-        where = (
-            "(same images for `paul` and `fixed-stratified`)"
-            if same_val
-            else "(`fixed-stratified`; `paul` has different val images)"
-        )
         lines += [
-            lead + f"On the stratified val split {where} {track['with_mud']} track-level "
+            lead + f"On the stratified val split (`paul` masks) {track['with_mud']} track-level "
             f"images with mud GT hold {share(track['mud_pixels'], total)}% of all mud GT "
             f"pixels and {cab['with_mud']} cab-view images {share(cab['mud_pixels'], total)}%; "
             f"the {group} scene group alone holds {pct(stratified['group_mud_share'])}%, and the "
@@ -602,19 +597,16 @@ def how_to_read(report: Report) -> list[str]:
         "adjudication of disagreements. Both passes are the same model, so their agreement is "
         "not evidence from independent annotators.",
     ]
-    fix = "- `paul` vs `fixed-stratified` is the label fix: " + (
-        "same val images (keys and image SHA-256 checked), each arm scored against its own "
-        "ground truth."
-        if same_val
-        else "**the two val sets differ**, so this is not a pure label-fix comparison."
-        if same_val is False
-        else "one of the two arms is missing."
+    split = (
+        "- `paul` vs `fixed-grouped` changes **both** the labels and the split policy. The "
+        "stopped label-fix arm (above) found the label part small on average but -3.3 to +4.7 "
+        "points per run, measured on eomt models and stratified val only, so a model's FG - P "
+        "difference within that range cannot be attributed to the split. "
     )
-    split = "- `fixed-stratified` vs `fixed-grouped` is the split policy: "
     if stratified and grouped:
         common_train = len(stratified["train_images"] & grouped["train_images"])
         split += (
-            "the val sets are different images and the train sets differ too "
+            "The val sets are different images and the train sets differ too "
             f"({len(stratified['train_images'])} vs {len(grouped['train_images'])} train "
             f"images, {common_train} in common), so the difference mixes the training data, "
             "model generalisation and val composition. On the stratified split "
@@ -624,8 +616,8 @@ def how_to_read(report: Report) -> list[str]:
             "recordings)."
         )
     else:
-        split += "one of the two arms is missing."
-    lines += [fix, split]
+        split += "One of the two arms is missing."
+    lines += [split]
     if report.missing_arms:
         lines += [
             "- Prepared dataset not found for "
@@ -658,7 +650,7 @@ def render(report: Report, generated_at: str) -> str:
     lines += [
         "## Headline: Segmentary campaign models",
         "",
-        "Percent; columns per arm: P = `paul`, FS = `fixed-stratified`, FG = `fixed-grouped`. "
+        "Percent; columns per arm: P = `paul`, FG = `fixed-grouped`. "
         "Selected checkpoint `best-auto-val`. Empty = job not completed.",
         "",
     ]
@@ -682,25 +674,14 @@ def render(report: Report, generated_at: str) -> str:
         "## Arm effects",
         "",
         "Differences in IoU points for model x protocol pairs completed in both arms, single "
-        "seed, no uncertainty. Label fix = FS - P"
-        + (
-            " (same val images)"
-            if same_images(
-                report.composition.get("paul"),
-                report.composition.get("fixed-stratified"),
-                "val_images",
-            )
-            else " (val images differ)"
-        )
-        + ". Split = FG - FS (different val and train images).",
+        "seed, no uncertainty. Split = FG - P: different labels, val images and train images "
+        "(the label part is small on average but up to about 5 points per run; see How to read "
+        "this).",
         "",
     ]
     effect_rows = []
     for (model, protocol), arms in sorted(by_job.items()):
-        for name, a, b in (
-            ("label fix", "paul", "fixed-stratified"),
-            ("split", "fixed-stratified", "fixed-grouped"),
-        ):
+        for name, a, b in (("split", "paul", "fixed-grouped"),):
             if a in arms and b in arms:
                 effect_rows.append(
                     [model, protocol, name]

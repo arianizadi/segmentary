@@ -17,7 +17,7 @@ run label says whose checkpoint each stage came from.
 | `paper-sfnet__rs19-paul__arm-<arm>` | reserved: only if Paul sends `railsem19_sfnet_resnet18_mean-iu_0.75268.pth`. Refused (by `write_provenance.py` and the scorer) until its SHA-256 is pinned as `("paul","rs19","sfnet")` in `write_provenance.PINS` and `("paper-sfnet","rs19-paul")` in `score_predictions.PINNED` | `paper-sfnet.sh --rs19 paul --rs19-ckpt …` |
 | `paul-reference__rr22-0.8964` | Paul's finished RAD model | **no recipe.** Reference only; NEVER scored on our splits: it may have trained on our val/test images. |
 
-`<arm>` ∈ `paul`, `fixed-stratified`, `fixed-grouped`.
+`<arm>` ∈ `paul`, `fixed-grouped`.
 
 **Recipe variants get their own label.** The default RAD recipe (`paul-shared-20260923`, the
 files Paul shared) keeps the label above, so the runs already going keep theirs. Any other
@@ -224,7 +224,7 @@ PROBE_EPOCHS=2 $T/paper-hrnet.sh --rs19 paul --arm paul --gpus 2,3,4,5 --run-dir
 # real runs
 $T/hrnet-rs19-ours.sh --gpus 2,3,4,5 --run-dir $R/hrnet-rs19-ours
 $T/sfnet-rs19-ours.sh --gpus 6,7,8,9 --run-dir $R/sfnet-rs19-ours
-$T/paper-hrnet.sh --rs19 paul --arm fixed-stratified --gpus 2,3,4,5 --run-dir $R/paper-hrnet__rs19-paul__arm-fixed-stratified
+$T/paper-hrnet.sh --rs19 paul --arm fixed-grouped --gpus 2,3,4,5 --run-dir $R/paper-hrnet__rs19-paul__arm-fixed-grouped
 $T/paper-hrnet.sh --rs19 ours --rs19-ckpt $R/hrnet-rs19-ours/train/<best_checkpoint_epN.pth> --arm paul --gpus 6,7,8,9 --run-dir $R/paper-hrnet__rs19-ours__arm-paul
 $T/paper-sfnet.sh --rs19 ours --rs19-ckpt $R/sfnet-rs19-ours/ckpt/sfnet-rs19-ours/<exp>/best_epoch_*.pth --arm paul --gpus 2,3,4,5 --run-dir $R/paper-sfnet__rs19-ours__arm-paul
 # P4 dumps for Segmentary scoring (one GPU; val first, test only for the final table)

@@ -123,10 +123,7 @@ def test_legacy_brand_only_appears_in_immutable_or_explicitly_archived_records()
         if any(
             relative.match(f"docs/results/paul-test-rtis/{collection}/models/*/record.json")
             for collection in ("live", "v2")
-        ) or any(
-            relative.match(f"docs/results/rad_9_24_2026/{arm}/models/*/record.json")
-            for arm in ("paul", "fixed-stratified", "fixed-grouped")
-        ):
+        ) or relative.match("docs/results/rad_9_24_2026/*/models/*/record.json"):
             text = text.replace(f"/data/izadia1/envs/{legacy_brand}/", "/recorded-env/")
         if re.search(legacy_brand, text, flags=re.IGNORECASE):
             stale.append(str(relative))

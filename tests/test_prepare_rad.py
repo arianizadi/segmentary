@@ -262,7 +262,7 @@ def test_prepare_rejects_duplicate_image_stems(delivery, tmp_path):
 
 @pytest.mark.parametrize(
     ("arm", "require_groups"),
-    [("paul", False), ("fixed-stratified", False), ("fixed-grouped", True)],
+    [("paul", False), ("fixed-grouped", True)],
 )
 def test_dataset_configs_load_and_drive_the_folder_loader(delivery, tmp_path, arm, require_groups):
     from segmentary.config import load_experiment
@@ -298,6 +298,6 @@ def test_dataset_configs_load_and_drive_the_folder_loader(delivery, tmp_path, ar
         dataset = build_dataset(data, space, ROOT / cfg.taxonomy_root, split, Compose([]))
         assert [s.key for s in dataset.samples] == expected
         groups = [s.group for s in dataset.samples]
-        # Without a groups map the loader falls back to the key, so stratified arms
-        # expose no recording identity to leak checks; grouped arms do.
+        # Without a groups map the loader falls back to the key, so the stratified arm
+        # exposes no recording identity to leak checks; the grouped arm does.
         assert groups == ([k.split("/")[0] for k in expected] if require_groups else expected)

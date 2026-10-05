@@ -24,7 +24,7 @@ PF_LAUNCHER=${FORK_GPU_RUN:-$PF_RECIPES_DIR/../fork_gpu_run.py}
 PF_PATCHES=${PAUL_FORK_PATCHES:-$PF_RECIPES_DIR/../patches}
 PF_RS19_ROOT=${PAUL_FORK_RS19_ROOT:-/data/izadia1/datasets/railsem19-paul-split}
 PF_CKPT=$PF_RUN_ROOT/checkpoints
-PF_ARMS=(paul fixed-stratified fixed-grouped)
+PF_ARMS=(paul fixed-grouped)
 
 # Checkpoints staged under $PF_RUN_ROOT/checkpoints (symlinks + SHA256SUMS).
 PF_NVIDIA_MAPCITY=$PF_CKPT/hrnet/cityscapes_trainval_ocr.HRNet_Mscale_nimble-chihuahua.pth

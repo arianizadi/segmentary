@@ -42,7 +42,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-ARMS = ("paul", "fixed-stratified", "fixed-grouped")
+ARMS = ("paul", "fixed-grouped")
 RS19_LABELS = ("hrnet-rs19-ours", "sfnet-rs19-ours")
 RAD_BASES = (
     "paper-hrnet__rs19-paul",

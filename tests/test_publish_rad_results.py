@@ -105,6 +105,14 @@ def test_first_publish_commits_and_unchanged_cycle_does_not(tmp_path, repos, fil
     changed = sh(remote, "diff", "--name-only", "main~1", "main").splitlines()
     assert changed == [f"{TREE}/README.md", f"{TREE}/paul/results.csv"]
     assert f"{TREE}/paul/results.csv" not in remote_files(remote)
+    # A dropped arm's whole directory disappears on the next cycle, with no special case.
+    files["dropped-arm/README.md"] = "# dropped\n"
+    files["dropped-arm/models/m/record.json"] = "{}\n"
+    assert pub.publish_once(args)["pushed"]
+    del files["dropped-arm/README.md"], files["dropped-arm/models/m/record.json"]
+    assert pub.publish_once(args)["pushed"]
+    assert not any(p.startswith(f"{TREE}/dropped-arm/") for p in remote_files(remote))
+    assert not (publisher / TREE / "dropped-arm").exists()
 
 
 def test_refuses_dirty_checkout_outside_tree_and_stops(tmp_path, repos, files):
@@ -311,7 +319,7 @@ def test_study_page_renders_arms_audit_forks_and_resolving_links(tmp_path, monke
         )
     )
     other = json.loads(audit.read_text()) | {"label_source": "rendered", "per_image": [1]}
-    second = tmp_path / "datasets/rad_9_24_2026-fixed-stratified/audit/label-audit.json"
+    second = tmp_path / "datasets/rad_9_24_2026-fixed-grouped/audit/label-audit.json"
     second.parent.mkdir(parents=True)
     second.write_text(json.dumps(other))
     runs = tmp_path / "forks/runs"
@@ -349,7 +357,7 @@ def test_study_page_renders_arms_audit_forks_and_resolving_links(tmp_path, monke
     readme = files["README.md"]
     assert "Not rendered this cycle: samples changed" in readme
     assert "| [`paul`](paul/README.md) |" in readme and "| 1/2 | training 1 |" in readme
-    assert "not initialized" in readme  # fixed arms have no campaign yet
+    assert "not initialized" in readme  # the fixed-grouped arm has no campaign yet
     assert "| Total disagreement pixels | 1,000 (1.00%) |" in readme
     assert "| 7 / 9 of 10,000 |" in readme and "`paul` paul" in readme
     assert "mud-pumping 9, person 0" in readme
@@ -364,8 +372,10 @@ def test_study_page_renders_arms_audit_forks_and_resolving_links(tmp_path, monke
     assert "- Publisher code: `" in readme and "Campaign records last changed:" in readme
     assert "mud IoU 93.8 @ epoch 460; mIoU 70.2 @ epoch 594" in readme
     assert "not comparable" in readme
-    assert "| Quantity | `paul`, `fixed-stratified` |" in readme
-    assert "`fixed-stratified` rendered" in readme
+    assert "| Quantity | `paul`, `fixed-grouped` |" in readme
+    assert "`fixed-grouped` rendered" in readme
+    assert "fixed-stratified" not in readme and "two arms" in readme
+    assert "stopped on 2026-10-05 at 8 of 40 jobs" in readme
     assert "`paper-hrnet__rs19-paul__arm-paul` (run `probe2-x`)" in readme
     assert "excluded (probe_epochs)" in readme and "queue: pending" in readme
     assert "Single seed" in readme and "Optimistic" in readme and "shares scenes" in readme

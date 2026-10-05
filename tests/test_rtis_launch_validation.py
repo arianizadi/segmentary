@@ -206,7 +206,11 @@ def test_rad_manifests_match_the_arms_and_smoke_covers_slow_families():
     reference = yaml.safe_load(
         (REPO / "configs/campaigns/paul-test-rtis-fullstats.yaml").read_text()
     )
-    for arm in ("paul", "fixed-stratified", "fixed-grouped"):
+    arms = ("paul", "fixed-grouped")
+    assert sorted(p.name for p in (REPO / "configs/campaigns").glob("rad_9_24_2026-*.yaml")) == [
+        f"rad_9_24_2026-{a}.yaml" for a in ("fixed-grouped", "paul", "smoke")
+    ]
+    for arm in arms:
         spec = yaml.safe_load((REPO / f"configs/campaigns/rad_9_24_2026-{arm}.yaml").read_text())
         assert spec["name"] == spec["dataset"] == f"rad_9_24_2026-{arm}"
         assert spec["dataset_config"] == f"configs/datasets/rad_9_24_2026-{arm}.yaml"

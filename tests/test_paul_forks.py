@@ -661,7 +661,7 @@ def test_adapt_rad_fails_closed(tmp_path, change, message):
 def test_adapt_rad_allows_groups_across_splits_for_stratified_arms(tmp_path):
     rows = list(ARM_ROWS)
     rows[5] = ("test", "g-c", "0006", ".png")
-    arm = make_arm(tmp_path, arm="fixed-stratified", rows=rows, grouped=False)
+    arm = make_arm(tmp_path, arm="paul", rows=rows, grouped=False)
     adapt_rad.adapt(arm, tmp_path / "adapter", 6)
     assert (tmp_path / "adapter" / "test_images" / "g-c__0006.png").exists()
 
@@ -1365,18 +1365,21 @@ def test_queue_file_refuses_bad_resolver_and_duplicate_labels(tmp_path):
 def test_tracked_queue_file_is_valid_and_ordered():
     spec = fork_queue.load_spec(PAUL_FORKS / "queue" / "rad-9-24-paper-models.yaml")
     labels = [job.label for job in spec.jobs]
-    arms = ["paul", "fixed-stratified", "fixed-grouped"]
-    # Our own RS19 retraining first (the work the comparison waits on), then RAD from it,
-    # then the optional comparisons: Map->City direct and the checkpoint-stored HRNet recipe.
+    arms = ["paul", "fixed-grouped"]
+    # Paul's HRNet on the fixed-grouped arm first (its paul arm runs in its own session), then
+    # our own RS19 retraining (the work the comparison waits on), then RAD from it, then the
+    # optional comparisons: Map->City direct and the checkpoint-stored HRNet recipe.
     expected = (
-        ["sfnet-rs19-ours", "hrnet-rs19-ours"]
+        ["paper-hrnet__rs19-paul__arm-fixed-grouped", "sfnet-rs19-ours", "hrnet-rs19-ours"]
         + [f"paper-sfnet__rs19-ours__arm-{a}" for a in arms]
         + [f"paper-hrnet__rs19-ours__arm-{a}" for a in arms]
         + [direct(a, "sfnet") for a in arms]
         + [f"paper-hrnet__rs19-paul__arm-{a}__recipe-train_2" for a in arms]
         + [direct(a) for a in arms]
     )
-    assert labels == expected
+    assert labels == expected and len(labels) == 13
+    assert spec.jobs[0].args == ("--rs19", "paul", "--arm", "fixed-grouped")
+    assert not spec.jobs[0].env and not spec.jobs[0].depends_on
     # Only recipes stored in Paul's checkpoints get a recipe label (SFNet train_2 is from git).
     assert not any(dict(job.env).get("SFNET_RAD_RECIPE") for job in spec.jobs)
     assert {(h.session, h.gpus) for h in spec.holds} == {
@@ -1400,7 +1403,7 @@ def test_queue_respects_order_depends_on_and_never_retries(tmp_path):
             depends_on=["x"],
             env={"HRNET_RAD_RECIPE": "train_2"},
         ),
-        queue_job("y", direct("fixed-stratified")),
+        queue_job("y", "paper-hrnet__rs19-paul__arm-paul"),
         queue_job("z", direct("fixed-grouped")),
         queue_job(
             "e",
@@ -1479,6 +1482,8 @@ def test_queue_does_not_start_on_busy_held_or_unsettled_gpus(tmp_path):
 
 # Start commands as `tmux list-panes -F '#{pane_start_command}'` printed them on HDRFS
 # (2026-10-04), shortened only in the paths: the guards must work on these, not on stand-ins.
+# The HRNet loop still names the dropped fixed-stratified arm; a NOT_RUN.txt in that arm's run
+# directory makes paper-hrnet.sh refuse it, so the loop ends after the paul arm.
 LIVE_HRNET_SESSION = (
     '"for a in paul fixed-stratified fixed-grouped; do env -u CUDA_VISIBLE_DEVICES -u '
     "CUDA_DEVICE_ORDER -u NVIDIA_VISIBLE_DEVICES /r/tools/paul_forks/recipes/paper-hrnet.sh "
@@ -1533,21 +1538,21 @@ def test_tracked_queue_holds_the_live_sessions_gpus(tmp_path):
     tmux.list_error = ""
     # The explicit hold keeps 2-5 even if the HRNet session's command named no GPU.
     assert queue.held({"pf-paper-hrnet-rs19-paul": "bash"}) == {2, 3, 4, 5}
-    # The campaign ends first (~32 h): our SFNet RS19 stage takes 6-9; HRNet RS19 waits for a
-    # quad and holds back the optional jobs (the dependents of the RS19 stages do not).
+    # The campaign ends first: Paul's HRNet on the fixed-grouped arm takes 6-9; our RS19
+    # stages wait for a quad and hold back the optional jobs (their dependents do not).
     del tmux.sessions["rad-catalog-launcher"]
     assert queue.tick() and tmux.started == []  # idle times restart after the tmux outage
     machine.clock.t += spec.min_idle_seconds
     assert queue.tick()
     assert [(n, queue.state["jobs"][n[5:]]["gpus"]) for n, _ in tmux.started] == [
-        ("pf-q-sfnet-rs19-ours", [6, 7, 8, 9]),
+        ("pf-q-hrnet-rs19paul-fixed-grouped", [6, 7, 8, 9]),
     ]
-    # The HRNet run ends (~72 h): our HRNet RS19 stage takes 2-5.
+    # The HRNet session ends after its paul arm: our SFNet RS19 stage takes 2-5.
     del tmux.sessions["pf-paper-hrnet-rs19-paul"]
     assert queue.tick()
     assert [(n, queue.state["jobs"][n[5:]]["gpus"]) for n, _ in tmux.started] == [
-        ("pf-q-sfnet-rs19-ours", [6, 7, 8, 9]),
-        ("pf-q-hrnet-rs19-ours", [2, 3, 4, 5]),
+        ("pf-q-hrnet-rs19paul-fixed-grouped", [6, 7, 8, 9]),
+        ("pf-q-sfnet-rs19-ours", [2, 3, 4, 5]),
     ]
     assert all("--gpus 0" not in c and "--gpus 1" not in c for _, c in tmux.started)
 
@@ -1662,10 +1667,35 @@ def test_queue_launch_refusal_returns_job_to_pending(tmp_path):
     assert statuses(queue)["a"] == "running" and len(queue.machine.tmux.started) == 2
 
 
+def test_dropped_label_fix_arm_is_refused_by_queue_and_scorer(tmp_path):
+    with pytest.raises(fork_queue.QueueError, match=re.escape("--arm must be one of")):
+        make_queue(tmp_path, [queue_job("a", direct("fixed-stratified"))])
+    with pytest.raises(score_predictions.ScoreError):
+        score_predictions.parse_label(direct("fixed-stratified"))
+
+
+def test_queue_drops_removed_pending_jobs_from_its_state(tmp_path):
+    jobs = [
+        queue_job("a", direct("paul")),
+        queue_job("b", direct("fixed-grouped")),
+        queue_job("c", "paper-hrnet__rs19-paul__arm-paul"),
+    ]
+    queue, path, root = make_queue(tmp_path, jobs)
+    queue.state["jobs"]["a"].update(status="done", exit_code=0)
+    queue.save()
+    path.write_text(json.dumps({"min_idle_seconds": 0, "holds": [], "jobs": jobs[2:]}))
+    again = fork_queue.Queue(fork_queue.load_spec(path), root, queue.machine)
+    assert statuses(again) == {"a": "done", "c": "pending"}  # finished jobs stay as history
+
+
 def test_queue_restart_is_idempotent_and_single_instance(tmp_path):
     jobs = [
-        queue_job(n, direct(a))
-        for n, a in (("p", "paul"), ("s", "fixed-stratified"), ("g", "fixed-grouped"))
+        queue_job(n, label)
+        for n, label in (
+            ("p", direct("paul")),
+            ("s", "paper-hrnet__rs19-paul__arm-paul"),
+            ("g", direct("fixed-grouped")),
+        )
     ]
     queue, path, root = make_queue(tmp_path, jobs)
     for name, code in (("p", 0), ("s", 1)):

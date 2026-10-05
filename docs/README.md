@@ -77,8 +77,8 @@ and saved predictions with `./scripts/inspect.sh /path/to/bundle`.
 
 - [Results by dataset](results/README.md) separates the Cityscapes/RailSem19
   benchmark from [RTIS campaign preparation](guides/paul-test-rtis-campaign.md).
-- [rad_9_24_2026: three comparable training arms](guides/rad-9-24-2026.md)
-  builds the Paul-label, fixed-stratified and fixed-grouped datasets from one
+- [rad_9_24_2026: two comparable training arms](guides/rad-9-24-2026.md)
+  builds the Paul-label (stratified split) and fixed-grouped datasets from one
   delivery with a label audit and render-parity check.
 - [Evaluation and results](guides/evaluation-and-results.md) explains native and
   common endpoints, EMA versus raw weights, final versus best checkpoints, TTA,

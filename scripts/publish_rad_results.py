@@ -57,7 +57,8 @@ TREE = Path("docs/results/rad_9_24_2026")
 INDEX = Path("docs/results/README.md")
 INDEX_ROW = (
     "| [RAD 9/24 (rad_9_24_2026)](rad_9_24_2026/README.md) | 10 models x 4 initialization paths on "
-    "three arms: Paul's masks, re-rendered masks, scene-grouped split; plus Paul Stanik's "
+    "two arms: Paul's masks with a stratified split, re-rendered masks with a scene-grouped "
+    "split; plus Paul Stanik's "
     "paper recipes (HRNet-OCR, SFNet) retrained by us with his fork code | Validation only, "
     "seed 0; cab-view subset; test held out |"
 )
@@ -80,7 +81,6 @@ FORK_ANCHOR = "#paper-recipe-fork-runs"
 DROPPED_REPORT_SECTIONS = {"## Paul-fork runs", "## Coverage"}
 ARM_TEXT = {
     "paul": ("Paul's delivered `masks_machine` copies", "stratified random (seed 0)"),
-    "fixed-stratified": ("re-rendered from the polygon JSONs", "the same stratified split"),
     "fixed-grouped": ("re-rendered from the polygon JSONs", "scene-grouped (from v1/v2)"),
 }
 GIT_ENV = {**os.environ, "GIT_TERMINAL_PROMPT": "0", "LC_ALL": "C"}
@@ -312,7 +312,7 @@ def fork_section(rows: list[dict]) -> list[str]:
         "",
         "Paul Stanik's two paper recipes (HRNet-OCR-Mscale `pauls3/semantic-segmentation@5e619e6`, "
         "SFNet-R18 `pauls3/SFSegNets-2@0bb9e59`), retrained by us with his fork code on the same "
-        "three arms: every RAD stage (`rad:ours`) is trained by us, and earlier stages may start "
+        "two arms: every RAD stage (`rad:ours`) is trained by us, and earlier stages may start "
         "from Paul's or public checkpoints. The run label states the init chain; checkpoint "
         "owners name who trained each stage (`paul` = Paul's checkpoint, `ours` = trained by us, "
         "`nvidia` / `public-sfnet-authors` = public). The `arm-<arm>` part of a label is the RAD "
@@ -382,8 +382,8 @@ def label_defects(datasets: Path) -> list[str]:
         "",
         "The annotator's `masks_machine` PNGs start from a black canvas and draw exterior "
         "polygon rings only, so pixels covered by no polygon become class 0 (person) and polygon "
-        "holes are filled. The `paul` arm trains on those masks; the two `fixed` arms train on "
-        "the repository render of the same polygon JSONs (holes cut out, uncovered pixels "
+        "holes are filled. The `paul` arm trains on those masks; the `fixed-grouped` arm trains "
+        "on the repository render of the same polygon JSONs (holes cut out, uncovered pixels "
         "ignored). Counts over all 314 images, from each prepared dataset's "
         "`audit/label-audit.json` (masks_machine versus the repository render):",
         "",
@@ -477,15 +477,16 @@ def study_readme(
         else f"Dataset preparation: `{GUIDE}`"
     )
     lines = [
-        "# RAD 9/24 study: label fix, split policy and Paul Stanik's paper recipes",
+        "# RAD 9/24 study: split policy and Paul Stanik's paper recipes",
         "",
-        "The `rad_9_24_2026` delivery (314 rail images with polygon labels) trained three ways "
+        "The `rad_9_24_2026` delivery (314 rail images with polygon labels) trained two ways "
         "with the same 10-model x 4-initialization-path catalog (40 jobs per arm, seed 0, "
         "checkpoint selection and early stopping on validation mud-pumping IoU), plus Paul "
-        "Stanik's two paper recipes, retrained by us with his fork code. Two questions: does fixing the "
-        "label render change the results (`paul` vs `fixed-stratified`), and how much does the "
-        "random stratified split flatter them (`fixed-stratified` vs `fixed-grouped`)? "
-        "Validation only; the test split is held out and never read.",
+        "Stanik's two paper recipes, retrained by us with his fork code. The question: how much "
+        "does Paul's random stratified split flatter the results compared with a scene-grouped "
+        "split (`paul` vs `fixed-grouped`)? The two arms also differ in labels. "
+        + rad_report.LABEL_ARM_STOPPED
+        + " Validation only; the test split is held out and never read.",
         "",
         guide + (" · [Comparison CSV](rad-comparison.csv)" if report is not None else ""),
         "",
@@ -597,7 +598,7 @@ def caveats(report: rad_report.Report | None) -> list[str]:
         "- **The stratified split shares scenes.** Frames of one recording can sit in train and "
         "val; scene groups of the val split that also have train images: "
         + (shared or "not available yet")
-        + ". Stratified-arm numbers measure same-recording generalisation; only "
+        + ". `paul`-arm numbers measure same-recording generalisation; only "
         "`fixed-grouped` keeps scene groups apart (groups are visually assigned).",
         "",
     ]

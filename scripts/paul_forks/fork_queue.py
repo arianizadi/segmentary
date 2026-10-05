@@ -63,7 +63,8 @@ nothing starts. The queue never sets GPU visibility: each job runs in its own tm
 ``fork_gpu_run.py`` (via the recipe) is the only thing that assigns GPUs. It does not use
 the Segmentary ``gpu_policy`` locks (the campaign takes none on the host).
 
-A restart is idempotent: the state is ``queue-state.json``; a job whose run directory already
+A restart is idempotent: the state is ``queue-state.json`` (a still-pending job that was
+removed from the queue file is dropped from it; finished ones are kept); a job whose run directory already
 holds a finished launcher record is marked done (exit 0) or failed without starting; a run
 directory without one (another process may be using it) keeps the job pending and is
 re-checked every tick. Only one queue runs per run root (``flock``).
@@ -525,6 +526,12 @@ class Queue:
         for name, entry in state["jobs"].items():
             if entry.get("status") == "running" and name not in names:
                 raise QueueError(f"job {name} is running but no longer in the queue file")
+        # A job removed from the queue file before it started is gone; finished ones stay.
+        state["jobs"] = {
+            name: entry
+            for name, entry in state["jobs"].items()
+            if name in names or entry.get("status") != "pending"
+        }
         for job in self.spec.jobs:
             entry = state["jobs"].setdefault(job.name, {"status": "pending"})
             if entry["status"] not in STATUSES:

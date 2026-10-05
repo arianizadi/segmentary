@@ -36,8 +36,8 @@ Tests: `tests/test_paul_forks.py`. These need no GPU and no nvidia-smi.
 | `paper-sfnet__rs19-paul` | Reserved. Used only if Paul sends his SFNet RS19 checkpoint (`public-sfnet-authors` → `paul` → `ours`). |
 | `paul-reference__rr22-0.8964` | Paul's finished RAD model. Reference only, and **never scored on our splits**, because it may have trained on our val/test images. `score_predictions.py` refuses it. |
 
-Each RAD-stage label carries its arm: `__arm-paul`, `__arm-fixed-stratified` or
-`__arm-fixed-grouped`. For example: `paper-hrnet__rs19-paul__arm-fixed-grouped`. A recipe
+Each RAD-stage label carries its arm: `__arm-paul` or `__arm-fixed-grouped` (the RAD 9/24
+study has only these two arms). For example: `paper-hrnet__rs19-paul__arm-fixed-grouped`. A recipe
 other than the default (Paul's shared 2026-09-23 files) appends `__recipe-<variant>`:
 `paper-hrnet__rs19-paul__arm-fixed-grouped__recipe-train_2` (variants per chain in
 `recipes/recipes.md`; `mapcity-direct` has none). An RS19-stage run (one we train ourselves)

@@ -12,7 +12,7 @@
 #       --gpus <one GPU> --run-dir <finished RAD run> [--scales single|native]
 #       P4 prediction dump (single = n_scales 1.0, primary; native = 0.5,1.0,2.0 as eval_rr22.yml)
 #
-# <arm> is paul, fixed-stratified or fixed-grouped (adapter $PAUL_FORK_RUN_ROOT/adapters/<arm>).
+# <arm> is paul or fixed-grouped (adapter $PAUL_FORK_RUN_ROOT/adapters/<arm>).
 # Recipe (HRNET_RAD_RECIPE): paul-shared-20260923 (default) = hrnet/train_rtisrail22.yml Paul
 # shared: lr 7e-5, 1000 epochs, n_scales 0.5,1.0,1.5, mscale weight 0.05. train_2 = the
 # 'command' stored in rr22_rs19_city_miou_0.8964.pth (lr 1e-4, 500 epochs); train_1 = lr 1e-4,

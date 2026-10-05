@@ -9,7 +9,7 @@
         [--assets docs/guides/assets/rad-9-24-2026-mud-iou]
 
 Reads, never writes, the prepared arms (``audit/samples.json``, images and masks of the
-``paul`` arm) and the three ``*-seed0-20261005-r2`` campaigns. Run metrics come from
+``paul`` arm) and the two ``*-seed0-20261005-r2`` campaigns (``paul``, ``fixed-grouped``). Run metrics come from
 ``scripts/rad_report.scan_campaign`` (which re-validates every per-image confusion file
 against its recorded SHA-256 and the run's reported total), so the numbers here are the
 numbers of ``rad_report.py``. A ``--campaign-root`` other than the HDRFS default is treated as a
@@ -45,7 +45,7 @@ CAMPAIGN_DIR = "{arm}-seed0-20261005-r2"
 DOC = ROOT / "docs/guides/rad-9-24-2026-mud-iou-case.md"
 ASSETS = ROOT / "docs/guides/assets/rad-9-24-2026-mud-iou"
 REFERENCE_JOB = "eomt_large--railsem19_to_rtis--seed-0"
-ARM = "paul"  # the arm with all 40 jobs; shares its val images with fixed-stratified
+ARM = "paul"  # the stratified-split arm (Paul's masks)
 MUD = 13
 IGNORE = 255
 CAB = "cab-view"
@@ -579,9 +579,8 @@ def table(headers: list[str], rows: list[list[str]], right: set[int]) -> list[st
 def write_doc(ctx: dict[str, Any], path: Path) -> None:
     c = ctx
     arm, comp = c["arm"], c["comp"]
-    strat, grouped = comp["fixed-stratified"], comp["fixed-grouped"]
-    paulc = comp[ARM]
-    total = paulc["mud_pixels"]
+    strat, grouped = comp[ARM], comp["fixed-grouped"]
+    total = strat["mud_pixels"]
     best, ref = c["best"], c["ref"]
     runs = c["runs"]
     med = c["medians"]
@@ -593,7 +592,6 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
     n_runs = len(runs)
     below = sum(r.metrics[CAB]["mud_iou"] < r.metrics["all"]["mud_iou"] for r in runs)
     fg_done, fg_total = c["done"]["fixed-grouped"]
-    fs_done, fs_total = c["done"]["fixed-stratified"]
     grouped_cab = grouped["viewpoints"][CAB]
     grouped_top_group, grouped_top_n = next(iter(grouped["cab_mud_groups"].items()))
     nn = c["nn"]
@@ -692,10 +690,7 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
         "",
         "## 3. Evidence A: where the val mud pixels are",
         "",
-        "Every val image with mud ground truth on the stratified split (`paul` arm masks; the "
-        "`fixed-stratified` arm "
-        + ("uses the same" if c["same_val"] else "uses DIFFERENT")
-        + " val images, checked by key and image SHA-256). "
+        "Every val image with mud ground truth on the stratified split (`paul` arm masks). "
         f"Per-image mud IoU is shown for the best cab-view run, **{best.name}**, and for the "
         f"reference run **{ref.name}**. `share` is the image's share of all {total:,} val mud "
         "pixels; `frame` is the share of the image covered by mud.",
@@ -937,12 +932,14 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
         "## 6. Evidence D: split overlap",
         "",
         'Scene groups are the directory layout names of the prepared arms. A val group "in '
-        'train" has at least one train image in the same group.',
+        'train" has at least one train image in the same group. The stratified column is the '
+        "`paul` arm (Paul's masks), the scene-grouped column the `fixed-grouped` arm (re-rendered "
+        "masks), so the mud pixel counts also differ by the label render.",
         "",
     ]
     splits = (strat, grouped)
     rows = [
-        ["masks", "`fixed-stratified` (same val images as `paul`)", "`fixed-grouped`"],
+        ["arm (masks)", "`paul` (masks_machine)", "`fixed-grouped` (re-rendered)"],
         ["val images", *(str(cc["images"]) for cc in splits)],
         ["train images", *(str(len(cc["train_images"])) for cc in splits)],
         [
@@ -980,8 +977,9 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
         "",
         "The `fixed-grouped` arm keeps every val scene group out of train. If the stratified "
         "numbers are inflated by same-scene frames, its mud IoU should fall to (or below) the "
-        "stratified cab-view numbers rather than near the stratified all-image numbers. Two "
-        "things are not separated by this test: the grouped arm also changes the training set "
+        "stratified cab-view numbers rather than near the stratified all-image numbers. Three "
+        "things are not separated by this test: the grouped arm also uses the re-rendered labels "
+        "(a small effect on average, see section 9), it changes the training set "
         f"({len(strat['train_images'])} vs {len(grouped['train_images'])} train images) and its "
         f"val mud is {grouped_top_n} of {grouped_cab['with_mud']} cab-view images from one camera "
         f"setup (`{grouped_top_group}`), so it is a different and narrower val set, not the same "
@@ -1068,12 +1066,8 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
         "- **Mask-conversion differences in the delivered `masks_machine/` masks** (used by the "
         "`paul` arm). The conversion labels pixels covered by no polygon as `person` and ignores "
         "polygon holes (see the guide); this is mechanical, not an annotation judgement. The "
-        "figures use those masks because the runs were scored against them. On val the mud total "
-        f"differs by {abs(strat['mud_pixels'] - total):,} px ({total:,} `paul` vs "
-        f"{strat['mud_pixels']:,} `fixed-stratified`, "
-        f"{100 * abs(strat['mud_pixels'] - total) / total:.2f}%).",
-        f"- **The `fixed-stratified` arm** has {fs_done} of {fs_total} jobs completed, so the "
-        "label-fix comparison on the same val images is not shown here.",
+        "figures use those masks because the runs were scored against them. "
+        + report.LABEL_ARM_STOPPED,
         "",
         "## 10. Reproduce",
         "",
@@ -1183,7 +1177,6 @@ def build(
         "train_in_group": {
             g: sum(s["group"] == g for s in train) for g in {s["group"] for s in val}
         },
-        "same_val": comp[ARM]["val_images"] == comp["fixed-stratified"]["val_images"],
         "done": done,
         "status": status,
         "medians": {
