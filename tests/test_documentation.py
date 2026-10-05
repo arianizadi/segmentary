@@ -119,9 +119,13 @@ def test_legacy_brand_only_appears_in_immutable_or_explicitly_archived_records()
         legacy_brand = "rail" + "yard"
         # Live machine records retain the actual interpreter path used by jobs.
         # Exempt that exact historical environment path, not arbitrary old branding.
+        # The RAD 9/24 arms are rendered by the same publisher from the same job records.
         if any(
             relative.match(f"docs/results/paul-test-rtis/{collection}/models/*/record.json")
             for collection in ("live", "v2")
+        ) or any(
+            relative.match(f"docs/results/rad_9_24_2026/{arm}/models/*/record.json")
+            for arm in ("paul", "fixed-stratified", "fixed-grouped")
         ):
             text = text.replace(f"/data/izadia1/envs/{legacy_brand}/", "/recorded-env/")
         if re.search(legacy_brand, text, flags=re.IGNORECASE):
