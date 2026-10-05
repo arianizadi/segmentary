@@ -1,0 +1,165 @@
+diff --git a/datasets/__init__.py b/datasets/__init__.py
+index 7207bd9..a94afab 100644
+--- a/datasets/__init__.py
++++ b/datasets/__init__.py
+@@ -349,7 +349,7 @@ def setup_loaders(args):
+             joint_transform_list=None,
+             transform=val_input_transform,
+             target_transform=target_transform,
+-            test=False)
++            test=getattr(args, 'dump_split', 'val') == 'test')  # P4
+     elif args.dataset == 'rtisrail22':
+         train_set = args.dataset_cls.RTISRail22(
+             'semantic', 'train',
+@@ -366,7 +366,7 @@ def setup_loaders(args):
+             joint_transform_list=None,
+             transform=val_input_transform,
+             target_transform=target_transform,
+-            test=False)
++            test=getattr(args, 'dump_split', 'val') == 'test')  # P4
+     elif args.dataset == 'flame':
+         train_set = args.dataset_cls.Flame(
+             'semantic', 'train',
+diff --git a/paul_dump.py b/paul_dump.py
+new file mode 100644
+index 0000000..31da32f
+--- /dev/null
++++ b/paul_dump.py
+@@ -0,0 +1,72 @@
++"""Eval-only prediction dump for Segmentary scoring (patch P4).
++
++Writes one uint8 label PNG per evaluated image to ``<dir>/<image stem>.png``. The stem is
++the adapter file name (``<group>__<stem>``), so predictions pair 1:1 with the adapter's
++``<split>_masks/<group>__<stem>.png``. The directory must not exist beforehand, files are
++never overwritten, and ``<dir>.manifest.json`` (next to the directory, so the directory
++holds nothing but the PNGs) is written only after checking that exactly the expected set
++of images was dumped (each DDP rank writes its own share).
++"""
++import hashlib
++import json
++import os
++
++import numpy as np
++from PIL import Image
++
++MANIFEST_SUFFIX = '.manifest.json'
++
++
++def manifest_path(out_dir):
++    return os.path.normpath(out_dir) + MANIFEST_SUFFIX
++
++
++def prepare(out_dir):
++    if os.path.lexists(out_dir) or os.path.lexists(manifest_path(out_dir)):
++        raise RuntimeError(f'P4: dump directory already exists, refusing to mix runs: {out_dir}')
++    os.makedirs(out_dir)
++
++
++def write(out_dir, names, predictions, num_classes):
++    predictions = np.asarray(predictions)
++    if predictions.ndim != 3 or len(names) != predictions.shape[0]:
++        raise RuntimeError(f'P4: expected (N,H,W) predictions for {len(names)} names, '
++                           f'got {predictions.shape}')
++    for name, pred in zip(names, predictions):
++        if pred.min() < 0 or pred.max() >= num_classes or num_classes > 255:
++            raise RuntimeError(f'P4: prediction for {name} outside [0, {num_classes})')
++        path = os.path.join(out_dir, f'{name}.png')
++        if os.path.lexists(path):
++            raise RuntimeError(f'P4: duplicate prediction for {name}')
++        Image.fromarray(np.ascontiguousarray(pred, dtype=np.uint8)).save(path)
++
++
++def _sha256(path):
++    digest = hashlib.sha256()
++    with open(path, 'rb') as stream:
++        for block in iter(lambda: stream.read(1 << 20), b''):
++            digest.update(block)
++    return digest.hexdigest()
++
++
++def finalize(out_dir, expected_names, meta):
++    expected = sorted(expected_names)
++    files = os.listdir(out_dir)
++    found = sorted(f[:-4] for f in files if f.endswith('.png'))
++    if len(found) != len(files):
++        raise RuntimeError(f'P4: non-PNG files in {out_dir}: '
++                           f'{sorted(f for f in files if not f.endswith(".png"))[:5]}')
++    if found != expected or len(set(expected)) != len(expected):
++        missing = sorted(set(expected) - set(found))
++        extra = sorted(set(found) - set(expected))
++        raise RuntimeError(f'P4: dump incomplete: missing {missing[:5]} extra {extra[:5]} '
++                           f'({len(found)} of {len(expected)})')
++    manifest = dict(meta)
++    manifest['count'] = len(found)
++    manifest['images'] = found
++    snapshot = manifest.get('snapshot')
++    if snapshot and os.path.isfile(snapshot):
++        manifest['snapshot_sha256'] = _sha256(snapshot)
++    with open(manifest_path(out_dir), 'w') as stream:
++        json.dump(manifest, stream, indent=2)
++    return manifest
+diff --git a/train.py b/train.py
+index 10ae9c3..2ad9a74 100755
+--- a/train.py
++++ b/train.py
+@@ -159,7 +159,13 @@ torch.cuda.manual_seed_all(0)
+ parser.add_argument('--allow_skip', '--allow-skip', dest='allow_skip', type=str, default='',
+                     help='P2: comma separated fnmatch patterns of non-head tensors that '
+                          'may keep their fresh initialisation when loading --snapshot')
++parser.add_argument('--dump_preds', type=str, default=None,
++                    help='P4: eval only; write one uint8 label PNG per image of --dump_split')
++parser.add_argument('--dump_split', type=str, default='val', choices=['val', 'test'],
++                    help='P4: split dumped by --dump_preds (whole image, single scale)')
+ args = parser.parse_args()
++if args.dump_split != 'val' and not args.dump_preds:
++    raise SystemExit('P4: --dump_split test is only allowed together with --dump_preds')
+ args.best_record = {'epoch': -1, 'iter': 0, 'val_loss': 1e10, 'acc': 0,
+                     'acc_cls': 0, 'mean_iu': 0, 'fwavacc': 0}
+ 
+@@ -222,6 +228,10 @@ def main():
+             allow_skip=paul_init.parse_allow_skip(args.allow_skip),
+             write_report=args.local_rank == 0, log=logging.info)
+         del checkpoint
++    if args.dump_preds:
++        assert args.snapshot is not None, "P4: --dump_preds needs --snapshot"
++        dump_predictions(val_loader, net, args)
++        return
+     if args.evaluateF:
+         assert args.snapshot is not None, "must load weights for evaluation"
+         evaluate(val_loader, net, args)
+@@ -376,6 +386,35 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
+     return val_loss.avg
+ 
+ 
++def dump_predictions(val_loader, net, args):
++    """P4: whole-image single-scale inference, one uint8 PNG per image."""
++    import paul_dump
++    if args.local_rank == 0:
++        paul_dump.prepare(args.dump_preds)
++    if args.apex:
++        torch.distributed.barrier()
++    net.eval()
++    for inputs, gt_image, img_names in val_loader:
++        with torch.no_grad():
++            output = net(inputs.cuda())
++        assert output.size()[2:] == gt_image.size()[1:]
++        assert output.size()[1] == args.dataset_cls.num_classes
++        predictions = output.data.max(1)[1].cpu().numpy()
++        paul_dump.write(args.dump_preds, list(img_names), predictions,
++                        args.dataset_cls.num_classes)
++    if args.apex:
++        torch.distributed.barrier()
++    if args.local_rank == 0:
++        names = [os.path.splitext(os.path.basename(item[0]))[0]
++                 for item in val_loader.dataset.imgs]
++        manifest = paul_dump.finalize(args.dump_preds, names, {
++            'fork': 'sfnet', 'split': args.dump_split, 'dataset': args.dataset,
++            'snapshot': args.snapshot, 'arch': args.arch,
++            'single_scale_whole_image': True,
++            'num_classes': args.dataset_cls.num_classes})
++        print('P4: dumped {} predictions to {}'.format(manifest['count'], args.dump_preds))
++
++
+ def evaluate(val_loader, net, args):
+     '''
+     Runs the evaluation loop and prints F score

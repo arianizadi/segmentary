@@ -1,0 +1,129 @@
+diff --git a/paul_resume_state.py b/paul_resume_state.py
+new file mode 100644
+index 0000000..0bb2fd2
+--- /dev/null
++++ b/paul_resume_state.py
+@@ -0,0 +1,63 @@
++"""RNG and GradScaler state in checkpoints, restored on --resume (patch P6).
++
++Every checkpoint gets ``paul_rng_states`` (one entry per DDP rank: Python, NumPy, torch CPU
++and current-device CUDA generator states) and ``paul_grad_scaler``. All values are plain
++ints/floats/lists/tensors so runx's ``weights_only`` checkpoint reload still works. A
++resumed run then continues the same random stream on every rank (cuDNN kernels remain
++non-deterministic, so the trajectory is still not bit-exact).
++"""
++import random
++
++import numpy as np
++import torch
++
++
++def capture():
++    version, internal, gauss = random.getstate()
++    name, keys, pos, has_gauss, cached = np.random.get_state()
++    return {
++        'python': {'version': int(version), 'state': [int(x) for x in internal],
++                   'gauss': None if gauss is None else float(gauss)},
++        'numpy': {'name': str(name), 'keys': torch.from_numpy(keys.astype(np.int64)),
++                  'pos': int(pos), 'has_gauss': int(has_gauss), 'cached': float(cached)},
++        'torch': torch.get_rng_state(),
++        'cuda': torch.cuda.get_rng_state() if torch.cuda.is_initialized() else None,
++    }
++
++
++def apply(state):
++    python = state['python']
++    random.setstate((python['version'], tuple(python['state']), python['gauss']))
++    numpy_state = state['numpy']
++    np.random.set_state((numpy_state['name'], numpy_state['keys'].numpy().astype(np.uint32),
++                         numpy_state['pos'], numpy_state['has_gauss'], numpy_state['cached']))
++    torch.set_rng_state(state['torch'])
++    if state['cuda'] is not None:
++        torch.cuda.set_rng_state(state['cuda'])
++
++
++def gather():
++    """Collective under DDP: every rank must call it. Returns the list of rank states."""
++    state = capture()
++    if torch.distributed.is_available() and torch.distributed.is_initialized():
++        states = [None] * torch.distributed.get_world_size()
++        torch.distributed.all_gather_object(states, state)
++        return states
++    return [state]
++
++
++def restore(checkpoint, rank, world_size, scaler, log=print):
++    states = checkpoint.get('paul_rng_states')
++    if states is None:
++        log('P6: checkpoint has no RNG state (pre-P6 checkpoint); RNG streams restart')
++    elif len(states) != world_size:
++        raise RuntimeError(f'P6: checkpoint has RNG state for {len(states)} ranks, '
++                           f'resuming with {world_size}')
++    else:
++        apply(states[rank])
++    scaler_state = checkpoint.get('paul_grad_scaler')
++    if scaler_state is None:
++        log('P6: checkpoint has no GradScaler state; scaler restarts')
++    else:
++        scaler.load_state_dict(scaler_state)
++    return states is not None and scaler_state is not None
+diff --git a/train.py b/train.py
+index 748a287..f0ee80a 100755
+--- a/train.py
++++ b/train.py
+@@ -412,6 +412,9 @@ def main():
+     if args.restore_net:
+         if args.resume:
+             net.load_state_dict(checkpoint['state_dict'], strict=True)
++            import paul_resume_state
++            args.paul_resume_exact_rng = paul_resume_state.restore(
++                checkpoint, args.global_rank, args.world_size, scaler, log=logx.msg)
+         else:
+             import paul_init
+             assert 'state_dict' in checkpoint, 'cant find state_dict in checkpoint'
+@@ -431,7 +434,10 @@ def main():
+         if args.apex:
+             train_loader.sampler.set_epoch(args.start_epoch)
+         if args.global_rank == 0:
+-            logx.msg(f"RESUME VERIFIED epoch={args.start_epoch} optimizer_states={len(optim.state)} lr={optim.param_groups[0]['lr']}; legacy checkpoint lacks RNG and AMP scaler state")
++            rng_note = ('RNG and AMP scaler state restored (P6)'
++                        if getattr(args, 'paul_resume_exact_rng', False)
++                        else 'legacy checkpoint lacks RNG and AMP scaler state')
++            logx.msg(f"RESUME VERIFIED epoch={args.start_epoch} optimizer_states={len(optim.state)} lr={optim.param_groups[0]['lr']}; {rng_note}")
+ 
+     if args.dump_preds:
+         import paul_dump
+diff --git a/utils/misc.py b/utils/misc.py
+index 0eeb3cc..0a3bea9 100644
+--- a/utils/misc.py
++++ b/utils/misc.py
+@@ -43,6 +43,7 @@ from tabulate import tabulate
+ from PIL import Image
+ 
+ from config import cfg
++from compat_native_amp import scaler
+ from utils.results_page import ResultsPage
+ from runx.logx import logx
+ 
+@@ -114,6 +115,10 @@ def eval_metrics(iou_acc, args, net, optim, val_loss, epoch, mf_score=None):
+         iou_per_scale[1.0] = iou_acc_tensor.cpu().numpy()
+     scales = [1.0]
+ 
++    # P6: collective, so every rank contributes its RNG state before rank 0 saves
++    import paul_resume_state
++    rng_states = paul_resume_state.gather()
++
+     # Only rank 0 should save models and calculate metrics
+     if args.global_rank != 0:
+         return
+@@ -156,7 +161,9 @@ def eval_metrics(iou_acc, args, net, optim, val_loss, epoch, mf_score=None):
+         'state_dict': net.state_dict(),
+         'optimizer': optim.state_dict(),
+         'mean_iu': mean_iu,
+-        'command': ' '.join(sys.argv[1:])
++        'command': ' '.join(sys.argv[1:]),
++        'paul_rng_states': rng_states,
++        'paul_grad_scaler': scaler.state_dict(),
+     }
+     logx.save_model(save_dict, metric=mean_iu, epoch=epoch)
+     if args.dataset == 'rtisrail22' and args.eval is None:

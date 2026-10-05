@@ -1,0 +1,13 @@
+diff --git a/datasets/uniform.py b/datasets/uniform.py
+index 5e4b2de..57ce167 100644
+--- a/datasets/uniform.py
++++ b/datasets/uniform.py
+@@ -144,7 +144,7 @@ def pooled_class_centroids_all(items, num_classes, id2trainid, tile_size=1024):
+     """
+     from multiprocessing.dummy import Pool
+     from functools import partial
+-    pool = Pool(4)
++    pool = Pool(80)  # P5: Paul/NVIDIA value (September port used 4); thread pool, throughput only
+     global pbar
+     pbar = tqdm(total=len(items), desc='pooled centroid extraction', file=sys.stdout)
+     class_centroids_item = partial(class_centroids_image,

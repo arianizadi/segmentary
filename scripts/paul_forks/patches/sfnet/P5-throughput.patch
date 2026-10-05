@@ -1,0 +1,26 @@
+diff --git a/datasets/__init__.py b/datasets/__init__.py
+index a94afab..c9d7e7a 100644
+--- a/datasets/__init__.py
++++ b/datasets/__init__.py
+@@ -104,7 +104,7 @@ def setup_loaders(args):
+         args.train_batch_size = args.bs_mult
+         args.val_batch_size = args.bs_mult_val
+ 
+-    args.num_workers = 2
++    args.num_workers = 4 * args.ngpu  # P5: Paul's value (September port used 2)
+     if args.test_mode:
+         args.num_workers = 1
+ 
+diff --git a/datasets/uniform.py b/datasets/uniform.py
+index 0b2bc25..c37d175 100644
+--- a/datasets/uniform.py
++++ b/datasets/uniform.py
+@@ -88,7 +88,7 @@ def pooled_class_centroids_all(items, num_classes, id2trainid, tile_size=1024):
+     """
+     from multiprocessing.dummy import Pool
+     from functools import partial
+-    pool = Pool(4)
++    pool = Pool(32)
+     global pbar
+     pbar = tqdm(total=len(items), desc='pooled centroid extraction')
+     class_centroids_item = partial(class_centroids_image,

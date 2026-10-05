@@ -1,0 +1,145 @@
+diff --git a/paul_dump.py b/paul_dump.py
+new file mode 100644
+index 0000000..31da32f
+--- /dev/null
++++ b/paul_dump.py
+@@ -0,0 +1,72 @@
++"""Eval-only prediction dump for Segmentary scoring (patch P4).
++
++Writes one uint8 label PNG per evaluated image to ``<dir>/<image stem>.png``. The stem is
++the adapter file name (``<group>__<stem>``), so predictions pair 1:1 with the adapter's
++``<split>_masks/<group>__<stem>.png``. The directory must not exist beforehand, files are
++never overwritten, and ``<dir>.manifest.json`` (next to the directory, so the directory
++holds nothing but the PNGs) is written only after checking that exactly the expected set
++of images was dumped (each DDP rank writes its own share).
++"""
++import hashlib
++import json
++import os
++
++import numpy as np
++from PIL import Image
++
++MANIFEST_SUFFIX = '.manifest.json'
++
++
++def manifest_path(out_dir):
++    return os.path.normpath(out_dir) + MANIFEST_SUFFIX
++
++
++def prepare(out_dir):
++    if os.path.lexists(out_dir) or os.path.lexists(manifest_path(out_dir)):
++        raise RuntimeError(f'P4: dump directory already exists, refusing to mix runs: {out_dir}')
++    os.makedirs(out_dir)
++
++
++def write(out_dir, names, predictions, num_classes):
++    predictions = np.asarray(predictions)
++    if predictions.ndim != 3 or len(names) != predictions.shape[0]:
++        raise RuntimeError(f'P4: expected (N,H,W) predictions for {len(names)} names, '
++                           f'got {predictions.shape}')
++    for name, pred in zip(names, predictions):
++        if pred.min() < 0 or pred.max() >= num_classes or num_classes > 255:
++            raise RuntimeError(f'P4: prediction for {name} outside [0, {num_classes})')
++        path = os.path.join(out_dir, f'{name}.png')
++        if os.path.lexists(path):
++            raise RuntimeError(f'P4: duplicate prediction for {name}')
++        Image.fromarray(np.ascontiguousarray(pred, dtype=np.uint8)).save(path)
++
++
++def _sha256(path):
++    digest = hashlib.sha256()
++    with open(path, 'rb') as stream:
++        for block in iter(lambda: stream.read(1 << 20), b''):
++            digest.update(block)
++    return digest.hexdigest()
++
++
++def finalize(out_dir, expected_names, meta):
++    expected = sorted(expected_names)
++    files = os.listdir(out_dir)
++    found = sorted(f[:-4] for f in files if f.endswith('.png'))
++    if len(found) != len(files):
++        raise RuntimeError(f'P4: non-PNG files in {out_dir}: '
++                           f'{sorted(f for f in files if not f.endswith(".png"))[:5]}')
++    if found != expected or len(set(expected)) != len(expected):
++        missing = sorted(set(expected) - set(found))
++        extra = sorted(set(found) - set(expected))
++        raise RuntimeError(f'P4: dump incomplete: missing {missing[:5]} extra {extra[:5]} '
++                           f'({len(found)} of {len(expected)})')
++    manifest = dict(meta)
++    manifest['count'] = len(found)
++    manifest['images'] = found
++    snapshot = manifest.get('snapshot')
++    if snapshot and os.path.isfile(snapshot):
++        manifest['snapshot_sha256'] = _sha256(snapshot)
++    with open(manifest_path(out_dir), 'w') as stream:
++        json.dump(manifest, stream, indent=2)
++    return manifest
+diff --git a/train.py b/train.py
+index bda465d..748a287 100755
+--- a/train.py
++++ b/train.py
+@@ -280,6 +280,8 @@ parser.add_argument('--ocr_aux_loss_rmi', action='store_true', default=False,
+ parser.add_argument('--allow_skip', '--allow-skip', dest='allow_skip', type=str, default='',
+                     help='P2: comma separated fnmatch patterns of non-head tensors that '
+                          'may keep their fresh initialisation when loading --snapshot')
++parser.add_argument('--dump_preds', type=str, default=None,
++                    help='P4: with --eval val|test, write one uint8 label PNG per image here')
+ 
+ 
+ args = parser.parse_args()
+@@ -431,6 +433,14 @@ def main():
+         if args.global_rank == 0:
+             logx.msg(f"RESUME VERIFIED epoch={args.start_epoch} optimizer_states={len(optim.state)} lr={optim.param_groups[0]['lr']}; legacy checkpoint lacks RNG and AMP scaler state")
+ 
++    if args.dump_preds:
++        import paul_dump
++        assert args.eval in ('val', 'test'), 'P4: --dump_preds needs --eval val or --eval test'
++        if args.global_rank == 0:
++            paul_dump.prepare(args.dump_preds)
++        if args.apex:
++            torch.distributed.barrier()
++
+     # There are 4 options for evaluation:
+     #  --eval val                           just run validation
+     #  --eval val --dump_assets             dump all images and assets
+@@ -623,6 +633,11 @@ def validate(val_loader, net, criterion, optim, epoch,
+ 
+         input_images, labels, img_names, _ = data
+ 
++        if args.dump_preds:
++            import paul_dump
++            paul_dump.write(args.dump_preds, list(img_names), assets['predictions'],
++                            cfg.DATASET.NUM_CLASSES)
++
+         dumper.dump({'gt_images': labels,
+                      'input_images': input_images,
+                      'img_names': img_names,
+@@ -634,6 +649,26 @@ def validate(val_loader, net, criterion, optim, epoch,
+         if val_idx % 20 == 0:
+             logx.msg(f'validating[Iter: {val_idx + 1} / {len(val_loader)}]')
+ 
++    if args.dump_preds:
++        import paul_dump
++        if args.apex:
++            torch.distributed.barrier()
++        if args.global_rank == 0:
++            names = [os.path.splitext(os.path.basename(item[0]))[0]
++                     for item in val_loader.dataset.all_imgs]
++            n_scales = cfg.MODEL.N_SCALES
++            manifest = paul_dump.finalize(args.dump_preds, names, {
++                'fork': 'hrnet', 'split': args.eval, 'dataset': args.dataset,
++                'snapshot': args.snapshot, 'arch': args.arch,
++                'n_scales': n_scales, 'multi_scale_inference': args.multi_scale_inference,
++                'do_flip': args.do_flip, 'default_scale': args.default_scale,
++                'single_scale_whole_image': (list(n_scales or []) == [1.0]
++                                             and not args.multi_scale_inference
++                                             and not args.do_flip
++                                             and args.default_scale == 1.0),
++                'num_classes': cfg.DATASET.NUM_CLASSES})
++            logx.msg(f"P4: dumped {manifest['count']} predictions to {args.dump_preds}")
++
+     end_time = time.time()
+     print("Total time: ", end_time - start_time)
+     print("Forward pass time: ", new_time)

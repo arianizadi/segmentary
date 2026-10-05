@@ -1,0 +1,178 @@
+diff --git a/paul_init.py b/paul_init.py
+new file mode 100644
+index 0000000..1ca141f
+--- /dev/null
++++ b/paul_init.py
+@@ -0,0 +1,132 @@
++"""Shape-matched partial checkpoint loading with a mandatory coverage report (patch P2).
++
++Replaces the forks' silent ``forgiving_state_restore``. Each model tensor is taken from
++the checkpoint when a tensor with the same name (ignoring a DDP ``module.`` prefix) and
++the same shape exists; everything else keeps its fresh initialisation and is listed in
++``init-coverage.json``. The load FAILS unless every skipped tensor is either
++
++* one of the architecture's final classifier tensors (``HEAD_TENSORS``), which must be
++  re-initialised when the class count changes (19 -> 21; shape mismatch only, a head
++  tensor missing from the checkpoint fails), or
++* matched by an explicit ``--allow_skip`` pattern (fnmatch, comma separated). Every
++  pattern must match at least one skipped tensor, so a stale allow list also fails.
++
++An architecture missing from ``HEAD_TENSORS`` fails closed.
++"""
++import fnmatch
++import hashlib
++import json
++import os
++
++HEAD_TENSORS = {
++    'ocrnet.HRNet_Mscale': (
++        'ocr.cls_head.weight', 'ocr.cls_head.bias',
++        'ocr.aux_head.2.weight', 'ocr.aux_head.2.bias',
++    ),
++    'network.sfnet_resnet.DeepR18_SF_deeply': (
++        'head.conv_last.1.weight', 'head.conv_last.1.bias',
++    ),
++}
++
++
++def _strip(key):
++    return key[len('module.'):] if key.startswith('module.') else key
++
++
++def _sha256(path):
++    digest = hashlib.sha256()
++    with open(path, 'rb') as stream:
++        for block in iter(lambda: stream.read(1 << 20), b''):
++            digest.update(block)
++    return digest.hexdigest()
++
++
++def parse_allow_skip(text):
++    return [item.strip() for item in (text or '').split(',') if item.strip()]
++
++
++def plan_load(model_state, checkpoint_state, arch, allow_skip=()):
++    """Return (merged_state, report). Pure function: no I/O, no torch import needed."""
++    if arch not in HEAD_TENSORS:
++        raise RuntimeError(f'P2: no classifier-head table for arch {arch!r}; refusing to load')
++    source = {}
++    for key, value in checkpoint_state.items():
++        stripped = _strip(key)
++        if stripped in source:
++            raise RuntimeError(f'P2: checkpoint has duplicate key after prefix strip: {key}')
++        source[stripped] = value
++    heads = set(HEAD_TENSORS[arch])
++    merged, loaded, skipped = {}, [], []
++    for key, value in model_state.items():
++        name = _strip(key)
++        candidate = source.get(name)
++        if candidate is not None and tuple(candidate.shape) == tuple(value.shape):
++            merged[key] = candidate
++            loaded.append(name)
++            continue
++        merged[key] = value
++        skipped.append({
++            'key': name,
++            'model_shape': list(value.shape),
++            'checkpoint_shape': None if candidate is None else list(candidate.shape),
++            'reason': 'missing' if candidate is None else 'shape',
++        })
++    used = set(loaded)
++    unused = sorted(name for name in source if name not in used and
++                    name not in {item['key'] for item in skipped})
++    unexpected, pattern_hits = [], {pattern: 0 for pattern in allow_skip}
++    for item in skipped:
++        if item['key'] in heads and item['reason'] == 'shape':
++            item['allowed_by'] = 'classifier-head'
++            continue
++        hits = [pattern for pattern in allow_skip if fnmatch.fnmatchcase(item['key'], pattern)]
++        for pattern in hits:
++            pattern_hits[pattern] += 1
++        if hits:
++            item['allowed_by'] = 'allow_skip:' + hits[0]
++        else:
++            unexpected.append(item['key'])
++    unused_patterns = sorted(pattern for pattern, count in pattern_hits.items() if count == 0)
++    report = {
++        'arch': arch,
++        'model_tensors': len(model_state),
++        'loaded_tensors': len(loaded),
++        'skipped_tensors': len(skipped),
++        'model_elements': int(sum(v.numel() for v in model_state.values())),
++        'loaded_elements': int(sum(model_state[k].numel() for k in model_state
++                                   if _strip(k) in used)),
++        'classifier_head_tensors': sorted(heads),
++        'allow_skip': list(allow_skip),
++        'skipped': skipped,
++        'checkpoint_tensors_unused': unused,
++        'unexpected_skips': unexpected,
++        'allow_skip_patterns_matching_nothing': unused_patterns,
++        'status': 'ok' if not unexpected and not unused_patterns else 'FAILED',
++    }
++    return merged, report
++
++
++def shape_matched_load(net, checkpoint_state, arch, source_path, coverage_path,
++                       allow_skip=(), write_report=True, log=print):
++    """Load ``checkpoint_state`` into ``net``; write ``coverage_path``; raise on failure."""
++    merged, report = plan_load(net.state_dict(), checkpoint_state, arch, allow_skip)
++    report['source'] = os.path.abspath(source_path)
++    report['source_sha256'] = _sha256(source_path) if write_report else None
++    if write_report:
++        os.makedirs(os.path.dirname(os.path.abspath(coverage_path)), exist_ok=True)
++        with open(coverage_path, 'w') as stream:
++            json.dump(report, stream, indent=2)
++    for item in report['skipped']:
++        log('P2 skipped {key} model={model_shape} checkpoint={checkpoint_shape} '
++            '({reason}, {allowed})'.format(allowed=item.get('allowed_by', 'NOT ALLOWED'),
++                                           **item))
++    log('P2 loaded {loaded_tensors}/{model_tensors} tensors from {source}; status {status}'
++        .format(**report))
++    if report['status'] != 'ok':
++        raise RuntimeError(
++            'P2: refusing partial load: unexpected skips {} ; allow_skip patterns matching '
++            'nothing {} (see {})'.format(report['unexpected_skips'],
++                                         report['allow_skip_patterns_matching_nothing'],
++                                         coverage_path))
++    net.load_state_dict(merged, strict=True)
++    return report
+diff --git a/train.py b/train.py
+index 15ea0fd..bda465d 100755
+--- a/train.py
++++ b/train.py
+@@ -277,6 +277,9 @@ parser.add_argument('--supervised_mscale_loss_wt', type=float, default=None,
+                     help='weighting for the supervised loss')
+ parser.add_argument('--ocr_aux_loss_rmi', action='store_true', default=False,
+                     help='allow rmi for aux loss')
++parser.add_argument('--allow_skip', '--allow-skip', dest='allow_skip', type=str, default='',
++                    help='P2: comma separated fnmatch patterns of non-head tensors that '
++                         'may keep their fresh initialisation when loading --snapshot')
+ 
+ 
+ args = parser.parse_args()
+@@ -378,8 +381,9 @@ def main():
+     elif args.snapshot:
+         if 'ASSETS_PATH' in args.snapshot:
+             args.snapshot = args.snapshot.replace('ASSETS_PATH', cfg.ASSETS_PATH)
++        # P2: trusted legacy checkpoints pickle argparse/NumPy objects; weights_only=True fails.
+         checkpoint = torch.load(args.snapshot,
+-                                map_location=torch.device('cpu'))
++                                map_location=torch.device('cpu'), weights_only=False)
+         args.restore_net = True
+         msg = "Loading weights from: checkpoint={}".format(args.snapshot)
+         logx.msg(msg)
+@@ -407,7 +411,13 @@ def main():
+         if args.resume:
+             net.load_state_dict(checkpoint['state_dict'], strict=True)
+         else:
+-            restore_net(net, checkpoint)
++            import paul_init
++            assert 'state_dict' in checkpoint, 'cant find state_dict in checkpoint'
++            paul_init.shape_matched_load(
++                net, checkpoint['state_dict'], args.arch, args.snapshot,
++                os.path.join(args.result_dir, 'init-coverage.json'),
++                allow_skip=paul_init.parse_allow_skip(args.allow_skip),
++                write_report=args.global_rank == 0, log=logx.msg)
+ 
+     if args.init_decoder:
+         net.module.init_mods()

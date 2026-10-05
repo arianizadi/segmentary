@@ -1,0 +1,95 @@
+diff --git a/paul_best_mud.py b/paul_best_mud.py
+new file mode 100644
+index 0000000..22d1386
+--- /dev/null
++++ b/paul_best_mud.py
+@@ -0,0 +1,68 @@
++"""Extra checkpoint selected on mud-pumping validation IoU (patch P3).
++
++The Segmentary campaign selects checkpoints on ``val_iou/mud-pumping`` (class 13), so the
++forks also keep ``best_mud_epoch_<N>.pth``: saved whenever class-13 val IoU improves, ties
++broken by higher mean IoU. A NaN class-13 IoU never counts as an improvement. The state is
++mirrored in ``best_mud.json`` next to the checkpoint, and reloaded from there on resume.
++The class id is checked against the adapter's ``classes.json`` (fail closed).
++"""
++import json
++import math
++import os
++
++MUD_CLASS_ID = 13
++MUD_CLASS_NAME = 'mud-pumping'
++STATE_FILE = 'best_mud.json'
++
++
++def check_class_id(classes_json):
++    with open(classes_json) as stream:
++        labels = json.load(stream)['labels']
++    name = labels[MUD_CLASS_ID]['name'] if len(labels) > MUD_CLASS_ID else None
++    if name != MUD_CLASS_NAME:
++        raise RuntimeError(f'P3: class {MUD_CLASS_ID} in {classes_json} is {name!r}, '
++                           f'expected {MUD_CLASS_NAME!r}')
++    return MUD_CLASS_ID
++
++
++def _finite(value):
++    return value is not None and math.isfinite(float(value))
++
++
++def is_better(mud_iou, mean_iu, best):
++    if not _finite(mud_iou):
++        return False
++    if best is None:
++        return True
++    if mud_iou != best['mud_iou']:
++        return mud_iou > best['mud_iou']
++    return _finite(mean_iu) and mean_iu > best['mean_iu']
++
++
++def update(out_dir, epoch, iu, mean_iu, save, classes_json):
++    """Save via ``save(path)`` when class-13 IoU improves. Returns True if saved."""
++    class_id = check_class_id(classes_json)
++    state_path = os.path.join(out_dir, STATE_FILE)
++    best = None
++    if os.path.isfile(state_path):
++        with open(state_path) as stream:
++            best = json.load(stream)
++    mud_iou = float(iu[class_id])
++    mean_iu = float(mean_iu)
++    if not is_better(mud_iou, mean_iu, best):
++        return False
++    path = os.path.join(out_dir, f'best_mud_epoch_{epoch}.pth')
++    save(path)
++    if best is not None and best.get('file') and best['file'] != path:
++        try:
++            os.remove(best['file'])
++        except FileNotFoundError:
++            pass
++    record = {'epoch': int(epoch), 'mud_iou': mud_iou, 'mean_iu': mean_iu,
++              'class_id': class_id, 'class_name': MUD_CLASS_NAME, 'file': path,
++              'rule': 'max val IoU of class 13, ties by mean IoU; NaN never improves'}
++    tmp = state_path + '.tmp'
++    with open(tmp, 'w') as stream:
++        json.dump(record, stream, indent=2)
++    os.replace(tmp, state_path)
++    return True
+diff --git a/utils/misc.py b/utils/misc.py
+index 5619900..ddb8110 100644
+--- a/utils/misc.py
++++ b/utils/misc.py
+@@ -177,6 +177,16 @@ def evaluate_eval(args, net, optimizer, val_loss, hist, dump_images, writer, epo
+         'command': ' '.join(sys.argv[1:])
+     }, last_snapshot)
+ 
++    # P3: extra checkpoint selected on mud-pumping (class 13) val IoU
++    if args.dataset == 'rtisrail22':
++        import paul_best_mud
++        import paul_env
++        if paul_best_mud.update(
++                args.exp_path, epoch, iu, mean_iu,
++                lambda path: shutil.copyfile(last_snapshot, path),
++                os.path.join(paul_env.require_dir('PAUL_ADAPTER_ROOT'), 'classes.json')):
++            logging.info('P3: new best mud-pumping val IoU %.5f at epoch %d', iu[13], epoch)
++
+     # update best snapshot
+     if mean_iu > args.best_record['mean_iu'] :
+         # remove old best snapshot

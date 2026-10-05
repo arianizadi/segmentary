@@ -1,0 +1,167 @@
+diff --git a/config.py b/config.py
+index 4815eaa..65cdd00 100644
+--- a/config.py
++++ b/config.py
+@@ -76,11 +76,11 @@ __C.TRAIN.FP16 = False
+ #Attribute Dictionary for Dataset
+ __C.DATASET = AttrDict()
+ 
+-__C.DATASET.RAILSEM19 = \
+-  os.path.join(__C.ASSETS_PATH, 'rtis_lab/data/RailSem19/custom_split')
++# P1: RAILSEM19, RTISRAIL22, CENTROID_ROOT and HRNET_CHECKPOINT come from PAUL_* environment
++# variables, checked where they are used (paul_env.py). None here so nothing falls back.
++__C.DATASET.RAILSEM19 = None
+ 
+-__C.DATASET.RTISRAIL22 = \
+-  '/data/izadia1/projects/paul-semantic-segmentation-5e619e6/rtis_v2_adapter'
++__C.DATASET.RTISRAIL22 = None
+ 
+ __C.DATASET.FLAME = \
+    os.path.join(__C.ASSETS_PATH, 'rtis_lab/data/FLAME/custom_split')
+@@ -90,8 +90,7 @@ __C.DATASET.CITYSCAPES_DIR = \
+   os.path.join(__C.ASSETS_PATH, 'rtis_lab/data/Cityscapes')
+ __C.DATASET.CITYSCAPES_CUSTOMCOARSE = \
+   os.path.join(__C.ASSETS_PATH, 'rtis_lab/data/Cityscapes/autolabelled')
+-__C.DATASET.CENTROID_ROOT = \
+-  '/data/izadia1/projects/paul-semantic-segmentation-5e619e6/centroids'
++__C.DATASET.CENTROID_ROOT = None
+ #SDC Augmented Cityscapes Dir Location
+ __C.DATASET.CITYSCAPES_AUG_DIR = ''
+ #Mapillary Dataset Dir Location
+@@ -155,8 +154,7 @@ __C.MODEL.WRN41_CHECKPOINT = \
+     os.path.join(WEIGHTS_PATH, 'wider_resnet41_cornflower_sunfish.pth')
+ __C.MODEL.X71_CHECKPOINT = \
+     os.path.join(WEIGHTS_PATH, 'aligned_xception71.pth')
+-__C.MODEL.HRNET_CHECKPOINT = \
+-    '/data/izadia1/projects/paul-semantic-segmentation-5e619e6/hrnet_w48_timm_imagenet.pth'
++__C.MODEL.HRNET_CHECKPOINT = None
+ 
+ __C.LOSS = AttrDict()
+ # Weight for OCR aux loss
+diff --git a/datasets/railsem19.py b/datasets/railsem19.py
+index c65ec2f..84deddd 100644
+--- a/datasets/railsem19.py
++++ b/datasets/railsem19.py
+@@ -7,6 +7,7 @@ from runx.logx import logx
+ from datasets.base_loader import BaseLoader
+ from datasets.utils import make_dataset_folder
+ from datasets import uniform
++import paul_env
+ 
+ 
+ class Loader(BaseLoader):
+@@ -24,9 +25,9 @@ class Loader(BaseLoader):
+                                      img_transform=img_transform,
+                                      label_transform=label_transform)
+ 
+-        root = cfg.DATASET.RAILSEM19
++        root = paul_env.require_dir('PAUL_RS19_ROOT')
+         # config_fn = os.path.join(root, '/home/stanik/rtis_lab/data/RailSem19/rs19-config.json')
+-        config_fn = '/home/stanik/rtis_lab/data/RailSem19/rs19-config.json'
++        config_fn = os.path.join(root, 'rs19-config.json')
+         self.fill_colormap_and_names(config_fn)
+ 
+         ######################################################################
+diff --git a/datasets/rtisrail22.py b/datasets/rtisrail22.py
+index d319082..fe6ba36 100644
+--- a/datasets/rtisrail22.py
++++ b/datasets/rtisrail22.py
+@@ -7,6 +7,7 @@ from runx.logx import logx
+ from datasets.base_loader import BaseLoader
+ from datasets.utils import make_dataset_folder
+ from datasets import uniform
++import paul_env
+ 
+ 
+ class Loader(BaseLoader):
+@@ -24,9 +25,9 @@ class Loader(BaseLoader):
+                                      img_transform=img_transform,
+                                      label_transform=label_transform)
+ 
+-        root = cfg.DATASET.RTISRAIL22
++        root = paul_env.require_dir('PAUL_ADAPTER_ROOT')
+         # config_fn = os.path.join(root, '/home/stanik/rtis_lab/data/RailSem19/rs19-config.json')
+-        config_fn = '/data/izadia1/projects/paul-semantic-segmentation-5e619e6/rtis_v2_adapter/classes.json'
++        config_fn = os.path.join(root, 'classes.json')
+         self.fill_colormap_and_names(config_fn)
+ 
+         ######################################################################
+diff --git a/datasets/uniform.py b/datasets/uniform.py
+index 9827778..5e4b2de 100644
+--- a/datasets/uniform.py
++++ b/datasets/uniform.py
+@@ -239,7 +239,9 @@ def build_centroids(imgs, num_classes, train, cv=None, coarse=False,
+     else:
+         centroid_fn += '_cv{}'.format(cv)
+     centroid_fn += '_tile{}.json'.format(cfg.DATASET.CLASS_UNIFORM_TILE)
+-    json_fn = os.path.join(cfg.DATASET.CENTROID_ROOT,
++    import paul_env
++    centroid_root = paul_env.require_dir('PAUL_CENTROID_ROOT')
++    json_fn = os.path.join(centroid_root,
+                            centroid_fn)
+     if os.path.isfile(json_fn):
+         logx.msg('Loading centroid file {}'.format(json_fn))
+@@ -252,7 +254,7 @@ def build_centroids(imgs, num_classes, train, cv=None, coarse=False,
+ 
+         if cfg.GLOBAL_RANK==0:
+ 
+-            os.makedirs(cfg.DATASET.CENTROID_ROOT, exist_ok=True)
++            os.makedirs(centroid_root, exist_ok=True)
+             # centroids is a dict (indexed by class) of lists of centroids
+             centroids = class_centroids_all(
+                 imgs,
+diff --git a/network/hrnetv2.py b/network/hrnetv2.py
+index a0091c9..0ed277c 100644
+--- a/network/hrnetv2.py
++++ b/network/hrnetv2.py
+@@ -448,7 +448,10 @@ class HighResolutionNet(nn.Module):
+ 
+         return None, None, feats
+ 
+-    def init_weights(self, pretrained=cfg.MODEL.HRNET_CHECKPOINT):
++    def init_weights(self, pretrained=None):
++        if pretrained is None:
++            import paul_env
++            pretrained = paul_env.require_file('PAUL_HRNET_IMAGENET_CKPT')
+         logx.msg('=> init weights from normal distribution')
+         for name, m in self.named_modules():
+             if any(part in name for part in {'cls', 'aux', 'ocr'}):
+diff --git a/paul_env.py b/paul_env.py
+new file mode 100644
+index 0000000..65758a6
+--- /dev/null
++++ b/paul_env.py
+@@ -0,0 +1,33 @@
++"""Fail-closed data and weight paths for the RAD 9/24 fork runs (patch P1).
++
++Every path that used to be hardcoded in this fork (Paul's /home/stanik paths, or the
++September 2026 RTIS v2 adapter) is read from an environment variable instead. An unset,
++relative or missing value raises, so a run can never fall back to a stale dataset or a
++stale centroid cache.
++
++    PAUL_ADAPTER_ROOT          RAD arm adapter (trainVal_/val_/test_ images+masks, classes.json)
++    PAUL_RS19_ROOT             RailSem19 split (train_/trainVal_/val_/test_ images+masks,
++                               rs19-config.json)
++    PAUL_CENTROID_ROOT         per-run class-uniform centroid cache directory (must exist)
++    PAUL_HRNET_IMAGENET_CKPT   HRNet-W48 ImageNet backbone loaded when the model is built
++"""
++import os
++
++
++def _require(name, check, kind):
++    value = os.environ.get(name, '')
++    if not value:
++        raise RuntimeError(f'{name} is not set; refusing to use a hardcoded {kind}')
++    if not os.path.isabs(value):
++        raise RuntimeError(f'{name} must be an absolute path, got {value!r}')
++    if not check(value):
++        raise RuntimeError(f'{name}={value} is not an existing {kind}')
++    return value
++
++
++def require_dir(name):
++    return _require(name, os.path.isdir, 'directory')
++
++
++def require_file(name):
++    return _require(name, os.path.isfile, 'file')

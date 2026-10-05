@@ -1,0 +1,22 @@
+diff --git a/datasets/__init__.py b/datasets/__init__.py
+index e79cedf..7207bd9 100644
+--- a/datasets/__init__.py
++++ b/datasets/__init__.py
+@@ -9,7 +9,7 @@ This file including the different datasets processing pipelines
+ # from datasets import bdd
+ # from datasets import idd
+ # from datasets import merged_auto_dataset
+-# from datasets import railsem19
++from datasets import railsem19  # P1b: re-enabled for the RailSem19 stage
+ from datasets import rtisrail22
+ # Unused legacy dataset import removed
+ # Unused legacy dataset import removed
+@@ -76,7 +76,7 @@ def setup_loaders(args):
+     #     else:
+     #         args.val_batch_size = args.bs_mult * args.ngpu
+     if args.dataset == 'railsem19':
+-        args.dataset_cls = RailSem19
++        args.dataset_cls = railsem19  # P1b: the module, as for rtisrail22 (SFSegNets-1 25f315e)
+         args.train_batch_size = args.bs_mult * args.ngpu
+         if args.bs_mult_val > 0:
+             args.val_batch_size = args.bs_mult_val * args.ngpu

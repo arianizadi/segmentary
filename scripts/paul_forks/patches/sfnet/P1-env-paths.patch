@@ -1,0 +1,201 @@
+diff --git a/config.py b/config.py
+index de9c44c..f1a2ad3 100644
+--- a/config.py
++++ b/config.py
+@@ -53,8 +53,10 @@ __C.DATASET.KITTI_AUG_DIR = ''
+ # __C.DATASET.BDD_DIR = './data/bdd'
+ # IDD Dataset
+ # __C.DATASET.IDD_DIR = './data/IDD'
+-__C.DATASET.RAILSEM19 = '/home/stanik/rtis_lab/data/RailSem19/custom_split'
+-__C.DATASET.RTISRAIL22 = '/data/izadia1/projects/paul-semantic-segmentation-5e619e6/rtis_v2_adapter'
++# P1: RAILSEM19 and RTISRAIL22 come from PAUL_RS19_ROOT / PAUL_ADAPTER_ROOT (paul_env.py),
++# checked when a loader is constructed. None here so nothing falls back.
++__C.DATASET.RAILSEM19 = None
++__C.DATASET.RTISRAIL22 = None
+ __C.DATASET.FLAME = '/home/stanik/rtis_lab/data/FLAME/custom_split'
+ 
+ #Number of splits to support
+diff --git a/datasets/railsem19.py b/datasets/railsem19.py
+index c3e4ea2..0c720c6 100644
+--- a/datasets/railsem19.py
++++ b/datasets/railsem19.py
+@@ -8,11 +8,13 @@ import numpy as np
+ import json
+ import datasets.uniform as uniform
+ from config import cfg
++import paul_env
+ 
+ num_classes = 19
+ ignore_label = 255
+-root = cfg.DATASET.RAILSEM19
+-config_fn = '/home/stanik/rtis_lab/data/RailSem19/rs19-config.json'
++# P1: read from PAUL_RS19_ROOT; RailSem19.__init__ fails closed if it is unset or missing.
++root = os.environ.get('PAUL_RS19_ROOT') or None
++config_fn = os.path.join(root, 'rs19-config.json') if root else None
+ id_to_ignore_or_group = {}
+ color_mapping = []
+ id_to_trainid = {}
+@@ -44,7 +46,8 @@ def gen_colormap():
+     print(id2name)
+     return id2name
+ 
+-gen_colormap()
++if config_fn and os.path.isfile(config_fn):
++    gen_colormap()
+ # assert len(color_mapping) != 0, 'can not load config.json, check your map dataset config file'
+ # zero_pad = 256 * 3 - len(color_mapping)
+ # for i in range(zero_pad):
+@@ -129,6 +132,8 @@ class RailSem19(data.Dataset):
+         self.dump_images = dump_images
+         self.class_uniform_pct = class_uniform_pct
+         self.class_uniform_tile = class_uniform_tile
++        if paul_env.require_dir('PAUL_RS19_ROOT') != root:
++            raise RuntimeError('P1: PAUL_RS19_ROOT changed after import')
+         self.id2name = gen_colormap()
+         self.imgs_uniform = None
+         self.test = test
+@@ -144,7 +149,8 @@ class RailSem19(data.Dataset):
+         #     self.imgs = self.imgs[:200]
+ 
+         if self.class_uniform_pct:
+-            json_fn = 'railsem19{}.json'.format(self.class_uniform_tile)
++            json_fn = os.path.join(paul_env.require_dir('PAUL_CENTROID_ROOT'),
++                                   'railsem19{}.json'.format(self.class_uniform_tile))
+             if os.path.isfile(json_fn):
+                 with open(json_fn, 'r') as json_data:
+                     centroids = json.load(json_data)
+@@ -156,8 +162,12 @@ class RailSem19(data.Dataset):
+                     num_classes,
+                     id2trainid=None,
+                     tile_size=self.class_uniform_tile)
+-                with open(json_fn, 'w') as outfile:
++                # P1: every rank builds and writes the cache; write atomically so no rank
++                # can read a half-written file.
++                tmp_fn = '{}.{}.tmp'.format(json_fn, os.getpid())
++                with open(tmp_fn, 'w') as outfile:
+                     json.dump(self.centroids, outfile, indent=4)
++                os.replace(tmp_fn, json_fn)
+         else:
+             self.centroids = []
+         self.build_epoch()
+diff --git a/datasets/rtisrail22.py b/datasets/rtisrail22.py
+index 34cd655..01b6811 100644
+--- a/datasets/rtisrail22.py
++++ b/datasets/rtisrail22.py
+@@ -8,13 +8,15 @@ import numpy as np
+ import json
+ import datasets.uniform as uniform
+ from config import cfg
++import paul_env
+ 
+ # num_classes = 16
+ num_classes = 21
+ ignore_label = 255
+-root = cfg.DATASET.RTISRAIL22
++# P1: read from PAUL_ADAPTER_ROOT; RTISRail22.__init__ fails closed if it is unset or missing.
++root = os.environ.get('PAUL_ADAPTER_ROOT') or None
+ # config_fn = '/home/stanik/rtis_lab/data/rtis-rail-2022/class_to_id_new.json'
+-config_fn = '/data/izadia1/projects/paul-semantic-segmentation-5e619e6/rtis_v2_adapter/classes.json' 
++config_fn = os.path.join(root, 'classes.json') if root else None
+ id_to_ignore_or_group = {}
+ color_mapping = []
+ id_to_trainid = {}
+@@ -47,7 +49,8 @@ def gen_colormap():
+     print(colormap)
+     return id2name
+ 
+-gen_colormap()
++if config_fn and os.path.isfile(config_fn):
++    gen_colormap()
+ # assert len(color_mapping) != 0, 'can not load config.json, check your map dataset config file'
+ zero_pad = 256 * 3 - len(color_mapping)
+ for i in range(zero_pad):
+@@ -133,6 +136,8 @@ class RTISRail22(data.Dataset):
+         self.dump_images = dump_images
+         self.class_uniform_pct = class_uniform_pct
+         self.class_uniform_tile = class_uniform_tile
++        if paul_env.require_dir('PAUL_ADAPTER_ROOT') != root:
++            raise RuntimeError('P1: PAUL_ADAPTER_ROOT changed after import')
+         self.id2name = gen_colormap()
+         self.imgs_uniform = None
+         self.test = test
+@@ -148,7 +153,8 @@ class RTISRail22(data.Dataset):
+         #     self.imgs = self.imgs[:200]
+ 
+         if self.class_uniform_pct:
+-            json_fn = 'rtisrail22{}.json'.format(self.class_uniform_tile)
++            json_fn = os.path.join(paul_env.require_dir('PAUL_CENTROID_ROOT'),
++                                   'rtisrail22{}.json'.format(self.class_uniform_tile))
+             if os.path.isfile(json_fn):
+                 with open(json_fn, 'r') as json_data:
+                     centroids = json.load(json_data)
+@@ -160,8 +166,12 @@ class RTISRail22(data.Dataset):
+                     num_classes,
+                     id2trainid=None,
+                     tile_size=self.class_uniform_tile)
+-                with open(json_fn, 'w') as outfile:
++                # P1: every rank builds and writes the cache; write atomically so no rank
++                # can read a half-written file.
++                tmp_fn = '{}.{}.tmp'.format(json_fn, os.getpid())
++                with open(tmp_fn, 'w') as outfile:
+                     json.dump(self.centroids, outfile, indent=4)
++                os.replace(tmp_fn, json_fn)
+         else:
+             self.centroids = []
+         self.build_epoch()
+diff --git a/network/resnet_d.py b/network/resnet_d.py
+index cbfbfa6..e433ef0 100755
+--- a/network/resnet_d.py
++++ b/network/resnet_d.py
+@@ -178,7 +178,9 @@ def resnet18(pretrained=True, **kwargs):
+     """
+     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
+     if pretrained:
+-        model.load_state_dict(torch.load("./pretrained_models/resnet18-deep-inplane128.pth", map_location="cpu"))
++        import paul_env
++        model.load_state_dict(torch.load(paul_env.require_file('PAUL_SFNET_R18_IMAGENET_CKPT'),
++                                         map_location="cpu"))
+     return model
+ 
+ 
+diff --git a/paul_env.py b/paul_env.py
+new file mode 100644
+index 0000000..58cd451
+--- /dev/null
++++ b/paul_env.py
+@@ -0,0 +1,35 @@
++"""Fail-closed data and weight paths for the RAD 9/24 fork runs (patch P1).
++
++Every path that used to be hardcoded in this fork (Paul's /home/stanik paths, or the
++September 2026 RTIS v2 adapter) is read from an environment variable instead. An unset,
++relative or missing value raises, so a run can never fall back to a stale dataset or a
++stale centroid cache.
++
++    PAUL_ADAPTER_ROOT          RAD arm adapter (trainVal_/val_/test_ images+masks, classes.json)
++    PAUL_RS19_ROOT             RailSem19 split (train_/trainVal_/val_/test_ images+masks,
++                               rs19-config.json)
++    PAUL_CENTROID_ROOT         per-run class-uniform centroid cache directory (must exist)
++    PAUL_SFNET_R18_IMAGENET_CKPT  (SFNet only) deep-stem ResNet-18 ImageNet weights loaded at
++                               model build (resnet18-deep-inplane128.pth)
++    PAUL_HRNET_IMAGENET_CKPT   (HRNet only) HRNet-W48 ImageNet backbone loaded at model build
++"""
++import os
++
++
++def _require(name, check, kind):
++    value = os.environ.get(name, '')
++    if not value:
++        raise RuntimeError(f'{name} is not set; refusing to use a hardcoded {kind}')
++    if not os.path.isabs(value):
++        raise RuntimeError(f'{name} must be an absolute path, got {value!r}')
++    if not check(value):
++        raise RuntimeError(f'{name}={value} is not an existing {kind}')
++    return value
++
++
++def require_dir(name):
++    return _require(name, os.path.isdir, 'directory')
++
++
++def require_file(name):
++    return _require(name, os.path.isfile, 'file')
