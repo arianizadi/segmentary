@@ -438,6 +438,7 @@ def test_orphan_in_its_own_session_is_terminated_before_locks_are_released(tmp_p
     )
     driver.write_text(
         "import json, sys\n"
+        f"sys.path.insert(0, {str(PAUL_FORKS.parents[1])!r})\n"  # repo root: `scripts` package
         f"sys.path.insert(0, {str(PAUL_FORKS)!r})\n"
         "import fork_gpu_run as f\n"
         f"sys.path.insert(0, {str(Path(__file__).parent)!r})\n"
