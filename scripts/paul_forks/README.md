@@ -15,6 +15,8 @@ Run root on HDRFS: `RUN=/data/izadia1/projects/segmentary-runs/paul-fork-rad-9-2
 | File | Purpose |
 |---|---|
 | `fork_gpu_run.py` | Fail-closed GPU launcher. Uses GPUs 2-9 only and never GPUs 0 or 1. |
+| `fork_queue.py` | Ordered queue: starts each recipe run (in tmux `pf-q-<name>`) when a GPU group of 2-9 is free. Queue file `queue/rad-9-24-paper-models.yaml`; state `$RUN/queue-state.json`. See `recipes/recipes.md`. |
+| `recipes/` | Recipe scripts, `write_provenance.py` and `recipes.md`. |
 | `adapt_rad.py` | Converts a prepared RAD arm to the forks' flat `trainVal_/val_/test_` layout. Writes support files. |
 | `make_rs19_split.py` | Builds Paul's 6800/850/850 RailSem19 `custom_split` symlink layout. |
 | `score_predictions.py` | Scores a run's dumped label PNGs with the campaign's own metric code. |
@@ -29,12 +31,17 @@ Tests: `tests/test_paul_forks.py`. These need no GPU and no nvidia-smi.
 | `paper-hrnet__rs19-paul` | NVIDIA `nimble-chihuahua` (`nvidia`) → Paul's RS19 `rs19_cityscapes_ep98_miou_0.7385.pth` (`paul`) → RAD (`ours`) |
 | `paper-hrnet__rs19-ours` | NVIDIA `nimble-chihuahua` (`nvidia`) → our RS19, trained with Paul's HRNet RS19 recipe (`ours`) → RAD (`ours`) |
 | `paper-sfnet__rs19-ours` | public SFNet Map→City `pretrained_cityscapes_mapillary_rs18_miou-0.799.pth` (`public-sfnet-authors`) → our RS19, trained with Paul's SFNet RS19 recipe (`ours`) → RAD (`ours`) |
+| `paper-hrnet__mapcity-direct` | NVIDIA `nimble-chihuahua` (`nvidia`) → RAD (`ours`). No RS19 stage, so no `rs19` entry in the chain. |
+| `paper-sfnet__mapcity-direct` | public SFNet Map→City (`public-sfnet-authors`) → RAD (`ours`). No RS19 stage. |
 | `paper-sfnet__rs19-paul` | Reserved. Used only if Paul sends his SFNet RS19 checkpoint (`public-sfnet-authors` → `paul` → `ours`). |
 | `paul-reference__rr22-0.8964` | Paul's finished RAD model. Reference only, and **never scored on our splits**, because it may have trained on our val/test images. `score_predictions.py` refuses it. |
 
-Each RAD-stage label ends with its arm: `__arm-paul`, `__arm-fixed-stratified` or
-`__arm-fixed-grouped`. For example: `paper-hrnet__rs19-paul__arm-fixed-grouped`. An RS19-stage
-run (one we train ourselves) carries the base label without an arm suffix.
+Each RAD-stage label carries its arm: `__arm-paul`, `__arm-fixed-stratified` or
+`__arm-fixed-grouped`. For example: `paper-hrnet__rs19-paul__arm-fixed-grouped`. A recipe
+other than the default (Paul's shared 2026-09-23 files) appends `__recipe-<variant>`:
+`paper-hrnet__rs19-paul__arm-fixed-grouped__recipe-train_2` (variants per chain in
+`recipes/recipes.md`; `mapcity-direct` has none). An RS19-stage run (one we train ourselves)
+carries the base label without an arm suffix.
 
 Checkpoints that we did not train are pinned by SHA-256 in `score_predictions.py`:
 
@@ -215,7 +222,7 @@ The mIoU rule is the mean over classes with non-zero union, which is what the ca
 
 **Checks (all fail closed).**
 
-- Label: a RAD-stage label whose arm is the scored arm; owners match the label; every checkpoint we did not train matches its pin, and a label whose non-ours checkpoint has no pin (`paper-sfnet__rs19-paul`) is refused; the reference label is refused; no dry run, probe or pins override.
+- Label: a RAD-stage label `<base>__arm-<arm>[__recipe-<variant>]` whose arm is the scored arm, whose variant is one the chain has, and whose training run recorded that `recipe_variant`; owners and the exact set of chain stages match the label (`mapcity-direct`: `map_city` and `rad` only); every checkpoint we did not train matches its pin, and a label whose non-ours checkpoint has no pin (`paper-sfnet__rs19-paul`) is refused; the reference label is refused; no dry run, probe or pins override.
 - Tie to the run: `--provenance` is the `dump-provenance.json` beside `--pred-dir`, and its command's `--dump_preds` is `--pred-dir`; the dump and the training run both exited 0 (`gpu-assignment.json`); the P4 manifest `<pred-dir>.manifest.json` names the split, the exact image set and the dumped checkpoint's SHA-256 (= `checkpoints.rad`); the dump's `init-coverage.json` loaded that checkpoint with zero skipped tensors; the training `provenance.json` is the one the dump recorded (SHA-256), with the same label, chain and adapter; the dumped checkpoint and the dump are inside that run.
 - Inference: whole-image single-scale only; `--allow-multi-scale` scores a `native` dump and labels it as a secondary number.
 - Data: the adapter `manifest.json` matches the run's provenance, was built from `rad_9_24_2026-<arm>` (`arm_name`), and the arm's `splits.json`, `classes.json` and `audit/samples.json` are unchanged since; ground-truth masks match the audit's SHA-256; the confusion matrix's ground-truth row sums equal the audit's `class_pixels` and the adapter's `validation-support.json` / `test-support.json` (mandatory).

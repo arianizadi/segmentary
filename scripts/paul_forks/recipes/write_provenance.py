@@ -13,7 +13,9 @@ sha256), ``recipe_args`` (the ``train.py`` argv, verbatim), ``deviations`` and
 files, the data files' sha256, the ``PAUL_*`` environment and the probe / dry-run flags.
 
 Before writing it refuses: a label outside the frozen set (the reference label is never
-run), owners that do not match the label's chain, a Paul/NVIDIA/public checkpoint whose
+run), a RAD label whose ``__recipe-<variant>`` suffix (absent = the default
+``paul-shared-20260923``) differs from the recorded ``recipe_variant``, owners that do not
+match the label's chain (``mapcity-direct`` has no ``rs19`` stage), a Paul/NVIDIA/public checkpoint whose
 sha256 differs from its pin or that has no pin at all (so ``paper-sfnet__rs19-paul`` stays
 reserved until Paul's SFNet RS19 checkpoint is pinned), a GPU outside 2-9, a launcher other
 than the ``fork_gpu_run.py`` next to these recipes (outside ``--dry-run``), a fork clone
@@ -45,11 +47,41 @@ RS19_LABELS = ("hrnet-rs19-ours", "sfnet-rs19-ours")
 RAD_BASES = (
     "paper-hrnet__rs19-paul",
     "paper-hrnet__rs19-ours",
+    "paper-hrnet__mapcity-direct",  # NVIDIA Map->City -> RAD, no RS19 stage
     "paper-sfnet__rs19-ours",
     "paper-sfnet__rs19-paul",  # reserved: only if Paul sends his SFNet RS19 checkpoint
+    "paper-sfnet__mapcity-direct",  # public SFNet Map->City -> RAD, no RS19 stage
 )
+# The default RAD recipe (Paul's shared 2026-09-23 files) keeps the plain label; any other
+# variant the recipe accepts appends "__recipe-<variant>", so two recipes of one chain and
+# arm never share a label. mapcity-direct runs the default only.
+DEFAULT_RECIPE = "paul-shared-20260923"
+RECIPE_VARIANTS = {
+    "paper-hrnet__rs19-paul": ("train_2", "train_1"),
+    "paper-hrnet__rs19-ours": ("train_2", "train_1"),
+    "paper-hrnet__mapcity-direct": (),
+    "paper-sfnet__rs19-ours": ("train_2",),
+    "paper-sfnet__rs19-paul": ("train_2",),
+    "paper-sfnet__mapcity-direct": (),
+}
 REFERENCE_LABELS = ("paul-reference__rr22-0.8964",)  # never trained here, never scored
-ALLOWED_LABELS = RS19_LABELS + tuple(f"{base}__arm-{arm}" for base in RAD_BASES for arm in ARMS)
+RAD_LABEL = re.compile(
+    r"(?P<base>paper-(?:hrnet|sfnet)__[a-z0-9-]+)__arm-(?P<arm>" + "|".join(ARMS) + r")"
+    r"(?:__recipe-(?P<recipe>[A-Za-z0-9_.-]+))?"
+)
+
+
+def rad_label(base: str, arm: str, recipe: str = DEFAULT_RECIPE) -> str:
+    label = f"{base}__arm-{arm}"
+    return label if recipe == DEFAULT_RECIPE else f"{label}__recipe-{recipe}"
+
+
+ALLOWED_LABELS = RS19_LABELS + tuple(
+    rad_label(base, arm, recipe)
+    for base in RAD_BASES
+    for arm in ARMS
+    for recipe in (DEFAULT_RECIPE, *RECIPE_VARIANTS[base])
+)
 OWNERS = ("paul", "nvidia", "ours", "public-sfnet-authors")
 STAGES = ("map_city", "rs19", "rad")
 CHAINS = {
@@ -57,8 +89,10 @@ CHAINS = {
     "sfnet-rs19-ours": {"map_city": "public-sfnet-authors", "rs19": "ours"},
     "paper-hrnet__rs19-paul": {"map_city": "nvidia", "rs19": "paul", "rad": "ours"},
     "paper-hrnet__rs19-ours": {"map_city": "nvidia", "rs19": "ours", "rad": "ours"},
+    "paper-hrnet__mapcity-direct": {"map_city": "nvidia", "rad": "ours"},
     "paper-sfnet__rs19-ours": {"map_city": "public-sfnet-authors", "rs19": "ours", "rad": "ours"},
     "paper-sfnet__rs19-paul": {"map_city": "public-sfnet-authors", "rs19": "paul", "rad": "ours"},
+    "paper-sfnet__mapcity-direct": {"map_city": "public-sfnet-authors", "rad": "ours"},
 }
 # Same pins as score_predictions.py (SHA256SUMS on HDRFS / the public SFNet download).
 PINS = {
@@ -93,8 +127,21 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def split_label(label: str) -> tuple[str, str | None, str | None]:
+    """``(base, arm, recipe variant)``; an RS19-stage label is its own base (no arm/recipe)."""
+    if label in RS19_LABELS:
+        return label, None, None
+    match = RAD_LABEL.fullmatch(label)
+    if not match:
+        raise SystemExit(f"REFUSING: {label!r} is not <base>__arm-<arm>[__recipe-<variant>]")
+    recipe = match.group("recipe")
+    if recipe == DEFAULT_RECIPE:
+        raise SystemExit(f"REFUSING: {label!r}: the default recipe carries no __recipe- suffix")
+    return match.group("base"), match.group("arm"), recipe or DEFAULT_RECIPE
+
+
 def base_of(label: str) -> str:
-    return label.split("__arm-")[0]
+    return split_label(label)[0]
 
 
 def load_pins() -> tuple[dict, str | None]:
@@ -288,13 +335,18 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("REFUSING: reference labels are never run or scored")
     if label not in ALLOWED_LABELS:
         raise SystemExit(f"REFUSING: label {label!r} not in the allowed set")
-    is_rad_label = "__arm-" in label
+    base, label_arm, recipe = split_label(label)
+    is_rad_label = label_arm is not None
     if (args.stage == "rs19") == is_rad_label:
         raise SystemExit(f"REFUSING: stage {args.stage} does not fit label {label}")
-    if is_rad_label and not re.fullmatch(r".+__arm-(" + "|".join(ARMS) + ")", label):
-        raise SystemExit("REFUSING: RAD label must end with __arm-<arm>")
-    if is_rad_label and not label.endswith(f"__arm-{args.arm}"):
+    if is_rad_label and label_arm != args.arm:
         raise SystemExit(f"REFUSING: label {label} does not match arm {args.arm!r}")
+    extras = dict(item.split("=", 1) for item in args.extra)
+    if args.stage == "rad" and extras.get("recipe_variant") != recipe:
+        raise SystemExit(
+            f"REFUSING: label {label} names recipe {recipe!r} but the run records "
+            f"recipe_variant={extras.get('recipe_variant')!r}"
+        )
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
     if not command:
         raise SystemExit("REFUSING: no command recorded")
@@ -306,24 +358,30 @@ def main(argv: list[str] | None = None) -> int:
     dump = None
     if args.stage == "dump":
         base_path = Path(args.base_provenance)
-        base = json.loads(base_path.read_text())
-        if base.get("label") != label or base.get("dry_run") or base.get("probe_epochs"):
+        training = json.loads(base_path.read_text())
+        if (
+            training.get("label") != label
+            or training.get("dry_run")
+            or training.get("probe_epochs")
+        ):
             raise SystemExit(f"REFUSING: {base_path} is not a finished run of {label}")
+        if (training.get("extra") or {}).get("recipe_variant") != recipe:
+            raise SystemExit(f"REFUSING: {base_path} recipe_variant is not {recipe!r}")
         if set(owners) != {"rad"} or not checkpoints["rad"]["path"]:
             raise SystemExit("REFUSING: a dump records exactly the dumped rad checkpoint")
         rad_owner, rad_entry = owners["rad"], checkpoints["rad"]
-        owners = dict(base["owner_of_each_checkpoint_in_chain"])
-        checkpoints = dict(base["checkpoints"])
+        owners = dict(training["owner_of_each_checkpoint_in_chain"])
+        checkpoints = dict(training["checkpoints"])
         if owners.get("rad") != rad_owner:
             raise SystemExit("REFUSING: dumped checkpoint owner differs from the run's chain")
         checkpoints["rad"] = rad_entry
         dump = {
             "training_provenance": str(base_path),
             "training_provenance_sha256": sha256(base_path),
-            "training_recipe_args": base.get("recipe_args"),
-            "training_gpu_assignment": base.get("gpu_assignment"),
+            "training_recipe_args": training.get("recipe_args"),
+            "training_gpu_assignment": training.get("gpu_assignment"),
         }
-    expected = CHAINS[base_of(label)]
+    expected = CHAINS[base]
     if owners != expected:
         raise SystemExit(f"REFUSING: {label} needs owners {expected}, got {owners}")
     pins, pins_override = load_pins()
@@ -356,7 +414,7 @@ def main(argv: list[str] | None = None) -> int:
         "probe_epochs": int(args.probe_epochs) if args.probe_epochs else None,
         "dry_run": args.dry_run,
         "pins_override": pins_override,
-        "extra": dict(item.split("=", 1) for item in args.extra),
+        "extra": extras,
         "created_utc": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
         "host": os.uname().nodename,
     }

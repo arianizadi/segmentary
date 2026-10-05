@@ -11,11 +11,29 @@ run label says whose checkpoint each stage came from.
 | `sfnet-rs19-ours` | Map→City `rs18 79.9` (**public-sfnet-authors**) → RS19 (**ours**) | `sfnet-rs19-ours.sh` |
 | `paper-hrnet__rs19-paul__arm-<arm>` | **nvidia** → RS19 `0.7385` (**paul**) → RAD (**ours**) | `paper-hrnet.sh --rs19 paul` |
 | `paper-hrnet__rs19-ours__arm-<arm>` | **nvidia** → RS19 from `hrnet-rs19-ours` (**ours**) → RAD (**ours**) | `paper-hrnet.sh --rs19 ours --rs19-ckpt …` |
+| `paper-hrnet__mapcity-direct__arm-<arm>` | **nvidia** → RAD (**ours**); no RS19 stage | `paper-hrnet.sh --rs19 none` |
 | `paper-sfnet__rs19-ours__arm-<arm>` | **public-sfnet-authors** → RS19 from `sfnet-rs19-ours` (**ours**) → RAD (**ours**) | `paper-sfnet.sh --rs19 ours --rs19-ckpt …` |
+| `paper-sfnet__mapcity-direct__arm-<arm>` | **public-sfnet-authors** → RAD (**ours**); no RS19 stage | `paper-sfnet.sh --rs19 none` |
 | `paper-sfnet__rs19-paul__arm-<arm>` | reserved: only if Paul sends `railsem19_sfnet_resnet18_mean-iu_0.75268.pth`. Refused (by `write_provenance.py` and the scorer) until its SHA-256 is pinned as `("paul","rs19","sfnet")` in `write_provenance.PINS` and `("paper-sfnet","rs19-paul")` in `score_predictions.PINNED` | `paper-sfnet.sh --rs19 paul --rs19-ckpt …` |
 | `paul-reference__rr22-0.8964` | Paul's finished RAD model | **no recipe.** Reference only; NEVER scored on our splits: it may have trained on our val/test images. |
 
-`<arm>` ∈ `paul`, `fixed-stratified`, `fixed-grouped`. Only these labels can be written
+`<arm>` ∈ `paul`, `fixed-stratified`, `fixed-grouped`.
+
+**Recipe variants get their own label.** The default RAD recipe (`paul-shared-20260923`, the
+files Paul shared) keeps the label above, so the runs already going keep theirs. Any other
+variant appends `__recipe-<variant>`, so two runs of one chain and arm with different recipes
+can never share a label or a run directory:
+
+| Chain | Variants with a suffix |
+|---|---|
+| `paper-hrnet__rs19-paul`, `paper-hrnet__rs19-ours` | `__recipe-train_2` (`HRNET_RAD_RECIPE=train_2`, the command stored in Paul's 0.8964 checkpoint), `__recipe-train_1` |
+| `paper-sfnet__rs19-ours`, `paper-sfnet__rs19-paul` | `__recipe-train_2` (`SFNET_RAD_RECIPE=train_2`) |
+| `paper-*__mapcity-direct` | none (default recipe only; the recipe refuses a selector) |
+
+For example `paper-hrnet__rs19-paul__arm-fixed-grouped__recipe-train_2`.
+`write_provenance.py` refuses a suffix that differs from the run's recorded
+`recipe_variant` (and the default spelled out as a suffix); the scorer refuses a label whose
+training run recorded another variant. Only these labels can be written
 (`write_provenance.py` holds the frozen set). Table rows must use the label, for example
 "HRNet Map→City(NVIDIA)→RS19(Paul)→RAD" versus "HRNet Map→City(NVIDIA)→RS19(ours)→RAD".
 
@@ -71,6 +89,8 @@ Defaults (override through the environment): `PAUL_FORK_RUN_ROOT=/data/izadia1/p
 | `hrnet-rs19-ours` | `hrnet/train_rs19.yml` | lr 1e-4, 150 epochs, mscale weight 0.1, n_scales 0.5,1.0,2.0 |
 | `paper-hrnet` | `hrnet/train_rtisrail22.yml` | lr 7e-5, 1000 epochs, mscale weight 0.05, n_scales 0.5,1.0,1.5 |
 | `paper-sfnet` | `sfnet/train_rtisrail22_sfnet_res18.sh` | lr 0.002, 1000 epochs |
+| `paper-sfnet --rs19 none` | `sfnet/train_rs19_rtisrail22_sfnet_res18.sh` | lr 0.0025, 700 epochs, snapshot Map→City |
+| `paper-hrnet --rs19 none` | `hrnet/train_rtisrail22.yml` (no file of Paul's for this chain) | as `paper-hrnet`, snapshot NVIDIA Map→City |
 | `sfnet-rs19-ours` | `sfnet/train_railsem19_sfnet_res18.sh` | unchanged (lr 0.0025, 400 epochs) |
 
 These differ from the commands stored inside Paul's checkpoints (0.7385: lr 5e-4, 300
@@ -164,6 +184,25 @@ SFSegNets-2 `scripts/rtisrail/train_rtisrail22_sfnet_res18.sh` @ fcc42b6 (train_
 
 Which SFNet run produced Paul's 0.88745 (train_0/1/2) is still not established.
 
+### Map→City → RAD directly (`--rs19 none`, label `…__mapcity-direct__arm-<arm>`)
+
+Skips RailSem19. Chain in provenance: `map_city` (role `init`), `rad` (`this-run`); no
+`rs19` entry. Both write a deviation saying so.
+
+- **SFNet**: Paul's shared `sfnet/train_rs19_rtisrail22_sfnet_res18.sh`, every flag verbatim:
+  lr 0.0025, poly 1.0, repoly 1.5, rescale 1.0, 700 epochs, crop 1080, class-uniform 0.5
+  tile 1080, OHEM, SGD, color_aug 0.25, gblur+bblur, wt_bound 1.0, syncbn, `--apex`,
+  `--snapshot pretrained_cityscapes_mapillary_rs18_miou-0.799.pth`. Despite its file name,
+  `--exp` and `EXP_DIR` (which mention rs19), the snapshot is the public Map→City
+  checkpoint; we follow the snapshot. Paul: 4 GPUs × bs_mult 8; `--gpus` with 2 GPUs runs
+  2 × 16 (recorded deviation). Adds `--allow_skip layer0.*,layer1.0.conv1.weight,layer1.0.downsample.*`
+  (the 22 stem tensors; P2 also skips the 19-class `head.conv_last.1` for 21 classes, checked
+  in `../patches/PATCHES.md`: 200 / 224 tensors).
+- **HRNet**: NVIDIA `nimble-chihuahua` fine-tuned on RAD with Paul's shared
+  `hrnet/train_rtisrail22.yml` settings (lr 7e-5, 1000 epochs, n_scales 0.5,1.0,1.5, weight
+  0.05). Paul shared no script for this chain (deviation recorded). P2 skips the four
+  `ocr.cls_head` / `ocr.aux_head.2` tensors only (1899 / 1903, `PATCHES.md`).
+
 ## Deviations shared by every RAD run (also in each provenance.json)
 
 - Data: our RAD 9/24 arms (21 classes, mud-pumping = 13, standing-water = 20) instead of
@@ -195,6 +234,41 @@ $T/paper-sfnet.sh --dump val --checkpoint $R/<run>/ckpt/<…>/best_mud_epoch_N.p
 
 Run each inside its own tmux session; the recipes do not daemonise. Re-sync
 `tools/paul_forks/` from the repo before launching so the launcher and patches are current.
+
+**Never overwrite a recipe in place while a run of it is alive.** bash reads a script as it
+executes it: `paper-hrnet.sh` sits on its last line (`pf_launch`) for the whole training, and
+when that returns bash reads on from the same byte offset. If the file was rewritten in place
+(`cp`, `scp`, `cat >`, `rsync --inplace`), it executes whatever the new file holds there
+(for the 2026-10-04 change: the middle of the deviations block, i.e. a failed arm after a
+finished training, and `|| break` ends the remaining arms). Plain `rsync -a` (temp file +
+rename) is safe because the running bash keeps the old inode; a separate directory
+(`tools/paul_forks-<commit>`) is safer still.
+
+### Queue (`../fork_queue.py`)
+
+The runs still to do are listed, in priority order, in `../queue/rad-9-24-paper-models.yaml`:
+our own RS19 retraining (SFNet, then HRNet) first, then RAD from those checkpoints, then the
+optional comparisons (Map->City -> RAD directly; the HRNet RAD recipe stored in Paul's 0.8964
+checkpoint). `fork_queue.py` starts each job in tmux session `pf-q-<name>` as soon as one of
+its GPU groups is free (see its docstring for the exact rule), never retries a failed job, and
+is idempotent on restart.
+
+Deploy the queue into its own tools directory (`tools/paul_forks-queue`), not over
+`tools/paul_forks`, while `pf-paper-hrnet-rs19-paul` is alive: that session starts
+`tools/paul_forks/recipes/paper-hrnet.sh` afresh for each arm, so a sync there gives its
+remaining arms a different recipe/`_common.sh`/`write_provenance.py` hash. Each copy accepts
+only the `fork_gpu_run.py` next to its recipes, and the launcher's `/tmp` GPU locks are shared.
+
+```
+RUN=/data/izadia1/projects/segmentary-runs/paul-fork-rad-9-24
+P=/data/izadia1/envs/paul-segmentation-20260915/bin/python   # Python >= 3.11 with PyYAML
+Q=$RUN/tools/paul_forks-queue                                 # rsync -a of scripts/paul_forks
+$P $Q/fork_queue.py check --queue $Q/queue/rad-9-24-paper-models.yaml
+tmux new-session -d -s pf-queue "$P $Q/fork_queue.py run --queue $Q/queue/rad-9-24-paper-models.yaml >> $RUN/logs/fork-queue.log 2>&1"
+$P $Q/fork_queue.py status                 # $RUN/queue-state.json
+touch $RUN/STOP_QUEUE                      # drain: no new starts; remove it to resume
+$P $Q/fork_queue.py reset <job> --queue …  # failed -> pending (stop the queue, move the run dir aside first)
+```
 
 ## Checks done without a GPU (HDRFS, `CUDA_VISIBLE_DEVICES=""`)
 

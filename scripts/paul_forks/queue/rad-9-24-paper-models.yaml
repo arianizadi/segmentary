@@ -1,0 +1,155 @@
+# Paul paper-model runs still to do for RAD 9/24, in priority order (fork_queue.py).
+#
+# Deploy into its OWN tools directory, never over tools/paul_forks: the running
+# pf-paper-hrnet-rs19-paul session starts tools/paul_forks/recipes/paper-hrnet.sh afresh for
+# each arm (a sync there would give arms 2 and 3 different script hashes), and the running
+# arm's bash is executing that file (an in-place cp/scp/--inplace would break it). The /tmp GPU
+# locks of fork_gpu_run.py are shared by every copy; each copy's recipes only accept the
+# fork_gpu_run.py next to them.
+#
+#   RUN=/data/izadia1/projects/segmentary-runs/paul-fork-rad-9-24
+#   Q=$RUN/tools/paul_forks-queue
+#   rsync -a <repo>/scripts/paul_forks/ HDRFS:$Q/
+#   P=/data/izadia1/envs/paul-segmentation-20260915/bin/python   # Python >= 3.11 with PyYAML
+#   $P $Q/fork_queue.py check --queue $Q/queue/rad-9-24-paper-models.yaml
+#   tmux new-session -d -s pf-queue "$P $Q/fork_queue.py run --queue $Q/queue/rad-9-24-paper-models.yaml >> $RUN/logs/fork-queue.log 2>&1"
+#
+# Order: our own RS19 retraining first (SFNet, then HRNet), then RAD from those RS19
+# checkpoints (SFNet first), then the optional comparisons: (a) Map->City -> RAD directly and
+# (b) the HRNet RAD recipe stored in Paul's 0.8964 checkpoint. A job waiting on a dependency
+# does not hold back later jobs, so the optional ones use GPUs the RS19 stages leave free.
+#
+# Not in this file: paper-hrnet --rs19 paul with the default recipe (already running in tmux
+# session pf-paper-hrnet-rs19-paul on GPUs 2-5), paper-sfnet --rs19 paul (reserved until
+# Paul's SFNet RS19 checkpoint is pinned), SFNET_RAD_RECIPE=train_2 (from Paul's git history,
+# not stored in a checkpoint) and HRNET_RS19_RECIPE variants (RS19 labels carry no recipe).
+#
+# GPUs 2-5 are held while pf-paper-hrnet-rs19-paul is alive (hold below, and its command names
+# --gpus 2,3,4,5), 6-9 while any rad-catalog* launcher is alive (hold below) or any
+# rtis-*-gpu-<N> service is. Every job may use any free group inside 2-9; GPUs 0 and 1 never
+# appear.
+
+min_idle_seconds: 300
+
+holds:
+  - session: pf-paper-hrnet-rs19-paul
+    gpus: [2, 3, 4, 5]
+  - session: rad-catalog*
+    gpus: [6, 7, 8, 9]
+
+# Group sets (YAML anchors &quads / &pairs at first use). HRNet and the SFNet RS19 stage use 4
+# GPUs; SFNet RAD runs use 2 GPUs x bs_mult 16 (global batch 32 as Paul's 4 x 8; recorded as a
+# deviation) so every arm and chain has the same layout.
+
+jobs:
+  # 1. Our SFNet RS19 stage (Paul's layout 4 x 8)
+  - name: sfnet-rs19-ours
+    label: sfnet-rs19-ours
+    recipe: sfnet-rs19-ours.sh
+    gpu_groups: &quads [[2, 3, 4, 5], [6, 7, 8, 9]]
+
+  # 2. Our HRNet RS19 stage (Paul's shared train_rs19.yml)
+  - name: hrnet-rs19-ours
+    label: hrnet-rs19-ours
+    recipe: hrnet-rs19-ours.sh
+    gpu_groups: *quads
+
+  # 3. SFNet RAD from our RS19 checkpoint (Paul's shared recipe)
+  - name: sfnet-rs19ours-paul
+    label: paper-sfnet__rs19-ours__arm-paul
+    recipe: paper-sfnet.sh
+    args: [--rs19, ours, --arm, paul]
+    depends_on: [sfnet-rs19-ours]
+    rs19_ckpt_from: sfnet-rs19-ours
+    gpu_groups: &pairs [[2, 3], [4, 5], [6, 7], [8, 9]]
+  - name: sfnet-rs19ours-fixed-stratified
+    label: paper-sfnet__rs19-ours__arm-fixed-stratified
+    recipe: paper-sfnet.sh
+    args: [--rs19, ours, --arm, fixed-stratified]
+    depends_on: [sfnet-rs19-ours]
+    rs19_ckpt_from: sfnet-rs19-ours
+    gpu_groups: *pairs
+  - name: sfnet-rs19ours-fixed-grouped
+    label: paper-sfnet__rs19-ours__arm-fixed-grouped
+    recipe: paper-sfnet.sh
+    args: [--rs19, ours, --arm, fixed-grouped]
+    depends_on: [sfnet-rs19-ours]
+    rs19_ckpt_from: sfnet-rs19-ours
+    gpu_groups: *pairs
+
+  # 4. HRNet RAD from our RS19 checkpoint (Paul's shared recipe)
+  - name: hrnet-rs19ours-paul
+    label: paper-hrnet__rs19-ours__arm-paul
+    recipe: paper-hrnet.sh
+    args: [--rs19, ours, --arm, paul]
+    depends_on: [hrnet-rs19-ours]
+    rs19_ckpt_from: hrnet-rs19-ours
+    gpu_groups: *quads
+  - name: hrnet-rs19ours-fixed-stratified
+    label: paper-hrnet__rs19-ours__arm-fixed-stratified
+    recipe: paper-hrnet.sh
+    args: [--rs19, ours, --arm, fixed-stratified]
+    depends_on: [hrnet-rs19-ours]
+    rs19_ckpt_from: hrnet-rs19-ours
+    gpu_groups: *quads
+  - name: hrnet-rs19ours-fixed-grouped
+    label: paper-hrnet__rs19-ours__arm-fixed-grouped
+    recipe: paper-hrnet.sh
+    args: [--rs19, ours, --arm, fixed-grouped]
+    depends_on: [hrnet-rs19-ours]
+    rs19_ckpt_from: hrnet-rs19-ours
+    gpu_groups: *quads
+
+  # 5. (a) SFNet Map->City -> RAD directly (Paul's shared train_rs19_rtisrail22_sfnet_res18.sh)
+  - name: sfnet-direct-paul
+    label: paper-sfnet__mapcity-direct__arm-paul
+    recipe: paper-sfnet.sh
+    args: [--rs19, none, --arm, paul]
+    gpu_groups: *pairs
+  - name: sfnet-direct-fixed-stratified
+    label: paper-sfnet__mapcity-direct__arm-fixed-stratified
+    recipe: paper-sfnet.sh
+    args: [--rs19, none, --arm, fixed-stratified]
+    gpu_groups: *pairs
+  - name: sfnet-direct-fixed-grouped
+    label: paper-sfnet__mapcity-direct__arm-fixed-grouped
+    recipe: paper-sfnet.sh
+    args: [--rs19, none, --arm, fixed-grouped]
+    gpu_groups: *pairs
+
+  # 6. (b) HRNet Map->City -> Paul RS19 -> RAD with the recipe stored in Paul's 0.8964 checkpoint
+  - name: hrnet-rs19paul-train2-paul
+    label: paper-hrnet__rs19-paul__arm-paul__recipe-train_2
+    recipe: paper-hrnet.sh
+    args: [--rs19, paul, --arm, paul]
+    env: {HRNET_RAD_RECIPE: train_2}
+    gpu_groups: *quads
+  - name: hrnet-rs19paul-train2-fixed-stratified
+    label: paper-hrnet__rs19-paul__arm-fixed-stratified__recipe-train_2
+    recipe: paper-hrnet.sh
+    args: [--rs19, paul, --arm, fixed-stratified]
+    env: {HRNET_RAD_RECIPE: train_2}
+    gpu_groups: *quads
+  - name: hrnet-rs19paul-train2-fixed-grouped
+    label: paper-hrnet__rs19-paul__arm-fixed-grouped__recipe-train_2
+    recipe: paper-hrnet.sh
+    args: [--rs19, paul, --arm, fixed-grouped]
+    env: {HRNET_RAD_RECIPE: train_2}
+    gpu_groups: *quads
+
+  # 7. (a) HRNet NVIDIA Map->City -> RAD directly (Paul's shared RAD settings; no script of his)
+  - name: hrnet-direct-paul
+    label: paper-hrnet__mapcity-direct__arm-paul
+    recipe: paper-hrnet.sh
+    args: [--rs19, none, --arm, paul]
+    gpu_groups: *quads
+  - name: hrnet-direct-fixed-stratified
+    label: paper-hrnet__mapcity-direct__arm-fixed-stratified
+    recipe: paper-hrnet.sh
+    args: [--rs19, none, --arm, fixed-stratified]
+    gpu_groups: *quads
+  - name: hrnet-direct-fixed-grouped
+    label: paper-hrnet__mapcity-direct__arm-fixed-grouped
+    recipe: paper-hrnet.sh
+    args: [--rs19, none, --arm, fixed-grouped]
+    gpu_groups: *quads

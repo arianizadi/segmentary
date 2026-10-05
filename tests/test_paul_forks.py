@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -15,7 +16,13 @@ import numpy as np
 import pytest
 import torch
 from PIL import Image
-from scripts.paul_forks import adapt_rad, fork_gpu_run, make_rs19_split, score_predictions
+from scripts.paul_forks import (
+    adapt_rad,
+    fork_gpu_run,
+    fork_queue,
+    make_rs19_split,
+    score_predictions,
+)
 from scripts.paul_forks.fork_gpu_run import ALLOWED, FORBIDDEN, Host, Proc
 
 from segmentary.engine.metrics import ConfusionMatrix
@@ -751,12 +758,12 @@ def test_make_rs19_split_fails_closed(tmp_path, problem):
 
 def provenance(label="paper-hrnet__rs19-paul__arm-paul", **edits) -> dict:
     hrnet = label.startswith("paper-hrnet")
+    base = label.split("__arm-", 1)[0]
+    recipe = label.split("__recipe-", 1)[1] if "__recipe-" in label else "paul-shared-20260923"
     record = {
         "label": label,
-        "owner_of_each_checkpoint_in_chain": dict(
-            score_predictions.CHAINS[label.rsplit("__arm-", 1)[0]]
-        )
-        if "__arm-" in label and label.rsplit("__arm-", 1)[0] in score_predictions.CHAINS
+        "owner_of_each_checkpoint_in_chain": dict(score_predictions.CHAINS[base])
+        if "__arm-" in label and base in score_predictions.CHAINS
         else {},
         "checkpoints": {
             "map_city": {
@@ -777,7 +784,10 @@ def provenance(label="paper-hrnet__rs19-paul__arm-paul", **edits) -> dict:
         "recipe_args": ["--lr", "1e-4"],
         "deviations": [],
         "gpu_assignment": {"indices": [2, 3], "uuids": [ALLOWED[2][0], ALLOWED[3][0]]},
+        "extra": {"recipe_variant": recipe},
     }
+    if base.endswith("__mapcity-direct"):
+        del record["checkpoints"]["rs19"]
     record.update(edits)
     return record
 
@@ -931,6 +941,29 @@ def test_score_predictions_equals_segmentary_metric_code(tmp_path):
             "checkpoint owners",
         ),
         (provenance(label="paper-sfnet__rs19-ours__arm-paul"), "pinned"),
+        (provenance(label="paper-sfnet__mapcity-direct__arm-paul"), "pinned"),
+        (provenance(label="paper-hrnet__rs19-paul__arm-paul__recipe-train_3"), "not a variant"),
+        (provenance(label="paper-hrnet__mapcity-direct__arm-paul__recipe-train_2"), "variant"),
+        (provenance(label="paper-hrnet__rs19-paul__recipe-train_2__arm-paul"), "RAD-stage label"),
+        (provenance(label="paper-hrnet__rs19-none__arm-paul"), "RAD-stage label"),
+        (
+            provenance(
+                label="paper-hrnet__mapcity-direct__arm-paul",
+                owner_of_each_checkpoint_in_chain={
+                    "map_city": "nvidia",
+                    "rs19": "paul",
+                    "rad": "ours",
+                },
+            ),
+            "checkpoint owners",
+        ),
+        (
+            provenance(
+                label="paper-hrnet__mapcity-direct__arm-paul",
+                checkpoints=provenance()["checkpoints"],  # an rs19 entry in a direct chain
+            ),
+            "exactly the chain stages",
+        ),
         (provenance(label="paper-sfnet__rs19-paul__arm-paul"), "reserved"),
         (provenance(gpu_assignment={"indices": [0, 2], "uuids": []}), "within 2-9"),
         (provenance(dry_run=True), "not a scored run"),
@@ -947,7 +980,7 @@ def test_score_predictions_enforces_labels_and_provenance(tmp_path, record, mess
         record["owner_of_each_checkpoint_in_chain"] = dict(
             score_predictions.CHAINS[record["label"].rsplit("__arm-", 1)[0]]
         )
-        if "rs19-ours" in record["label"]:
+        if "rs19-ours" in record["label"] or "mapcity-direct" in record["label"]:
             record["checkpoints"]["map_city"]["sha256"] = score_predictions.PINNED[
                 ("paper-hrnet", "map_city")
             ]
@@ -1029,6 +1062,46 @@ def test_score_predictions_ties_predictions_to_their_run(tmp_path, tamper, messa
         score_predictions.score(pred, arm, "val", prov)
 
 
+@pytest.mark.parametrize(
+    "label",
+    [
+        "paper-hrnet__mapcity-direct__arm-paul",
+        "paper-hrnet__rs19-paul__arm-paul__recipe-train_2",
+        "paper-hrnet__rs19-paul__arm-paul__recipe-train_1",
+    ],
+)
+def test_score_predictions_accepts_direct_chain_and_recipe_variants(tmp_path, label):
+    arm = make_arm(tmp_path, arm="paul", grouped=False)
+    made = make_scored_run(tmp_path, arm, label=label)
+    result = score_predictions.score(made["pred"], arm, "val", made["prov"])
+    assert result["label"] == label
+    assert result["base_label"] == label.split("__arm-")[0]
+    want = label.split("__recipe-")[1] if "__recipe-" in label else "paul-shared-20260923"
+    assert result["recipe_variant"] == want
+    stages = set(result["provenance"]["checkpoints"])
+    assert stages == (
+        {"map_city", "rad"} if "mapcity-direct" in label else {"map_city", "rs19", "rad"}
+    )
+
+
+@pytest.mark.parametrize(
+    ("label", "recorded"),
+    [
+        ("paper-hrnet__rs19-paul__arm-paul", "train_2"),
+        ("paper-hrnet__rs19-paul__arm-paul__recipe-train_2", "paul-shared-20260923"),
+        ("paper-hrnet__rs19-paul__arm-paul", None),
+    ],
+)
+def test_score_predictions_refuses_training_recipe_not_named_by_label(tmp_path, label, recorded):
+    arm = make_arm(tmp_path, arm="paul", grouped=False)
+    made = make_scored_run(tmp_path, arm, label=label)
+    training = made["run"] / "provenance.json"
+    _edit(training, lambda v: v.update(extra={"recipe_variant": recorded} if recorded else {}))
+    _edit(made["prov"], lambda v: v["dump"].update(training_provenance_sha256=sha_of(training)))
+    with pytest.raises(score_predictions.ScoreError, match="recipe_variant"):
+        score_predictions.score(made["pred"], arm, "val", made["prov"])
+
+
 def test_score_predictions_multi_scale_only_as_secondary(tmp_path):
     arm = make_arm(tmp_path, arm="paul", grouped=False)
     made = make_scored_run(tmp_path, arm)
@@ -1069,3 +1142,609 @@ def test_staged_scorer_needs_a_segmentary_checkout(tmp_path):
     )
     assert ok.returncode == 0, ok.stderr
     assert "--allow-multi-scale" in ok.stdout
+
+
+# --------------------------------------------------------------------------- queue
+
+
+class FakeTmux:
+    """tmux with sessions as a dict (name -> start command); records new-session calls."""
+
+    def __init__(self, sessions=None):
+        self.sessions = dict(sessions or {})
+        self.started: list[tuple[str, str]] = []
+        self.fail_new = False
+        self.list_error = ""
+
+    def __call__(self, args):
+        if args[0] == "list-panes":
+            if self.list_error:
+                return 1, "", self.list_error
+            return 0, "".join(f"{n}\t{c}\n" for n, c in self.sessions.items()), ""
+        if args[0] == "new-session":
+            if self.fail_new:
+                return 1, "", "boom"
+            name, command = args[args.index("-s") + 1], args[-1]
+            assert name not in self.sessions
+            self.sessions[name] = command
+            self.started.append((name, command))
+            return 0, "", ""
+        raise AssertionError(f"unexpected tmux call {args}")
+
+
+class Clock:
+    def __init__(self):
+        self.t = 1_800_000_000.0
+
+    def __call__(self):
+        return self.t
+
+
+def queue_job(name, label, recipe="paper-hrnet.sh", args=None, groups=None, **extra):
+    job = {
+        "name": name,
+        "label": label,
+        "recipe": recipe,
+        "args": args if args is not None else label_args(label),
+        "gpu_groups": groups or [[2, 3, 4, 5], [6, 7, 8, 9]],
+    }
+    job.update(extra)
+    return job
+
+
+def label_args(label):
+    if "__arm-" not in label:
+        return []
+    base, arm = label.split("__recipe-")[0].split("__arm-")
+    chain = base.split("__")[1]
+    rs19 = "none" if chain == "mapcity-direct" else chain.removeprefix("rs19-")
+    return ["--rs19", rs19, "--arm", arm]
+
+
+def direct(arm, family="hrnet"):
+    return f"paper-{family}__mapcity-direct__arm-{arm}"
+
+
+def make_queue(tmp_path, jobs, smi=None, tmux=None, min_idle=0, holds=None):
+    path = tmp_path / "queue.json"
+    path.write_text(json.dumps({"min_idle_seconds": min_idle, "holds": holds or [], "jobs": jobs}))
+    root = tmp_path / "run-root"
+    root.mkdir(exist_ok=True)
+    logs: list[str] = []
+    machine = fork_queue.Machine(
+        smi=smi or FakeSmi(),
+        tmux=tmux or FakeTmux(),
+        clock=Clock(),
+        sleep=lambda s: None,
+        idle_pause_seconds=0.0,
+        log=logs.append,
+    )
+    queue = fork_queue.Queue(fork_queue.load_spec(path), root, machine)
+    return queue, path, root
+
+
+def finish(queue, name, status="exited", code=0, label=None):
+    """Simulate a job's session ending after fork_gpu_run wrote its record."""
+    job = queue.spec.job(name)
+    run = queue.run_dir(job)
+    write_json(run / "provenance.json", {"label": label or job.label})
+    write_json(run / "gpu-assignment.json", {"status": status, "exit_code": code})
+    queue.exit_file(job).parent.mkdir(parents=True, exist_ok=True)
+    queue.exit_file(job).write_text(f"{code}\n")
+    queue.machine.tmux.sessions.pop(job.session)
+
+
+def statuses(queue):
+    return {name: entry["status"] for name, entry in queue.state["jobs"].items()}
+
+
+@pytest.mark.parametrize(
+    ("change", "message"),
+    [
+        ({"gpu_groups": [[0, 2, 3, 4]]}, "GPU 0 or 1"),
+        ({"gpu_groups": [[2, 3, 4, 5], [1, 6, 7, 8]]}, "GPU 0 or 1"),
+        ({"gpu_groups": [[2, 3, 4, 10]]}, "outside 2-9"),
+        ({"gpu_groups": [[2, 2, 3, 4]]}, "duplicates"),
+        ({"gpu_groups": [[2, 3]]}, "takes (4,) GPUs"),
+        ({"gpu_groups": []}, "non-empty"),
+        ({"args": ["--rs19", "none", "--arm", "paul", "--gpus", "2,3,4,5"]}, "not allowed"),
+        ({"env": {"CUDA_VISIBLE_DEVICES": "2"}}, "env may only set"),
+        ({"env": {"HRNET_RAD_RECIPE": "train_2"}}, "the recipe would write"),
+        ({"label": "paper-hrnet__rs19-paul__arm-paul"}, "the recipe would write"),
+        ({"recipe": "frrn.sh"}, "recipe must be"),
+        ({"depends_on": ["later"]}, "earlier jobs"),
+        ({"name": "Bad Name"}, "name must match"),
+    ],
+)
+def test_queue_file_refusals(tmp_path, change, message):
+    job = queue_job("a", direct("paul"))
+    job.update(change)
+    with pytest.raises(fork_queue.QueueError, match=re.escape(message)):
+        make_queue(tmp_path, [job, queue_job("later", direct("fixed-grouped"))])
+
+
+def test_queue_file_refuses_bad_resolver_and_duplicate_labels(tmp_path):
+    rs19 = queue_job("rs19", "hrnet-rs19-ours", recipe="hrnet-rs19-ours.sh")
+    ours = queue_job("ours", "paper-hrnet__rs19-ours__arm-paul", rs19_ckpt_from="rs19")
+    with pytest.raises(fork_queue.QueueError, match="in depends_on"):
+        make_queue(tmp_path, [rs19, ours])
+    sfnet_rs19 = queue_job("sf", "sfnet-rs19-ours", recipe="sfnet-rs19-ours.sh")
+    wrong = dict(ours, depends_on=["sf"], rs19_ckpt_from="sf")
+    with pytest.raises(fork_queue.QueueError, match="hrnet-rs19-ours job"):
+        make_queue(tmp_path, [sfnet_rs19, wrong])
+    with pytest.raises(fork_queue.QueueError, match="needs --rs19-ckpt or rs19_ckpt_from"):
+        make_queue(tmp_path, [rs19, dict(ours, rs19_ckpt_from=None)])
+    with pytest.raises(fork_queue.QueueError, match="same label"):
+        make_queue(tmp_path, [queue_job("a", direct("paul")), queue_job("b", direct("paul"))])
+
+
+def test_tracked_queue_file_is_valid_and_ordered():
+    spec = fork_queue.load_spec(PAUL_FORKS / "queue" / "rad-9-24-paper-models.yaml")
+    labels = [job.label for job in spec.jobs]
+    arms = ["paul", "fixed-stratified", "fixed-grouped"]
+    # Our own RS19 retraining first (the work the comparison waits on), then RAD from it,
+    # then the optional comparisons: Map->City direct and the checkpoint-stored HRNet recipe.
+    expected = (
+        ["sfnet-rs19-ours", "hrnet-rs19-ours"]
+        + [f"paper-sfnet__rs19-ours__arm-{a}" for a in arms]
+        + [f"paper-hrnet__rs19-ours__arm-{a}" for a in arms]
+        + [direct(a, "sfnet") for a in arms]
+        + [f"paper-hrnet__rs19-paul__arm-{a}__recipe-train_2" for a in arms]
+        + [direct(a) for a in arms]
+    )
+    assert labels == expected
+    # Only recipes stored in Paul's checkpoints get a recipe label (SFNet train_2 is from git).
+    assert not any(dict(job.env).get("SFNET_RAD_RECIPE") for job in spec.jobs)
+    assert {(h.session, h.gpus) for h in spec.holds} == {
+        ("pf-paper-hrnet-rs19-paul", (2, 3, 4, 5)),
+        ("rad-catalog*", (6, 7, 8, 9)),
+    }
+    for job in spec.jobs:
+        assert all(set(g) <= set(range(2, 10)) for g in job.gpu_groups)
+        assert {i for g in job.gpu_groups for i in g} == set(range(2, 10))
+        if job.rs19_ckpt_from:
+            assert job.depends_on == (job.rs19_ckpt_from,)
+    assert spec.job("hrnet-rs19paul-train2-paul").env == (("HRNET_RAD_RECIPE", "train_2"),)
+
+
+def test_queue_respects_order_depends_on_and_never_retries(tmp_path):
+    jobs = [
+        queue_job("x", direct("paul")),
+        queue_job(
+            "d",
+            "paper-hrnet__rs19-paul__arm-paul__recipe-train_2",
+            depends_on=["x"],
+            env={"HRNET_RAD_RECIPE": "train_2"},
+        ),
+        queue_job("y", direct("fixed-stratified")),
+        queue_job("z", direct("fixed-grouped")),
+        queue_job(
+            "e",
+            "paper-hrnet__rs19-paul__arm-paul__recipe-train_1",
+            depends_on=["z"],
+            env={"HRNET_RAD_RECIPE": "train_1"},
+        ),
+    ]
+    queue, _, _ = make_queue(tmp_path, jobs)
+    tmux = queue.machine.tmux
+    assert queue.tick()
+    assert [n for n, _ in tmux.started] == ["pf-q-x", "pf-q-y"]  # z waits for a free quad
+    assert queue.state["jobs"]["x"]["gpus"] == [2, 3, 4, 5]
+    assert queue.state["jobs"]["y"]["gpus"] == [6, 7, 8, 9]
+    assert queue.state["jobs"]["d"]["reason"] == "waiting for dependencies"
+    finish(queue, "x")
+    assert queue.tick()
+    # d (now ready, earlier in the file) gets the freed GPUs before z
+    assert statuses(queue)["x"] == "done" and statuses(queue)["d"] == "running"
+    assert queue.state["jobs"]["d"]["gpus"] == [2, 3, 4, 5]
+    assert statuses(queue)["z"] == "pending"
+    finish(queue, "y", code=1)
+    assert queue.tick()
+    assert statuses(queue)["y"] == "failed" and queue.state["jobs"]["y"]["exit_code"] == 1
+    assert statuses(queue)["z"] == "running"
+    finish(queue, "z", code=1)
+    finish(queue, "d")
+    assert not queue.tick()  # e's dependency failed; nothing else can start
+    assert statuses(queue) == {
+        "x": "done",
+        "d": "done",
+        "y": "failed",
+        "z": "failed",
+        "e": "pending",
+    }
+    assert queue.state["jobs"]["e"]["reason"] == "a dependency failed"
+    assert [n for n, _ in tmux.started] == ["pf-q-x", "pf-q-y", "pf-q-d", "pf-q-z"]
+    saved = json.loads((queue.root / "queue-state.json").read_text())
+    assert saved["jobs"]["y"]["status"] == "failed"
+
+
+def test_queue_does_not_start_on_busy_held_or_unsettled_gpus(tmp_path):
+    smi = FakeSmi(apps=lambda: [(ALLOWED[2][0], 4242)])
+    smi.state[7] = [5000, 0]
+    jobs = [
+        queue_job(
+            "a",
+            direct("paul", "sfnet"),
+            recipe="paper-sfnet.sh",
+            groups=[[2, 3], [4, 5], [6, 7], [8, 9]],
+        )
+    ]
+    tmux = FakeTmux(
+        {
+            "pf-paper-hrnet-rs19-paul": "for a in paul; do paper-hrnet.sh --gpus 4,5 ...; done",
+            "rtis-paul-seed0-gpu-8": "python run_rtis_full_campaign.py",
+            "rad-catalog-launcher": "python launch_rtis_full_campaign.py",
+            "unrelated": "train.py --gpus 9",
+        }
+    )
+    queue, _, _ = make_queue(
+        tmp_path,
+        jobs,
+        smi=smi,
+        tmux=tmux,
+        holds=[{"session": "rad-catalog-*", "gpus": [9]}],
+    )
+    assert queue.tick()
+    assert tmux.started == []  # 2 compute app, 4-5 + 8 + 9 held, 7 has memory in use
+    del tmux.sessions["rad-catalog-launcher"]
+    assert queue.tick() and tmux.started == []  # 8 still held by its -gpu-8 service
+    del tmux.sessions["rtis-paul-seed0-gpu-8"]
+    assert queue.tick()
+    assert queue.state["jobs"]["a"]["gpus"] == [8, 9]
+
+
+# Start commands as `tmux list-panes -F '#{pane_start_command}'` printed them on HDRFS
+# (2026-10-04), shortened only in the paths: the guards must work on these, not on stand-ins.
+LIVE_HRNET_SESSION = (
+    '"for a in paul fixed-stratified fixed-grouped; do env -u CUDA_VISIBLE_DEVICES -u '
+    "CUDA_DEVICE_ORDER -u NVIDIA_VISIBLE_DEVICES /r/tools/paul_forks/recipes/paper-hrnet.sh "
+    "--rs19 paul --arm \\$a --gpus 2,3,4,5 --run-dir /r/runs/paper-hrnet__rs19-paul__arm-\\$a "
+    '>> /r/logs/paper-hrnet__rs19-paul.log 2>&1 || break; done"'
+)
+LIVE_CAMPAIGN_SESSIONS = {
+    "rad-catalog-launcher": '"cd /s && env CUDA_VISIBLE_DEVICES= PYTHONPATH=src /e/python -u '
+    'scripts/launch_rtis_full_campaign.py --no-dashboard --campaign /c/paul-seed0 >> /c/l 2>&1"',
+    **{
+        f"rtis-paul-seed0-20261005-r2-gpu-{i}": (
+            f'"cd /s && env CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES={i} /e/python -u '
+            f'scripts/run_rtis_full_campaign.py --campaign /c/paul-seed0 --gpu {i} >> /c/g 2>&1"'
+        )
+        for i in (6, 7, 8, 9)
+    },
+}
+
+
+def test_tracked_queue_holds_the_live_sessions_gpus(tmp_path):
+    """The tracked queue file against the live session commands, every GPU idle and settled:
+    nothing starts while the HRNet run and the campaign live (between their runs too)."""
+    spec = fork_queue.load_spec(PAUL_FORKS / "queue" / "rad-9-24-paper-models.yaml")
+    smi = FakeSmi()
+    tmux = FakeTmux({"pf-paper-hrnet-rs19-paul": LIVE_HRNET_SESSION, **LIVE_CAMPAIGN_SESSIONS})
+    machine = fork_queue.Machine(
+        smi=smi,
+        tmux=tmux,
+        clock=Clock(),
+        sleep=lambda s: None,
+        idle_pause_seconds=0.0,
+        log=lambda m: None,
+    )
+    root = tmp_path / "run-root"
+    queue = fork_queue.Queue(spec, root, machine)
+    assert queue.held(tmux.sessions) == set(range(2, 10))
+    for _ in range(3):
+        assert queue.tick()
+        machine.clock.t += spec.min_idle_seconds
+    assert tmux.started == []
+    # Between campaign runs the per-GPU services may be gone; the launcher hold still covers.
+    for i in (6, 7, 8, 9):
+        del tmux.sessions[f"rtis-paul-seed0-20261005-r2-gpu-{i}"]
+    assert queue.tick() and tmux.started == []
+    # tmux unreadable (socket removed): no holds can be seen, so nothing starts.
+    tmux.list_error = "error connecting to /tmp/tmux-1/default (No such file or directory)\n"
+    for _ in range(3):
+        assert queue.tick()
+        machine.clock.t += spec.min_idle_seconds
+    tmux.list_error = "no server running on /tmp/tmux-1/default\n"
+    assert queue.tick() and tmux.started == []
+    tmux.list_error = ""
+    # The explicit hold keeps 2-5 even if the HRNet session's command named no GPU.
+    assert queue.held({"pf-paper-hrnet-rs19-paul": "bash"}) == {2, 3, 4, 5}
+    # The campaign ends first (~32 h): our SFNet RS19 stage takes 6-9; HRNet RS19 waits for a
+    # quad and holds back the optional jobs (the dependents of the RS19 stages do not).
+    del tmux.sessions["rad-catalog-launcher"]
+    assert queue.tick() and tmux.started == []  # idle times restart after the tmux outage
+    machine.clock.t += spec.min_idle_seconds
+    assert queue.tick()
+    assert [(n, queue.state["jobs"][n[5:]]["gpus"]) for n, _ in tmux.started] == [
+        ("pf-q-sfnet-rs19-ours", [6, 7, 8, 9]),
+    ]
+    # The HRNet run ends (~72 h): our HRNet RS19 stage takes 2-5.
+    del tmux.sessions["pf-paper-hrnet-rs19-paul"]
+    assert queue.tick()
+    assert [(n, queue.state["jobs"][n[5:]]["gpus"]) for n, _ in tmux.started] == [
+        ("pf-q-sfnet-rs19-ours", [6, 7, 8, 9]),
+        ("pf-q-hrnet-rs19-ours", [2, 3, 4, 5]),
+    ]
+    assert all("--gpus 0" not in c and "--gpus 1" not in c for _, c in tmux.started)
+
+
+def test_queue_keeps_running_jobs_when_tmux_cannot_be_read(tmp_path):
+    queue, _, _ = make_queue(tmp_path, [queue_job("a", direct("paul"))])
+    tmux = queue.machine.tmux
+    assert queue.tick() and statuses(queue)["a"] == "running"
+    tmux.list_error = "no server running on /tmp/tmux-1/default\n"
+    assert queue.tick() and statuses(queue)["a"] == "running"  # not finalised as gone
+    assert queue.state["jobs"]["a"]["gpus"] == [2, 3, 4, 5]
+
+
+def test_queue_needs_gpus_idle_for_min_idle_seconds(tmp_path):
+    smi = FakeSmi()
+    queue, _, _ = make_queue(tmp_path, [queue_job("a", direct("paul"))], smi=smi, min_idle=300)
+    clock = queue.machine.clock
+    assert queue.tick() and queue.machine.tmux.started == []
+    clock.t += 200
+    smi.state[6] = [0, 50]  # a short gap on 6: its idle time restarts
+    assert queue.tick() and queue.machine.tmux.started == []
+    smi.state[6] = [0, 0]
+    clock.t += 150
+    assert queue.tick()
+    assert queue.state["jobs"]["a"]["gpus"] == [2, 3, 4, 5]  # 2-5 idle for 350 s, 6 for 0 s
+
+
+def test_queue_command_clears_gpu_env_and_runs_the_recipe(tmp_path, monkeypatch):
+    recipes = tmp_path / "recipes"
+    recipes.mkdir()
+    (recipes / "paper-hrnet.sh").write_text(
+        "env | grep -E '^(CUDA|NVIDIA|PROBE|HRNET|PAUL_FORK|FORK_GPU_RUN)' | sort\n"
+        'printf "%s\\n" "$@"\nexit 7\n'
+    )
+    monkeypatch.setattr(fork_queue, "RECIPES_DIR", recipes)
+    jobs = [
+        queue_job(
+            "t2",
+            "paper-hrnet__rs19-paul__arm-paul__recipe-train_2",
+            env={"HRNET_RAD_RECIPE": "train_2"},
+        )
+    ]
+    queue, _, root = make_queue(tmp_path, jobs)
+    assert queue.tick()
+    name, command = queue.machine.tmux.started[0]
+    assert name == "pf-q-t2"
+    env = {
+        **os.environ,
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "CUDA_DEVICE_ORDER": "FASTEST_FIRST",
+        "NVIDIA_VISIBLE_DEVICES": "all",
+        "PROBE_EPOCHS": "1",
+        "HRNET_RAD_RECIPE": "train_1",
+        "FORK_GPU_RUN": "/tmp/other/fork_gpu_run.py",
+        "PAUL_FORK_RUN_ROOT": "/elsewhere",
+        **{
+            f"PAUL_FORK_{name}": "/elsewhere"
+            for name in ("ADAPTERS", "ENV", "PATCHES", "PYTHON", "RS19_ROOT", "TOOL_PYTHON")
+        },
+        "PAUL_FORK_DRY_RUN": "1",
+        "PAUL_FORK_PINS_FILE": "/elsewhere/pins",
+    }
+    subprocess.run(["sh", "-c", command], env=env, check=True)
+    job = queue.spec.job("t2")
+    assert queue.exit_file(job).read_text().strip() == "7"
+    out = queue.log(job).read_text().splitlines()
+    assert "HRNET_RAD_RECIPE=train_2" in out
+    assert f"PAUL_FORK_RUN_ROOT={root}" in out
+    assert not [line for line in out if line.startswith(("CUDA", "NVIDIA", "PROBE"))]
+    # Inherited path overrides are dropped: the recipes use their defaults.
+    assert not [line for line in out if "/elsewhere" in line or line.startswith("FORK_GPU_RUN")]
+    argv = out[out.index("--rs19") :]
+    assert argv == [
+        "--rs19",
+        "paul",
+        "--arm",
+        "paul",
+        "--gpus",
+        "2,3,4,5",
+        "--run-dir",
+        str(root / "runs" / job.label),
+    ]
+    del queue.machine.tmux.sessions["pf-q-t2"]
+    assert not queue.tick()  # the fake recipe exited 7 before launching: failed, not retried
+    assert statuses(queue)["t2"] == "failed"
+    assert queue.state["jobs"]["t2"]["recipe_exit_code"] == 7
+
+
+def test_queue_launch_refusal_returns_job_to_pending(tmp_path):
+    queue, _, root = make_queue(tmp_path, [queue_job("a", direct("paul"), groups=[[2, 3, 4, 5]])])
+    assert queue.tick()
+    job = queue.spec.job("a")
+    run = queue.run_dir(job)
+    write_json(run / "provenance.json", {"label": job.label})
+    (run / "centroids").mkdir()
+    (run / "console.log").write_text(
+        "fork_gpu_run: REFUSED: GPU 3 is not idle: ['3', 'GPU-...', '900', '0']\n"
+    )
+    queue.exit_file(job).write_text("2\n")
+    queue.machine.tmux.sessions.pop(job.session)
+    queue.machine.smi.state[3] = [900, 0]
+    assert queue.tick()
+    entry = queue.state["jobs"]["a"]
+    assert entry["status"] == "pending" and entry["launch_refusals"] == 1
+    assert "not idle" in entry["last_refusal"]
+    assert not run.exists()
+    moved = list((root / "queue" / "refused").iterdir())
+    assert len(moved) == 1 and (moved[0] / "provenance.json").is_file()
+    assert len(queue.machine.tmux.started) == 1  # GPU 3 still busy
+    queue.machine.smi.state[3] = [0, 0]
+    assert queue.tick()
+    assert statuses(queue)["a"] == "running" and len(queue.machine.tmux.started) == 2
+
+
+def test_queue_restart_is_idempotent_and_single_instance(tmp_path):
+    jobs = [
+        queue_job(n, direct(a))
+        for n, a in (("p", "paul"), ("s", "fixed-stratified"), ("g", "fixed-grouped"))
+    ]
+    queue, path, root = make_queue(tmp_path, jobs)
+    for name, code in (("p", 0), ("s", 1)):
+        run = root / "runs" / queue.spec.job(name).label
+        write_json(run / "provenance.json", {"label": queue.spec.job(name).label})
+        write_json(run / "gpu-assignment.json", {"status": "exited", "exit_code": code})
+    assert queue.tick()
+    assert statuses(queue) == {"p": "done", "s": "failed", "g": "running"}
+    assert [n for n, _ in queue.machine.tmux.started] == ["pf-q-g"]
+    # A new queue process with the same state: g is still running and keeps its GPUs.
+    again = fork_queue.Queue(fork_queue.load_spec(path), root, queue.machine)
+    assert again.tick()
+    assert statuses(again) == {"p": "done", "s": "failed", "g": "running"}
+    assert len(queue.machine.tmux.started) == 1
+    # Fresh state, run dir without a finished record (someone else's run): not started.
+    (root / "queue-state.json").unlink()
+    queue.machine.tmux.sessions.clear()
+    write_json(root / "runs" / queue.spec.job("g").label / "provenance.json", {"label": "x"})
+    third = fork_queue.Queue(fork_queue.load_spec(path), root, queue.machine)
+    queue.machine.tmux.sessions["pf-q-old"] = "env ... paper-hrnet.sh --gpus 2,3,4,5 --run-dir x"
+    assert third.held(queue.machine.tmux.sessions) == {2, 3, 4, 5}  # a queue session not ours
+    assert third.tick()
+    assert statuses(third)["g"] == "pending"
+    assert "without a finished launcher record" in third.state["jobs"]["g"]["reason"]
+    assert len(queue.machine.tmux.started) == 1
+    with fork_queue.single_instance(root):
+        code = fork_queue.main(
+            ["run", "--once", "--queue", str(path), "--run-root", str(root)], machine=queue.machine
+        )
+    assert code == 2
+
+
+def test_queue_reset_only_failed_jobs_without_run_dir(tmp_path, capsys):
+    queue, path, root = make_queue(tmp_path, [queue_job("a", direct("paul"))])
+    assert queue.tick()
+    finish(queue, "a", code=1)
+    assert not queue.tick() and statuses(queue)["a"] == "failed"
+    argv = ["reset", "a", "--queue", str(path), "--run-root", str(root)]
+    assert fork_queue.main(argv, machine=queue.machine) == 2
+    assert "move" in capsys.readouterr().err
+    (root / "runs" / queue.spec.job("a").label).rename(root / "aside")
+    assert fork_queue.main(argv, machine=queue.machine) == 0
+    assert json.loads((root / "queue-state.json").read_text())["jobs"]["a"]["status"] == "pending"
+
+
+def test_stop_queue_drains(tmp_path):
+    jobs = [queue_job("a", direct("paul")), queue_job("b", direct("fixed-grouped"))]
+    queue, _, root = make_queue(tmp_path, jobs)
+    queue.machine.smi.state[6] = [5000, 90]
+    assert queue.tick() and statuses(queue)["a"] == "running"
+    (root / "STOP_QUEUE").write_text("")
+    queue.machine.smi.state[6] = [0, 0]
+    assert queue.tick()  # a still running: keep watching it, but start nothing
+    assert statuses(queue)["b"] == "pending" and len(queue.machine.tmux.started) == 1
+    finish(queue, "a")
+    assert not queue.tick()
+    assert statuses(queue) == {"a": "done", "b": "pending"}
+    assert len(queue.machine.tmux.started) == 1
+
+
+def _rs19_run(root, label, files):
+    run = root / "runs" / label
+    write_json(run / "provenance.json", {"label": label, "dry_run": False, "probe_epochs": None})
+    write_json(run / "gpu-assignment.json", {"status": "exited", "exit_code": 0})
+    for rel in files:
+        (run / rel).parent.mkdir(parents=True, exist_ok=True)
+        (run / rel).write_bytes(b"w")
+    return run
+
+
+def test_rs19_resolver_picks_what_the_recipe_accepts(tmp_path):
+    hr = _rs19_run(
+        tmp_path,
+        "hrnet-rs19-ours",
+        [
+            "train/best_checkpoint_ep98.pth",
+            "train/last_checkpoint_ep149.pth",
+        ],
+    )
+    sf = _rs19_run(
+        tmp_path,
+        "sfnet-rs19-ours",
+        [
+            "ckpt/sfnet-rs19-ours/railsem19-x_sbn/best_epoch_391_mean-iu_0.75268.pth",
+            "ckpt/sfnet-rs19-ours/railsem19-x_sbn/last_epoch_399_mean-iu_0.74000.pth",
+        ],
+    )
+    resolved = {
+        "hrnet-rs19-ours": fork_queue.resolve_rs19_checkpoint(hr, "hrnet-rs19-ours"),
+        "sfnet-rs19-ours": fork_queue.resolve_rs19_checkpoint(sf, "sfnet-rs19-ours"),
+    }
+    assert resolved["hrnet-rs19-ours"].name == "best_checkpoint_ep98.pth"
+    assert resolved["sfnet-rs19-ours"].name == "best_epoch_391_mean-iu_0.75268.pth"
+    common = PAUL_FORKS / "recipes" / "_common.sh"
+    for label, ckpt in resolved.items():
+        check = subprocess.run(
+            [
+                "bash",
+                "-c",
+                f'source "{common}"; pf_check_rs19_ours "$1" "$2"',
+                "x",
+                str(ckpt),
+                label,
+            ],
+            env={**os.environ, "PAUL_FORK_TOOL_PYTHON": sys.executable},
+            capture_output=True,
+            text=True,
+        )
+        assert check.returncode == 0, check.stderr
+        assert check.stdout.strip().endswith(f"{label}/provenance.json")
+    with pytest.raises(fork_queue.QueueError, match="not a finished hrnet-rs19-ours"):
+        fork_queue.resolve_rs19_checkpoint(sf, "hrnet-rs19-ours")
+    (hr / "train" / "best_checkpoint_ep120.pth").write_bytes(b"w")
+    with pytest.raises(fork_queue.QueueError, match="exactly one best checkpoint"):
+        fork_queue.resolve_rs19_checkpoint(hr, "hrnet-rs19-ours")
+    write_json(sf / "gpu-assignment.json", {"status": "exited", "exit_code": 1})
+    with pytest.raises(fork_queue.QueueError, match="not finished"):
+        fork_queue.resolve_rs19_checkpoint(sf, "sfnet-rs19-ours")
+    write_json(sf / "gpu-assignment.json", {"status": "exited", "exit_code": 0})
+    write_json(sf / "provenance.json", {"label": "sfnet-rs19-ours", "dry_run": True})
+    with pytest.raises(fork_queue.QueueError, match="dry_run=True"):
+        fork_queue.resolve_rs19_checkpoint(sf, "sfnet-rs19-ours")
+
+
+def test_queue_resolves_rs19_checkpoint_after_dependency(tmp_path):
+    jobs = [
+        queue_job("rs19", "sfnet-rs19-ours", recipe="sfnet-rs19-ours.sh"),
+        queue_job(
+            "rad",
+            "paper-sfnet__rs19-ours__arm-paul",
+            recipe="paper-sfnet.sh",
+            groups=[[2, 3], [4, 5]],
+            depends_on=["rs19"],
+            rs19_ckpt_from="rs19",
+        ),
+        queue_job(
+            "bad",
+            "paper-sfnet__rs19-ours__arm-fixed-grouped",
+            recipe="paper-sfnet.sh",
+            groups=[[6, 7], [8, 9]],
+            depends_on=["rs19"],
+            rs19_ckpt_from="rs19",
+        ),
+    ]
+    queue, _, root = make_queue(tmp_path, jobs)
+    assert queue.tick() and statuses(queue)["rs19"] == "running"
+    assert statuses(queue)["rad"] == "pending"
+    queue.machine.tmux.sessions.pop("pf-q-rs19")
+    best = "ckpt/sfnet-rs19-ours/x/best_epoch_391_mean-iu_0.75268.pth"
+    run = _rs19_run(root, "sfnet-rs19-ours", [best])
+    queue.exit_file(queue.spec.job("rs19")).write_text("0\n")
+    assert queue.tick()
+    assert statuses(queue)["rs19"] == "done" and statuses(queue)["rad"] == "running"
+    assert queue.state["jobs"]["rad"]["rs19_ckpt"] == str(run / best)
+    assert f"--rs19-ckpt {run / best}" in queue.machine.tmux.started[1][1]
+    # "bad" started too (same checkpoint); a second best file would make the next one fail
+    assert statuses(queue)["bad"] == "running"
+
+
+def test_scorer_and_provenance_writer_share_chains_and_recipe_variants():
+    # score_predictions.py and recipes/write_provenance.py keep separate copies of these
+    # tables (the writer runs with the fork env's Python); they must never drift apart.
+    prov = fork_queue.PROV
+    assert {b: prov.CHAINS[b] for b in prov.RAD_BASES} == score_predictions.CHAINS
+    assert score_predictions.RECIPE_VARIANTS == prov.RECIPE_VARIANTS
+    assert score_predictions.DEFAULT_RECIPE == prov.DEFAULT_RECIPE

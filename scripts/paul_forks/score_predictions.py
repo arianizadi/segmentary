@@ -23,8 +23,10 @@ arm's audit (``audit/samples.json`` class_pixels) and the adapter's
 refused, and the result records its git commit and the sha256 of the three files.
 
 The run label comes from ``provenance.json`` and must be a RAD-stage label
-``<base>__arm-<arm>`` whose arm matches ``--arm-root``; its checkpoint owners and the
-sha256 of every Paul/NVIDIA/public checkpoint must match the label (a label naming a
+``<base>__arm-<arm>[__recipe-<variant>]`` whose arm matches ``--arm-root`` (no suffix = the
+default recipe ``paul-shared-20260923``; the training run's ``extra.recipe_variant`` must
+equal it); its checkpoint owners, the exact set of chain stages (``mapcity-direct`` has no
+``rs19``) and the sha256 of every Paul/NVIDIA/public checkpoint must match the label (a label naming a
 checkpoint we did not train and have no pin for, i.e. ``paper-sfnet__rs19-paul``, is
 refused). The reference label ``paul-reference__rr22-0.8964`` is refused: that model may
 have trained on these images.
@@ -105,8 +107,21 @@ OWNERS = ("paul", "nvidia", "ours", "public-sfnet-authors")
 CHAINS = {
     "paper-hrnet__rs19-paul": {"map_city": "nvidia", "rs19": "paul", "rad": "ours"},
     "paper-hrnet__rs19-ours": {"map_city": "nvidia", "rs19": "ours", "rad": "ours"},
+    "paper-hrnet__mapcity-direct": {"map_city": "nvidia", "rad": "ours"},
     "paper-sfnet__rs19-ours": {"map_city": "public-sfnet-authors", "rs19": "ours", "rad": "ours"},
     "paper-sfnet__rs19-paul": {"map_city": "public-sfnet-authors", "rs19": "paul", "rad": "ours"},
+    "paper-sfnet__mapcity-direct": {"map_city": "public-sfnet-authors", "rad": "ours"},
+}
+# Default RAD recipe (plain label) and the other variants, which carry "__recipe-<variant>"
+# (same table as recipes/write_provenance.py). mapcity-direct runs the default only.
+DEFAULT_RECIPE = "paul-shared-20260923"
+RECIPE_VARIANTS = {
+    "paper-hrnet__rs19-paul": ("train_2", "train_1"),
+    "paper-hrnet__rs19-ours": ("train_2", "train_1"),
+    "paper-hrnet__mapcity-direct": (),
+    "paper-sfnet__rs19-ours": ("train_2",),
+    "paper-sfnet__rs19-paul": ("train_2",),
+    "paper-sfnet__mapcity-direct": (),
 }
 REFERENCE_ONLY = ("paul-reference__rr22-0.8964",)
 # Checkpoints we did not train, pinned by sha256 (SHA256SUMS on HDRFS / September provenance).
@@ -148,26 +163,35 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def parse_label(label: str) -> tuple[str, str]:
+def parse_label(label: str) -> tuple[str, str, str]:
+    """``(base, arm, recipe variant)`` of ``<base>__arm-<arm>[__recipe-<variant>]``."""
     if label in REFERENCE_ONLY or label.startswith("paul-reference__"):
         raise ScoreError(
             f"{label} is a reference model that may have trained on our val/test images; "
             "it is never scored on our splits"
         )
-    match = re.fullmatch(r"(.+)__arm-(.+)", label)
-    if not match or match.group(1) not in CHAINS or match.group(2) not in ARMS:
+    match = re.fullmatch(
+        r"(.+?)__arm-(" + "|".join(ARMS) + r")(?:__recipe-([A-Za-z0-9_.-]+))?", label
+    )
+    if not match or match.group(1) not in CHAINS:
         raise ScoreError(
-            f"{label!r} is not a RAD-stage label <base>__arm-<arm> with base in "
-            f"{sorted(CHAINS)} and arm in {list(ARMS)}"
+            f"{label!r} is not a RAD-stage label <base>__arm-<arm>[__recipe-<variant>] with "
+            f"base in {sorted(CHAINS)} and arm in {list(ARMS)}"
         )
-    return match.group(1), match.group(2)
+    base, arm, recipe = match.group(1), match.group(2), match.group(3)
+    if recipe is not None and recipe not in RECIPE_VARIANTS[base]:
+        raise ScoreError(
+            f"{label!r}: recipe {recipe!r} is not a variant of {base} "
+            f"(allowed: {list(RECIPE_VARIANTS[base])}; the default has no suffix)"
+        )
+    return base, arm, recipe or DEFAULT_RECIPE
 
 
 def check_provenance(provenance: dict[str, Any], arm: str) -> tuple[str, str]:
     missing = [key for key in PROVENANCE_KEYS if key not in provenance]
     if missing:
         raise ScoreError(f"provenance.json lacks {missing}")
-    base, label_arm = parse_label(str(provenance["label"]))
+    base, label_arm, _ = parse_label(str(provenance["label"]))
     if label_arm != arm:
         raise ScoreError(f"label arm {label_arm!r} differs from the scored arm {arm!r}")
     for flag in ("dry_run", "probe_epochs", "pins_override"):
@@ -177,12 +201,15 @@ def check_provenance(provenance: dict[str, Any], arm: str) -> tuple[str, str]:
     if owners != CHAINS[base]:
         raise ScoreError(f"{base} needs checkpoint owners {CHAINS[base]}, provenance has {owners}")
     checkpoints = provenance["checkpoints"]
-    for stage in STAGES:
-        entry = checkpoints.get(stage) if isinstance(checkpoints, dict) else None
+    if not isinstance(checkpoints, dict) or set(checkpoints) != set(owners):
+        raise ScoreError(f"provenance checkpoints must be exactly the chain stages {list(owners)}")
+    for stage in owners:
+        entry = checkpoints[stage]
         if not isinstance(entry, dict) or not entry.get("path") or not entry.get("sha256"):
             raise ScoreError(f"provenance checkpoints.{stage} needs path and sha256")
-    family, rs19 = base.split("__")
-    for stage, key in (("map_city", "map_city"), ("rs19", rs19)):
+    family, chain = base.split("__")
+    for stage in owners:
+        key = "map_city" if stage == "map_city" else chain
         if owners[stage] == "ours":
             continue
         pin = PINNED.get((family, key))
@@ -306,9 +333,20 @@ def check_dump(
     for flag in ("dry_run", "probe_epochs", "pins_override"):
         if training.get(flag):
             raise ScoreError(f"training provenance has {flag}={training[flag]!r}")
-    for stage in ("map_city", "rs19"):
+    upstream = [
+        stage for stage in provenance["owner_of_each_checkpoint_in_chain"] if stage != "rad"
+    ]
+    if set(training["checkpoints"]) != set(provenance["checkpoints"]):
+        raise ScoreError("dump and training provenance list different chain stages")
+    for stage in upstream:
         if training["checkpoints"][stage] != provenance["checkpoints"][stage]:
             raise ScoreError(f"dump and training provenance differ in checkpoints.{stage}")
+    _, _, recipe = parse_label(str(provenance["label"]))
+    if (training.get("extra") or {}).get("recipe_variant") != recipe:
+        raise ScoreError(
+            f"{training_path} recipe_variant "
+            f"{(training.get('extra') or {}).get('recipe_variant')!r} is not the label's {recipe!r}"
+        )
     finished(training_path.parent, "the training run")
     run_dir = training_path.parent.resolve()
     dumped_ckpt = Path(rad.get("resolved_path") or rad["path"]).resolve()
@@ -369,6 +407,7 @@ def score(
     arm = arm_of(arm_root)
     provenance = load_json(provenance_path, "provenance")
     base, _ = check_provenance(provenance, arm)
+    recipe = parse_label(str(provenance["label"]))[2]
     schema = json.loads((arm_root / "classes.json").read_text())
     names = [c["name"] for c in schema["classes"]]
     if len(names) != NUM_CLASSES or names.index(MUD) != 13 or schema["ignore_index"] != IGNORE:
@@ -427,6 +466,7 @@ def score(
         "schema_version": 2,
         "label": provenance["label"],
         "base_label": base,
+        "recipe_variant": recipe,
         "arm": arm,
         "split": split,
         "images": len(keys),

@@ -111,6 +111,16 @@ for name, key in (("splits.json", "splits_sha256"), ("classes.json", "classes_sh
 PY
 }
 
+# RAD-stage label: <family>__<chain>__arm-<arm>, plus __recipe-<variant> for any recipe other
+# than the default (Paul's shared 2026-09-23 files), so two recipes of one chain and arm never
+# share a label or a run directory. write_provenance.py checks the suffix against the
+# recorded recipe_variant.
+PF_DEFAULT_RECIPE=paul-shared-20260923
+pf_rad_label() {
+  LABEL=$1__arm-$PF_ARM
+  [[ $2 == "$PF_DEFAULT_RECIPE" ]] || LABEL+=__recipe-$2
+}
+
 pf_check_arm() {
   local a
   for a in "${PF_ARMS[@]}"; do [[ $PF_ARM == "$a" ]] && return 0; done
@@ -201,7 +211,7 @@ record = json.load(open(sys.argv[1]))
 if record.get("dry_run") or record.get("probe_epochs"):
     sys.exit("training provenance is a dry run or a probe, not a finished run")
 print(record["label"])' "$PF_RUN_DIR/provenance.json") || pf_die "$PF_RUN_DIR is not a finished run"
-  [[ $label == *__arm-"$PF_ARM" ]] || pf_die "run $label is not arm $PF_ARM"
+  [[ $label =~ __arm-${PF_ARM}(__recipe-[A-Za-z0-9_.-]+)?$ ]] || pf_die "run $label is not arm $PF_ARM"
   local name
   name=$PF_DUMP-$PF_DUMP_SCALES-$(basename "$PF_DUMP_CKPT" .pth)
   local dump_dir=$PF_RUN_DIR/dumps/$name

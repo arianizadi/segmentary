@@ -124,16 +124,33 @@ def test_patches_are_ordered_one_concern_and_documented():
 
 def test_allowed_labels_are_exactly_the_planned_set():
     expected = {"hrnet-rs19-ours", "sfnet-rs19-ours"} | {
-        f"{base}__arm-{arm}"
-        for base in (
-            "paper-hrnet__rs19-paul",
-            "paper-hrnet__rs19-ours",
-            "paper-sfnet__rs19-ours",
-            "paper-sfnet__rs19-paul",
+        f"{base}__arm-{arm}{suffix}"
+        for base, suffixes in (
+            ("paper-hrnet__rs19-paul", ("", "__recipe-train_2", "__recipe-train_1")),
+            ("paper-hrnet__rs19-ours", ("", "__recipe-train_2", "__recipe-train_1")),
+            ("paper-hrnet__mapcity-direct", ("",)),
+            ("paper-sfnet__rs19-ours", ("", "__recipe-train_2")),
+            ("paper-sfnet__rs19-paul", ("", "__recipe-train_2")),
+            ("paper-sfnet__mapcity-direct", ("",)),
         )
+        for suffix in suffixes
         for arm in ARMS
     }
     assert set(PROV.ALLOWED_LABELS) == expected
+    # The labels of the runs already going on HDRFS (default recipe) are unchanged.
+    assert "paper-hrnet__rs19-paul__arm-fixed-grouped" in PROV.ALLOWED_LABELS
+    assert PROV.split_label("paper-hrnet__rs19-paul__arm-paul") == (
+        "paper-hrnet__rs19-paul",
+        "paul",
+        "paul-shared-20260923",
+    )
+    assert PROV.split_label("paper-hrnet__rs19-paul__arm-paul__recipe-train_2")[2] == "train_2"
+    for bad in (
+        "paper-hrnet__rs19-paul__arm-paul__recipe-paul-shared-20260923",
+        "paper-hrnet__rs19-paul__recipe-train_2__arm-paul",
+        "paper-hrnet__mapcity-direct__arm-paul__recipe-train_2",
+    ):
+        assert bad not in PROV.ALLOWED_LABELS
     assert "paul-reference__rr22-0.8964" in PROV.REFERENCE_LABELS
     assert not set(PROV.REFERENCE_LABELS) & set(PROV.ALLOWED_LABELS)
     assert set(PROV.OWNERS) == {"paul", "nvidia", "ours", "public-sfnet-authors"}
@@ -266,31 +283,54 @@ def fake_rs19_run(fake, label, name="rs19-run"):
 
 
 def invocations(fake):
+    """``(label, script, args, env)`` for every label ``write_provenance.py`` can write."""
     hrnet_ours = fake_rs19_run(fake, "hrnet-rs19-ours", "hrnet-rs19")
     sfnet_ours = fake_rs19_run(fake, "sfnet-rs19-ours", "sfnet-rs19")
     paul_sf = fake["paul_sf"]
-    yield "hrnet-rs19-ours", "hrnet-rs19-ours.sh", ["--gpus", "2,3,4,5"]
-    yield "sfnet-rs19-ours", "sfnet-rs19-ours.sh", ["--gpus", "6,7,8,9"]
+    yield "hrnet-rs19-ours", "hrnet-rs19-ours.sh", ["--gpus", "2,3,4,5"], {}
+    yield "sfnet-rs19-ours", "sfnet-rs19-ours.sh", ["--gpus", "6,7,8,9"], {}
+    hrnet = {
+        "rs19-paul": ["--rs19", "paul"],
+        "rs19-ours": ["--rs19", "ours", "--rs19-ckpt", str(hrnet_ours)],
+    }
+    sfnet = {
+        "rs19-ours": ["--rs19", "ours", "--rs19-ckpt", str(sfnet_ours)],
+        "rs19-paul": ["--rs19", "paul", "--rs19-ckpt", str(paul_sf)],
+    }
     for arm in ARMS:
+        for chain, args in hrnet.items():
+            for recipe in ("", "train_2", "train_1"):
+                yield (
+                    f"paper-hrnet__{chain}__arm-{arm}" + (f"__recipe-{recipe}" if recipe else ""),
+                    "paper-hrnet.sh",
+                    [
+                        *args,
+                        "--arm",
+                        arm,
+                        "--gpus",
+                        "2,3,4,5" if chain == "rs19-paul" else "6,7,8,9",
+                    ],
+                    {"HRNET_RAD_RECIPE": recipe} if recipe else {},
+                )
+        for chain, args in sfnet.items():
+            for recipe in ("", "train_2"):
+                yield (
+                    f"paper-sfnet__{chain}__arm-{arm}" + (f"__recipe-{recipe}" if recipe else ""),
+                    "paper-sfnet.sh",
+                    [*args, "--arm", arm, "--gpus", "2,3" if chain == "rs19-ours" else "4,5,6,7"],
+                    {"SFNET_RAD_RECIPE": recipe} if recipe else {},
+                )
         yield (
-            f"paper-hrnet__rs19-paul__arm-{arm}",
+            f"paper-hrnet__mapcity-direct__arm-{arm}",
             "paper-hrnet.sh",
-            ["--rs19", "paul", "--arm", arm, "--gpus", "2,3,4,5"],
+            ["--rs19", "none", "--arm", arm, "--gpus", "6,7,8,9"],
+            {},
         )
         yield (
-            f"paper-hrnet__rs19-ours__arm-{arm}",
-            "paper-hrnet.sh",
-            ["--rs19", "ours", "--rs19-ckpt", str(hrnet_ours), "--arm", arm, "--gpus", "6,7,8,9"],
-        )
-        yield (
-            f"paper-sfnet__rs19-ours__arm-{arm}",
+            f"paper-sfnet__mapcity-direct__arm-{arm}",
             "paper-sfnet.sh",
-            ["--rs19", "ours", "--rs19-ckpt", str(sfnet_ours), "--arm", arm, "--gpus", "2,3"],
-        )
-        yield (
-            f"paper-sfnet__rs19-paul__arm-{arm}",
-            "paper-sfnet.sh",
-            ["--rs19", "paul", "--rs19-ckpt", str(paul_sf), "--arm", arm, "--gpus", "4,5,6,7"],
+            ["--rs19", "none", "--arm", arm, "--gpus", "8,9"],
+            {},
         )
 
 
@@ -301,6 +341,8 @@ EXPECTED_OWNERS = {
     "paper-hrnet__rs19-ours": {"map_city": "nvidia", "rs19": "ours", "rad": "ours"},
     "paper-sfnet__rs19-ours": {"map_city": "public-sfnet-authors", "rs19": "ours", "rad": "ours"},
     "paper-sfnet__rs19-paul": {"map_city": "public-sfnet-authors", "rs19": "paul", "rad": "ours"},
+    "paper-hrnet__mapcity-direct": {"map_city": "nvidia", "rad": "ours"},
+    "paper-sfnet__mapcity-direct": {"map_city": "public-sfnet-authors", "rad": "ours"},
 }
 
 
@@ -362,9 +404,11 @@ def test_provenance_records_gpus_in_launcher_order_and_pins_the_launcher(tmp_pat
 
 def test_dry_run_provenance_for_every_label(fake_root):
     seen = set()
-    for label, script, args in invocations(fake_root):
+    for label, script, args, env in invocations(fake_root):
         run_dir = fake_root["tmp"] / "runs" / label
-        result = run_recipe(fake_root, script, *args, "--run-dir", str(run_dir), "--dry-run")
+        result = run_recipe(
+            fake_root, script, *args, "--run-dir", str(run_dir), "--dry-run", extra_env=env
+        )
         assert result.returncode == 0, (label, result.stderr)
         assert "DRY-RUN command:" in result.stdout
         tokens = shlex.split(result.stdout.split("DRY-RUN command:")[1])
@@ -380,7 +424,9 @@ def test_dry_run_provenance_for_every_label(fake_root):
         prov = json.loads((run_dir / "provenance.json").read_text())
         assert prov["label"] == label and label in PROV.ALLOWED_LABELS
         assert prov["dry_run"] is True
-        base = label.split("__arm-")[0]
+        base, label_arm, recipe = PROV.split_label(label)
+        if label_arm is not None:
+            assert prov["extra"]["recipe_variant"] == recipe
         owners = prov["owner_of_each_checkpoint_in_chain"]
         assert owners == EXPECTED_OWNERS[base]
         assert set(prov["checkpoints"]) == set(owners)
@@ -408,10 +454,9 @@ def test_dry_run_provenance_for_every_label(fake_root):
         assert prov["gpu_assignment"]["indices"] == indices
         assert all(u.startswith("GPU-") for u in prov["gpu_assignment"]["uuids"])
         assert not {0, 1} & set(prov["gpu_assignment"]["indices"])
-        if "__arm-" in label:
-            arm = label.split("__arm-")[1]
-            assert prov["arm"] == arm
-            assert prov["environment"]["PAUL_ADAPTER_ROOT"].endswith(f"/adapters/{arm}")
+        if label_arm is not None:
+            assert prov["arm"] == label_arm
+            assert prov["environment"]["PAUL_ADAPTER_ROOT"].endswith(f"/adapters/{label_arm}")
         assert prov["environment"]["PAUL_CENTROID_ROOT"] == str(run_dir / "centroids")
         seen.add(label)
     assert seen == set(PROV.ALLOWED_LABELS)
@@ -427,10 +472,12 @@ def value_after(args, flag):
 
 def test_recipe_hyperparameters_match_paul(fake_root):
     runs = {}
-    for label, script, args in invocations(fake_root):
-        if label.endswith("__arm-paul") or "__arm-" not in label:
+    for label, script, args, env in invocations(fake_root):
+        if "__arm-paul" in label or "__arm-" not in label:
             run_dir = fake_root["tmp"] / "hp" / label
-            result = run_recipe(fake_root, script, *args, "--run-dir", str(run_dir), "--dry-run")
+            result = run_recipe(
+                fake_root, script, *args, "--run-dir", str(run_dir), "--dry-run", extra_env=env
+            )
             assert result.returncode == 0, result.stderr
             runs[label] = recipe_args(json.loads((run_dir / "provenance.json").read_text()))
     hr = runs["hrnet-rs19-ours"]
@@ -460,6 +507,46 @@ def test_recipe_hyperparameters_match_paul(fake_root):
     assert value_after(sfr, "--max_epoch") == shared["max_epoch"] == "1000"
     assert value_after(sfr, "--bs_mult") == "16"  # 2 GPUs x 16 = 32
     assert value_after(runs["paper-sfnet__rs19-paul__arm-paul"], "--bs_mult") == "8"
+    assert "--allow_skip" not in sfr
+
+    # Checkpoint-embedded variants, each under its own label.
+    rad2 = runs["paper-hrnet__rs19-paul__arm-paul__recipe-train_2"]
+    assert value_after(rad2, "--lr") == "1e-4" and value_after(rad2, "--max_epoch") == "500"
+    assert value_after(rad2, "--n_scales") == "0.5,1.0,1.5"
+    assert value_after(rad2, "--supervised_mscale_loss_wt") == "0.05"
+    assert value_after(rad2, "--snapshot").endswith("rs19_cityscapes_ep98_miou_0.7385.pth")
+    rad1 = runs["paper-hrnet__rs19-ours__arm-paul__recipe-train_1"]
+    assert value_after(rad1, "--supervised_mscale_loss_wt") == "0.1"
+    sfr2 = runs["paper-sfnet__rs19-ours__arm-paul__recipe-train_2"]
+    assert value_after(sfr2, "--lr") == "0.001"
+
+    # Map->City -> RAD directly: SFNet reproduces train_rs19_rtisrail22_sfnet_res18.sh flag by
+    # flag (only --exp/--ckpt/--tb_path/--snapshot ours, bs_mult for 2 GPUs, + --allow_skip).
+    direct = runs["paper-sfnet__mapcity-direct__arm-paul"]
+    shared = paul_shared("sfnet/train_rs19_rtisrail22_sfnet_res18.sh")
+    ours_only = {"exp", "ckpt", "tb_path", "snapshot", "bs_mult"}
+    for flag, value in shared.items():
+        if flag not in ours_only:
+            assert value_after(direct, f"--{flag}") == value, flag
+    shared_text = (SHARED / "sfnet/train_rs19_rtisrail22_sfnet_res18.sh").read_text()
+    switches = set(re.findall(r"--([a-z_]+) *\\$", shared_text, re.M))
+    assert switches == {"syncbn", "sgd", "ohem", "gblur", "bblur", "apex"}
+    for flag in switches:
+        assert f"--{flag}" in direct
+    assert value_after(direct, "--lr") == "0.0025" and value_after(direct, "--max_epoch") == "700"
+    assert value_after(direct, "--bs_mult") == "16"  # 2 GPUs x 16 = Paul's 4 x 8
+    assert value_after(direct, "--snapshot").endswith(
+        "pretrained_cityscapes_mapillary_rs18_miou-0.799.pth"
+    )
+    assert shared["snapshot"].endswith("pretrained_cityscapes_mapillary_rs18_miou-0.799.pth")
+    assert value_after(direct, "--allow_skip") == (
+        "layer0.*,layer1.0.conv1.weight,layer1.0.downsample.*"
+    )
+    hdirect = runs["paper-hrnet__mapcity-direct__arm-paul"]
+    shared = paul_shared("hrnet/train_rtisrail22.yml")
+    for flag in ("lr", "max_epoch", "n_scales", "supervised_mscale_loss_wt", "poly_exp"):
+        assert value_after(hdirect, f"--{flag}") == shared[flag], flag
+    assert value_after(hdirect, "--snapshot").endswith("nimble-chihuahua.pth")
 
 
 def test_hrnet_git_head_variant_is_selectable_and_flagged(fake_root):
@@ -562,7 +649,16 @@ def test_ours_rs19_checkpoint_must_come_from_finished_matching_run(fake_root):
 
 
 def test_reference_label_and_unknown_labels_are_never_written(tmp_path):
-    for label in ("paul-reference__rr22-0.8964", "paper-hrnet__rs19-paul__arm-test", "x"):
+    for label in (
+        "paul-reference__rr22-0.8964",
+        "paul-reference__rr22-0.8964__arm-paul",
+        "paper-hrnet__rs19-paul__arm-test",
+        "paper-hrnet__rs19-none__arm-paul",
+        "paper-hrnet__mapcity-direct__arm-paul__recipe-train_2",
+        "paper-sfnet__rs19-ours__arm-paul__recipe-train_1",
+        "paper-hrnet__rs19-paul__arm-paul__recipe-paul-shared-20260923",
+        "x",
+    ):
         with pytest.raises(SystemExit, match="REFUSING"):
             PROV.main(
                 [
@@ -609,7 +705,7 @@ def dump(fake, script, ckpt, arm, run_dir, split="test"):
 
 
 def test_dump_provenance_satisfies_the_scorer_contract(fake_root, monkeypatch):
-    label, script, args = next(
+    label, script, args, _ = next(
         item for item in invocations(fake_root) if item[0] == "paper-sfnet__rs19-ours__arm-paul"
     )
     run_dir = fake_root["tmp"] / "finished"
@@ -650,6 +746,144 @@ def test_dump_provenance_satisfies_the_scorer_contract(fake_root, monkeypatch):
         score_predictions.check_provenance(prov, "paul")  # test pins override is recorded
     prov.update(dry_run=False, pins_override=None)
     assert score_predictions.check_provenance(prov, "paul") == ("paper-sfnet__rs19-ours", "paul")
+
+
+def test_dump_of_a_recipe_variant_run_keeps_its_label(fake_root):
+    run_dir = fake_root["tmp"] / "variant-run"
+    args = ["--rs19", "paul", "--arm", "fixed-stratified", "--gpus", "2,3,4,5"]
+    env = {"HRNET_RAD_RECIPE": "train_2"}
+    trained = run_recipe(
+        fake_root, "paper-hrnet.sh", *args, "--run-dir", str(run_dir), "--dry-run", extra_env=env
+    )
+    assert trained.returncode == 0, trained.stderr
+    training = json.loads((run_dir / "provenance.json").read_text())
+    training["dry_run"] = False
+    (run_dir / "provenance.json").write_text(json.dumps(training))
+    ckpt = run_dir / "train" / "best_mud_epoch_3.pth"
+    ckpt.parent.mkdir(parents=True)
+    ckpt.write_bytes(b"w")
+    assert dump(fake_root, "paper-hrnet.sh", ckpt, "paul", run_dir).returncode != 0
+    result = dump(fake_root, "paper-hrnet.sh", ckpt, "fixed-stratified", run_dir)
+    assert result.returncode == 0, result.stderr
+    prov = json.loads(
+        (run_dir / "dumps" / "test-single-best_mud_epoch_3" / "dump-provenance.json").read_text()
+    )
+    assert prov["label"] == "paper-hrnet__rs19-paul__arm-fixed-stratified__recipe-train_2"
+
+
+def test_mapcity_direct_chain_provenance(fake_root):
+    for script, owner, init in (
+        ("paper-hrnet.sh", "nvidia", "nimble-chihuahua.pth"),
+        ("paper-sfnet.sh", "public-sfnet-authors", "rs18_miou-0.799.pth"),
+    ):
+        family = script.removesuffix(".sh")
+        gpus = "2,3,4,5" if family == "paper-hrnet" else "2,3"
+        run_dir = fake_root["tmp"] / f"{family}-direct"
+        args = ["--rs19", "none", "--arm", "fixed-grouped", "--gpus", gpus]
+        result = run_recipe(fake_root, script, *args, "--run-dir", str(run_dir), "--dry-run")
+        assert result.returncode == 0, result.stderr
+        prov = json.loads((run_dir / "provenance.json").read_text())
+        assert prov["label"] == f"{family}__mapcity-direct__arm-fixed-grouped"
+        assert prov["owner_of_each_checkpoint_in_chain"] == {"map_city": owner, "rad": "ours"}
+        assert set(prov["checkpoints"]) == {"map_city", "rad"}
+        assert prov["checkpoints"]["map_city"]["role"] == "init"
+        assert prov["checkpoints"]["map_city"]["path"].endswith(init)
+        assert any("chain mapcity-direct" in d for d in prov["deviations"])
+        assert any("19-class Cityscapes head" in d for d in prov["deviations"])
+        # --rs19-ckpt, a non-default recipe and a wrong pin are refused
+        bad_dir = fake_root["tmp"] / f"{family}-direct-bad"
+        variant = "HRNET_RAD_RECIPE" if family == "paper-hrnet" else "SFNET_RAD_RECIPE"
+        for extra_args, env in (
+            (["--rs19-ckpt", str(fake_root["paul_sf"])], {}),
+            ([], {variant: "train_2"}),
+            ([], {"PAUL_FORK_PINS_FILE": ""}),
+        ):
+            bad = run_recipe(
+                fake_root,
+                script,
+                *args,
+                *extra_args,
+                "--run-dir",
+                str(bad_dir),
+                "--dry-run",
+                extra_env=env,
+            )
+            assert bad.returncode != 0 and "REFUSING" in bad.stderr, (extra_args, env)
+            assert not (bad_dir / "provenance.json").exists()
+
+
+def test_recipe_variants_never_share_a_label_or_run_dir(fake_root):
+    labels = set()
+    for recipe in ("", "train_2", "train_1"):
+        run_dir = fake_root["tmp"] / f"variant-{recipe or 'default'}"
+        result = run_recipe(
+            fake_root,
+            "paper-hrnet.sh",
+            "--rs19",
+            "paul",
+            "--arm",
+            "paul",
+            "--gpus",
+            "2,3,4,5",
+            "--run-dir",
+            str(run_dir),
+            "--dry-run",
+            extra_env={"HRNET_RAD_RECIPE": recipe} if recipe else {},
+        )
+        assert result.returncode == 0, result.stderr
+        prov = json.loads((run_dir / "provenance.json").read_text())
+        labels.add(prov["label"])
+        assert prov["extra"]["recipe_variant"] == recipe or (
+            not recipe and prov["extra"]["recipe_variant"] == "paul-shared-20260923"
+        )
+    assert labels == {
+        "paper-hrnet__rs19-paul__arm-paul",
+        "paper-hrnet__rs19-paul__arm-paul__recipe-train_2",
+        "paper-hrnet__rs19-paul__arm-paul__recipe-train_1",
+    }
+
+
+def _write_provenance_args(tmp_path, label, *extra):
+    return [
+        "--label",
+        label,
+        "--stage",
+        "rad",
+        "--fork",
+        "hrnet",
+        "--arm",
+        "paul",
+        "--run-dir",
+        str(tmp_path),
+        "--src",
+        str(tmp_path),
+        "--gpus",
+        "2",
+        "--launcher",
+        str(LAUNCHER),
+        "--recipe-source",
+        "x",
+        "--recipe-script",
+        __file__,
+        *extra,
+        "--",
+        "true",
+    ]
+
+
+@pytest.mark.parametrize(
+    ("label", "recorded"),
+    [
+        ("paper-hrnet__rs19-paul__arm-paul", "train_2"),  # train_2 under the default label
+        ("paper-hrnet__rs19-paul__arm-paul__recipe-train_2", "paul-shared-20260923"),
+        ("paper-hrnet__rs19-paul__arm-paul__recipe-train_2", "train_1"),
+        ("paper-hrnet__rs19-paul__arm-paul", None),
+    ],
+)
+def test_label_recipe_suffix_must_match_recorded_variant(tmp_path, label, recorded):
+    extra = ["--extra", f"recipe_variant={recorded}"] if recorded else []
+    with pytest.raises(SystemExit, match="recipe"):
+        PROV.main(_write_provenance_args(tmp_path, label, *extra))
 
 
 def test_real_pins_are_enforced_at_launch(fake_root):
