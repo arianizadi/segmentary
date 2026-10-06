@@ -178,7 +178,7 @@ Paul Stanik's two paper recipes (HRNet-OCR-Mscale `pauls3/semantic-segmentation@
 | label | arm | checkpoint owners | status | scored: GT-class mIoU / mud IoU / mud IoU cab / img-mean mud IoU cab | fork's own in-training best (not comparable) |
 | --- | --- | --- | --- | --- | --- |
 | `paper-hrnet__rs19-paul__arm-paul` | paul | map_city:nvidia -> rs19:paul -> rad:ours | scored (val) | 65.4 / 88.1 / 47.0 / 52.4 | — |
-| `paper-hrnet__rs19-paul__arm-fixed-grouped` | fixed-grouped | map_city:nvidia -> rs19:paul -> rad:ours | training, epoch 912 (0-based, of 1000) | — | mud IoU 9.4 @ epoch 901; mIoU 49.1 @ epoch 892 |
+| `paper-hrnet__rs19-paul__arm-fixed-grouped` | fixed-grouped | map_city:nvidia -> rs19:paul -> rad:ours | trained, val not yet scored | — | mud IoU 10.3 @ epoch 921; mIoU 49.1 @ epoch 892 |
 | `hrnet-rs19-ours` | — (RS19 stage) | — | queue: pending | — | — |
 | `paper-hrnet__mapcity-direct__arm-fixed-grouped` | fixed-grouped | — | queue: pending | — | — |
 | `paper-hrnet__mapcity-direct__arm-paul` | paul | — | queue: pending | — | — |
