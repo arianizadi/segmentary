@@ -9,7 +9,7 @@ The `rad_9_24_2026` delivery (314 rail images with polygon labels) trained two w
 | arm | labels | split; train/val/test | completed | other jobs | code |
 | --- | --- | --- | --- | --- | --- |
 | [`paul`](paul/README.md) | Paul's delivered `masks_machine` copies | stratified random (seed 0); 227/37/50 | 40/40 | — | `d864b72bd907` |
-| [`fixed-grouped`](fixed-grouped/README.md) | re-rendered from the polygon JSONs | scene-grouped (from v1/v2); 217/37/60 | 19/40 | evaluating 1, queued 17, training 3 | `d864b72bd907` |
+| [`fixed-grouped`](fixed-grouped/README.md) | re-rendered from the polygon JSONs | scene-grouped (from v1/v2); 217/37/60 | 39/40 | evaluating 1 | `d864b72bd907` |
 
 Each arm page has the per-model reports, `results.csv`, `status.json` and the downloadable evidence exactly as for [RTIS v2](../paul-test-rtis/v2/README.md). Fork progress is in the [paper-recipe section](#paper-recipe-fork-runs).
 
@@ -74,10 +74,10 @@ Percent; columns per arm: P = `paul`, FG = `fixed-grouped`. Selected checkpoint 
 | hrnet_w48_ocr | railsem19_to_rtis | 61.1 | 51.3 | 76.7 | 2.4 | 46.3 | 8.2 | 42.4 | 7.5 |
 | hrnet_w48_ocr | rtis_only | 59.8 | 37.2 | 90.8 | 3.6 | 49.3 | 7.0 | 45.7 | 6.2 |
 | native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 64.2 |  | 90.5 |  | 45.0 |  | 43.2 |  |
-| native_convnext_tiny_uper | cityscapes_to_rtis | 60.5 |  | 89.4 |  | 45.2 |  | 43.6 |  |
-| native_convnext_tiny_uper | railsem19_to_rtis | 64.1 |  | 88.4 |  | 48.5 |  | 43.7 |  |
-| native_convnext_tiny_uper | rtis_only | 60.5 |  | 88.8 |  | 47.5 |  | 53.3 |  |
-| segformer_b2 | cityscapes_to_railsem19_to_rtis | 64.4 |  | 89.2 |  | 42.7 |  | 49.9 |  |
+| native_convnext_tiny_uper | cityscapes_to_rtis | 60.5 | 41.1 | 89.4 | 3.1 | 45.2 | 3.6 | 43.6 | 3.7 |
+| native_convnext_tiny_uper | railsem19_to_rtis | 64.1 | 49.5 | 88.4 | 2.1 | 48.5 | 4.7 | 43.7 | 5.6 |
+| native_convnext_tiny_uper | rtis_only | 60.5 | 29.2 | 88.8 | 6.9 | 47.5 | 13.3 | 53.3 | 11.7 |
+| segformer_b2 | cityscapes_to_railsem19_to_rtis | 64.4 | 47.6 | 89.2 | 15.9 | 42.7 | 16.6 | 49.9 | 16.9 |
 | segformer_b2 | cityscapes_to_rtis | 54.2 | 45.1 | 87.3 | 16.8 | 29.7 | 23.1 | 30.2 | 23.1 |
 | segformer_b2 | railsem19_to_rtis | 66.4 | 52.7 | 93.2 | 6.1 | 57.0 | 13.1 | 51.6 | 11.9 |
 | segformer_b2 | rtis_only | 58.2 | 39.8 | 93.1 | 10.1 | 58.7 | 19.9 | 59.2 | 20.0 |
@@ -85,22 +85,22 @@ Percent; columns per arm: P = `paul`, FG = `fixed-grouped`. Selected checkpoint 
 | segformer_b5 | cityscapes_to_rtis | 59.1 | 44.2 | 91.3 | 4.7 | 46.8 | 26.9 | 51.9 | 22.8 |
 | segformer_b5 | railsem19_to_rtis | 69.5 | 53.9 | 90.4 | 5.6 | 55.2 | 14.7 | 50.6 | 14.3 |
 | segformer_b5 | rtis_only | 59.1 | 41.7 | 93.1 | 5.2 | 53.4 | 14.9 | 60.0 | 12.4 |
-| smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 56.9 |  | 85.4 |  | 39.9 |  | 47.2 |  |
-| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 55.7 |  | 89.6 |  | 45.6 |  | 38.2 |  |
-| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 62.4 |  | 87.7 |  | 47.2 |  | 36.3 |  |
-| smp_deeplabv3plus_resnet101 | rtis_only | 41.3 |  | 85.9 |  | 12.1 |  | 16.6 |  |
-| smp_fpn_resnet50 | cityscapes_to_railsem19_to_rtis | 57.0 |  | 74.0 |  | 38.7 |  | 34.3 |  |
-| smp_fpn_resnet50 | cityscapes_to_rtis | 55.5 |  | 85.3 |  | 18.4 |  | 14.0 |  |
-| smp_fpn_resnet50 | railsem19_to_rtis | 60.3 |  | 89.9 |  | 47.4 |  | 43.3 |  |
-| smp_fpn_resnet50 | rtis_only | 52.5 |  | 89.2 |  | 38.1 |  | 31.3 |  |
-| smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 55.5 |  | 87.6 |  | 28.1 |  | 33.0 |  |
-| smp_upernet_resnet101 | cityscapes_to_rtis | 49.4 |  | 85.2 |  | 24.9 |  | 25.0 |  |
-| smp_upernet_resnet101 | railsem19_to_rtis | 57.4 |  | 86.0 |  | 42.7 |  | 38.4 |  |
-| smp_upernet_resnet101 | rtis_only | 54.8 |  | 87.5 |  | 37.5 |  | 51.0 |  |
-| upernet_convnext | cityscapes_to_railsem19_to_rtis | 67.2 |  | 92.6 |  | 42.3 |  | 38.4 |  |
-| upernet_convnext | cityscapes_to_rtis | 62.6 |  | 89.2 |  | 38.3 |  | 42.2 |  |
-| upernet_convnext | railsem19_to_rtis | 66.1 |  | 88.3 |  | 40.1 |  | 36.2 |  |
-| upernet_convnext | rtis_only | 61.5 |  | 91.7 |  | 50.6 |  | 50.9 |  |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 56.9 | 40.9 | 85.4 | 3.7 | 39.9 | 8.0 | 47.2 | 5.6 |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 55.7 | 23.6 | 89.6 | 1.4 | 45.6 | 3.4 | 38.2 | 4.6 |
+| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 62.4 | 49.2 | 87.7 | 5.6 | 47.2 | 13.7 | 36.3 | 13.9 |
+| smp_deeplabv3plus_resnet101 | rtis_only | 41.3 | 30.2 | 85.9 | 6.6 | 12.1 | 10.8 | 16.6 | 15.6 |
+| smp_fpn_resnet50 | cityscapes_to_railsem19_to_rtis | 57.0 | 41.1 | 74.0 | 14.4 | 38.7 | 15.8 | 34.3 | 12.1 |
+| smp_fpn_resnet50 | cityscapes_to_rtis | 55.5 | 32.2 | 85.3 | 8.2 | 18.4 | 9.1 | 14.0 | 9.0 |
+| smp_fpn_resnet50 | railsem19_to_rtis | 60.3 | 48.8 | 89.9 | 12.8 | 47.4 | 20.7 | 43.3 | 16.2 |
+| smp_fpn_resnet50 | rtis_only | 52.5 | 22.4 | 89.2 | 4.8 | 38.1 | 10.3 | 31.3 | 9.8 |
+| smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 55.5 | 37.3 | 87.6 | 15.9 | 28.1 | 19.3 | 33.0 | 16.2 |
+| smp_upernet_resnet101 | cityscapes_to_rtis | 49.4 | 26.1 | 85.2 | 16.3 | 24.9 | 25.5 | 25.0 | 21.5 |
+| smp_upernet_resnet101 | railsem19_to_rtis | 57.4 | 35.2 | 86.0 | 8.7 | 42.7 | 12.4 | 38.4 | 9.9 |
+| smp_upernet_resnet101 | rtis_only | 54.8 | 25.6 | 87.5 | 6.8 | 37.5 | 8.1 | 51.0 | 7.3 |
+| upernet_convnext | cityscapes_to_railsem19_to_rtis | 67.2 | 44.2 | 92.6 | 2.4 | 42.3 | 5.9 | 38.4 | 5.8 |
+| upernet_convnext | cityscapes_to_rtis | 62.6 | 36.2 | 89.2 | 3.2 | 38.3 | 17.5 | 42.2 | 15.0 |
+| upernet_convnext | railsem19_to_rtis | 66.1 | 49.4 | 88.3 | 7.8 | 40.1 | 13.4 | 36.2 | 14.0 |
+| upernet_convnext | rtis_only | 61.5 | 42.1 | 91.7 | 4.7 | 50.6 | 11.7 | 50.9 | 10.6 |
 
 ### Arm effects
 
@@ -120,6 +120,10 @@ Differences in IoU points for model x protocol pairs completed in both arms, sin
 | hrnet_w48_ocr | cityscapes_to_rtis | split | -16.8 | -73.8 | -21.6 | -31.6 |
 | hrnet_w48_ocr | railsem19_to_rtis | split | -9.8 | -74.3 | -38.1 | -35.0 |
 | hrnet_w48_ocr | rtis_only | split | -22.6 | -87.3 | -42.4 | -39.5 |
+| native_convnext_tiny_uper | cityscapes_to_rtis | split | -19.4 | -86.3 | -41.6 | -39.8 |
+| native_convnext_tiny_uper | railsem19_to_rtis | split | -14.6 | -86.4 | -43.8 | -38.1 |
+| native_convnext_tiny_uper | rtis_only | split | -31.2 | -81.9 | -34.2 | -41.5 |
+| segformer_b2 | cityscapes_to_railsem19_to_rtis | split | -16.8 | -73.3 | -26.1 | -32.9 |
 | segformer_b2 | cityscapes_to_rtis | split | -9.1 | -70.5 | -6.5 | -7.1 |
 | segformer_b2 | railsem19_to_rtis | split | -13.7 | -87.1 | -43.9 | -39.7 |
 | segformer_b2 | rtis_only | split | -18.4 | -83.0 | -38.9 | -39.2 |
@@ -127,6 +131,22 @@ Differences in IoU points for model x protocol pairs completed in both arms, sin
 | segformer_b5 | cityscapes_to_rtis | split | -14.9 | -86.7 | -19.9 | -29.1 |
 | segformer_b5 | railsem19_to_rtis | split | -15.7 | -84.8 | -40.5 | -36.3 |
 | segformer_b5 | rtis_only | split | -17.5 | -87.9 | -38.5 | -47.6 |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | split | -15.9 | -81.7 | -31.9 | -41.7 |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | split | -32.1 | -88.3 | -42.2 | -33.6 |
+| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | split | -13.1 | -82.0 | -33.6 | -22.4 |
+| smp_deeplabv3plus_resnet101 | rtis_only | split | -11.1 | -79.2 | -1.3 | -1.0 |
+| smp_fpn_resnet50 | cityscapes_to_railsem19_to_rtis | split | -15.8 | -59.6 | -23.0 | -22.1 |
+| smp_fpn_resnet50 | cityscapes_to_rtis | split | -23.4 | -77.0 | -9.3 | -5.0 |
+| smp_fpn_resnet50 | railsem19_to_rtis | split | -11.5 | -77.1 | -26.7 | -27.1 |
+| smp_fpn_resnet50 | rtis_only | split | -30.1 | -84.4 | -27.8 | -21.5 |
+| smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | split | -18.2 | -71.7 | -8.8 | -16.8 |
+| smp_upernet_resnet101 | cityscapes_to_rtis | split | -23.3 | -68.8 | +0.6 | -3.5 |
+| smp_upernet_resnet101 | railsem19_to_rtis | split | -22.3 | -77.4 | -30.3 | -28.5 |
+| smp_upernet_resnet101 | rtis_only | split | -29.2 | -80.7 | -29.4 | -43.8 |
+| upernet_convnext | cityscapes_to_railsem19_to_rtis | split | -23.0 | -90.2 | -36.5 | -32.6 |
+| upernet_convnext | cityscapes_to_rtis | split | -26.4 | -86.0 | -20.8 | -27.2 |
+| upernet_convnext | railsem19_to_rtis | split | -16.7 | -80.5 | -26.7 | -22.2 |
+| upernet_convnext | rtis_only | split | -19.4 | -87.0 | -38.8 | -40.3 |
 
 ### Validation composition (labels only)
 
@@ -156,7 +176,7 @@ Paul Stanik's two paper recipes (HRNet-OCR-Mscale `pauls3/semantic-segmentation@
 
 | label | arm | checkpoint owners | status | scored: GT-class mIoU / mud IoU / mud IoU cab / img-mean mud IoU cab | fork's own in-training best (not comparable) |
 | --- | --- | --- | --- | --- | --- |
-| `paper-hrnet__rs19-paul__arm-fixed-grouped` | fixed-grouped | map_city:nvidia -> rs19:paul -> rad:ours | training, epoch 45 (0-based, of 1000) | — | mud IoU 0.4 @ epoch 3; mIoU 31.1 @ epoch 39 |
+| `paper-hrnet__rs19-paul__arm-fixed-grouped` | fixed-grouped | map_city:nvidia -> rs19:paul -> rad:ours | training, epoch 217 (0-based, of 1000) | — | mud IoU 3.5 @ epoch 214; mIoU 45.3 @ epoch 212 |
 | `paper-hrnet__rs19-paul__arm-paul` | paul | map_city:nvidia -> rs19:paul -> rad:ours | trained, val not yet scored | — | mud IoU 94.1 @ epoch 978; mIoU 70.4 @ epoch 878 |
 | `hrnet-rs19-ours` | — (RS19 stage) | — | queue: pending | — | — |
 | `paper-hrnet__mapcity-direct__arm-fixed-grouped` | fixed-grouped | — | queue: pending | — | — |
@@ -179,4 +199,4 @@ Paul Stanik's two paper recipes (HRNet-OCR-Mscale `pauls3/semantic-segmentation@
 Generated by `scripts/publish_rad_results.py` from the HDRFS campaign records, the prepared datasets and the fork run directories, which it only reads. Absolute paths are provenance on HDRFS, not links. Prediction masks are not published.
 
 - Publisher code: `e29c74ade580`
-- Campaign records last changed: 2026-10-06 01:24 UTC
+- Campaign records last changed: 2026-10-06 04:24 UTC
