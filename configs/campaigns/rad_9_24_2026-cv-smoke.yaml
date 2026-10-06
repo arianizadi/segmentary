@@ -18,7 +18,7 @@ cross_validation:
   primary_checkpoint: final
   run_folds: [1]
 models:
-- smp_deeplabv3plus_resnet101
+- smp_upernet_resnet101
 - eomt_dinov3_large
 - segformer_b5
 seeds:

@@ -24,14 +24,16 @@ cross_validation:
   holdout: [test]
   val_min_side: 1024
   primary_checkpoint: final
-# PLACEHOLDER: five of the current top results. The final list is decided after the
-# fixed-grouped arm finishes.
+# Chosen 2026-10-05 after the fixed-grouped arm finished (40/40): the five models with the
+# highest cab-view mud IoU on the scene-grouped val split, averaged over the four protocols
+# (eomt_dinov3_large 33.1, eomt_large 26.0, segformer_b5 20.4, segformer_b2 18.2,
+# smp_upernet_resnet101 16.3). All four protocols run, so no protocol is picked on val.
 models:
 - eomt_dinov3_large
 - eomt_large
 - segformer_b5
 - segformer_b2
-- smp_deeplabv3plus_resnet101
+- smp_upernet_resnet101
 seeds:
 - 0
 target_steps: 4000
