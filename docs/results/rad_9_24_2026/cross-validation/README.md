@@ -6,7 +6,7 @@
 
 Stratified group 5-fold cross-validation: the 243 scored images in 17 scenes of `rad_9_24_2026-fixed-grouped` are divided into 5 folds of whole scenes, balanced on the rare classes. Each model trains on the other folds and is scored on its own, so every image is scored once by a model that never trained on its scene (*pooled* results add up those scores). The result is the final checkpoint after the full training budget, so nothing is picked on the scored images. The test images are never used.
 
-Percent, final checkpoint. 32 of 100 runs done; `*` = not all folds done yet (pooled over the finished folds only, not comparable). Train-camera images: a forward view from a camera on the train, the real use case.
+Percent, final checkpoint. 44 of 100 runs done; `*` = not all folds done yet (pooled over the finished folds only, not comparable). Train-camera images: a forward view from a camera on the train, the real use case.
 
 | Model | Starting point | Folds done | Mud-pumping IoU, train-camera images | Precision, train-camera | Recall, train-camera | mIoU (classes present), all images |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -14,9 +14,9 @@ Percent, final checkpoint. 32 of 100 runs done; `*` = not all folds done yet (po
 | `eomt_dinov3_large` | Cityscapes | 5/5 | 27.6 | 45.9 | 40.9 | 55.7 |
 | `eomt_dinov3_large` | RailSem19 | 5/5 | 30.1 | 61.8 | 37.0 | 57.4 |
 | `eomt_dinov3_large` | recipe pretrained weights | 5/5 | 32.6 | 62.6 | 40.4 | 55.8 |
-| `eomt_large` | Cityscapes → RailSem19 | 0/5 | — | — | — | — |
+| `eomt_large` | Cityscapes → RailSem19 | 5/5 | 26.4 | 55.9 | 33.4 | 60.7 |
 | `eomt_large` | Cityscapes | 5/5 | 23.7 | 49.8 | 31.2 | 58.1 |
-| `eomt_large` | RailSem19 | 2/5 | 28.1* | 41.2* | 46.9* | 58.4* |
+| `eomt_large` | RailSem19 | 5/5 | 20.5 | 67.0 | 22.8 | 57.8 |
 | `eomt_large` | recipe pretrained weights | 5/5 | 25.2 | 48.5 | 34.4 | 57.9 |
 | `segformer_b2` | Cityscapes → RailSem19 | 0/5 | — | — | — | — |
 | `segformer_b2` | Cityscapes | 0/5 | — | — | — | — |
@@ -25,7 +25,7 @@ Percent, final checkpoint. 32 of 100 runs done; `*` = not all folds done yet (po
 | `segformer_b5` | Cityscapes → RailSem19 | 0/5 | — | — | — | — |
 | `segformer_b5` | Cityscapes | 0/5 | — | — | — | — |
 | `segformer_b5` | RailSem19 | 0/5 | — | — | — | — |
-| `segformer_b5` | recipe pretrained weights | 0/5 | — | — | — | — |
+| `segformer_b5` | recipe pretrained weights | 4/5 | 22.9* | 51.4* | 29.3* | 46.1* |
 | `smp_upernet_resnet101` | Cityscapes → RailSem19 | 0/5 | — | — | — | — |
 | `smp_upernet_resnet101` | Cityscapes | 0/5 | — | — | — | — |
 | `smp_upernet_resnet101` | RailSem19 | 0/5 | — | — | — | — |
@@ -51,9 +51,11 @@ Percent.
 | eomt_dinov3_large | cityscapes_to_rtis | 0 | 5/5 | 55.7 | 2.2 | 17.7 | 27.6 | 30.1 | 55.3 (SD 5.0, n=5) | 11.2 (SD 15.3, n=5) | 24.6 (SD 19.0, n=5) | 20.2 (SD 14.7, n=4) | 32.5 (SD 12.4, n=4) |
 | eomt_dinov3_large | railsem19_to_rtis | 0 | 5/5 | 57.4 | 4.4 | 18.7 | 30.1 | 30.0 | 58.1 (SD 4.2, n=5) | 13.6 (SD 13.7, n=5) | 23.5 (SD 18.9, n=5) | 21.9 (SD 14.7, n=4) | 28.2 (SD 18.1, n=4) |
 | eomt_dinov3_large | rtis_only | 0 | 5/5 | 55.8 | 1.8 | 19.2 | 32.6 | 33.0 | 55.4 (SD 4.9, n=5) | 11.5 (SD 15.6, n=5) | 24.5 (SD 19.6, n=5) | 24.0 (SD 13.5, n=4) | 31.9 (SD 13.9, n=4) |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | 5/5 | 60.7 | 1.5 | 17.2 | 26.4 | 29.6 | 59.1 (SD 4.2, n=5) | 9.0 (SD 12.5, n=5) | 23.3 (SD 21.3, n=5) | 18.8 (SD 13.9, n=4) | 28.1 (SD 21.2, n=4) |
 | eomt_large | cityscapes_to_rtis | 0 | 5/5 | 58.1 | 2.4 | 16.5 | 23.7 | 27.7 | 57.2 (SD 4.6, n=5) | 8.8 (SD 9.5, n=5) | 22.0 (SD 20.9, n=5) | 17.1 (SD 12.6, n=4) | 26.6 (SD 21.0, n=4) |
-| eomt_large | railsem19_to_rtis | 0 | 2/5 | 58.4* | 0.4* | 2.2* | 28.1* | 48.2* | 57.9 (SD 0.7, n=2) | 10.5 (SD 14.4, n=2) | 24.2 (SD 33.9, n=2) | 30.0 (n=1) | 48.2 (n=1) |
+| eomt_large | railsem19_to_rtis | 0 | 5/5 | 57.8 | 1.2 | 11.2 | 20.5 | 19.3 | 57.2 (SD 4.1, n=5) | 10.6 (SD 12.0, n=5) | 18.2 (SD 20.0, n=5) | 18.0 (SD 13.1, n=4) | 22.8 (SD 19.8, n=4) |
 | eomt_large | rtis_only | 0 | 5/5 | 57.9 | 2.1 | 16.0 | 25.2 | 27.1 | 57.6 (SD 4.9, n=5) | 13.0 (SD 11.3, n=5) | 22.7 (SD 23.7, n=5) | 20.7 (SD 14.5, n=4) | 27.9 (SD 23.8, n=4) |
+| segformer_b5 | rtis_only | 0 | 4/5 | 46.1* | 1.2* | 14.5* | 22.9* | 27.8* | 45.3 (SD 5.6, n=4) | 9.0 (SD 9.7, n=4) | 25.7 (SD 31.2, n=4) | 17.6 (SD 11.7, n=3) | 35.1 (SD 31.0, n=3) |
 
 ## Full report: Secondary (optimistic): best-on-val checkpoint
 
@@ -65,19 +67,21 @@ Selected on the same fold it is scored on; shown only to size that bias.
 | eomt_dinov3_large | cityscapes_to_rtis | 0 | 5/5 | 54.6 | 2.3 | 18.0 | 27.6 | 30.7 | 54.5 (SD 4.9, n=5) | 11.4 (SD 15.7, n=5) | 25.8 (SD 18.9, n=5) | 20.4 (SD 14.7, n=4) | 35.0 (SD 10.6, n=4) |
 | eomt_dinov3_large | railsem19_to_rtis | 0 | 5/5 | 57.2 | 9.1 | 21.8 | 29.5 | 31.5 | 57.5 (SD 4.9, n=5) | 14.8 (SD 13.2, n=5) | 25.3 (SD 17.8, n=5) | 22.5 (SD 15.1, n=4) | 29.1 (SD 18.3, n=4) |
 | eomt_dinov3_large | rtis_only | 0 | 5/5 | 51.5 | 2.5 | 19.8 | 32.9 | 33.6 | 52.2 (SD 7.6, n=5) | 12.0 (SD 15.8, n=5) | 25.4 (SD 19.2, n=5) | 24.6 (SD 13.1, n=4) | 33.3 (SD 12.4, n=4) |
+| eomt_large | cityscapes_to_railsem19_to_rtis | 0 | 5/5 | 59.3 | 1.8 | 17.9 | 26.4 | 30.6 | 58.0 (SD 5.3, n=5) | 9.4 (SD 12.8, n=5) | 23.8 (SD 21.4, n=5) | 19.2 (SD 14.4, n=4) | 28.6 (SD 21.3, n=4) |
 | eomt_large | cityscapes_to_rtis | 0 | 5/5 | 57.1 | 2.4 | 16.7 | 23.5 | 27.9 | 56.3 (SD 5.0, n=5) | 9.0 (SD 9.7, n=5) | 22.3 (SD 20.8, n=5) | 17.2 (SD 12.7, n=4) | 26.8 (SD 21.0, n=4) |
-| eomt_large | railsem19_to_rtis | 0 | 2/5 | 58.4* | 1.1* | 2.8* | 28.6* | 48.2* | 58.1 (SD 0.4, n=2) | 10.8 (SD 13.9, n=2) | 24.6 (SD 33.4, n=2) | 30.0 (n=1) | 48.2 (n=1) |
+| eomt_large | railsem19_to_rtis | 0 | 5/5 | 57.7 | 1.8 | 11.7 | 20.7 | 19.5 | 57.1 (SD 3.9, n=5) | 10.9 (SD 12.0, n=5) | 18.7 (SD 19.8, n=5) | 18.0 (SD 13.5, n=4) | 22.9 (SD 20.2, n=4) |
 | eomt_large | rtis_only | 0 | 5/5 | 54.1 | 2.6 | 18.0 | 28.6 | 30.5 | 54.2 (SD 3.4, n=5) | 15.4 (SD 14.1, n=5) | 26.0 (SD 23.9, n=5) | 23.9 (SD 15.1, n=4) | 32.8 (SD 21.5, n=4) |
+| segformer_b5 | rtis_only | 0 | 4/5 | 44.3* | 1.5* | 16.7* | 27.9* | 32.0* | 43.4 (SD 5.5, n=4) | 12.0 (SD 12.8, n=4) | 23.5 (SD 24.3, n=4) | 19.4 (SD 13.3, n=3) | 31.0 (SD 23.4, n=3) |
 
 ## Full report: Coverage
 
 | fold | completed | not completed (status count) | jobs |
 |---|---|---|---:|
-| 0 | 7 | queued 12, training 1 | 20 |
-| 1 | 7 | queued 12, training 1 | 20 |
-| 2 | 6 | queued 12, training 2 | 20 |
-| 3 | 6 | evaluating 1, queued 12, training 1 | 20 |
-| 4 | 6 | queued 12, training 2 | 20 |
+| 0 | 9 | queued 9, training 2 | 20 |
+| 1 | 9 | queued 9, training 2 | 20 |
+| 2 | 9 | queued 10, training 1 | 20 |
+| 3 | 9 | queued 10, training 1 | 20 |
+| 4 | 8 | queued 10, training 2 | 20 |
 
 ## Full report: Fold composition (labels only)
 

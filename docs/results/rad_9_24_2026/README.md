@@ -9,13 +9,13 @@
 
 ## Key result
 
-Paul's split looks good (median 89.2 on all images) because 94.9% of its validation mud-pumping pixels come from one scene, `trackside-maintenance` (track-level close-ups), and every validation scene of that split also has images in training. On scenes the models never trained on, mud-pumping IoU on train-camera images is median 13.4 (best 42.3) with the scene-grouped split and median 26.4 (best 32.6) in cross-validation.
+Paul's split looks good (median 89.2 on all images) because 94.9% of its validation mud-pumping pixels come from one scene, `trackside-maintenance` (track-level close-ups), and every validation scene of that split also has images in training. On scenes the models never trained on, mud-pumping IoU on train-camera images is median 13.4 (best 42.3) with the scene-grouped split and median 25.8 (best 32.6) in cross-validation.
 
 | Split | Model runs | Mud-pumping IoU, all images | Mud-pumping IoU, train-camera images | mIoU (classes present) |
 | --- | --- | --- | --- | --- |
 | Paul's split | 40 | median 89.2 (best 95.0) | median 42.7 (best 61.9) | median 60.8 (best 72.8) |
 | Scene-grouped split | 40 | median 6.9 (best 18.8) | median 13.4 (best 42.3) | median 44.6 (best 58.3) |
-| Cross-validation over scenes | 6 of 20 with all folds done | median 2.3 (best 4.4) | median 26.4 (best 32.6) | median 56.9 (best 58.1) |
+| Cross-validation over scenes | 8 of 20 with all folds done | median 2.1 (best 4.4) | median 25.8 (best 32.6) | median 57.6 (best 60.7) |
 
 Median and best over every finished model and starting point of each split. mIoU averages IoU over the classes present in the images.
 
@@ -59,14 +59,14 @@ Whole scenes kept on one side; 0 of its 3 validation scenes have images in train
 
 ### Cross-validation over scenes
 
-The scenes of the scene-grouped data are divided into 5 folds; each model trains on 4 folds and is scored on the remaining one, so every image is scored once by a model that never saw its scene. The result is the final checkpoint, so nothing is picked on the scored images. 32 of 100 runs done; `*` = not all folds done yet. [Full report](cross-validation/README.md).
+The scenes of the scene-grouped data are divided into 5 folds; each model trains on 4 folds and is scored on the remaining one, so every image is scored once by a model that never saw its scene. The result is the final checkpoint, so nothing is picked on the scored images. 44 of 100 runs done; `*` = not all folds done yet. [Full report](cross-validation/README.md).
 
 | Model | Best starting point | Mud-pumping IoU, train-camera images | Mud-pumping IoU, all images | mIoU (classes present) | Folds done |
 | --- | --- | --- | --- | --- | --- |
 | eomt_dinov3_large | recipe pretrained weights | 32.6 | 1.8 | 55.8 | 5/5 |
-| eomt_large | recipe pretrained weights | 25.2 | 2.1 | 57.9 | 5/5 |
+| eomt_large | Cityscapes → RailSem19 | 26.4 | 1.5 | 60.7 | 5/5 |
+| segformer_b5 | recipe pretrained weights | 22.9* | 1.2* | 46.1* | 4/5 |
 | segformer_b2 | — | — | — | — | 0/5 |
-| segformer_b5 | — | — | — | — | 0/5 |
 | smp_upernet_resnet101 | — | — | — | — | 0/5 |
 
 ## Paul's paper model
