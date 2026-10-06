@@ -55,7 +55,7 @@ def files(monkeypatch):
 
     def render(*_args, **_kwargs):
         pub.check_paths(content)
-        return dict(content), None
+        return dict(content), None, None
 
     monkeypatch.setattr(pub, "render_tree", render)
     return content
@@ -350,11 +350,32 @@ def test_study_page_renders_arms_audit_forks_and_resolving_links(tmp_path, monke
             }
         )
     )
-    files, error = pub.render_tree(
+    files, error, cv_error = pub.render_tree(
         [root, tmp_path / "missing"], runs, tmp_path / "datasets", tmp_path / "v.yaml"
     )
-    assert error == "samples changed"
-    readme = files["README.md"]
+    assert error == "samples changed" and cv_error is None
+    assert not any(name.startswith(f"{pub.CV_DIR}/") for name in files)  # no --cv-campaign
+    # The short study page: plain sections in order, details linked, no jargon headings.
+    short = files["README.md"]
+    headings = [line for line in short.splitlines() if line.startswith("## ")]
+    assert headings == [
+        "## What we tested",
+        "## Key result",
+        "## Results by split",
+        "## Paul's paper model",
+        "## Caveats",
+        "## Details",
+    ]
+    assert "### Paul's split" in short and "### Scene-grouped split" in short
+    assert "Not available this cycle: samples changed" in short
+    assert "### Cross-validation over scenes\n\nNot published yet." in short
+    assert "314 rail images labelled with 21 classes" in short
+    assert "[Full details](details.md)" in short and "Label defects" not in short
+    assert "HRNet-OCR, Paul's RailSem19 checkpoint | Paul's split | not scored yet" in short
+    caveats = short.split("## Caveats", 1)[1].split("## Details", 1)[0]
+    assert 0 < caveats.count("\n- ") <= 5
+    assert " arm" not in short and "protocol" not in short and "±" not in short
+    readme = files[pub.DETAILS]
     assert "Not rendered this cycle: samples changed" in readme
     assert "| [`paul`](paul/README.md) |" in readme and "| 1/2 | training 1 |" in readme
     assert "not initialized" in readme  # the fixed-grouped arm has no campaign yet
@@ -380,10 +401,11 @@ def test_study_page_renders_arms_audit_forks_and_resolving_links(tmp_path, monke
     assert "excluded (probe_epochs)" in readme and "queue: pending" in readme
     assert "Single seed" in readme and "Optimistic" in readme and "shares scenes" in readme
     arm = files["paul/README.md"]
-    assert arm.startswith("# RAD 9/24: `paul` arm")
+    assert arm.startswith("# RAD 9/24: Paul's split (`paul`)")
     assert "[RAD 9/24 study](../README.md)" in arm and "none_stratified" in arm
-    assert "not who trained: every model on this page was trained by us" in arm
-    assert "[RAD 9/24 `paul` arm](../../README.md)" in files["paul/models/m/README.md"]
+    assert "Every model on this page was trained by us" in arm
+    assert "`rtis_only` = recipe pretrained weights" in arm
+    assert "[RAD 9/24: Paul's split](../../README.md)" in files["paul/models/m/README.md"]
     assert "RTIS comparison" not in files["paul/models/m/README.md"]
     assert "paul/models/m/README.md" in files and "paul/models/m/record.json" in files
     # Every relative link inside the published tree resolves within it.
@@ -535,7 +557,7 @@ def test_failed_comparison_keeps_the_published_one(tmp_path, repos, monkeypatch)
         content = {"README.md": "# RAD\n"}
         if outcome["error"] is None:
             content["rad-comparison.csv"] = "a\n"
-        return content, outcome["error"]
+        return content, outcome["error"], None
 
     monkeypatch.setattr(pub, "render_tree", render)
     args = args_for(tmp_path, remote, publisher)
@@ -554,3 +576,199 @@ def test_ci_skips_published_rad_results():
 
     ignored = yaml.safe_load(workflow)[True]["push"]["paths-ignore"]
     assert f"{TREE}/**" in ignored
+
+
+# ----------------------------------------------------------------------------- cross-validation
+
+
+@pytest.fixture
+def cv_campaign(tmp_path):
+    """A synthetic 3-fold CV campaign (tests/test_group_cv.py) with fold 2 not yet run."""
+    from segmentary.data import group_cv
+    from test_group_cv import fake_campaign, make, write_dataset
+
+    dataset = write_dataset(tmp_path / "cv-data" / "ds")
+    folds = tmp_path / "cv-data" / "cv"
+    group_cv.materialize(dataset, make(dataset), folds)
+    root, _ = fake_campaign(tmp_path / "cv-run", folds)
+    (root / "state" / "m1--p--fold-2--seed-0.json").unlink()  # planned, not started
+    return root, tmp_path / "cv-data" / "viewpoints.yaml"
+
+
+def write_checkout(base: Path, files: dict[str, str | bytes]) -> Path:
+    """The rendered tree inside a checkout-like directory with the guides it links."""
+    for page in (
+        pub.GUIDE,
+        pub.CASE_GUIDE,
+        pub.CV_GUIDE,
+        "docs/results/paul-test-rtis/v2/README.md",
+    ):
+        (base / page).parent.mkdir(parents=True, exist_ok=True)
+        (base / page).write_text("# page\n")
+    (base / "tests").mkdir(exist_ok=True)
+    (base / "tests/test_documentation.py").write_text(f'EXEMPT = "{TREE}/"\n')
+    pub.write_tree(base, files)
+    return base
+
+
+def assert_documentation_rules(base: Path) -> None:
+    """tests/test_documentation.py's link and legacy-name rules (and the no-± rule of
+    tests/test_model_comparison_results.py) on the rendered tree."""
+    import test_documentation as docs
+
+    pub.docs_check(base)
+    for page in sorted((base / TREE).rglob("*.md")):
+        text = page.read_text(encoding="utf-8")
+        assert "±" not in text, page
+        assert not re.search("rail" + "yard", text, re.IGNORECASE), page
+        for raw in docs.MARKDOWN_LINK.findall(text):
+            target = docs._local_target(page, raw)
+            assert target is None or target.exists(), (page, raw)
+            if target is not None:
+                assert base.resolve() in target.parents, (page, raw)  # repo-relative
+
+
+def test_cv_pages_render_with_partial_coverage_and_resolving_links(tmp_path, cv_campaign):
+    root, viewpoints = cv_campaign
+    files, _, cv_error = pub.render_tree(
+        [], None, tmp_path / "datasets", viewpoints, cv_campaign=root
+    )
+    assert cv_error is None
+    cv_readme = files[f"{pub.CV_DIR}/README.md"]
+    csv_rows = files[f"{pub.CV_DIR}/cv-report.csv"].splitlines()
+    assert csv_rows[0].split(",") == list(pub.cv_report.CSV_FIELDS)
+    assert any(r.startswith("m1,p,0,final,pooled,2,cab-view,") for r in csv_rows)
+    assert "Generated:" not in cv_readme  # deterministic: unchanged records, no new commit
+    assert cv_readme.startswith("# RAD 9/24: cross-validation over scenes (`synthetic-cv`)")
+    assert "[RAD 9/24 study](../README.md)" in cv_readme
+    assert "[How the cross-validation works](../../../guides/cross-validation.md)" in cv_readme
+    assert "[`cv-report.csv`](cv-report.csv)" in cv_readme
+    # Partial coverage: 2 of 3 folds of m1/p, nothing of m1/q; unfinished cells carry `*`.
+    assert "2 of 4 runs done" in cv_readme
+    p_row = next(x for x in cv_readme.splitlines() if x.startswith("| `m1` | p | 2/3 |"))
+    assert p_row.count("*") == 4
+    assert "| `m1` | q | 0/3 | — | — | — | — |" in cv_readme
+    assert "| 2 | 0 | no state 1 | 1 |" in cv_readme  # cv_report's coverage table
+    assert "Fold caveat" not in cv_readme  # no fold holds over half of the mud pixels here
+    # The study page: CV section with folds done, link, and the caveat bullet.
+    short = files["README.md"]
+    section = short.split("### Cross-validation over scenes", 1)[1].split("## ", 1)[0]
+    assert "3 of 4 runs done" not in section and "2 of 4 runs done" in section
+    assert f"[Full report]({pub.CV_DIR}/README.md)" in section
+    assert "| m1 | p | " in section and "* | 2/3 |" in section
+    assert f"[Cross-validation report]({pub.CV_DIR}/README.md)" in short
+    assert_documentation_rules(write_checkout(tmp_path / "checkout", files))
+
+
+def test_cv_failure_keeps_the_previous_pages(tmp_path, cv_campaign):
+    root, viewpoints = cv_campaign
+    previous = {
+        f"{pub.CV_DIR}/README.md": b"# Last good CV report\n",
+        f"{pub.CV_DIR}/cv-report.csv": b"model\n",
+    }
+    missing = tmp_path / "no-such-cv"
+    files, _, cv_error = pub.render_tree(
+        [], None, tmp_path / "datasets", viewpoints, cv_campaign=missing, cv_previous=previous
+    )
+    assert cv_error == f"{missing}/campaign.json does not exist"
+    assert {k: files[k] for k in previous} == previous
+    assert "Not refreshed this cycle:" in files["README.md"]
+    assert f"[last published report]({pub.CV_DIR}/README.md) is kept" in files["README.md"]
+    assert_documentation_rules(write_checkout(tmp_path / "kept", files))
+    # A broken campaign record behaves the same; with nothing published, nothing is linked.
+    (root / "plan.json").write_text("{")
+    files, _, cv_error = pub.render_tree(
+        [], None, tmp_path / "datasets", viewpoints, cv_campaign=root
+    )
+    assert cv_error and cv_error.startswith("JSONDecodeError")
+    assert not any(name.startswith(f"{pub.CV_DIR}/") for name in files)
+    assert f"]({pub.CV_DIR}/" not in files["README.md"]
+
+
+def test_publish_cycle_keeps_published_cv_pages_when_the_cv_render_fails(
+    tmp_path, repos, cv_campaign
+):
+    remote, author, publisher = repos
+    root, viewpoints = cv_campaign
+    rtis = author / "docs/results/paul-test-rtis/v2/README.md"  # linked from details.md
+    rtis.parent.mkdir(parents=True)
+    rtis.write_text("# RTIS v2\n")
+    sh(author, "add", ".")
+    sh(author, "commit", "--quiet", "-m", "RTIS page")
+    sh(author, "push", "--quiet", "origin", "main")
+    args = args_for(
+        tmp_path, remote, publisher, "--cv-campaign", str(root), "--viewpoints", str(viewpoints)
+    )
+    first = pub.publish_once(args)
+    assert first["pushed"] and first["cv_error"] is None
+    page = f"{TREE}/{pub.CV_DIR}/README.md"
+    assert {page, f"{TREE}/{pub.CV_DIR}/cv-report.csv"} <= remote_files(remote)
+    published = sh(remote, "show", f"main:{page}")
+    assert not pub.publish_once(args)["pushed"]  # deterministic: nothing changed, no commit
+    # The campaign disappears: the cycle still publishes, keeping the CV pages verbatim.
+    root.rename(root.with_name("moved"))
+    second = pub.publish_once(args)
+    assert second["cv_error"].endswith("campaign.json does not exist")
+    assert sh(remote, "show", f"main:{page}") == published
+    assert "Not refreshed this cycle" in sh(remote, "show", f"main:{TREE}/README.md")
+    assert pub.run(args) == 0  # recorded, not a refusal; retried next cycle
+    status = json.loads((tmp_path / "state/publisher-status.json").read_text())
+    assert status["cv_error"] and status["error"] is None and not status["stopped"]
+    # Once the campaign is back, the next cycle renders it again.
+    root.with_name("moved").rename(root)
+    assert pub.publish_once(args)["cv_error"] is None
+    assert "Not refreshed" not in sh(remote, "show", f"main:{TREE}/README.md")
+
+
+def test_cv_campaign_flag_is_an_input_the_clone_must_not_overlap(tmp_path, repos, files):
+    remote, _, publisher = repos
+    args = args_for(tmp_path, remote, publisher, "--cv-campaign", str(publisher / "cv"))
+    with pytest.raises(pub.Refusal, match="overlaps input"):
+        pub.publish_once(args)
+    assert pub.parse(["--checkout", str(publisher)]).cv_campaign is None
+    with pytest.raises(SystemExit):
+        pub.parse(
+            [
+                *("--checkout", str(publisher), "--cv-campaign", str(tmp_path / "cv")),
+                *("--state-dir", str(tmp_path / "cv" / "publisher")),
+            ]
+        )
+
+
+def test_fold_caveat_names_the_dominant_fold_from_the_spec():
+    def fold(k, groups, share, cab, views):
+        return {
+            "fold": k,
+            "groups": groups,
+            "label_pixel_share": {"mud-pumping": share},
+            "label_pixel_share_by_viewpoint": {"cab-view": {"mud-pumping": cab}},
+            "label_images_by_viewpoint": {v: {"mud-pumping": n} for v, n in views.items()},
+        }
+
+    spec = {
+        "report": {
+            "label_scored_groups": {"mud-pumping": ["trackside-maintenance", "cab-scene"]},
+            "folds": [
+                fold(0, ["cab-scene", "dry"], 0.041, 1.0, {"cab-view": 17, "track-level": 0}),
+                fold(1, ["roadside", "trackside-maintenance"], 0.959, 0.0, {"track-level": 49}),
+            ],
+        }
+    }
+    report = pub.cv_report.Report({}, [0, 1], [], "mud-pumping", [], [], {}, spec)
+    cv = pub.CrossValidation(report, [])
+    assert pub.fold_caveat(cv, short=True) == (
+        "fold 1 holds 95.9% of all scored mud-pumping pixels, all from one scene "
+        "(`trackside-maintenance`; 49 track-level images) and none of the train-camera ones, "
+        "so the all-images numbers mostly measure that one scene."
+    )
+    assert pub.fold_caveat(cv).endswith("the train-camera numbers are the headline.")
+    spec["report"]["folds"][1]["label_pixel_share"]["mud-pumping"] = 0.5
+    assert pub.fold_caveat(cv) is None
+    assert (
+        pub.fold_caveat(
+            pub.CrossValidation(
+                pub.cv_report.Report({}, [0], [], "mud-pumping", [], [], {}, None), []
+            )
+        )
+        is None
+    )
