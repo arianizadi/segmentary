@@ -9,7 +9,7 @@ The `rad_9_24_2026` delivery (314 rail images with polygon labels) trained two w
 | arm | labels | split; train/val/test | completed | other jobs | code |
 | --- | --- | --- | --- | --- | --- |
 | [`paul`](paul/README.md) | Paul's delivered `masks_machine` copies | stratified random (seed 0); 227/37/50 | 40/40 | — | `d864b72bd907` |
-| [`fixed-grouped`](fixed-grouped/README.md) | re-rendered from the polygon JSONs | scene-grouped (from v1/v2); 217/37/60 | 9/40 | queued 27, training 4 | `d864b72bd907` |
+| [`fixed-grouped`](fixed-grouped/README.md) | re-rendered from the polygon JSONs | scene-grouped (from v1/v2); 217/37/60 | 19/40 | evaluating 1, queued 17, training 3 | `d864b72bd907` |
 
 Each arm page has the per-model reports, `results.csv`, `status.json` and the downloadable evidence exactly as for [RTIS v2](../paul-test-rtis/v2/README.md). Fork progress is in the [paper-recipe section](#paper-recipe-fork-runs).
 
@@ -69,21 +69,21 @@ Percent; columns per arm: P = `paul`, FG = `fixed-grouped`. Selected checkpoint 
 | eomt_large | cityscapes_to_rtis | 71.0 | 56.4 | 92.7 | 9.4 | 40.3 | 25.3 | 50.5 | 28.7 |
 | eomt_large | railsem19_to_rtis | 72.8 | 58.0 | 95.0 | 3.3 | 50.7 | 10.4 | 49.3 | 10.3 |
 | eomt_large | rtis_only | 70.3 | 53.2 | 92.5 | 12.7 | 42.6 | 33.6 | 51.3 | 34.6 |
-| hrnet_w48_ocr | cityscapes_to_railsem19_to_rtis | 55.4 |  | 75.5 |  | 34.1 |  | 45.5 |  |
-| hrnet_w48_ocr | cityscapes_to_rtis | 56.9 |  | 85.8 |  | 33.9 |  | 39.9 |  |
-| hrnet_w48_ocr | railsem19_to_rtis | 61.1 |  | 76.7 |  | 46.3 |  | 42.4 |  |
-| hrnet_w48_ocr | rtis_only | 59.8 |  | 90.8 |  | 49.3 |  | 45.7 |  |
+| hrnet_w48_ocr | cityscapes_to_railsem19_to_rtis | 55.4 | 49.6 | 75.5 | 6.5 | 34.1 | 6.6 | 45.5 | 5.5 |
+| hrnet_w48_ocr | cityscapes_to_rtis | 56.9 | 40.1 | 85.8 | 12.0 | 33.9 | 12.2 | 39.9 | 8.4 |
+| hrnet_w48_ocr | railsem19_to_rtis | 61.1 | 51.3 | 76.7 | 2.4 | 46.3 | 8.2 | 42.4 | 7.5 |
+| hrnet_w48_ocr | rtis_only | 59.8 | 37.2 | 90.8 | 3.6 | 49.3 | 7.0 | 45.7 | 6.2 |
 | native_convnext_tiny_uper | cityscapes_to_railsem19_to_rtis | 64.2 |  | 90.5 |  | 45.0 |  | 43.2 |  |
 | native_convnext_tiny_uper | cityscapes_to_rtis | 60.5 |  | 89.4 |  | 45.2 |  | 43.6 |  |
 | native_convnext_tiny_uper | railsem19_to_rtis | 64.1 |  | 88.4 |  | 48.5 |  | 43.7 |  |
 | native_convnext_tiny_uper | rtis_only | 60.5 |  | 88.8 |  | 47.5 |  | 53.3 |  |
 | segformer_b2 | cityscapes_to_railsem19_to_rtis | 64.4 |  | 89.2 |  | 42.7 |  | 49.9 |  |
-| segformer_b2 | cityscapes_to_rtis | 54.2 |  | 87.3 |  | 29.7 |  | 30.2 |  |
-| segformer_b2 | railsem19_to_rtis | 66.4 |  | 93.2 |  | 57.0 |  | 51.6 |  |
-| segformer_b2 | rtis_only | 58.2 |  | 93.1 |  | 58.7 |  | 59.2 |  |
-| segformer_b5 | cityscapes_to_railsem19_to_rtis | 65.1 |  | 91.2 |  | 61.9 |  | 60.0 |  |
-| segformer_b5 | cityscapes_to_rtis | 59.1 |  | 91.3 |  | 46.8 |  | 51.9 |  |
-| segformer_b5 | railsem19_to_rtis | 69.5 |  | 90.4 |  | 55.2 |  | 50.6 |  |
+| segformer_b2 | cityscapes_to_rtis | 54.2 | 45.1 | 87.3 | 16.8 | 29.7 | 23.1 | 30.2 | 23.1 |
+| segformer_b2 | railsem19_to_rtis | 66.4 | 52.7 | 93.2 | 6.1 | 57.0 | 13.1 | 51.6 | 11.9 |
+| segformer_b2 | rtis_only | 58.2 | 39.8 | 93.1 | 10.1 | 58.7 | 19.9 | 59.2 | 20.0 |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | 65.1 | 50.3 | 91.2 | 5.0 | 61.9 | 25.2 | 60.0 | 22.6 |
+| segformer_b5 | cityscapes_to_rtis | 59.1 | 44.2 | 91.3 | 4.7 | 46.8 | 26.9 | 51.9 | 22.8 |
+| segformer_b5 | railsem19_to_rtis | 69.5 | 53.9 | 90.4 | 5.6 | 55.2 | 14.7 | 50.6 | 14.3 |
 | segformer_b5 | rtis_only | 59.1 | 41.7 | 93.1 | 5.2 | 53.4 | 14.9 | 60.0 | 12.4 |
 | smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 56.9 |  | 85.4 |  | 39.9 |  | 47.2 |  |
 | smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 55.7 |  | 89.6 |  | 45.6 |  | 38.2 |  |
@@ -116,6 +116,16 @@ Differences in IoU points for model x protocol pairs completed in both arms, sin
 | eomt_large | cityscapes_to_rtis | split | -14.6 | -83.3 | -15.0 | -21.7 |
 | eomt_large | railsem19_to_rtis | split | -14.8 | -91.6 | -40.3 | -39.1 |
 | eomt_large | rtis_only | split | -17.2 | -79.7 | -9.0 | -16.7 |
+| hrnet_w48_ocr | cityscapes_to_railsem19_to_rtis | split | -5.8 | -69.0 | -27.5 | -40.0 |
+| hrnet_w48_ocr | cityscapes_to_rtis | split | -16.8 | -73.8 | -21.6 | -31.6 |
+| hrnet_w48_ocr | railsem19_to_rtis | split | -9.8 | -74.3 | -38.1 | -35.0 |
+| hrnet_w48_ocr | rtis_only | split | -22.6 | -87.3 | -42.4 | -39.5 |
+| segformer_b2 | cityscapes_to_rtis | split | -9.1 | -70.5 | -6.5 | -7.1 |
+| segformer_b2 | railsem19_to_rtis | split | -13.7 | -87.1 | -43.9 | -39.7 |
+| segformer_b2 | rtis_only | split | -18.4 | -83.0 | -38.9 | -39.2 |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | split | -14.8 | -86.2 | -36.7 | -37.4 |
+| segformer_b5 | cityscapes_to_rtis | split | -14.9 | -86.7 | -19.9 | -29.1 |
+| segformer_b5 | railsem19_to_rtis | split | -15.7 | -84.8 | -40.5 | -36.3 |
 | segformer_b5 | rtis_only | split | -17.5 | -87.9 | -38.5 | -47.6 |
 
 ### Validation composition (labels only)
@@ -146,13 +156,13 @@ Paul Stanik's two paper recipes (HRNet-OCR-Mscale `pauls3/semantic-segmentation@
 
 | label | arm | checkpoint owners | status | scored: GT-class mIoU / mud IoU / mud IoU cab / img-mean mud IoU cab | fork's own in-training best (not comparable) |
 | --- | --- | --- | --- | --- | --- |
-| `paper-hrnet__rs19-paul__arm-paul` | paul | map_city:nvidia -> rs19:paul -> rad:ours | training, epoch 897 (0-based, of 1000) | — | mud IoU 93.8 @ epoch 460; mIoU 70.4 @ epoch 878 |
+| `paper-hrnet__rs19-paul__arm-fixed-grouped` | fixed-grouped | map_city:nvidia -> rs19:paul -> rad:ours | training, epoch 45 (0-based, of 1000) | — | mud IoU 0.4 @ epoch 3; mIoU 31.1 @ epoch 39 |
+| `paper-hrnet__rs19-paul__arm-paul` | paul | map_city:nvidia -> rs19:paul -> rad:ours | trained, val not yet scored | — | mud IoU 94.1 @ epoch 978; mIoU 70.4 @ epoch 878 |
 | `hrnet-rs19-ours` | — (RS19 stage) | — | queue: pending | — | — |
 | `paper-hrnet__mapcity-direct__arm-fixed-grouped` | fixed-grouped | — | queue: pending | — | — |
 | `paper-hrnet__mapcity-direct__arm-paul` | paul | — | queue: pending | — | — |
 | `paper-hrnet__rs19-ours__arm-fixed-grouped` | fixed-grouped | — | queue: pending | — | — |
 | `paper-hrnet__rs19-ours__arm-paul` | paul | — | queue: pending | — | — |
-| `paper-hrnet__rs19-paul__arm-fixed-grouped` | fixed-grouped | — | queue: pending | — | — |
 | `paper-hrnet__rs19-paul__arm-fixed-grouped__recipe-train_2` | fixed-grouped | — | queue: pending | — | — |
 | `paper-hrnet__rs19-paul__arm-paul` (run `probe2-paper-hrnet__rs19-paul__arm-paul`) | paul | map_city:nvidia -> rs19:paul -> rad:ours | excluded (probe_epochs) | — | — |
 | `paper-hrnet__rs19-paul__arm-paul__recipe-train_2` | paul | — | queue: pending | — | — |
@@ -169,4 +179,4 @@ Paul Stanik's two paper recipes (HRNet-OCR-Mscale `pauls3/semantic-segmentation@
 Generated by `scripts/publish_rad_results.py` from the HDRFS campaign records, the prepared datasets and the fork run directories, which it only reads. Absolute paths are provenance on HDRFS, not links. Prediction masks are not published.
 
 - Publisher code: `e29c74ade580`
-- Campaign records last changed: 2026-10-05 22:00 UTC
+- Campaign records last changed: 2026-10-06 01:24 UTC
