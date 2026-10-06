@@ -484,6 +484,8 @@ def test_recipe_hyperparameters_match_paul(fake_root):
     shared = paul_shared("hrnet/train_rs19.yml")
     assert value_after(hr, "--lr") == shared["lr"] == "1e-4"
     assert value_after(hr, "--max_epoch") == shared["max_epoch"] == "150"
+    # Deliberate, recorded deviation: Paul validates every epoch (val_freq 1).
+    assert value_after(hr, "--val_freq") == "5"
     assert value_after(hr, "--supervised_mscale_loss_wt") == shared["supervised_mscale_loss_wt"]
     assert value_after(hr, "--n_scales") == shared["n_scales"]
     assert value_after(hr, "--dataset") == "railsem19"

@@ -55,13 +55,17 @@ pf_fresh_run_dir
 pf_export_paths
 export PAUL_RS19_ROOT=$PF_RS19_ROOT
 
+# Validation on the 850 RailSem19 test images at 3 scales costs ~10-15 min per epoch. Training
+# is unchanged by val_freq; only how often the best checkpoint is evaluated (epochs 0, 5, ...).
+val_freq=${HRNET_RS19_VAL_FREQ:-5}
+[[ $val_freq =~ ^[1-9][0-9]*$ ]] || pf_die "HRNET_RS19_VAL_FREQ must be a positive integer"
 pf_torchrun 4 hrnet
 cmd=("${PF_TORCHRUN[@]}"
   --dataset railsem19 --cv 0 --syncbn --apex --fp16 --gblur --brt_aug
   --crop_size "1080,1920" --bs_trn 1 --poly_exp 2 --lr "$lr" --rmi_loss
   --max_epoch "$epochs" --n_scales "0.5,1.0,2.0" --supervised_mscale_loss_wt "$mscale_wt"
   --snapshot "$PF_NVIDIA_MAPCITY" --arch ocrnet.HRNet_Mscale
-  --result_dir "$PF_RUN_DIR/train")
+  --val_freq "$val_freq" --result_dir "$PF_RUN_DIR/train")
 
 deviations=(
   "Apex replaced by native AMP (fp16 autocast + GradScaler) and torch DDP/SyncBN (September compat port, patch P0)"
@@ -73,6 +77,7 @@ deviations=(
 )
 [[ $variant == paul-shared-20260923 ]] && deviations+=("recipe paul-shared-20260923 (lr 1e-4, 150 epochs, weight 0.1) is what Paul shared for this work, not the recipe stored in his 0.7385 checkpoint (lr 5e-4, 300 epochs, weight 0.05)")
 [[ $variant == git-head-9fbd50f ]] && deviations+=("recipe variant git-head-9fbd50f is not the one that produced Paul's 0.7385 checkpoint")
+[[ $val_freq != 1 ]] && deviations+=("validation every $val_freq epochs instead of every epoch (Paul's val_freq 1): training is identical; the RS19 checkpoint handed to the RAD stage is the best of epochs 0, $val_freq, ... (decision 2026-10-05, saves ~1 day)")
 [[ -n ${PF_PROBE:-} ]] && deviations+=("TIMING PROBE: max_epoch=$PF_PROBE (poly LR schedule differs); not a result")
 
 prov=(--chain "map_city|nvidia|init|$PF_NVIDIA_MAPCITY"
