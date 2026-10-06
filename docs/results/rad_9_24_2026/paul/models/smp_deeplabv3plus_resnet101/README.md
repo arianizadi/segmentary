@@ -1,6 +1,6 @@
 # smp_deeplabv3plus_resnet101 — rad_9_24_2026-paul
 
-[RAD 9/24 `paul` arm](../../README.md) · [Full model records](record.json)
+[RAD 9/24: Paul's split](../../README.md) · [Full model records](record.json)
 
 Primary selection and early stopping: **mud-pumping validation IoU**. A job is complete only after full statistics and isolated profiling are verified.
 

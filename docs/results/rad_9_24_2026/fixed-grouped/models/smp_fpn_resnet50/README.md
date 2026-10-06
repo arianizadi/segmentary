@@ -1,6 +1,6 @@
 # smp_fpn_resnet50 — rad_9_24_2026-fixed-grouped
 
-[RAD 9/24 `fixed-grouped` arm](../../README.md) · [Full model records](record.json)
+[RAD 9/24: Scene-grouped split](../../README.md) · [Full model records](record.json)
 
 Primary selection and early stopping: **mud-pumping validation IoU**. A job is complete only after full statistics and isolated profiling are verified.
 
