@@ -2,7 +2,7 @@
 
 Our 10-model x 4-initialization-path campaign on the `fixed-grouped` arm (labels: re-rendered from the polygon JSONs; split: scene-grouped (from v1/v2)). The arm name describes the labels and split, not who trained: every model on this page was trained by us. Protocol names keep the RTIS publisher's wording, where `rtis` is the final RAD training stage: "RTIS only" is pretrained backbone → RAD, "City → Rail → RTIS" is Cityscapes → RailSem19 → RAD.
 
-**39/40 completed · 0 failed**
+**40/40 completed · 0 failed**
 
 Overall segmentation quality and mud-pumping results across four initialization paths. Every completed job includes quality evaluation, training diagnostics and isolated performance profiling.
 
@@ -19,7 +19,7 @@ Validation **mIoU (%)** across classes. Cells show the mean over completed seeds
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | 4/4 | 43.80 | 46.27 | 49.96 | 44.82 |
 | [eomt_large](models/eomt_large/README.md) | 4/4 | 47.84 | 53.42 | 49.72 | 55.15 |
 | [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | 4/4 | 31.91 | 34.37 | 46.15 | 44.68 |
-| [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | 3/4 | 27.69 | 35.19 | 42.40 | — |
+| [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | 4/4 | 27.69 | 35.19 | 42.40 | 41.99 |
 | [segformer_b2](models/segformer_b2/README.md) | 4/4 | 34.14 | 38.62 | 45.16 | 42.83 |
 | [segformer_b5](models/segformer_b5/README.md) | 4/4 | 35.71 | 39.76 | 46.16 | 45.26 |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | 4/4 | 25.88 | 22.34 | 44.32 | 36.83 |
@@ -36,7 +36,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | 4/4 | 8.67 | 10.58 | 18.84 | 8.22 |
 | [eomt_large](models/eomt_large/README.md) | 4/4 | 12.73 | 9.40 | 3.33 | 15.70 |
 | [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | 4/4 | 3.60 | 12.02 | 2.40 | 6.51 |
-| [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | 3/4 | 6.90 | 3.11 | 2.07 | — |
+| [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | 4/4 | 6.90 | 3.11 | 2.07 | 9.08 |
 | [segformer_b2](models/segformer_b2/README.md) | 4/4 | 10.08 | 16.81 | 6.09 | 15.88 |
 | [segformer_b5](models/segformer_b5/README.md) | 4/4 | 5.19 | 4.69 | 5.60 | 5.02 |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | 4/4 | 6.62 | 1.38 | 5.65 | 3.72 |
@@ -53,7 +53,7 @@ Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, 
 | [eomt_dinov3_large](models/eomt_dinov3_large/README.md) | 4/4 | 38.25 | 37.25 | 41.47 | 41.38 |
 | [eomt_large](models/eomt_large/README.md) | 4/4 | 45.95 | 45.80 | 45.26 | 45.50 |
 | [hrnet_w48_ocr](models/hrnet_w48_ocr/README.md) | 4/4 | 30.81 | 31.72 | 30.76 | 31.50 |
-| [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | 3/4 | 76.06 | 75.90 | 76.52 | — |
+| [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | 4/4 | 76.06 | 75.90 | 76.52 | 76.16 |
 | [segformer_b2](models/segformer_b2/README.md) | 4/4 | 53.92 | 53.02 | 53.93 | 53.87 |
 | [segformer_b5](models/segformer_b5/README.md) | 4/4 | 27.84 | 27.53 | 27.73 | 27.85 |
 | [smp_deeplabv3plus_resnet101](models/smp_deeplabv3plus_resnet101/README.md) | 4/4 | 119.75 | 108.60 | 119.35 | 117.12 |
@@ -107,7 +107,7 @@ Click any model for all initialization paths, full class metrics, training/valid
 | [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | rtis_only | 0 | completed | 1555 | 259 | 6.90 | 12.50 | 13.35 | 3.02 | 27.69 | 29.22 |
 | [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | cityscapes_to_rtis | 0 | completed | 2074 | 777 | 3.11 | 12.24 | 4.01 | 1.94 | 35.19 | 41.06 |
 | [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | railsem19_to_rtis | 0 | completed | 2333 | 1037 | 2.07 | 3.14 | 5.73 | 1.73 | 42.40 | 49.46 |
-| [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | cityscapes_to_railsem19_to_rtis | 0 | evaluating | 2851 | — | — | — | — | — | — | — |
+| [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | cityscapes_to_railsem19_to_rtis | 0 | completed | 2851 | 1555 | 9.08 | 23.99 | 12.75 | 8.16 | 41.99 | 48.98 |
 
 </details>
 
@@ -167,7 +167,7 @@ Frozen training code: `d864b72bd90706260965bb1a48398d01167b6d5c`. Split SHA-256:
 | [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | rtis_only | 0 | 10.20 | 7.42 | 1271.32 | 16.08 |
 | [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | cityscapes_to_rtis | 0 | 10.20 | 7.42 | 1696.85 | 15.57 |
 | [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | railsem19_to_rtis | 0 | 10.20 | 7.42 | 1894.96 | 15.21 |
-| [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | cityscapes_to_railsem19_to_rtis | 0 | — | — | — | — |
+| [native_convnext_tiny_uper](models/native_convnext_tiny_uper/README.md) | cityscapes_to_railsem19_to_rtis | 0 | 10.20 | 7.42 | 2307.25 | 15.12 |
 
 </details>
 

@@ -1,4 +1,8 @@
 source,arm,model,protocol,label,checkpoint_owners,job,subset,images,images_with_mud_gt,mud_gt_pixels,mud_iou,mud_precision,mud_recall,mud_image_mean_iou,gt_class_miou,miou,top5_mud_share
+fork,paul,,,paper-hrnet__rs19-paul__arm-paul,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-paul,all,37,13,7435760,0.880883,0.957818,0.916434,0.636578,0.654020,0.654020,0.949413
+fork,paul,,,paper-hrnet__rs19-paul__arm-paul,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-paul,cab-view,28,7,363290,0.469913,0.595930,0.689653,0.524318,0.610208,0.610208,0.889190
+fork,paul,,,paper-hrnet__rs19-paul__arm-paul,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-paul,not-cab-view,9,6,7072470,0.911304,0.980547,0.928083,0.767548,0.607747,0.405165,0.998182
+fork,paul,,,paper-hrnet__rs19-paul__arm-paul,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-paul,excl-trackside-maintenance,32,8,376151,0.456939,0.592719,0.666073,0.458778,0.637578,0.637578,0.858788
 segmentary,fixed-grouped,eomt_dinov3_large,cityscapes_to_railsem19_to_rtis,,,eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0,all,37,18,1226250,0.082156,0.166773,0.139357,0.114865,0.522898,0.448199,0.442561
 segmentary,fixed-grouped,eomt_dinov3_large,cityscapes_to_railsem19_to_rtis,,,eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0,cab-view,27,17,1213322,0.121127,0.600421,0.131747,0.115035,0.581167,0.498143,0.447276
 segmentary,fixed-grouped,eomt_dinov3_large,cityscapes_to_railsem19_to_rtis,,,eomt_dinov3_large--cityscapes_to_railsem19_to_rtis--seed-0,not-cab-view,10,1,12928,0.014513,0.014550,0.853574,0.111960,0.405016,0.337513,1.000000
@@ -47,6 +51,10 @@ segmentary,fixed-grouped,hrnet_w48_ocr,rtis_only,,,hrnet_w48_ocr--rtis_only--see
 segmentary,fixed-grouped,hrnet_w48_ocr,rtis_only,,,hrnet_w48_ocr--rtis_only--seed-0,cab-view,27,17,1213322,0.069583,0.699967,0.071722,0.061964,0.425003,0.364288,0.447276
 segmentary,fixed-grouped,hrnet_w48_ocr,rtis_only,,,hrnet_w48_ocr--rtis_only--seed-0,not-cab-view,10,1,12928,0.005064,0.005087,0.532410,0.119675,0.255062,0.159414,1.000000
 segmentary,fixed-grouped,hrnet_w48_ocr,rtis_only,,,hrnet_w48_ocr--rtis_only--seed-0,excl-trackside-maintenance,37,18,1226250,0.035982,0.063560,0.076579,0.065170,0.372272,0.319090,0.442561
+segmentary,fixed-grouped,native_convnext_tiny_uper,cityscapes_to_railsem19_to_rtis,,,native_convnext_tiny_uper--cityscapes_to_railsem19_to_rtis--seed-0,all,37,18,1226250,0.090813,0.239874,0.127505,0.110577,0.489843,0.419865,0.442561
+segmentary,fixed-grouped,native_convnext_tiny_uper,cityscapes_to_railsem19_to_rtis,,,native_convnext_tiny_uper--cityscapes_to_railsem19_to_rtis--seed-0,cab-view,27,17,1213322,0.119595,0.930975,0.120665,0.111948,0.572430,0.490654,0.447276
+segmentary,fixed-grouped,native_convnext_tiny_uper,cityscapes_to_railsem19_to_rtis,,,native_convnext_tiny_uper--cityscapes_to_railsem19_to_rtis--seed-0,not-cab-view,10,1,12928,0.019993,0.020113,0.769415,0.087274,0.292329,0.182706,1.000000
+segmentary,fixed-grouped,native_convnext_tiny_uper,cityscapes_to_railsem19_to_rtis,,,native_convnext_tiny_uper--cityscapes_to_railsem19_to_rtis--seed-0,excl-trackside-maintenance,37,18,1226250,0.090813,0.239874,0.127505,0.110577,0.489843,0.419865,0.442561
 segmentary,fixed-grouped,native_convnext_tiny_uper,cityscapes_to_rtis,,,native_convnext_tiny_uper--cityscapes_to_rtis--seed-0,all,37,18,1226250,0.031149,0.122362,0.040110,0.040599,0.410582,0.351927,0.442561
 segmentary,fixed-grouped,native_convnext_tiny_uper,cityscapes_to_rtis,,,native_convnext_tiny_uper--cityscapes_to_rtis--seed-0,cab-view,27,17,1213322,0.035873,0.789037,0.036220,0.037396,0.451684,0.387158,0.447276
 segmentary,fixed-grouped,native_convnext_tiny_uper,cityscapes_to_rtis,,,native_convnext_tiny_uper--cityscapes_to_rtis--seed-0,not-cab-view,10,1,12928,0.014798,0.015127,0.405167,0.095050,0.284376,0.189584,1.000000
