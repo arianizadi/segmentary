@@ -1,0 +1,4171 @@
+{
+  "assignments": {
+    "evening-water-cab-view/0289": {
+      "fold": 0,
+      "group": "evening-water-cab-view",
+      "image_sha256": "61b19d029c6cc48d744189fd60f15317991db02db7ea86e03c8dd7f235cb5126",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "evening-water-cab-view/0290": {
+      "fold": 0,
+      "group": "evening-water-cab-view",
+      "image_sha256": "bc87c6029c376bb13438534dc5403cc400260f97f586d1d6581f3e6c7f911c08",
+      "labels": [
+        "standing-water",
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "evening-water-cab-view/0291": {
+      "fold": 0,
+      "group": "evening-water-cab-view",
+      "image_sha256": "98c179d6033fbdd1ac8781f30103871dbd923fb986a02c3839d44f86da4740de",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "evening-water-cab-view/0292": {
+      "fold": 0,
+      "group": "evening-water-cab-view",
+      "image_sha256": "c47041264983df88be8732a551bdb7507509c28d5cb3bc0e0a6705cc49ae6711",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "evening-water-cab-view/0293": {
+      "fold": 0,
+      "group": "evening-water-cab-view",
+      "image_sha256": "6077aba4a4bb99250442da395b3d3240725c2e1e0aef293eb44333393c53dc7c",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "evening-water-cab-view/0294": {
+      "fold": 0,
+      "group": "evening-water-cab-view",
+      "image_sha256": "fc99bfd711df81411031982d6c1af485a0d5de1a6bc8031d66c08fe78aaaf437",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "evening-water-cab-view/0295": {
+      "fold": 0,
+      "group": "evening-water-cab-view",
+      "image_sha256": "1ea1f8228875b85ab9c9ba9af6c08081357dd191501d0e71dc3afce5c9e22ae3",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "evening-water-cab-view/0296": {
+      "fold": 0,
+      "group": "evening-water-cab-view",
+      "image_sha256": "ccabc9bad6992ae81dbcf31b87e948651539d5fb18383056159cb4158d7aa1e0",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "evening-water-cab-view/0297": {
+      "fold": 0,
+      "group": "evening-water-cab-view",
+      "image_sha256": "3991ffb21019078827ed3b2a9c55d03ca08f03c4e1d83a5f5e4fd5e978338f54",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "flooded-road-crossing/0272": {
+      "fold": 1,
+      "group": "flooded-road-crossing",
+      "image_sha256": "1a64c22d40183eaa53211aeb2ab21c5cbf2a328ca7b2d6716a58fff64bb7291d",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-road-crossing/0273": {
+      "fold": 1,
+      "group": "flooded-road-crossing",
+      "image_sha256": "4f42631f3a3bf1174b11d6978aa00479044e989be0e1722cf53a2a7d698ca4da",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-road-crossing/0274": {
+      "fold": 1,
+      "group": "flooded-road-crossing",
+      "image_sha256": "5eac815d6dcafeaed42ca25116f35fe30e4598159ae3b155d664bf6b7378427a",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-station-platform/0298": {
+      "fold": 2,
+      "group": "flooded-station-platform",
+      "image_sha256": "f0194c9f5092ef4a9f5211064d986408ef94a7c44752b254cf2a6cb67600d64a",
+      "labels": [
+        "on-rails",
+        "person",
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-station-platform/0299": {
+      "fold": 2,
+      "group": "flooded-station-platform",
+      "image_sha256": "2e8151e2e6b02fcc2163c50aa86d9e5e0134c8e81d7ed74c33832a121b91dcaf",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-station-platform/0300": {
+      "fold": 2,
+      "group": "flooded-station-platform",
+      "image_sha256": "aa5009748eb469829d461d7b4e9a1e63aced662acde1baab34479670671c9cfc",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-station-platform/0301": {
+      "fold": 2,
+      "group": "flooded-station-platform",
+      "image_sha256": "b6bfd2eb1a154fe26098279bca8d8165e5aa045fad56b687663d941cba56bfda",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-station-platform/0302": {
+      "fold": 2,
+      "group": "flooded-station-platform",
+      "image_sha256": "0758d8245392d38d69bb520d6aa46dd39d38ccdfa9c8011ae15e78d2a3d0dfae",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-station-platform/0303": {
+      "fold": 2,
+      "group": "flooded-station-platform",
+      "image_sha256": "e62cac97ea08c225e113869af1e24539312d59ae8b1ea981d8625c7d8c85968b",
+      "labels": [
+        "on-rails",
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-station-platform/0304": {
+      "fold": 2,
+      "group": "flooded-station-platform",
+      "image_sha256": "c9797d293e9f42ce5aacd15adf5adeae5aabd49c586206b065f6f9ae8218987a",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-station-platform/0305": {
+      "fold": 2,
+      "group": "flooded-station-platform",
+      "image_sha256": "10d64186056082ebd4e47902c4c0de8902ac70f0ef5c2e64b7a35ce344eeda23",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "flooded-stone-bridge/0270": {
+      "fold": null,
+      "group": "flooded-stone-bridge",
+      "image_sha256": "d8aff7595858cbf04c9e2b85dc09bc865c9a2ad58b92c41e823fb4a084f4bada",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "train_all_folds",
+      "scored": false,
+      "source_split": "train"
+    },
+    "flooded-stone-bridge/0271": {
+      "fold": null,
+      "group": "flooded-stone-bridge",
+      "image_sha256": "f5180763e414fb42a131798a9a989ba50a68fa194643d48809aba9a9130498ed",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "train_all_folds",
+      "scored": false,
+      "source_split": "train"
+    },
+    "flooded-stone-bridge/0310": {
+      "fold": null,
+      "group": "flooded-stone-bridge",
+      "image_sha256": "244d2e5e9d27aab38bd91e338efee542e9ef1b32b81f5b1d04e493988fd9fb15",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "train_all_folds",
+      "scored": false,
+      "source_split": "train"
+    },
+    "flooded-stone-bridge/0311": {
+      "fold": null,
+      "group": "flooded-stone-bridge",
+      "image_sha256": "3ec9872d416c77c2223a85177374f753b9fa22546177d378a402366f3a00fac8",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "train_all_folds",
+      "scored": false,
+      "source_split": "train"
+    },
+    "flooded-trackside-woodland/0306": {
+      "fold": null,
+      "group": "flooded-trackside-woodland",
+      "image_sha256": "0021b7212f209be14d804f00cbd09a05f058de3d7582bd9ccb3bb068575fac81",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "flooded-trackside-woodland/0307": {
+      "fold": null,
+      "group": "flooded-trackside-woodland",
+      "image_sha256": "05638be2766fc4b1131b1244aba691384afbe16930ecba0b0faf7738dcf28e31",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "flooded-trackside-woodland/0308": {
+      "fold": null,
+      "group": "flooded-trackside-woodland",
+      "image_sha256": "0020a0a56903de99cf38302e93fdee20ec756bd51a40b2edf7884183de063666",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "flooded-trackside-woodland/0309": {
+      "fold": null,
+      "group": "flooded-trackside-woodland",
+      "image_sha256": "b0aed51ac2b31233ca1f0b25b0f75d6ad53e8afd209b956cbf317def34ebd785",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "green-roadside-cab-view/0174": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "ac8756b81048f48af6d2c3fee710b8b43f34a4e658cde8c09bb9f690902790e5",
+      "labels": [],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0200": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "647d89550b9094d69144e9eb687405a9b548e981193dfb8682ee2e38bdb37aa6",
+      "labels": [
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0201": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "cec5a4a2267098df2b64c119ce4e99aacc9014722b05125b92bd8da623cddee4",
+      "labels": [
+        "tram-track"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0202": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "318bdc8615a85a559ef35aac3c3b7f2506709bbb305ce03e4e8ea37ade4d7da2",
+      "labels": [
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0203": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "18638926136c9e885bad8a5394a86973d90d5ed5638573e5985654dec64db548",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0204": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "cb34ab4d9a1966c9d974500a92359ca204a93a0c8283bcc59a5f16456005f1dc",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0205": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "84c3ad934ba556452a390cf9a7615f786d7bada1f0ce3bec466c1ccd2a89b441",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0206": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "326099a1d7068b475af019e6dcf936e26aa1a539954a3f0fa5df1a5ff8428999",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0207": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "0a69c574d773bd2b02269bec42203fa65c198e4f1f50743335704b45db4b879d",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0208": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "3b8efe8aa3a6e136add1665ab904a06b78b874796e0c18912f3ee9f3ff74d366",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0209": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "ee956750d1fd8c7676cd76b8db71bf93b9cbcedf8b4aaf4e538041ef501ade04",
+      "labels": [
+        "on-rails"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0210": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "7fa10db78fee89d3d4e8282d50e5cec55c3943202f620889b50503ae276b1a74",
+      "labels": [
+        "tram-track",
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0211": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "41f0cad9cf8e4e11e5a870a293f740a7bce70a66b0bf5b0e86c9dd1fa6396f5c",
+      "labels": [
+        "tram-track",
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0212": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "19490f9f31865422ef3257bbecd836b58a75e1200af558b47627240cfc9e49e9",
+      "labels": [
+        "person",
+        "tram-track",
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-roadside-cab-view/0213": {
+      "fold": 1,
+      "group": "green-roadside-cab-view",
+      "image_sha256": "5229632691652545fa2f89ea5800c86d39d27545bb45654c44af717c422b95c4",
+      "labels": [
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-water-cab-view/0263": {
+      "fold": 3,
+      "group": "green-water-cab-view",
+      "image_sha256": "d38268ad352c084c45d9c129d86eed80ec34068717620fc1685f07a6cefd1468",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-water-cab-view/0264": {
+      "fold": 3,
+      "group": "green-water-cab-view",
+      "image_sha256": "7ac26e3576a11b28c401290cbed89e663ce03d2ae23dcbd062e1ece5d3ba81a1",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-water-cab-view/0265": {
+      "fold": 3,
+      "group": "green-water-cab-view",
+      "image_sha256": "021d832dd111da4e3fd13f74b2531f5a87481b14073f6b0ac4a5a1149c442820",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-water-cab-view/0266": {
+      "fold": 3,
+      "group": "green-water-cab-view",
+      "image_sha256": "1b57cba93cf3601d156721ce3f759bba69f41268fe5b975191c86fbff322be98",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "green-water-cab-view/0267": {
+      "fold": 3,
+      "group": "green-water-cab-view",
+      "image_sha256": "9b17276ea65c583df9303ed986d88d187c963d9ed6bf0b5700396e0de25190c4",
+      "labels": [
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-flood-stills/0275": {
+      "fold": 0,
+      "group": "miscellaneous-flood-stills",
+      "image_sha256": "61c2965c3c11954382ff9e9e06c34ffa4996a9a48b46aa7f5490049b85765bca",
+      "labels": [
+        "on-rails",
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": false,
+      "source_split": "train"
+    },
+    "miscellaneous-flood-stills/0276": {
+      "fold": 0,
+      "group": "miscellaneous-flood-stills",
+      "image_sha256": "85d7d06fc795f58f6e51ed5e91c5d5d8ab1f41194ab44f3471da41bdadf45973",
+      "labels": [
+        "person",
+        "standing-water"
+      ],
+      "role": "cv_fold",
+      "scored": false,
+      "source_split": "train"
+    },
+    "miscellaneous-flood-stills/0313": {
+      "fold": 0,
+      "group": "miscellaneous-flood-stills",
+      "image_sha256": "74272d0a74c881e4e18e9bf6000c065a51519bf7c05acb3c8e912f075c3b5ddf",
+      "labels": [
+        "on-rails",
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-mud-cab-view/0173": {
+      "fold": 3,
+      "group": "miscellaneous-mud-cab-view",
+      "image_sha256": "f0ca7b2f878f2a5e167e558097ca517d126cb474aa25f5b0ec0fc4d6b1e57432",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0013": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "cdc7c624979074f91663aae6c612b6f6c370af9ca88a91ba076c2bad37e6c319",
+      "labels": [],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0014": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "00a59e617c6d81492253ece8ef06493164bef224314ee99156bc01663f8ccd38",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0022": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "34431340589d77bf879a5d44b35f1ba4ee67944d06302e41751f49b52c7cd6bd",
+      "labels": [],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0023": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "4dbdaa16ac641963e653bf5fa8dce1b9b05b89b3a3d10f8da2e3c9c38deeee7e",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0024": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "35db7be7064f509351e3627b33430eabc718080e493e83ad1551491d62e1f113",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0030": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "a88a70e7bc9e1730883e2cfef16954b7c5a6ebee797dfe8205837e1e2f9cc290",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0031": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "582a1052402234b092c9e8f0eb985ba78c3b1068c2ae8c12c805aadd11584b0a",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0032": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "1bdac9a6b7ef8988de21ddaa678ad8a54e0a98f75bf8ed86e61e0f50a7a6c16b",
+      "labels": [
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0044": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "bb02fd705ac7b08fb3ae7c618b46f5a9da4ef32b590259233156f5fee831aacb",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0045": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "8a2c09c50911afe45e05157fb8602cf7345aa5cf6f005c3b76f7c0d8b50f36c3",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0046": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "a1bc04fa20bd623f99bbac759e22dbd90554263ca7b217cee49ddc9fedd59da2",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0047": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "b74e6210f53416c45a93c3fb1a022de2cc33ed02723512634c739624b649276d",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0048": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "f912ea15971bc82b19029b9aad152ec1934e74e2a32d29934c116cdd7409125d",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0049": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "18e4e59e4f1f16790b92171327c69eba67d5364edbe5a933d052ee78b21f9557",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0050": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "33fc6fbed915cff715396fc229a8e0da423ed1d84e76cec2dcc2a28d124be983",
+      "labels": [
+        "on-rails",
+        "person",
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0051": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "a29169723725172c5b690fadfa30cc7cf76f7eb2328590890c3c828f7d3f20bf",
+      "labels": [
+        "person",
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0053": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "9e09a858819a1882bccc4f5b7cd52bca20f66b1052a3c5191dc459062ae69e81",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "miscellaneous-numbered-cab-views/0054": {
+      "fold": 0,
+      "group": "miscellaneous-numbered-cab-views",
+      "image_sha256": "ac828e814ea477c826e95def13cde08680d0a05dbe64cde8303472779d31fce8",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "new-unmatched-2026/0175": {
+      "fold": 0,
+      "group": "new-unmatched-2026",
+      "image_sha256": "c81bc0c590d9bd6563e2e11176cfe441dc0920a5f9cdbbea9d32b36a51347b86",
+      "labels": [
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "new-unmatched-2026/0176": {
+      "fold": 0,
+      "group": "new-unmatched-2026",
+      "image_sha256": "fdfba692303712b2119a1d725763d74b54fa20defdb3415916105955f503bd9b",
+      "labels": [
+        "on-rails",
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "new-unmatched-2026/0177": {
+      "fold": 0,
+      "group": "new-unmatched-2026",
+      "image_sha256": "92fdd6e752f0a8493a8a0114320f0d3adb209985cc28a17efef842ce5c887b26",
+      "labels": [
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "new-unmatched-2026/0178": {
+      "fold": 0,
+      "group": "new-unmatched-2026",
+      "image_sha256": "bcfbb199baa79a77d97dfe9e368490306a1c84afc0dabca15e0dae262f2a945e",
+      "labels": [
+        "on-rails"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "new-unmatched-2026/0183": {
+      "fold": 0,
+      "group": "new-unmatched-2026",
+      "image_sha256": "60f737c273e283351acc6efb1ba0704e0827f47b77fdd8695a5bd891f5dbab4e",
+      "labels": [
+        "on-rails",
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0214": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "fcf5289b197c7f0a48d5f375c13e6c090599b238c68ce299010e0babb86cb7e7",
+      "labels": [
+        "on-rails",
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0215": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "a4ea3527469f92f7e01c82dbad4e004af29e5a534ebe1ed94e96185736126eff",
+      "labels": [
+        "on-rails",
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0216": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "39f23d5418cbc5c465dddc13feda5ebb78e7eb06be8eacb3a5acb0256a95f409",
+      "labels": [
+        "on-rails",
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0217": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "014ccb7933ce4cc405469bff1fb36825df54553c505c185a5c2b9ca46750aa01",
+      "labels": [
+        "person",
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0218": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "7d192a396ef667bb5f346b4419b19250547fc8d398f9ad1541087e3b71df732f",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0219": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "217eb3ce4240bbab2cd912c73d871881db741d3f99a15000d1343139afbeb72c",
+      "labels": [
+        "tram-track"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0220": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "b998518e2d97c634c8c2c846bf7f07e5ad02688387f15d657cc9646d080b722f",
+      "labels": [
+        "on-rails"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0231": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "27cd78cb2b58647066724fd485237e2568caa02d648e8186d42928145e8c8070",
+      "labels": [
+        "on-rails"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0232": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "77b17d1922889f7c1d3d5c9eb9eb7abb5f53399f38433a493e4e0d9f6d369bd5",
+      "labels": [
+        "tram-track"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0233": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "ccfe0f6097d8c9ab6aa93e8322b418afe7878378f87ebfaa7638f12f8605381e",
+      "labels": [
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0234": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "709cbea54e2cf9800bbf3d0c032a4ecbdd34ac081630e119aea5e897a39808a8",
+      "labels": [],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0235": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "468c69f20ee4665d35f34a795d6f47eaaff96dedee7864164a769f063403427d",
+      "labels": [
+        "tram-track"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0236": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "7d0f48496493980d7a6b226310064c37f280f0d3d8723af88c69108db233c6e9",
+      "labels": [
+        "person",
+        "tram-track"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0237": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "d9eebb905aa35607b8a9ee3cdb0cfd1d4a4e368e77135f92e804f42440f333cd",
+      "labels": [
+        "tram-track"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0238": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "38d3daf79fb1b3f1c4c8c5bf74635d5954f16b3c5be5297e9e5ac9b077259d42",
+      "labels": [
+        "on-rails"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0239": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "a48c958611d90e4471af958912e453f589b8b5533315c5d59ce81b77a46a7bfc",
+      "labels": [
+        "on-rails",
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0240": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "8b51f499144ba83986ae26ea615d1f3e8da062613143bac5e635ab5684f8c914",
+      "labels": [
+        "on-rails"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0241": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "3625a2c4d4e9f8f3e0165e6dd90494d2791acd79e6142389e4a17e9e72601af3",
+      "labels": [],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0242": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "ded050ca71f820d730759226ffc1d2274e07ef4601f63b34c13120c7ef05161e",
+      "labels": [
+        "on-rails"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "overcast-mountain-stations/0312": {
+      "fold": 3,
+      "group": "overcast-mountain-stations",
+      "image_sha256": "5443a27572d1805ca781a25437ef08d1d27ac70239d96cb52f50717ff14822c3",
+      "labels": [
+        "on-rails"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0268": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "7a53e1b4c0a64e0b30e58ab9db89fcf98ce95254700008d25f5394d06f97a292",
+      "labels": [
+        "standing-water",
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0269": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "1100c1ea54949235b635d2def045d12f73d290500eb308c1ce83323f8600862a",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0277": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "ca57dfd0f80377755014a88660f5a17884651b8fc20abd7455c72679bd8bb09f",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0278": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "ae02105bf482e4b7269f687a6bf9420a5d1fcf5bf84ca910a716df519b4a66f1",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0279": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "41a8c3396c58a82a580a4b2d762d7a5813c5b86e025f72d9bc3ad2ba21db3545",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0280": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "70a05bd99cfd467ea3e055a00e478d6e1b45acfa4adb761b94f8e266417d1ae9",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0281": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "a7da1f692dfad6e78cfde641dada58c6873c4539cb40843c04d9e3238e0235ac",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0282": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "f9741378f2d70f2bd7e5236fc50ad4936840f4c1561be37a810e2aba8983efab",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0283": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "50f5c438789710cc8a44142a41fc391480200cadb38493f126501909f2df6f3a",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0284": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "43ee426aa0b2c2ce8f85dc51fb77e1d7b14c6221bf250479b4fc3db9938e1d2f",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0285": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "2956bdb840f2c86e03cbc88cc38600c415d72eea5fff4f468697cb6ad1fb86fb",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0286": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "65bb9a26ed2495d66bcecef26da2702eed5d5ef32bc6393785623c77524cec64",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0287": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "e86117d8914772da397288df8ec1e772efd2441073ebe583809d2c492b5a8b2e",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rain-water-cab-view-with-overlay/0288": {
+      "fold": 4,
+      "group": "rain-water-cab-view-with-overlay",
+      "image_sha256": "edfc5f576a3fe8034173a9ff71791befd981bc683b089bc729fe555cefbe4b3f",
+      "labels": [
+        "standing-water",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "rural-non-electrified-cab-view/0221": {
+      "fold": null,
+      "group": "rural-non-electrified-cab-view",
+      "image_sha256": "6411626e4dd88d0c532aa68480772b47bb488e0f02a7b85b9bc3a6689ed129d5",
+      "labels": [
+        "tram-track"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "rural-non-electrified-cab-view/0222": {
+      "fold": null,
+      "group": "rural-non-electrified-cab-view",
+      "image_sha256": "be0865e3ca07c856aa6344ba88297231d8f119a2854ae1fc7b08fa9de2dc7252",
+      "labels": [
+        "tram-track"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "rural-non-electrified-cab-view/0223": {
+      "fold": null,
+      "group": "rural-non-electrified-cab-view",
+      "image_sha256": "67998981efb9b95ac93732686fcfa42fea52aa0fe3e6e4024b9fa67def81c212",
+      "labels": [
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "rural-non-electrified-cab-view/0224": {
+      "fold": null,
+      "group": "rural-non-electrified-cab-view",
+      "image_sha256": "1e41ae632ab7d25f8465de2e6f35040f43e06005f63f671f9bc38bc730cc1d23",
+      "labels": [
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "rural-non-electrified-cab-view/0225": {
+      "fold": null,
+      "group": "rural-non-electrified-cab-view",
+      "image_sha256": "f4f88535c53b204aba9d05b638314389fa878abcf8e01baf8f954e3c487ce4fb",
+      "labels": [
+        "tram-track",
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "rural-non-electrified-cab-view/0226": {
+      "fold": null,
+      "group": "rural-non-electrified-cab-view",
+      "image_sha256": "31c04d2163a83cb2cbb97f6a65f78f6292915635dca2124764515620555e02a5",
+      "labels": [
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "rural-non-electrified-cab-view/0227": {
+      "fold": null,
+      "group": "rural-non-electrified-cab-view",
+      "image_sha256": "2d98795621d72b995c9a7899bfb43a833e5adad504b015737ba1d2fddb18f3d8",
+      "labels": [
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "rural-overcast-cab-view/0001": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "7e879229872a254385a7202e95ca5f4f6a1b6a40841686e8306ffbb777805314",
+      "labels": [
+        "mud-pumping",
+        "tram-track"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0002": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "d6a1cdca475235fda34249ac027cadb8cfd26f48e206fe60727e06408ea9daf2",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0003": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "04a002e5659f3d51126f61bc75400b6cef6d9688c3f19cc5a7f5110b8233bf8c",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0004": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "7d5290356d971b8d7ecd4adff945aeb7be4ef3dfebda904223dcf2dc140e4ce5",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0005": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "aedc6dab3debab63ed2639dc17103ad650d4dd41a6f7227f09b5480b90de2c40",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0006": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "3db1516a2e0c1874fb0dbb51d803925befe045e5d166f68c67d2511cf052796a",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0007": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "9ae138fc89678cfcd1474b9bf8cc396de8f0e6e2a43775c082e7fd324b1e9972",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0008": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "7bbb672efc6998e2fe07036354809c380b8c0b38f55bd9aae1815308defc4ec2",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0009": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "cb6aad832f86ea69af2440cd70efb6f57530b847c2ddd1bb2bd71a9a289e449d",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0040": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "021941b66ec27bb2fcf79d061d8aee08b9c3f292d08a9a7405a19e299c832db3",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0041": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "ff35eda53bd2422223f5fcafb02cea4c44b441958325638de3a11790243b67c9",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0106": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "5424a1e04b74a0676fa48eed3d02b218dfe6d71d777a4fb8d4ef4ce2732db7dc",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0107": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "215b77d9cef9cc3af93c75d0f03981fcc3de1a90d89599e881fcd4a81e39bf3b",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0108": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "c33b247dbf2b4f39cc6e562b021c46ced689391a1b60185e8afc0ac60fed379e",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0109": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "f38954f1bfc9fe50b963723a16b16b8d3f9d7362875393e41e5e9796dd413c67",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0110": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "fdf24fc27e07ee485b7222ccde914085e8f087aa8259cc0b90e6f71e0a387ffc",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0111": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "e296d338c3af3daabb671a8586609af5cbf67e7bb34880dd1529fcc3f38445cc",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0112": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "8aa93fc1231db8b4b0a120906afce6efe281b5d722780d8cc957032da6e74746",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "rural-overcast-cab-view/0113": {
+      "fold": 4,
+      "group": "rural-overcast-cab-view",
+      "image_sha256": "ba958581ca15fdae026c4dc5918bbf409fb30ae6ee8593531607b3d3640ebc46",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "sunny-mainline-cab-view/0124": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "7401f5fc76b6fc6c255d1dd4039a55eb15e32ab20cd3552dcac7878a8a74eb88",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0125": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "b9b5845a7575d6e07a9bbc5c28a07e05557e8f29ff815f5cbf7248d75ec08247",
+      "labels": [
+        "mud-pumping",
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0126": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "a1e2fc892f0b131c74ecceb67559b53b91457b9cf91503592486c858fd335277",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0127": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "0d4cde05aed2bd4fe2170c8e306ae84b426e1f4e3c8d7f9b0b0cb271454f8c9e",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0128": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "24687c346d035f3bef72afba9b140f03eab022e4a90af673afe81fa9f274787b",
+      "labels": [
+        "mud-pumping",
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0129": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "e52ffee04497a5939bda202788429a87b3560377d2abd91af07b4286a26b89c6",
+      "labels": [
+        "mud-pumping",
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0130": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "e0ef00001b7bf26a5b6122387465145d21b99c1296743b3f03e61660ac3b3c2c",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0131": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "6ed3b7e372d8d5dc78b215af5af6f4653456cd41ece09177eab1178a747e70bc",
+      "labels": [
+        "mud-pumping",
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0132": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "e153b7e6bd960d596c08d639a6b6e83a0851899aff6c01d8e6bfbba8b04f29ab",
+      "labels": [
+        "mud-pumping",
+        "tram-track"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0133": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "f9e73f2fb85c57a08b9d33b0c1c38cfbd56bb541c4b32e14c80883c01757b91a",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0134": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "9e4b1e6f4202cdfc0d9ff15e1ee6eb32270e1c0e88b7b7842be2345e74dab6f2",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0135": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "917d7fdbcba14ad98f4155259ad4945453a4e76aecab144bfdfd515d95e55343",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0136": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "23d8b5534877bd891ce5b404ae30036f3fd3a3f9769fc5d17235cd727642067e",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0137": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "a171edd02bf21b2bc889ac8ed17fe30fc47d76defd59a637e236ddadf0c76f27",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0138": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "461bdcfd80571cea432e10e0947270b1a03bad21b5efa4efc325d700d1107bed",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0139": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "ea793969cdff22d7aeff4460d14cafa8007c32c5650e6cd3586775c958a0754c",
+      "labels": [
+        "mud-pumping",
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0140": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "3a5fae521d4841d641c0b0953b4733aa8f8734d7fd9997403022f033352a935e",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0141": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "2ab1618bf2232f7953374c7ff9fd6dbb5957a1d11d887a1004faeb1f3bfa8241",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0142": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "f9d4c3db5d27a80539d7e059e63c85bbda048e2f6d73d48e3b0e6d2541a023d4",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0143": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "4437f8bc5b8248f9f54a530115e7dbcc3ace4af83f6e7e7505c28bd61deecdb4",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0144": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "f6b634ec6548b8bf98554aa0ac61f40eb22ae85f7e7ae26d084ddb9500ae7e5d",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0145": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "fcdb2f1d198ca40299c924da55b12732604c2030a0db21c6f4a86b3b5c804d35",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0146": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "144ac7ace9587dad2bd7d7909441c0b2eb1b7a5fd5d975855c31e6f54006cc89",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0147": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "6cf388fea166cff5c1481f523509bf3d72656e5aede0964f0ec6b15e88adea19",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0148": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "d859eb4079cd5f05a69e1a52ca314157548f99524569888aa31aa39194c4c163",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0149": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "0f14ff36a7fdb27af6f7ec8cb353e753e159bb3b77aab52a80b13fe6937791bc",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0150": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "d4d60368183c52383216b6039fb814147d7720ff8a5ea3c97e9222f8f0eb8937",
+      "labels": [
+        "mud-pumping",
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0151": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "4b1751c125ecc67afaa53eb1d7655c7a5ec051098de588dcb48ea4bc9cd3c5fc",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0152": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "7c244faef1d58c7c544581c4aaad579ceaddaf9f4f8593f1c642198319e0f064",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0153": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "8a9db76dfcf9155f0dfba13eb33441d81632dfa0d872dd599c6a9a249961a009",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0154": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "6ba5f4dc3a08179c05592eb64e30da7a3ab0f61eb7a134091c4cb022c307f8ce",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0155": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "06a90f5ff240f94f7308b963ae697e96d8e7f41f7c690b41c58516e490c044e0",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0156": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "2a9b7f9f2e664a6492b210e6af5c8b3238a3d01e1f1d4f0c3506e92519ad0942",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0157": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "8e5da439095b7bf529ca9afbcfc297a86c96a3820aab657ef461687e06417c1a",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0158": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "e6a650c2b434f3111eccf6b5f78e578afe4a7a00834675380b1cee62d761869d",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0159": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "0857b1a64422a748f3a1acbe2298b756354dc4e916a3e35065e7c7c8aa443cfa",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0160": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "3f99be5f7928e5a01c3e2e0da7c216742c167125a2f4df4f9eda959f3e86453c",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0161": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "016395879116dde76f1eddcc264a67c3d1fb136d9a0f2d92b33ab41044c4e774",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0162": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "9a198f581ccbd0527724f15f9a3cece6e5832854e77e259dffc5bd5a429ff05c",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0163": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "53c1f0e23c023af87bca8d7c925f1118fa6e03bf34b314ab0e901d159fd525b9",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0164": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "dc2322339b57aed5805465301755b9054b87fba047b608e05ae4dcf959232006",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0165": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "ed03205def575f68a08e90b5040e492f111657b011c4a09ea8773bfee95ae4f8",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0166": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "4cb25bc7ad809534409bf310ce0bd9621415dfebdaa38bfbacf278916ddd0f64",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0167": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "ea08f07ca095ed6d035d6f14b8548f69a14bf8d6b49efbbdddf5179bf9ef3009",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0168": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "72b8f6a32917f9b4cd7edbfc8b38900c94a094dd308a81ee17ec8c715bf8a875",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0169": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "e50a126b8e9d96524472935c0169644a3000d548dd10622d7dd7837f28b262f3",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0170": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "3f433ab98d445e66fbd4c3879168f0ff099bfa2f2a0555a496a23ef041827ef6",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0171": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "f0f37b4a43e03c4b5aef2ec2723b33d29fdeb183e0247dc20cc38fd51708b6d4",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0172": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "9d1f242981192b866b8c78b235337b3fcd78c0dbb947afbb3861211b73247352",
+      "labels": [],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0179": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "2980bdd5ac578120cb35ad4b8b8f5798eb1663f505b1d628312365558c8e6637",
+      "labels": [
+        "on-rails",
+        "person",
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0180": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "11d2b9c079ad57dd8e7e64839160cd7b1d1b689d42720e385bbae214ae1ce4e2",
+      "labels": [
+        "on-rails",
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0181": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "961d4dc340edb778535bf1a91b174154c09e8c3bf2814a05efe15d66cfa809cb",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0182": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "2b635f17ddb2ba61b77fdcac0499ec5c3d70dea1323a289937212955ea815653",
+      "labels": [
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mainline-cab-view/0184": {
+      "fold": 2,
+      "group": "sunny-mainline-cab-view",
+      "image_sha256": "fce720c8ba60a17547f87e487d475b7dfc8130e8e3f6de1eb655de80095dd9d4",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-cab-view/0010": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "e9abfe7bf5161453fc5c6a86049cec52880047eedd0f46a57ab7b1277cc49105",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0015": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "3b93d1d95ac6a5f591a542a124e5c350be70f114e31e6cec7a46e8b4a97b9840",
+      "labels": [
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0016": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "8e6aa8676c0ac48ee943a84156a1b1ed8c8bc794a99c28a1e37f8cb4a9bcdc54",
+      "labels": [
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0025": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "0dce3080c760760bfddf50a247fb072413c68e2c1186d80f7d1fa3746e29cf36",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0026": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "7f706347a66965f26071d7bdab0d9ba00cba0b8a5a8e1c068565b07fcea18893",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0033": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "056cfb32b06947adeeed7dc38c65cb7ff1ef4f3709826863bb10c9849023c213",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0034": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "2dc7f6d449d2ddd33f5e4373346976cbf0b27a6ad026f19565d15223ed49d7a2",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0035": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "8f27f4777b424fca3a01c563f2634f985f97ef3cdac8ad2838d194087f29673c",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0036": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "32ed1c8323a9c48ae4e2fbb951b06f24d6270bc0ce52506af4d5aa0c2ac6eb83",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0037": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "0dd350c7fad9d51bd0a73412fd77600d87ca6c0306501e202ac13254700718f2",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0038": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "b5c7a56b8478d6e94f292e36428c999f7d2b159ae6eaa12f152b282c76555c2d",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0039": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "7f58ce7149cb2d8eecc31b59b6d93c8dcfc39835bfee3b20b04bf3db72ea05d3",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0042": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "964b0b7c575fb4c85761e403a370a1a881fcd7e4dd05e086a74c1c54adf9c7c4",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0043": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "53014f8bd86d528cd8a95f6cb5412c1b3e34232439908a147b5a50d4322c418e",
+      "labels": [
+        "person",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0114": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "c007047e3e4cafb0e9f7361205fbbf99eba406c2a2d48c27a1e4841c36d6981f",
+      "labels": [
+        "mud-pumping",
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0115": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "1134419530370ec181cc2dbdf7ed47abf34bf4bb36f84ecdb4c0558e375d0180",
+      "labels": [
+        "mud-pumping",
+        "on-rails"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0116": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "4aac1243132852bdd2e0dabe350ac2bbe6e1bff145fdb607bed02285a2a5b3dd",
+      "labels": [
+        "mud-pumping",
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0117": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "a8e0e30ee4662eecca1f750e4d92ea6165cc44a396312edaca6b89a06a91ba66",
+      "labels": [
+        "mud-pumping",
+        "tram-track"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0118": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "1c5790e05968d7a3413632eca28a9951451130120ae6c3be0d9fb3662522973e",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0119": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "cb92b7934e948289bd873fc48056ab1d859792c8b97117109824dbca1535e0ec",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0120": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "dc94d0155312b343e6ff5abae3d13658ce6e2e68d85a1e19ae327502112c7ade",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0121": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "206009d26edfc8c2e0f344aea9acb20cb6de8131d203ed7cb1f115b94e8ed2db",
+      "labels": [
+        "mud-pumping",
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0122": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "4f4b3464f0b5802d16878c1dc0f86b4269c3594bb418fcde23f59c8843e5a106",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0123": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "a71394a8fb92b54596294623d7fc56819949a317e4c10ea92c79c80708c94b39",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0251": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "aad562df6009953778cb9dff9d20017306b172423b3048045d7075007454e144",
+      "labels": [
+        "on-rails",
+        "person"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0253": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "e7783e56f279d39cd7bd7290d05da53a477bd864ffc3137b30bc05d962176634",
+      "labels": [
+        "tram-track",
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0254": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "894016b1cd34242641d03b1e60f84d320a5fef1107813f9d45d43e3c77279bfb",
+      "labels": [
+        "person"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0255": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "0255dda3dea077491f3d1ea3685abea083122dcb6a7cfcfec7f931dd8bf33c61",
+      "labels": [],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0256": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "ef44ddfdd8dd428bc6d4711e781a3acfab6551a4e271113972f2f9f4c5be9d0b",
+      "labels": [
+        "person",
+        "tram-track",
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0257": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "92ee9060e9af4c102a639559aace1bb2646cdc84e4eda9f46917fcf4fa36b689",
+      "labels": [
+        "on-rails",
+        "person",
+        "tram-track"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0258": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "ecb31c61f1c477f36a5340fe767db50b1f149adaffc2af007aaae1d5134fff0c",
+      "labels": [
+        "on-rails",
+        "person"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0259": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "40c4d08494b370ed9b2c47cf3957c3cf0f558a22009eafee581dd73a00829562",
+      "labels": [
+        "tram-track",
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0260": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "d269ec5abb041480939a115b70098c6b899559455a79121a6fcadfc4db68d848",
+      "labels": [
+        "person"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-cab-view/0261": {
+      "fold": null,
+      "group": "sunny-mountain-cab-view",
+      "image_sha256": "c907f3894e962844d9db2c4ac28771860d430f48f3489ad03b70394d0429251d",
+      "labels": [
+        "person",
+        "tram-track"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "sunny-mountain-stations/0228": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "8fb67a7950262b0a2133f19fd631fd9df52f83e1660f0a811abf3e9d0982f269",
+      "labels": [
+        "on-rails",
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0229": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "0354800bf80455fa7680958e010518b436ea155dca8b0abbc8d1e10092f0661b",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0230": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "505099662669780df8408d783f6869cfd7b572910896d2c7b6f0e27c7432cffb",
+      "labels": [
+        "on-rails",
+        "tram-track",
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0243": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "d048231d419c08d7176eaceaa89f964709a5a5de28918f80af2d6d5cb56dc892",
+      "labels": [
+        "on-rails"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0244": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "8d1edf47c4a0e099e6bac09702b9eb61358d689387405e5915c4b761311fb755",
+      "labels": [
+        "on-rails",
+        "person",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0245": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "ede5e722aa51b1edf1b7f3550819d1fa7c743d02958fb765bf9233ccf1ea1020",
+      "labels": [
+        "on-rails",
+        "person",
+        "tram-track"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0246": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "90a65adbb644d54e42c7e51d5cebfa0b1e554d4d34f442db24481dcd7007c74c",
+      "labels": [
+        "person",
+        "tram-track"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0247": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "a442fff38da0ce40c7e735cd036d9ad22fde5c1909107105ed77bd798ca3f872",
+      "labels": [
+        "truck"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0248": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "c489b83cc8d5e13b9e9ee4f588ba23a86a21404337b41cc01afb90627630275f",
+      "labels": [
+        "on-rails",
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0249": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "408760b135c0da743871d600304812e352ac956549d1987597238245735e8672",
+      "labels": [
+        "on-rails",
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0250": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "0956dd0c21f6af0a1387e957effd77c906124754c421ea783a885ae3ce8cf3f2",
+      "labels": [
+        "on-rails",
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "sunny-mountain-stations/0252": {
+      "fold": 4,
+      "group": "sunny-mountain-stations",
+      "image_sha256": "1749f26376edb32da712444c9e60186ff4bd29e1fed12a43bf0f659bf8e5a11b",
+      "labels": [
+        "on-rails",
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0000": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "e41473adaa20b0dfe8eecc7e6000f550ae13c68770e4946667d4c938e7a89230",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0021": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "f193c1a096a827f7ac610c2dfa2ef5244731e66842755d4d9a52dae046fadeb1",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0052": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "efc1a697946924df5b504e34114d2f5a5bdaff8ab191a9dd2c8d978a19525204",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0055": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "28f3b3d7bec0bf474a3fc09012c7f4ef1b0b5a4e37e51acf00fbc5bea657569b",
+      "labels": [
+        "mud-pumping",
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0056": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "ecf8e84d483b920ff62e729b88a34b2e02bc43b25ba2201f33a1d1233e98db4f",
+      "labels": [
+        "mud-pumping",
+        "person"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0057": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "76a244cf235702a8709bcd5845224a9a5785c3cd791a1fc89b4d54cf065746b8",
+      "labels": [
+        "mud-pumping",
+        "person",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0058": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "527bd4c6f5b48a8fa052db415d684acdb3dcbf8021025486fa219182ad9059ba",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0059": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "8f38d8ecfaf13ea9265b15f72d8c2a5f6320df894c563c0277971f5a71223076",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0060": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "af2519b33d6b5f52478d8c41669353834cbc46bda125e944b6f0f559e55e7d51",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0061": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "8bdf064f89bd89d79af62f1c4461b3024cfa2110a8194ff5044d74f7f592fc74",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0062": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "6f1c22c5a26f9c6f9349d1b7472ea93537d6383a9cda356167f51397f8e8f989",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0063": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "f25b27c24e3ff91436c5e3877a5df281c4dd826a5c70266f8b58faae4174a2e4",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0064": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "40ea4a91bdc724c6898236dad7394cdb56c3f9eff92be4c2d3cdc31bac221ba5",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0065": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "f03f57e248aa7907bdc8f6d9dc2d77aa18d6bd0c9408c1035bef8a148a559b79",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0066": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "6223c858287f0677fdc6d3b7cc8038c3ecc2f0d657d409ea0818439bb88d0fa5",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0067": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "0500732a4422c6db9e57d541c1a7f0c06c3e10fd30ca7e04d1cb512dcd29b739",
+      "labels": [
+        "mud-pumping",
+        "on-rails",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0068": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "2002370858caebe870952bed7a32a15d4c1e010a5b718f1e3c6e2a619ef1550f",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0069": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "f29f28360c7637a0569445615e72587d568ec754c219c552470709afefec21c0",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0070": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "8da8ac7ad697e79d43107c8ebe4903d9b515079f50e3b43f871cbcaca0df5d1e",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0071": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "3722b3d81a9495d0186d3ce92ec994c7f10c979ce8ebf1d78a787043f819a9f5",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0072": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "190287f82f43182bf0e583f603971ce568382ea6cb8bd6655a8483c3dd9de73a",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0073": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "5652f16f45d364803ae0cb7862cfd6866fbbefdeeefdf76929de1dbf58fe7814",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0074": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "093b845a2d8a639e83ffa1ecf5fde92d921664c2417e66a25b10d3dca8f6d55f",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0075": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "03904f8a2512daea1c39d2cbdedf3303eb95dcf456e4adbc73e729eb2d9aca10",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0076": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "2c8539da08f1b6584a3d127fd3a5f5050bdc5350404f6d4739a5e44dc6d6e78b",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0077": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "845a1cf210437b2039d48232df6099976b3cbf2a66266f2948cd84e0e8dd1a89",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0078": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "9072ecd1d6bd9a6ade7bbf9d4ebfe4912556baadda2bae4e1a66249b89915dc1",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0079": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "7245d072113222a13b028579251a425ef833a8850f977f01ffb13f42c5569754",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0080": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "045d4791802edd4766cb20165f7f89e48500708e9eacc4fb3176b9cd89733d49",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0081": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "eaf74d01f4f349885d90aff52c367596e2cba944e49a7b0feffd851b79a71ea1",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0082": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "65b79e130b09b882fa33f7676d2436a802b097d73fc606fa0428a40aa7592ed5",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0083": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "f93539c0825969b6f96f386dbaa98f06caadbcb1d80a39102a077ace90560d5e",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0084": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "78b655ec93b0e9575d9bf363a03233ad6e48a40c1e428e86125f919cccf38ced",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0085": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "1fe7cf2ae2eef9be85f098226cc6e927e226f7e34a356079eaf30f81a5517c08",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0086": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "9db552632140a4fe745fdf61a0d0fa31fc4952af06addd32095a7c1372bb9d8a",
+      "labels": [
+        "mud-pumping",
+        "on-rails",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0087": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "95207ac84f3acc3ff5c55764aa554bffc9f0a32f4cab08eaf951e2fe43877d51",
+      "labels": [
+        "mud-pumping",
+        "on-rails",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0088": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "d725e1c7a0e34cdd9a85ca766c2f77aae4456153fa89c7ec4ed4903841bcc25a",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0089": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "0055dcf9f3b23337c4d0b8675c5c94dc530eabdf296e211580d8631bfde63237",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0090": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "0a5483a0127931090560f2cb06532b9de62ff8978b5d2d75fc73f10c9e628fb9",
+      "labels": [
+        "mud-pumping",
+        "on-rails",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0091": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "140a0439c3c000cca0ab1e8fd90ed6598c8fdb0c15a7ebf645bf70366d6dd90b",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0092": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "b46f2ac36452a0a15ac8e7c69746492ff0b596b959f253d1612c3db9998b2895",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0093": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "6259e3456d036d7371c800562ffea682d470ccccfc442c166f67ae5f354b645f",
+      "labels": [
+        "mud-pumping",
+        "on-rails",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0094": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "e0ed8f532604e6e6555ff2fed40abf4191312f80d30033f9f5891f116ab17ef9",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0095": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "2c0673f9062a1f999a14ea9f32f3a730731ead900fcdf51751a187ad746dfc7b",
+      "labels": [
+        "mud-pumping",
+        "on-rails",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0096": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "4c21278ae3f78bf40f512492d07dff5fe47bcd04749b1b5bbb976b5f139f1b63",
+      "labels": [
+        "mud-pumping",
+        "on-rails",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0097": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "069e56fc048051d80ef3d6c175598cb6a1df2596f82c85bd8075f4b88100565a",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0098": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "fc04d89f6819407752a53d790ea973fc002344aa19eadc04b345225545c7ce53",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0099": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "34c0bbfd58571e1b86214468e7824979e09367e8aa452150512daa459ff8c186",
+      "labels": [
+        "mud-pumping",
+        "on-rails",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0100": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "295de469c85a2cbd063ed52a760230d5847fd6ca3ec792d4228e881a1fc88163",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": false,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0101": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "f18cd13f8be6e6da511d8cc5f6ff2f0e8e5ffa3cdc730d55f0752e075e4be9a7",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": false,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0102": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "d32849c8bde9dd413c6d0ab82ca84e62323fed3319cfb99825a11f91ac7baef3",
+      "labels": [
+        "mud-pumping",
+        "tram-track",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": false,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0103": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "bcd725f20e45aba176964b9c6318633c2f7a70f7664784eb0dfc98abf0940141",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0104": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "8af545cd5a93e866ceeaf9e8b89657bd1753fb543ecfc98e2121144440cb5e5b",
+      "labels": [
+        "mud-pumping"
+      ],
+      "role": "cv_fold",
+      "scored": false,
+      "source_split": "train"
+    },
+    "trackside-maintenance/0105": {
+      "fold": 1,
+      "group": "trackside-maintenance",
+      "image_sha256": "d1ad562afeae01ddb70bc66ae877af92f08918967c215ffefec2257c3ad76fa6",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": false,
+      "source_split": "train"
+    },
+    "trackside-vegetation-closeups/0011": {
+      "fold": 3,
+      "group": "trackside-vegetation-closeups",
+      "image_sha256": "25d53cf4cc92fc05960ba14cbc8d1b8d7a8d88b48dbf2ee8fb364b4479f8836e",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "trackside-vegetation-closeups/0012": {
+      "fold": 3,
+      "group": "trackside-vegetation-closeups",
+      "image_sha256": "6d411277b073c9f8148657c867b1259110caffbc10996436432e2bbef233e3c7",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "trackside-vegetation-closeups/0017": {
+      "fold": 3,
+      "group": "trackside-vegetation-closeups",
+      "image_sha256": "028a08528e4e767ba7b3c0cf28e85786354503f78c2dd0a447f206796a58013d",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "trackside-vegetation-closeups/0018": {
+      "fold": 3,
+      "group": "trackside-vegetation-closeups",
+      "image_sha256": "c63ccdb72ee621ea3abddc87464bce0d0d17c15f939a53a7189ff1ec3c846dd0",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "trackside-vegetation-closeups/0019": {
+      "fold": 3,
+      "group": "trackside-vegetation-closeups",
+      "image_sha256": "0f04b3c645dadb7431f751cf0813b5b34e40f34c8786fd50a006d9a58a70b608",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "trackside-vegetation-closeups/0020": {
+      "fold": 3,
+      "group": "trackside-vegetation-closeups",
+      "image_sha256": "1b155b4a115f6ef6baeca7676fd004b92d57f38e06386f5ff1bd7a83f362ec1b",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "trackside-vegetation-closeups/0027": {
+      "fold": 3,
+      "group": "trackside-vegetation-closeups",
+      "image_sha256": "06792293b475dd732fefad07c30e647b9a36431e1100f0842c4b21d219899267",
+      "labels": [
+        "mud-pumping",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "trackside-vegetation-closeups/0028": {
+      "fold": 3,
+      "group": "trackside-vegetation-closeups",
+      "image_sha256": "4e19459360e08e5f3877234f1a74ad6e98184568c64a7688ff552fb1f571e05c",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "trackside-vegetation-closeups/0029": {
+      "fold": 3,
+      "group": "trackside-vegetation-closeups",
+      "image_sha256": "b142c2c3b4d8b0c2f33874b0b2f674127f017b3fa6bce4bfa1549dc6c6a1f606",
+      "labels": [
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "val"
+    },
+    "vegetation-worksite/0262": {
+      "fold": 0,
+      "group": "vegetation-worksite",
+      "image_sha256": "54396730a7d632e6ac164891ed59aa4b248397c4bff8ad0524ee051361535740",
+      "labels": [
+        "truck",
+        "vegetation-overgrowth"
+      ],
+      "role": "cv_fold",
+      "scored": true,
+      "source_split": "train"
+    },
+    "winter-town-cab-view/0185": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "5886ace53044086e84b2f4b85a962b8fc5d0e5df0f398df5bff81f0cefcdd458",
+      "labels": [
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0186": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "7b53cc55f0bba2e1833ae405668e09335397f1631bd62e9570846377941ee427",
+      "labels": [
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0187": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "371f8cab2a02e7c906db6170d2bbcbd9b3c7d52734e13bb23a4134d5547e11e4",
+      "labels": [
+        "tram-track",
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0188": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "93065b17ef536461211968f71d3b394d46cb55404435af01f1702cc875cdc85c",
+      "labels": [
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0189": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "06118b62db2d8b18889a7d9354ef0877b3f5042e249ab6f22e11ad80c9f3242a",
+      "labels": [
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0190": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "55cf7c8129b7d290a98190185ebf3f9c9c1bcfda8b3256a472c4c639eff7e307",
+      "labels": [
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0191": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "fddfb8962d8961d625bea817fe5552ec2c1d016f4d6cc0fec53b8171c0f10c1d",
+      "labels": [
+        "tram-track"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0192": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "754211da40dd122ce82a710c71d8d2d60c6a74f3695406c8e58832fa940cea1a",
+      "labels": [
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0193": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "a7bfcd85a89725b2d02dab9f9806c3f52ba23dcde5b69e7808bff0e8fdbc4c95",
+      "labels": [
+        "on-rails",
+        "person",
+        "tram-track",
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0194": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "86bec697fc86a9152f90aa11441db7d66b5f096dac9422d72d66e592861f8801",
+      "labels": [
+        "tram-track"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0195": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "b011832e15f90292721c197db21ac1d902b6875259288cfca2f254319ca7f8a5",
+      "labels": [
+        "on-rails",
+        "tram-track",
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0196": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "6642757595beb9bad0e29bd2abf92ae99ddffef5f2d5a4fe2af3140090621eb3",
+      "labels": [
+        "tram-track",
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0197": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "d1fa3766125975c74594d24d6c5044627b07b4c6ea3e7134ad33d09e5767a8b0",
+      "labels": [
+        "on-rails",
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0198": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "cc5f67af19f67c1a6ec338148aac18a59457131b40eefe18cb47d42221300216",
+      "labels": [
+        "on-rails"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    },
+    "winter-town-cab-view/0199": {
+      "fold": null,
+      "group": "winter-town-cab-view",
+      "image_sha256": "bf2591468b8c776a8775aaf5f6535f7fa792b9c0ee28c52f9e87b591efe4c9b3",
+      "labels": [
+        "person",
+        "truck"
+      ],
+      "role": "holdout",
+      "scored": false,
+      "source_split": "test"
+    }
+  },
+  "method": {
+    "anomaly_classes": [
+      "mud-pumping",
+      "standing-water",
+      "vegetation-overgrowth"
+    ],
+    "balance_columns": [
+      "mud-pumping",
+      "on-rails",
+      "person",
+      "standing-water",
+      "tram-track",
+      "truck",
+      "vegetation-overgrowth",
+      "<images>"
+    ],
+    "folds": 5,
+    "holdout_splits": [
+      "test"
+    ],
+    "objective": "sum over balance columns c (each stratification label with scored images, plus the scored image count) and folds k of (x[k][c] / x[c] - 1/K)^2, where x[k][c] is the number of fold k's scored images carrying label c (or all of them) and x[c] its pool total; lower is better, 0 is a perfect 1/K share of every column in every fold. Exact integer arithmetic; ties broken by the canonical fold assignment.",
+    "pool_splits": [
+      "train",
+      "val"
+    ],
+    "presence_rule": "a class is present when its mask has any pixel of it (255 ignored)",
+    "rare_classes": [
+      "on-rails",
+      "person",
+      "tram-track",
+      "truck"
+    ],
+    "rare_threshold": 50,
+    "require_classes": [
+      "mud-pumping"
+    ],
+    "restarts": 2000,
+    "search": "per restart: iterative stratification over whole groups (rarest balance column first, each group to the fold that most lacks it, ties by image deficit then seeded RNG), then steepest descent over single-group moves and pairwise swaps; the best restart is kept",
+    "seed": 0,
+    "stratification_labels": [
+      "mud-pumping",
+      "on-rails",
+      "person",
+      "standing-water",
+      "tram-track",
+      "truck",
+      "vegetation-overgrowth"
+    ],
+    "val_min_side": 1024,
+    "viewpoints": "rad_9_24_2026-viewpoints.yaml",
+    "viewpoints_sha256": "7dfc4f730cbea1f9b991c75fa1d0c4efa1b5ef313f5e2dd944af028841998965"
+  },
+  "report": {
+    "cv_groups": 17,
+    "folds": [
+      {
+        "excluded_small_images": [
+          "miscellaneous-flood-stills/0275",
+          "miscellaneous-flood-stills/0276"
+        ],
+        "fold": 0,
+        "groups": [
+          "evening-water-cab-view",
+          "miscellaneous-flood-stills",
+          "miscellaneous-numbered-cab-views",
+          "new-unmatched-2026",
+          "vegetation-worksite"
+        ],
+        "label_images": {
+          "mud-pumping": 2,
+          "on-rails": 5,
+          "person": 6,
+          "standing-water": 10,
+          "tram-track": 2,
+          "truck": 3,
+          "vegetation-overgrowth": 19
+        },
+        "label_images_by_viewpoint": {
+          "cab-view": {
+            "mud-pumping": 2,
+            "on-rails": 4,
+            "person": 6,
+            "standing-water": 9,
+            "tram-track": 2,
+            "truck": 3,
+            "vegetation-overgrowth": 18
+          },
+          "other": {
+            "mud-pumping": 0,
+            "on-rails": 0,
+            "person": 0,
+            "standing-water": 0,
+            "tram-track": 0,
+            "truck": 0,
+            "vegetation-overgrowth": 0
+          },
+          "track-level": {
+            "mud-pumping": 0,
+            "on-rails": 1,
+            "person": 0,
+            "standing-water": 1,
+            "tram-track": 0,
+            "truck": 0,
+            "vegetation-overgrowth": 1
+          }
+        },
+        "label_pixel_share": {
+          "mud-pumping": 0.0014373050219822839,
+          "on-rails": 0.36162834008740213,
+          "person": 0.0792292737973949,
+          "standing-water": 0.05769539818012031,
+          "tram-track": 0.1710144842823909,
+          "truck": 0.27970202539837197,
+          "vegetation-overgrowth": 0.21144818375017752
+        },
+        "label_pixel_share_by_viewpoint": {
+          "cab-view": {
+            "mud-pumping": 0.03486088804995053
+          },
+          "other": {
+            "mud-pumping": null
+          },
+          "track-level": {
+            "mud-pumping": 0.0
+          }
+        },
+        "train_images": 218,
+        "val_images": 34,
+        "viewpoints": {
+          "cab-view": 33,
+          "track-level": 1
+        }
+      },
+      {
+        "excluded_small_images": [
+          "trackside-maintenance/0100",
+          "trackside-maintenance/0101",
+          "trackside-maintenance/0102",
+          "trackside-maintenance/0104",
+          "trackside-maintenance/0105"
+        ],
+        "fold": 1,
+        "groups": [
+          "flooded-road-crossing",
+          "green-roadside-cab-view",
+          "trackside-maintenance"
+        ],
+        "label_images": {
+          "mud-pumping": 49,
+          "on-rails": 9,
+          "person": 4,
+          "standing-water": 3,
+          "tram-track": 6,
+          "truck": 10,
+          "vegetation-overgrowth": 17
+        },
+        "label_images_by_viewpoint": {
+          "cab-view": {
+            "mud-pumping": 0,
+            "on-rails": 1,
+            "person": 1,
+            "standing-water": 0,
+            "tram-track": 6,
+            "truck": 10,
+            "vegetation-overgrowth": 5
+          },
+          "other": {
+            "mud-pumping": 0,
+            "on-rails": 0,
+            "person": 0,
+            "standing-water": 3,
+            "tram-track": 0,
+            "truck": 0,
+            "vegetation-overgrowth": 0
+          },
+          "track-level": {
+            "mud-pumping": 49,
+            "on-rails": 8,
+            "person": 3,
+            "standing-water": 0,
+            "tram-track": 0,
+            "truck": 0,
+            "vegetation-overgrowth": 12
+          }
+        },
+        "label_pixel_share": {
+          "mud-pumping": 0.958563544392745,
+          "on-rails": 0.08925746991068538,
+          "person": 0.40397476728732296,
+          "standing-water": 0.511086227115773,
+          "tram-track": 0.27776592511193465,
+          "truck": 0.4052705439236231,
+          "vegetation-overgrowth": 0.0033581307374120255
+        },
+        "label_pixel_share_by_viewpoint": {
+          "cab-view": {
+            "mud-pumping": 0.0
+          },
+          "other": {
+            "mud-pumping": null
+          },
+          "track-level": {
+            "mud-pumping": 0.9997843852311422
+          }
+        },
+        "train_images": 182,
+        "val_images": 67,
+        "viewpoints": {
+          "cab-view": 15,
+          "other": 3,
+          "track-level": 49
+        }
+      },
+      {
+        "excluded_small_images": [],
+        "fold": 2,
+        "groups": [
+          "flooded-station-platform",
+          "sunny-mainline-cab-view"
+        ],
+        "label_images": {
+          "mud-pumping": 48,
+          "on-rails": 4,
+          "person": 3,
+          "standing-water": 8,
+          "tram-track": 5,
+          "truck": 6,
+          "vegetation-overgrowth": 20
+        },
+        "label_images_by_viewpoint": {
+          "cab-view": {
+            "mud-pumping": 48,
+            "on-rails": 2,
+            "person": 2,
+            "standing-water": 0,
+            "tram-track": 5,
+            "truck": 6,
+            "vegetation-overgrowth": 19
+          },
+          "other": {
+            "mud-pumping": 0,
+            "on-rails": 2,
+            "person": 1,
+            "standing-water": 3,
+            "tram-track": 0,
+            "truck": 0,
+            "vegetation-overgrowth": 1
+          },
+          "track-level": {
+            "mud-pumping": 0,
+            "on-rails": 0,
+            "person": 0,
+            "standing-water": 5,
+            "tram-track": 0,
+            "truck": 0,
+            "vegetation-overgrowth": 0
+          }
+        },
+        "label_pixel_share": {
+          "mud-pumping": 0.01965050293762856,
+          "on-rails": 0.07137696947383099,
+          "person": 0.17128481999363568,
+          "standing-water": 0.3875019002323713,
+          "tram-track": 0.06696058030651968,
+          "truck": 0.10071094354988239,
+          "vegetation-overgrowth": 0.05820265782339798
+        },
+        "label_pixel_share_by_viewpoint": {
+          "cab-view": {
+            "mud-pumping": 0.4766100253995612
+          },
+          "other": {
+            "mud-pumping": null
+          },
+          "track-level": {
+            "mud-pumping": 0.0
+          }
+        },
+        "train_images": 192,
+        "val_images": 62,
+        "viewpoints": {
+          "cab-view": 54,
+          "other": 3,
+          "track-level": 5
+        }
+      },
+      {
+        "excluded_small_images": [],
+        "fold": 3,
+        "groups": [
+          "green-water-cab-view",
+          "miscellaneous-mud-cab-view",
+          "overcast-mountain-stations",
+          "trackside-vegetation-closeups"
+        ],
+        "label_images": {
+          "mud-pumping": 2,
+          "on-rails": 10,
+          "person": 3,
+          "standing-water": 5,
+          "tram-track": 7,
+          "truck": 4,
+          "vegetation-overgrowth": 15
+        },
+        "label_images_by_viewpoint": {
+          "cab-view": {
+            "mud-pumping": 1,
+            "on-rails": 10,
+            "person": 3,
+            "standing-water": 5,
+            "tram-track": 7,
+            "truck": 4,
+            "vegetation-overgrowth": 6
+          },
+          "other": {
+            "mud-pumping": 0,
+            "on-rails": 0,
+            "person": 0,
+            "standing-water": 0,
+            "tram-track": 0,
+            "truck": 0,
+            "vegetation-overgrowth": 0
+          },
+          "track-level": {
+            "mud-pumping": 1,
+            "on-rails": 0,
+            "person": 0,
+            "standing-water": 0,
+            "tram-track": 0,
+            "truck": 0,
+            "vegetation-overgrowth": 9
+          }
+        },
+        "label_pixel_share": {
+          "mud-pumping": 0.0009470366571385744,
+          "on-rails": 0.28331937473644553,
+          "person": 0.02751772253107961,
+          "standing-water": 0.0219357395704389,
+          "tram-track": 0.33358857156217486,
+          "truck": 0.11620227807327209,
+          "vegetation-overgrowth": 0.565255098052219
+        },
+        "label_pixel_share_by_viewpoint": {
+          "cab-view": {
+            "mud-pumping": 0.017955771642082213
+          },
+          "other": {
+            "mud-pumping": null
+          },
+          "track-level": {
+            "mud-pumping": 0.00021561476885781562
+          }
+        },
+        "train_images": 219,
+        "val_images": 35,
+        "viewpoints": {
+          "cab-view": 26,
+          "track-level": 9
+        }
+      },
+      {
+        "excluded_small_images": [],
+        "fold": 4,
+        "groups": [
+          "rain-water-cab-view-with-overlay",
+          "rural-overcast-cab-view",
+          "sunny-mountain-stations"
+        ],
+        "label_images": {
+          "mud-pumping": 17,
+          "on-rails": 9,
+          "person": 8,
+          "standing-water": 14,
+          "tram-track": 4,
+          "truck": 4,
+          "vegetation-overgrowth": 18
+        },
+        "label_images_by_viewpoint": {
+          "cab-view": {
+            "mud-pumping": 17,
+            "on-rails": 9,
+            "person": 8,
+            "standing-water": 14,
+            "tram-track": 4,
+            "truck": 4,
+            "vegetation-overgrowth": 17
+          },
+          "other": {
+            "mud-pumping": 0,
+            "on-rails": 0,
+            "person": 0,
+            "standing-water": 0,
+            "tram-track": 0,
+            "truck": 0,
+            "vegetation-overgrowth": 1
+          },
+          "track-level": {
+            "mud-pumping": 0,
+            "on-rails": 0,
+            "person": 0,
+            "standing-water": 0,
+            "tram-track": 0,
+            "truck": 0,
+            "vegetation-overgrowth": 0
+          }
+        },
+        "label_pixel_share": {
+          "mud-pumping": 0.01940161099050552,
+          "on-rails": 0.194417845791636,
+          "person": 0.3179934163905669,
+          "standing-water": 0.021780734901296502,
+          "tram-track": 0.15067043873697994,
+          "truck": 0.09811420905485045,
+          "vegetation-overgrowth": 0.16173592963679354
+        },
+        "label_pixel_share_by_viewpoint": {
+          "cab-view": {
+            "mud-pumping": 0.47057331490840604
+          },
+          "other": {
+            "mud-pumping": null
+          },
+          "track-level": {
+            "mud-pumping": 0.0
+          }
+        },
+        "train_images": 209,
+        "val_images": 45,
+        "viewpoints": {
+          "cab-view": 44,
+          "other": 1
+        }
+      }
+    ],
+    "holdout_groups": [
+      "flooded-trackside-woodland",
+      "rural-non-electrified-cab-view",
+      "sunny-mountain-cab-view",
+      "winter-town-cab-view"
+    ],
+    "holdout_images": 60,
+    "label_coverage_warnings": [],
+    "label_scored_groups": {
+      "mud-pumping": [
+        "miscellaneous-mud-cab-view",
+        "miscellaneous-numbered-cab-views",
+        "rural-overcast-cab-view",
+        "sunny-mainline-cab-view",
+        "trackside-maintenance",
+        "trackside-vegetation-closeups"
+      ],
+      "on-rails": [
+        "flooded-station-platform",
+        "green-roadside-cab-view",
+        "miscellaneous-flood-stills",
+        "miscellaneous-numbered-cab-views",
+        "new-unmatched-2026",
+        "overcast-mountain-stations",
+        "sunny-mainline-cab-view",
+        "sunny-mountain-stations",
+        "trackside-maintenance"
+      ],
+      "person": [
+        "flooded-station-platform",
+        "green-roadside-cab-view",
+        "miscellaneous-numbered-cab-views",
+        "new-unmatched-2026",
+        "overcast-mountain-stations",
+        "sunny-mainline-cab-view",
+        "sunny-mountain-stations",
+        "trackside-maintenance"
+      ],
+      "standing-water": [
+        "evening-water-cab-view",
+        "flooded-road-crossing",
+        "flooded-station-platform",
+        "green-water-cab-view",
+        "miscellaneous-flood-stills",
+        "rain-water-cab-view-with-overlay"
+      ],
+      "tram-track": [
+        "evening-water-cab-view",
+        "green-roadside-cab-view",
+        "miscellaneous-numbered-cab-views",
+        "overcast-mountain-stations",
+        "rural-overcast-cab-view",
+        "sunny-mainline-cab-view",
+        "sunny-mountain-stations"
+      ],
+      "truck": [
+        "green-roadside-cab-view",
+        "miscellaneous-numbered-cab-views",
+        "overcast-mountain-stations",
+        "rain-water-cab-view-with-overlay",
+        "sunny-mainline-cab-view",
+        "sunny-mountain-stations",
+        "vegetation-worksite"
+      ],
+      "vegetation-overgrowth": [
+        "evening-water-cab-view",
+        "flooded-station-platform",
+        "green-roadside-cab-view",
+        "green-water-cab-view",
+        "miscellaneous-flood-stills",
+        "miscellaneous-mud-cab-view",
+        "miscellaneous-numbered-cab-views",
+        "overcast-mountain-stations",
+        "rain-water-cab-view-with-overlay",
+        "rural-overcast-cab-view",
+        "sunny-mainline-cab-view",
+        "sunny-mountain-stations",
+        "trackside-maintenance",
+        "trackside-vegetation-closeups",
+        "vegetation-worksite"
+      ]
+    },
+    "label_scored_images": {
+      "mud-pumping": 118,
+      "on-rails": 37,
+      "person": 24,
+      "standing-water": 40,
+      "tram-track": 24,
+      "truck": 27,
+      "vegetation-overgrowth": 89
+    },
+    "pool_groups": 18,
+    "pool_images": 254,
+    "scored_images": 243,
+    "search": {
+      "distinct_local_optima": 5,
+      "infeasible_restarts": 0,
+      "objective": 0.3455515110999417,
+      "objective_exact": "616173214623273377/1783158790600864800",
+      "restarts": 2000,
+      "restarts_reaching_best": 888
+    },
+    "small_images_never_scored": [
+      "flooded-stone-bridge/0270",
+      "flooded-stone-bridge/0271",
+      "flooded-stone-bridge/0310",
+      "flooded-stone-bridge/0311",
+      "miscellaneous-flood-stills/0275",
+      "miscellaneous-flood-stills/0276",
+      "trackside-maintenance/0100",
+      "trackside-maintenance/0101",
+      "trackside-maintenance/0102",
+      "trackside-maintenance/0104",
+      "trackside-maintenance/0105"
+    ],
+    "train_all_folds_groups": [
+      "flooded-stone-bridge"
+    ]
+  },
+  "scheme": "stratified-group-kfold",
+  "source": {
+    "dataset": "rad_9_24_2026-fixed-grouped",
+    "grouping_status": "provisional_until_recording_provenance_confirmed",
+    "samples_sha256": "46e5b404cb1e2da101c9ac01490f072552804e5a44125937564c57469bd58975",
+    "splits_sha256": "12d7b367c72cda61d57686ff2ac28223530d0af49debd9fb7a0fbc68b908bc93"
+  }
+}

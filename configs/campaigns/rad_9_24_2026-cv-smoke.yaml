@@ -1,0 +1,42 @@
+# GPU preflight for rad_9_24_2026-cv: the same cross_validation block on fold 1 only (the fold
+# that holds trackside-maintenance and leaves its small frames out), a few steps per job, no
+# early stopping, final checkpoint primary, and the stride-sensitive smp model. Its completed
+# states feed scripts/validate_rtis_launch.py for the CV campaign planned from the same code
+# revision; it never produces results.
+name: rad_9_24_2026-cv-smoke
+smoke: true
+dataset: rad_9_24_2026-cv
+dataset_config: configs/datasets/rad_9_24_2026-cv.yaml
+model_catalog: configs/campaigns/all_models_cityscapes_railsem19.yaml
+status: smoke
+publisher: false
+cross_validation:
+  scheme: stratified-group-kfold
+  folds: 5
+  seed: 0
+  restarts: 2000
+  primary_checkpoint: final
+  run_folds: [1]
+models:
+- smp_deeplabv3plus_resnet101
+- eomt_dinov3_large
+- segformer_b5
+seeds:
+- 0
+target_steps: 40
+batch_size: 2
+accumulation: 8
+validation_interval: 20
+checkpoint_interval: 20
+num_workers: 2
+protocols:
+  rtis_only:
+    label: Recipe pretrained initialization -> RTIS
+    source_protocol: null
+  cityscapes_to_rtis:
+    label: Cityscapes -> RTIS
+    source_protocol: cityscapes
+collection_contract: rtis-full-statistics-v1
+selection_metric: val_iou/mud-pumping
+caveats:
+- Smoke campaign; results are execution evidence only.

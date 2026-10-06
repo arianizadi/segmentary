@@ -288,6 +288,80 @@ def test_initialize_freezes_policy_sizes_and_smoke_from_plan(tmp_path, monkeypat
     assert rtis.verify_frozen(root, tmp_path)["gpu_policy_sha256"] == campaign["gpu_policy_sha256"]
 
 
+@pytest.mark.parametrize("primary", [None, "best", "final"])
+def test_initialize_records_primary_checkpoint_only_when_planned(tmp_path, monkeypatch, primary):
+    plan = {"gpu_allowlist": [2]} | ({"primary_checkpoint": primary} if primary else {})
+    root = _initialize_fixture(tmp_path, monkeypatch, plan)
+    rtis.initialize(root, tmp_path)
+    campaign = rtis.read(root / "campaign.json")
+    assert campaign.get("primary_checkpoint") == primary
+    if primary == "final":
+        assert campaign["selection"].startswith("final checkpoint at the fixed step budget")
+    else:
+        assert campaign["selection"] == (
+            "best validation checkpoint; auto raw/EMA-safe weights; no TTA"
+        )
+
+
+@pytest.mark.parametrize("primary", [None, "final"])
+def test_run_job_refuses_an_early_stop_when_the_final_checkpoint_is_primary(
+    tmp_path, monkeypatch, primary
+):
+    from types import SimpleNamespace
+
+    campaign = write_campaign(tmp_path, jobs=["job"], collection_contract="rtis-full-statistics-v1")
+    data_root = tmp_path / "data"
+    data_root.mkdir()
+    (data_root / "splits.json").write_text("s")
+    campaign.update(split_sha256=rtis.digest(data_root / "splits.json"), target_steps=4000)
+    if primary:
+        campaign["primary_checkpoint"] = primary
+    config = tmp_path / "job.yaml"
+    config.write_text("job")
+    job = {"name": "job", "config": str(config), "config_sha256": rtis.digest(config)}
+    job["source_checkpoint"] = None
+    run = tmp_path / "future-runs/job_seed0/rtis"
+    run.mkdir(parents=True)
+    rtis.write(
+        run / "results.json",
+        {
+            "env": {
+                "training_stop": {
+                    "reason": "validation_plateau",
+                    "actual_steps": 1000,
+                    "maximum_steps": 4000,
+                    "patience": 5,
+                }
+            },
+            "metrics": {"miou": 0.5},
+        },
+    )
+    cfg = SimpleNamespace(
+        stages=[SimpleNamespace(data=[SimpleNamespace(root=str(data_root))])],
+        output_root=str(tmp_path / "future-runs"),
+        name="job",
+        train=SimpleNamespace(seed=0),
+    )
+    monkeypatch.setitem(
+        sys.modules, "segmentary.config", SimpleNamespace(load_experiment=lambda layers: cfg)
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "segmentary.utils.resource_tracking",
+        SimpleNamespace(run_recorded=lambda command, **kwargs: None),
+    )
+    monkeypatch.setattr(
+        rtis,
+        "checkpoint_info",
+        lambda path: {"path": str(path), "sha256": "x", "global_step": 1000},
+    )
+    # An early-stopped run is valid evidence for the best-checkpoint contract (the job then
+    # fails later only because this fixture has no best checkpoint), never for final.
+    match = "full step budget" if primary == "final" else "exactly one best checkpoint"
+    with pytest.raises(RuntimeError, match=match):
+        rtis.run_job(tmp_path, tmp_path, job, 2, campaign)
+
+
 def test_initialize_refuses_plan_without_allowlist(tmp_path, monkeypatch):
     root = _initialize_fixture(tmp_path, monkeypatch, {})
     with pytest.raises(GpuPolicyError, match="gpu_allowlist"):

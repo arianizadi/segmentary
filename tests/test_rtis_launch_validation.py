@@ -208,7 +208,7 @@ def test_rad_manifests_match_the_arms_and_smoke_covers_slow_families():
     )
     arms = ("paul", "fixed-grouped")
     assert sorted(p.name for p in (REPO / "configs/campaigns").glob("rad_9_24_2026-*.yaml")) == [
-        f"rad_9_24_2026-{a}.yaml" for a in ("fixed-grouped", "paul", "smoke")
+        f"rad_9_24_2026-{a}.yaml" for a in ("cv-smoke", "cv", "fixed-grouped", "paul", "smoke")
     ]
     for arm in arms:
         spec = yaml.safe_load((REPO / f"configs/campaigns/rad_9_24_2026-{arm}.yaml").read_text())
@@ -232,3 +232,16 @@ def test_rad_manifests_match_the_arms_and_smoke_covers_slow_families():
     assert set(TOP10) <= ids
     assert {"smp_fpn_resnet50", "eomt_dinov3_large", "hrnet_w48_ocr"} == set(smoke["models"])
     assert set(smoke["models"]) <= set(TOP10)
+
+
+def test_plan_records_primary_checkpoint_only_when_the_manifest_sets_it(tmp_path, monkeypatch):
+    plan, _ = _plan(tmp_path, monkeypatch, BASE_MANIFEST, "--gpus", "2")
+    assert "primary_checkpoint" not in plan
+    final = {**BASE_MANIFEST, "primary_checkpoint": "final"}
+    plan, _ = _plan(tmp_path / "final", monkeypatch, final, "--gpus", "2")
+    assert plan["primary_checkpoint"] == "final"
+    with pytest.raises(ValueError, match="early_stopping_patience"):
+        _plan(tmp_path / "es", monkeypatch, {**final, "early_stopping_patience": 5}, "--gpus", "2")
+    with pytest.raises(ValueError, match="primary_checkpoint must be"):
+        _plan(tmp_path / "bad", monkeypatch, {**final, "primary_checkpoint": "last"}, "--gpus", "2")
+    assert not (tmp_path / "es/out").exists() and not (tmp_path / "bad/out").exists()

@@ -80,6 +80,9 @@ and saved predictions with `./scripts/inspect.sh /path/to/bundle`.
 - [rad_9_24_2026: two comparable training arms](guides/rad-9-24-2026.md)
   builds the Paul-label (stratified split) and fixed-grouped datasets from one
   delivery with a label audit and render-parity check.
+- [Cross-validation (stratified group k-fold)](guides/cross-validation.md): make
+  group folds of any grouped folder dataset, plan one campaign over all folds with
+  final-checkpoint scoring, and read pooled out-of-fold metrics.
 - [Evaluation and results](guides/evaluation-and-results.md) explains native and
   common endpoints, EMA versus raw weights, final versus best checkpoints, TTA,
   multi-seed aggregation, and reproducible result records.

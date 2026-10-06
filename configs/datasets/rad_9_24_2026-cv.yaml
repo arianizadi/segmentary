@@ -1,0 +1,23 @@
+# rad_9_24_2026 stratified group 5-fold cross-validation. The root holds cv-spec.json and one
+# prepared dataset view per fold (fold-<k>/: val = fold k, train = the other pool groups,
+# test = the held-out grouped test groups, never scored), made from the fixed-grouped arm by
+# `segmentary-make-split --scheme stratified-group-kfold`. plan_rtis_campaign.py points each
+# job at its fold view. Tracked fold assignment: configs/datasets/rad_9_24_2026-cv-spec.json.
+# Guide: docs/guides/cross-validation.md.
+name: rad_9_24_2026-cv
+space: paul-test-rtis
+taxonomy_root: taxonomy
+output_root: runs/rad_9_24_2026-cv
+stages:
+- name: rtis
+  data:
+  - name: rad_9_24_2026-cv
+    root: data/rad_9_24_2026-cv
+    loader: folder
+    mapping: paul-test-rtis
+    train_split: train
+    val_split: val
+    split_file: splits.json
+    loader_options:
+      require_groups: true
+  init_from: pretrained

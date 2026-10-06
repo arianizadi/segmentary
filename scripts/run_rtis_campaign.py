@@ -120,6 +120,43 @@ def verify_samples(data_root, samples):
             raise RuntimeError(f"Dataset content changed: {mask}")
 
 
+def split_sizes(splits):
+    return {
+        split: len(keys)
+        for split, keys in splits.items()
+        if isinstance(keys, list) and not split.startswith("_")
+    }
+
+
+def job_dataset(record, job):
+    """The dataset identity a job must match: its CV fold's, else the plan's/campaign's own.
+
+    ``record`` is a plan or a campaign; the result carries ``split_sha256`` (and, for a
+    campaign, ``dataset_audit_sha256`` and ``dataset_sizes``)."""
+    if "fold" not in job:
+        return record
+    return record["cross_validation"]["fold_datasets"][str(job["fold"])]
+
+
+def verify_fold_datasets(cv):
+    """Hash every sample of every planned cross-validation fold dataset."""
+    folds = {}
+    for key, entry in sorted(cv["fold_datasets"].items(), key=lambda item: int(item[0])):
+        data_root = Path(entry["root"])
+        if digest(data_root / "splits.json") != entry["split_sha256"]:
+            raise RuntimeError(f"Fold {key} dataset split changed")
+        samples = read(data_root / "audit/samples.json")
+        verify_samples(data_root, samples)
+        folds[key] = {
+            **entry,
+            "dataset_audit_sha256": digest(data_root / "audit/samples.json"),
+            "dataset_sizes": split_sizes(read(data_root / "splits.json")),
+            "dataset_samples_verified": len(samples),
+        }
+        print(f"Verified fold {key}: {len(samples)} samples", flush=True)
+    return folds
+
+
 def initialize(root, repo):
     if (root / "campaign.json").exists():
         raise RuntimeError("Campaign already initialized; use worker to resume")
@@ -131,24 +168,28 @@ def initialize(root, repo):
     policy = gpu_policy.freeze(plan["gpu_allowlist"], gpu_policy.inventory(), gpu_policy.hostname())
     from segmentary.config import load_experiment
 
-    data_cfg = load_experiment([Path(plan["jobs"][0]["config"])])
-    data_root = Path(data_cfg.stages[0].data[0].root)
-    samples = read(data_root / "audit/samples.json")
-    verify_samples(data_root, samples)
-    splits = read(data_root / "splits.json")
-    dataset_sizes = {
-        split: len(keys)
-        for split, keys in splits.items()
-        if isinstance(keys, list) and not split.startswith("_")
-    }
+    cv = plan.get("cross_validation")
+    if cv:
+        folds = verify_fold_datasets(cv)
+        samples_verified = sum(f["dataset_samples_verified"] for f in folds.values())
+        dataset_sizes = None  # per fold, in campaign["cross_validation"]
+    else:
+        data_cfg = load_experiment([Path(plan["jobs"][0]["config"])])
+        data_root = Path(data_cfg.stages[0].data[0].root)
+        samples = read(data_root / "audit/samples.json")
+        verify_samples(data_root, samples)
+        samples_verified = len(samples)
+        dataset_sizes = split_sizes(read(data_root / "splits.json"))
     verified = {}
     for job in plan["jobs"]:
         if digest(job["config"]) != job["config_sha256"]:
             raise RuntimeError(f"Config changed: {job['name']}")
         cfg = load_experiment([Path(job["config"])])
         data_root = Path(cfg.stages[0].data[0].root)
-        if digest(data_root / "splits.json") != plan["split_sha256"]:
+        if digest(data_root / "splits.json") != job_dataset(plan, job)["split_sha256"]:
             raise RuntimeError("Dataset split changed")
+        if cv and data_root != Path(job_dataset(plan, job)["root"]):
+            raise RuntimeError(f"{job['name']} does not train on its fold dataset")
         output = Path(cfg.output_root).resolve()
         if not output.is_relative_to(root) or output == root:
             raise RuntimeError("Run outputs must be inside the new campaign directory")
@@ -175,13 +216,24 @@ def initialize(root, repo):
         "grouping_status": plan["grouping_status"],
         "dataset_sizes": dataset_sizes,
         "source_checkpoints": verified,
-        "dataset_samples_verified": len(samples),
-        "dataset_audit_sha256": digest(data_root / "audit/samples.json"),
+        "dataset_samples_verified": samples_verified,
+        "dataset_audit_sha256": None if cv else digest(data_root / "audit/samples.json"),
         "target_steps": plan["target_steps_per_job"],
         "selection": "best validation checkpoint; auto raw/EMA-safe weights; no TTA",
         "test": "held out; not evaluated",
         "retention": "Keep best and final; delete periodic snapshots only after successful validation. Keep failed-run checkpoints for recovery.",
     }
+    if "primary_checkpoint" in plan:
+        # Absent from older plans, whose campaign.json therefore stays unchanged.
+        campaign["primary_checkpoint"] = plan["primary_checkpoint"]
+        if plan["primary_checkpoint"] == "final":
+            campaign["selection"] = (
+                "final checkpoint at the fixed step budget (no early stopping); auto "
+                "raw/EMA-safe weights; no TTA. The best-on-val checkpoint is kept and scored "
+                "as secondary evidence only"
+            )
+    if cv:
+        campaign["cross_validation"] = {**cv, "fold_datasets": folds}
     write(root / "campaign.json", campaign)
     for job in plan["jobs"]:
         write(root / "state" / f"{job['name']}.json", {"name": job["name"], "status": "queued"})
@@ -267,7 +319,8 @@ def run_job(root, repo, job, gpu, campaign):
     if digest(job["config"]) != job["config_sha256"]:
         raise RuntimeError("Config digest mismatch")
     cfg = load_experiment([Path(job["config"])])
-    if digest(Path(cfg.stages[0].data[0].root) / "splits.json") != campaign["split_sha256"]:
+    expected = job_dataset(campaign, job)["split_sha256"]
+    if digest(Path(cfg.stages[0].data[0].root) / "splits.json") != expected:
         raise RuntimeError("Dataset split changed")
     source = job["source_checkpoint"]
     if source and digest(source["checkpoint"]) != source["recorded_sha256"]:
@@ -334,6 +387,13 @@ def run_job(root, repo, job, gpu, campaign):
         last = checkpoint_info(run / "last.ckpt")
         training = read(run / "results.json")
         stop = validate_stop(training, last["global_step"], campaign["target_steps"])
+        if (
+            campaign.get("primary_checkpoint") == "final"
+            and stop.get("reason") != "budget_complete"
+        ):
+            raise RuntimeError(
+                "primary_checkpoint final requires the full step budget, no early stop"
+            )
 
         best_paths = list(run.glob("best*.ckpt"))
         if len(best_paths) != 1:

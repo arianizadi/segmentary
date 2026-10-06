@@ -29,6 +29,10 @@ Equivalent source-checkout examples:
         --group-regex '^(?P<group>run_[^_]+)_' \\
         --out-root /datasets/my_project
 
+Cross-validation folds of an already prepared grouped dataset (whole groups per fold,
+stratified on class presence) use ``--scheme stratified-group-kfold``; see
+``segmentary.data.group_cv`` and docs/guides/cross-validation.md.
+
 By default the output tree contains absolute symlinks to the immutable source
 files.  Use ``--materialize hardlink`` or ``--materialize copy`` when the output
 must be self-contained.  Existing output roots are never overwritten.
@@ -43,6 +47,7 @@ import os
 import random
 import re
 import shutil
+import sys
 import tempfile
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
@@ -394,6 +399,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    arguments = sys.argv[1:] if argv is None else list(argv)
+    if any(a == "--scheme" or a.startswith("--scheme=") for a in arguments):
+        # Cross-validation folds of an already prepared, grouped dataset.
+        from .data.group_cv import main as group_cv_main
+
+        return group_cv_main(arguments)
     parser = build_parser()
     args = parser.parse_args(argv)
     try:

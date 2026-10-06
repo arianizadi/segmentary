@@ -254,10 +254,11 @@ def validate_split_coverage(results, splits):
 def validate_dataset(root, job, cfg, campaign):
     """Fail before model loading if the frozen dataset contract no longer matches."""
     data_root = Path(cfg.stages[0].data[0].root)
+    dataset = runtime.job_dataset(campaign, job)  # a CV job's own fold, else the campaign's
     for path, expected in (
         (Path(job["config"]), job["config_sha256"]),
-        (data_root / "splits.json", campaign["split_sha256"]),
-        (data_root / "audit/samples.json", campaign["dataset_audit_sha256"]),
+        (data_root / "splits.json", dataset["split_sha256"]),
+        (data_root / "audit/samples.json", dataset["dataset_audit_sha256"]),
     ):
         actual = runtime.digest(path)
         if actual != expected:
@@ -283,7 +284,7 @@ def validate_dataset(root, job, cfg, campaign):
                 f"Images overlap dataset splits: {sorted(seen.intersection(actual_keys))}"
             )
         seen.update(actual_keys)
-        count = campaign.get("dataset_sizes", {}).get(split, len(expected_keys))
+        count = (dataset.get("dataset_sizes") or {}).get(split, len(expected_keys))
         if len(actual_keys) != count:
             raise RuntimeError(f"Dataset {split}: expected {count} images, got {len(actual_keys)}")
         for kind in ("images", "masks"):

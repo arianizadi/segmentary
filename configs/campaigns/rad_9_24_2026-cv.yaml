@@ -1,0 +1,67 @@
+# rad_9_24_2026 stratified group 5-fold cross-validation: ONE campaign, one job per
+# model x protocol x fold x seed (`<model>--<protocol>--fold-<k>--seed-<s>`). Same recipe as
+# the fixed-grouped arm except that nothing is selected on the held-out fold: no early stopping
+# (the key is absent), every job trains the full target_steps and the FINAL checkpoint is the
+# primary result; the best-on-val checkpoint is still kept and scored, as labelled secondary
+# evidence only. GPUs are not chosen here: plan_rtis_campaign.py --gpus freezes the allowlist.
+# Guide: docs/guides/cross-validation.md.
+name: rad_9_24_2026-cv
+dataset: rad_9_24_2026-cv
+dataset_config: configs/datasets/rad_9_24_2026-cv.yaml
+model_catalog: configs/campaigns/all_models_cityscapes_railsem19.yaml
+status: full-statistics
+publisher: false
+# Must equal the dataset root's cv-spec.json (the planner refuses a mismatch).
+cross_validation:
+  scheme: stratified-group-kfold
+  folds: 5
+  seed: 0
+  restarts: 2000
+  stratify:
+    anomaly_classes: [mud-pumping, standing-water, vegetation-overgrowth]
+    rare_threshold: 50
+  pool: [train, val]
+  holdout: [test]
+  val_min_side: 1024
+  primary_checkpoint: final
+# PLACEHOLDER: five of the current top results. The final list is decided after the
+# fixed-grouped arm finishes.
+models:
+- eomt_dinov3_large
+- eomt_large
+- segformer_b5
+- segformer_b2
+- smp_deeplabv3plus_resnet101
+seeds:
+- 0
+target_steps: 4000
+batch_size: 2
+accumulation: 8
+validation_interval: 250
+checkpoint_interval: 500
+num_workers: 2
+# All four by default (100 jobs, ~144 GPU-h). For "best protocol per model" (25 jobs, ~36 GPU-h)
+# add a model_protocols map, e.g.
+#   model_protocols: {eomt_dinov3_large: [railsem19_to_rtis], segformer_b5: [rtis_only], ...}
+# chosen from the fixed-grouped arm once it finishes; see docs/guides/cross-validation.md.
+protocols:
+  rtis_only:
+    label: Recipe pretrained initialization -> RTIS
+    source_protocol: null
+  cityscapes_to_rtis:
+    label: Cityscapes -> RTIS
+    source_protocol: cityscapes
+  railsem19_to_rtis:
+    label: RailSem19 -> RTIS
+    source_protocol: railsem19
+  cityscapes_to_railsem19_to_rtis:
+    label: Cityscapes -> RailSem19 -> RTIS
+    source_protocol: cityscapes_to_railsem19
+collection_contract: rtis-full-statistics-v1
+# Metric of the secondary best checkpoint only; it never stops training or picks the result.
+selection_metric: val_iou/mud-pumping
+caveats:
+- 5-fold group CV; read scripts/cv_report.py output (pooled out-of-fold), never one fold alone.
+- Primary result is the final checkpoint at 4000 steps; best-on-val numbers are secondary and optimistic.
+- Scene groups are visual layout names, not confirmed recording provenance.
+- Test (the held-out grouped test groups) is never evaluated.
