@@ -12,6 +12,13 @@ eomt_dinov3_large             tue-mps/eomt-dinov3-coco-panoptic-large-640; 640 g
 mask2former_dinov3            BLOCKED: vanilla DINOv3 has no feature pyramid;
                               requires Meta's DINOv3 Adapter implementation
 hrnet_w48_ocr                 timm hrnet_w48 (ImageNet) + models.heads.OCRHead
+bisenetv1_r18                 BiSeNet V1, timm resnet18.tv_in1k context path,
+                              two context-path auxiliary heads (training only)
+bisenetv2                     BiSeNet V2 from scratch (vendored CoinCheung code),
+                              four booster heads (training only)
+espnet                        ESPNet v1, full decoder, p=2 q=8, from scratch
+denseaspp121                  DenseASPP, timm densenet121.tv_in1k at stride 8
+denseaspp161                  DenseASPP, timm densenet161.tv_in1k at stride 8
 deeplabv3plus_r101            smp DeepLabV3Plus, resnet101/imagenet
 upernet_r101                  smp UPerNet, resnet101/imagenet
 smp                           reviewed smp decoder + explicit encoder/weights
@@ -41,6 +48,9 @@ from typing import Any, TypeVar, cast
 from torch import nn
 
 from ..config import ModelConfig, SMPDecoder
+from .bisenet import BiSeNetV1, BiSeNetV2Segmenter
+from .denseaspp import DenseASPP
+from .espnet import ESPNet
 from .hrnet_ocr import HRNetOCR
 from .mask_classification import MaskClassWrapper
 from .wrappers import HFDenseWrapper, SegmentationModel, SMPWrapper
@@ -51,6 +61,13 @@ SEGFORMER_ARCHS = {
     "segformer_b5": "nvidia/mit-b5",
 }
 SMP_ARCHS = ("deeplabv3plus_r101", "upernet_r101")
+# Hand-written classic CNN arms. Pretrained ones take an exact timm tag; the
+# other two train from scratch exactly as in their papers.
+CLASSIC_ARCHS = ("bisenetv1_r18", "bisenetv2", "espnet", "denseaspp121", "denseaspp161")
+DENSEASPP_BACKBONES = {
+    "denseaspp121": "densenet121.tv_in1k",
+    "denseaspp161": "densenet161.tv_in1k",
+}
 SMP_DECODERS: tuple[SMPDecoder, ...] = (
     "Unet",
     "UnetPlusPlus",
@@ -70,6 +87,7 @@ VALID_ARCHS = (
     "eomt_dinov3_large",
     "mask2former_dinov3",
     "hrnet_w48_ocr",
+    *CLASSIC_ARCHS,
     "hf_auto",
     "native",
     "smp",
@@ -325,6 +343,29 @@ def _smp(arch: str, cfg: ModelConfig, num_classes: int) -> SegmentationModel:
     )
 
 
+def _classic(arch: str, cfg: ModelConfig, num_classes: int) -> SegmentationModel:
+    if cfg.checkpoint is not None:
+        raise ValueError(
+            f"{arch} takes no model.checkpoint: its weights are fixed by the recipe (an exact "
+            f"timm ImageNet tag or a from-scratch start); load a Segmentary state_dict through "
+            f"the stage's init_from instead"
+        )
+    if cfg.drop_path is not None:
+        raise ValueError(
+            f"{arch} has no stochastic depth; drop_path would be recorded but never applied"
+        )
+    match arch:
+        case "bisenetv1_r18":
+            return BiSeNetV1(num_classes)
+        case "bisenetv2":
+            return BiSeNetV2Segmenter(num_classes)
+        case "espnet":
+            return ESPNet(num_classes)
+        case "denseaspp121" | "denseaspp161":
+            return DenseASPP(num_classes, backbone_name=DENSEASPP_BACKBONES[arch])
+    raise ValueError(f"unknown classic arch {arch!r}")
+
+
 def build_model(cfg: ModelConfig, num_classes: int) -> SegmentationModel:
     """Build the architecture named by ``cfg.arch`` with a ``num_classes`` head.
 
@@ -395,6 +436,9 @@ def build_model(cfg: ModelConfig, num_classes: int) -> SegmentationModel:
                 "regularisation setting it never applied"
             )
         return HRNetOCR(num_classes, backbone_name="hrnet_w48")
+
+    if arch in CLASSIC_ARCHS:
+        return _classic(arch, cfg, num_classes)
 
     if arch == "smp" or arch in SMP_ARCHS:
         return _smp(arch, cfg, num_classes)

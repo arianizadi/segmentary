@@ -17,6 +17,7 @@ priority_order:
   - hf_auto_upernet_swin_tiny
   - hrnet_w48_ocr
   - native_resnet101_uper
+  - denseaspp161
   - segformer_b2
   - smp_upernet_resnet101
   - smp_deeplabv3plus_resnet101
@@ -28,6 +29,7 @@ priority_order:
   - native_resnet50_fpn_ocr
   - native_resnet50_psp
   - native_resnet50_aspp
+  - denseaspp121
   - smp_deeplabv3_resnet50
   - smp_fpn_resnet50
   - smp_upernet_mit_b0
@@ -44,8 +46,11 @@ priority_order:
   - native_mobilenetv3_large_lraspp
   - smp_pspnet_mobilenet_v2
   - smp_linknet_mobilenet_v2
+  - bisenetv1_r18
   - native_resnet18_fpn_segformer_aux
   - native_resnet18_fpn_fcn
+  - bisenetv2
+  - espnet
 
 protocols:
   cityscapes:
@@ -80,10 +85,22 @@ protocols:
     evaluation_space: rail_union
 
 models:
+  - id: bisenetv1_r18
+    config: configs/models/bisenetv1_r18.yaml
+    readme: docs/catalog/models/builtin-bisenetv1-r18/README.md
+  - id: bisenetv2
+    config: configs/models/bisenetv2.yaml
+    readme: docs/catalog/models/builtin-bisenetv2/README.md
   - id: deeplabv3plus_r101
     config: configs/models/deeplabv3plus_r101.yaml
     readme: docs/catalog/models/builtin-deeplabv3plus-r101-alias/README.md
     alias_of: smp_deeplabv3plus_resnet101
+  - id: denseaspp121
+    config: configs/models/denseaspp121.yaml
+    readme: docs/catalog/models/builtin-denseaspp121/README.md
+  - id: denseaspp161
+    config: configs/models/denseaspp161.yaml
+    readme: docs/catalog/models/builtin-denseaspp161/README.md
   - id: eomt_dinov3_large
     config: configs/models/eomt_dinov3_large.yaml
     readme: docs/catalog/models/builtin-eomt-dinov3-large/README.md
@@ -92,6 +109,9 @@ models:
     config: configs/models/eomt_large.yaml
     readme: docs/catalog/models/builtin-eomt-large/README.md
     campaign_config: configs/campaigns/eomt_hungarian_query.yaml
+  - id: espnet
+    config: configs/models/espnet.yaml
+    readme: docs/catalog/models/builtin-espnet/README.md
   - id: hf_auto_beit_base_ade
     config: configs/models/hf_auto_beit_base_ade.yaml
     readme: docs/catalog/models/hf-auto-beit-base-ade/README.md

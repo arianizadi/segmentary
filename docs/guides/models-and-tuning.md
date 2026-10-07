@@ -31,6 +31,10 @@ preprocessing, pros/cons, resource evidence, and benchmark scope.
 | `smp` | compose a conventional decoder and encoder | ten reviewed decoder families; explicit encoder and pretraining choice | each new decoder/encoder pair needs a smoke test; no arbitrary constructor options |
 | `deeplabv3plus_r101` | sanity floor | established CNN baseline; export verified | typically lower ceiling than modern transformers |
 | `hrnet_w48_ocr` | legacy comparison | maintains high-resolution features | large; OCR head is local; export not validated |
+| `bisenetv1_r18` | classic real-time CNN | two-path design, ImageNet ResNet-18, paper auxiliary losses | pooled 1x1 BatchNorm needs per-device training batch >= 2 |
+| `bisenetv2` | real-time CNN trained from scratch | ~3.4M inference parameters; four training-only booster heads | from scratch; pooled BatchNorm needs training batch >= 2; pads to multiples of 32 |
+| `espnet` | extreme-efficiency baseline | ~0.36M parameters | from scratch; the decoder is class-shaped and resets at a taxonomy change |
+| `denseaspp121` / `denseaspp161` | dense multi-rate context | paper-faithful stride-8 DenseNet with densely connected ASPP | high training memory, especially DenseNet-161 |
 | `upernet_convnext` | modern convolutional alternative | hierarchical multi-scale feature pyramid | heavier than the default |
 | `upernet_r101` | ResNet pyramid comparison | conventional and interpretable | older backbone |
 | `eomt_large` | mask-classification research arm | verified construction/forward; native query objective available | model YAML alone retains experimental dense CE; fixed 640 grid; export blocked |

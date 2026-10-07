@@ -81,7 +81,7 @@ real optimizer smoke before it belongs in this table.
 
 ## Hand-integrated built-ins
 
-These paths have architecture-specific factory wiring. Eight have ready model
+These paths have architecture-specific factory wiring. Thirteen have ready model
 files; the blocked research arm and one legacy alias intentionally do not.
 
 | config or `model.arch` | status | point-of-choice documentation |
@@ -93,6 +93,11 @@ files; the blocked research arm and one legacy alias intentionally do not.
 | `eomt_large.yaml` | query objective available; model YAML alone retains experimental dense loss | [EoMT-L](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-eomt-large/README.md) |
 | `eomt_dinov3_large.yaml` | query objective available; model YAML alone retains experimental dense loss | [EoMT-DINOv3-L](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-eomt-dinov3-large/README.md) |
 | `hrnet_w48_ocr.yaml` | supported with OCR-objective deviation | [HRNet-W48/OCR](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-hrnet-w48-ocr/README.md) |
+| `bisenetv1_r18.yaml` | supported real-time CNN, ImageNet ResNet-18, training-only auxiliary heads | [BiSeNet V1/R18](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-bisenetv1-r18/README.md) |
+| `bisenetv2.yaml` | supported real-time CNN from scratch, training-only booster heads | [BiSeNet V2](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-bisenetv2/README.md) |
+| `espnet.yaml` | supported 0.36M-parameter CNN from scratch | [ESPNet](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-espnet/README.md) |
+| `denseaspp121.yaml` | supported, ImageNet DenseNet-121 at stride 8 | [DenseASPP-121](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-denseaspp121/README.md) |
+| `denseaspp161.yaml` | supported, ImageNet DenseNet-161 at stride 8; high training memory | [DenseASPP-161](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-denseaspp161/README.md) |
 | `deeplabv3plus_r101.yaml` | compatibility alias | [DeepLabV3+/R101](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-deeplabv3plus-r101-alias/README.md) |
 | `mask2former_dinov3` | deliberately blocked | [architectural reason and required adapter](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-mask2former-dinov3/README.md) |
 | `upernet_r101` | factory-only compatibility alias | [UPerNet/R101](https://github.com/arianizadi/segmentary/blob/main/docs/catalog/models/builtin-upernet-r101-alias/README.md) |

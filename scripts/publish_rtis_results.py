@@ -108,6 +108,11 @@ def initial_weights(cfg):
         "segformer_b2": "nvidia/mit-b2",
         "segformer_b5": "nvidia/mit-b5",
         "hrnet_w48_ocr": "timm hrnet_w48 pretrained ImageNet backbone; fresh OCR head",
+        "bisenetv1_r18": "timm resnet18.tv_in1k ImageNet context path; fresh BiSeNet modules",
+        "bisenetv2": "none (BiSeNet V2 trained from scratch)",
+        "espnet": "none (ESPNet trained from scratch)",
+        "denseaspp121": "timm densenet121.tv_in1k ImageNet backbone; fresh DenseASPP head",
+        "denseaspp161": "timm densenet161.tv_in1k ImageNet backbone; fresh DenseASPP head",
     }
     return (
         model.get("checkpoint")

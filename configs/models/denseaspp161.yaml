@@ -1,0 +1,12 @@
+# DenseASPP (Yang et al., CVPR 2018) on timm's densenet161.tv_in1k (torchvision
+# ImageNet weights) at output stride 8, ASPP widths 512/128 (~35.4M
+# parameters). DenseNet-161 is the paper's headline backbone.
+model:
+  arch: denseaspp161
+  tuning: full
+  head: unified_head
+# Same rationale as denseaspp121.yaml.
+optim:
+  backbone_lr: 1.0e-4
+  head_lr_mult: 10.0
+  llrd: 1.0

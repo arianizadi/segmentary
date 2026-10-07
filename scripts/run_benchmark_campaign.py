@@ -136,6 +136,16 @@ MODEL_COST_WEIGHTS = {
     "segformer_b2": 6.086527,
     "segformer_b0": 5.826159,
     "hf_auto_segformer_b0": 5.333861,
+    # Provisional, NOT measured on an L40S: no GPU admission probe has run for
+    # these arms yet. Each is 14.0 + 10.43 * (CPU fwd+bwd seconds, batch 2,
+    # 512x512), the line through the CPU timings of native_resnet18_fpn_fcn and
+    # native_resnet101_uper against their measured weights above (it also
+    # predicts native_resnet50_aspp to within 0.1). Replace with probe values.
+    "bisenetv1_r18": 17.33,
+    "bisenetv2": 21.26,
+    "espnet": 16.75,
+    "denseaspp121": 27.35,
+    "denseaspp161": 45.77,
 }
 
 
@@ -406,7 +416,7 @@ def load_campaign_manifest(path: Path | str = DEFAULT_MANIFEST) -> CampaignManif
                 )
 
     # Compose each model/protocol once without touching datasets or model weights.
-    # This catches a wrong label space or final-stage name before a 111-job plan exists.
+    # This catches a wrong label space or final-stage name before the full job plan exists.
     base = load_yaml(REPO_ROOT / "configs/base.yaml")
     for model in models:
         model_layer = load_yaml(REPO_ROOT / model.config)

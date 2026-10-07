@@ -22,6 +22,11 @@ for its exact upstream module layout and behavior.
 | `eomt_dinov3_large` | [EoMT-DINOv3-L](../../models/builtin-eomt-dinov3-large/README.md) | native query objective available; dense default remains experimental | complete COCO panoptic checkpoint |
 | `mask2former_dinov3` | [Mask2Former/DINOv3](../../models/builtin-mask2former-dinov3/README.md) | deliberately blocked | none |
 | `hrnet_w48_ocr` | [HRNet-W48/OCR](../../models/builtin-hrnet-w48-ocr/README.md) | supported with supervised coarse OCR logits | ImageNet HRNet backbone |
+| `bisenetv1_r18` | [BiSeNet V1/R18](../../models/builtin-bisenetv1-r18/README.md) | supported; two training-only auxiliary heads | ImageNet ResNet-18 (`resnet18.tv_in1k`) |
+| `bisenetv2` | [BiSeNet V2](../../models/builtin-bisenetv2/README.md) | supported; four training-only booster heads | none (from scratch, as in the paper) |
+| `espnet` | [ESPNet](../../models/builtin-espnet/README.md) | supported | none (from scratch) |
+| `denseaspp121` | [DenseASPP-121](../../models/builtin-denseaspp121/README.md) | supported | ImageNet DenseNet-121 (`densenet121.tv_in1k`) |
+| `denseaspp161` | [DenseASPP-161](../../models/builtin-denseaspp161/README.md) | supported; high training memory | ImageNet DenseNet-161 (`densenet161.tv_in1k`) |
 | `deeplabv3plus_r101` | [DeepLabV3+/R101 alias](../../models/builtin-deeplabv3plus-r101-alias/README.md) | compatibility alias | ImageNet ResNet-101 encoder |
 | `upernet_r101` | [UPerNet/R101 alias](../../models/builtin-upernet-r101-alias/README.md) | compatibility alias | ImageNet ResNet-101 encoder |
 

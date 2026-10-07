@@ -166,7 +166,7 @@ def test_plan_freezes_allowlist_dataset_models_smoke_and_caveats(tmp_path, monke
     assert plan["gpu_allowlist"] == [2, 5, 9]
     assert plan["dataset"] == "paul-test-rtis"
     assert plan["smoke"] is False
-    assert len(jobs) == 36
+    assert len(jobs) == 41
     assert "Original recording groups need confirmation." in plan["caveats"]
     manifest = {
         **BASE_MANIFEST,

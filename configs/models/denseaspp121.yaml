@@ -1,0 +1,14 @@
+# DenseASPP (Yang et al., CVPR 2018) on timm's densenet121.tv_in1k (torchvision
+# ImageNet weights) at output stride 8, ASPP widths 128/64 (~8.3M parameters).
+model:
+  arch: denseaspp121
+  tuning: full
+  head: unified_head
+# The paper's own optimizer settings are not reproduced: every catalog arm uses
+# Segmentary's shared AdamW + poly schedule. This takes the pretrained-CNN rate
+# of the native ResNet recipes: 1e-4 on the DenseNet and 10x on the fresh
+# transition/ASPP/classifier.
+optim:
+  backbone_lr: 1.0e-4
+  head_lr_mult: 10.0
+  llrd: 1.0

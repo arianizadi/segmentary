@@ -1,0 +1,16 @@
+# BiSeNet V2 (Yu et al., IJCV 2021): detail + semantic branches, guided
+# aggregation, and four booster heads (training only, weight 1.0 each as in the
+# paper). Trained from scratch, as in the paper; ~3.4M parameters at inference,
+# ~5.2M including the booster heads. Architecture code is the CoinCheung/BiSeNet
+# copy vendored for the medical pipeline (MIT, pinned commit 6b4b67a).
+model:
+  arch: bisenetv2
+  tuning: full
+  head: unified_head
+# No pretrained part, so one uniform rate (head_lr_mult 1.0). The paper uses
+# SGD lr 5e-2 for 150k iterations; under Segmentary's shared AdamW + poly
+# schedule 5e-4 is the usual from-scratch AdamW rate (same as ESPNet's Adam).
+optim:
+  backbone_lr: 5.0e-4
+  head_lr_mult: 1.0
+  llrd: 1.0

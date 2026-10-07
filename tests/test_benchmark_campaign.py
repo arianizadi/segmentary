@@ -93,15 +93,15 @@ def _record(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict:
 
 def test_manifest_covers_every_recipe_and_alias_is_not_duplicate_gpu_work() -> None:
     manifest = campaign.load_campaign_manifest()
-    assert len(manifest.models) == 37
+    assert len(manifest.models) == 42
     assert {model.config for model in manifest.models} == {
         path.relative_to(campaign.REPO_ROOT)
         for path in (campaign.REPO_ROOT / "configs/models").glob("*.yaml")
     }
     logical = campaign.campaign_jobs(manifest, (0,))
     physical = campaign.campaign_jobs(manifest, (0,), include_aliases=False)
-    assert len(logical) == 111
-    assert len(physical) == 108
+    assert len(logical) == 126
+    assert len(physical) == 123
     alias = next(model for model in manifest.models if model.id == "deeplabv3plus_r101")
     assert alias.alias_of == "smp_deeplabv3plus_resnet101"
 
@@ -285,8 +285,8 @@ def test_partition_is_complete_unique_and_one_physical_gpu_per_lane() -> None:
     jobs = campaign.campaign_jobs(manifest, (0,), include_aliases=False)
     lanes = campaign.partition_jobs(jobs, (0, 2, 4, 6))
     flattened = [job for lane in lanes.values() for job in lane]
-    assert len(flattened) == len(jobs) == 108
-    assert len({job.id for job in flattened}) == 108
+    assert len(flattened) == len(jobs) == 123
+    assert len({job.id for job in flattened}) == 123
     assert set(campaign.MODEL_COST_WEIGHTS) == {job.model.id for job in jobs}
     loads = [sum(campaign._job_cost(job) for job in lane) for lane in lanes.values()]
     assert max(loads) / min(loads) < 1.02
@@ -340,8 +340,8 @@ def test_transfer_reuses_city_checkpoint_and_only_schedules_target_iterations(
             "head_group_learning_rate_scale": pytest.approx(1.0),
         }
     ]
-    assert record["execution"]["planned_optimizer_iterations"] == 3_600_000
-    assert record["execution"]["avoided_duplicate_city_iterations"] == 1_440_000
+    assert record["execution"]["planned_optimizer_iterations"] == 4_100_000
+    assert record["execution"]["avoided_duplicate_city_iterations"] == 1_640_000
 
     paths = campaign._attempt_paths(transfer, tmp_path / "attempt", resolved)
     assert paths["milestone_checkpoints"] == {}
@@ -548,7 +548,7 @@ def test_exactly_one_rail_performance_owner_per_physical_model(
 ) -> None:
     record = _record(tmp_path, monkeypatch)
     owners = [job for job in record["jobs"] if job["performance_owner"]]
-    assert len(owners) == 36
+    assert len(owners) == 41
     assert {job["protocol"] for job in owners} == {"railsem19"}
     assert {job["seed"] for job in owners} == {0}
     assert all(not job.get("alias_of") for job in owners)
@@ -815,7 +815,7 @@ def test_dry_run_prints_named_tmux_sessions_without_mutation(
     record = _record(tmp_path, monkeypatch)
     assert campaign.launch_campaign(record, dry_run=True) == 0
     shown = capsys.readouterr().out
-    assert "108 jobs" in shown
+    assert "123 jobs" in shown
     assert "segmentary-test-gpu0" in shown
     assert "CUDA_VISIBLE_DEVICES=0" in shown
     assert not Path(record["campaign"]).exists()
@@ -909,7 +909,7 @@ def test_reporting_complete_result_without_checkpoint_is_reused_and_not_queued(
     audit = campaign.scan_reusable_cells(record)
 
     assert audit["accepted_cells"] == 1
-    assert audit["queued_cells"] == 107
+    assert audit["queued_cells"] == 122
     accepted = audit["accepted"][0]
     assert accepted["job_id"] == job["id"]
     assert accepted["checkpoint_available"] is False
@@ -1032,7 +1032,7 @@ def test_reporting_only_city_source_stays_queued_when_transfer_needs_checkpoint(
     audit = campaign.scan_reusable_cells(record)
 
     assert audit["accepted_cells"] == 0
-    assert audit["queued_cells"] == 108
+    assert audit["queued_cells"] == 123
     assert audit["counts"]["dependency_source_without_checkpoint"] == 1
     assert "source training remains queued" in audit["rejected_examples"][-1]["reason"]
 

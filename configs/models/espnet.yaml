@@ -1,0 +1,13 @@
+# ESPNet v1 (Mehta et al., ECCV 2018) with the full decoder and the reference
+# depths p=2, q=8 (~0.36M parameters). Trained from scratch: the reference
+# recipe warm-starts from its own Cityscapes ESPNet-C encoder, which is not an
+# ImageNet backbone and has no pinned public weight registry entry.
+model:
+  arch: espnet
+  tuning: full
+  head: unified_head
+# Reference: Adam lr 5e-4. No pretrained part, so one uniform rate.
+optim:
+  backbone_lr: 5.0e-4
+  head_lr_mult: 1.0
+  llrd: 1.0
