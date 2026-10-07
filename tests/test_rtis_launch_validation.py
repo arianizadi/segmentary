@@ -208,7 +208,16 @@ def test_rad_manifests_match_the_arms_and_smoke_covers_slow_families():
     )
     arms = ("paul", "fixed-grouped")
     assert sorted(p.name for p in (REPO / "configs/campaigns").glob("rad_9_24_2026-*.yaml")) == [
-        f"rad_9_24_2026-{a}.yaml" for a in ("cv-smoke", "cv", "fixed-grouped", "paul", "smoke")
+        f"rad_9_24_2026-{a}.yaml"
+        for a in (
+            "cv-smoke",
+            "cv",
+            "fixed-grouped-all-smoke",
+            "fixed-grouped-all",
+            "fixed-grouped",
+            "paul",
+            "smoke",
+        )
     ]
     for arm in arms:
         spec = yaml.safe_load((REPO / f"configs/campaigns/rad_9_24_2026-{arm}.yaml").read_text())
@@ -245,3 +254,35 @@ def test_plan_records_primary_checkpoint_only_when_the_manifest_sets_it(tmp_path
     with pytest.raises(ValueError, match="primary_checkpoint must be"):
         _plan(tmp_path / "bad", monkeypatch, {**final, "primary_checkpoint": "last"}, "--gpus", "2")
     assert not (tmp_path / "es/out").exists() and not (tmp_path / "bad/out").exists()
+
+
+NEW_CLASSIC = ["bisenetv1_r18", "bisenetv2", "espnet", "denseaspp121", "denseaspp161"]
+
+
+def test_fixed_grouped_all_trains_every_catalog_model_and_reports_the_final_checkpoint():
+    catalog = yaml.safe_load(
+        (REPO / "configs/campaigns/all_models_cityscapes_railsem19.yaml").read_text()
+    )
+    ids = [m["id"] for m in catalog["models"] if "alias_of" not in m]
+    reference = yaml.safe_load(
+        (REPO / "configs/campaigns/rad_9_24_2026-fixed-grouped.yaml").read_text()
+    )
+    spec = yaml.safe_load(
+        (REPO / "configs/campaigns/rad_9_24_2026-fixed-grouped-all.yaml").read_text()
+    )
+    assert spec["dataset"] == "rad_9_24_2026-fixed-grouped"
+    assert spec["dataset_config"] == reference["dataset_config"]
+    assert spec["models"] == ids and set(NEW_CLASSIC) <= set(ids)
+    assert spec["model_protocols"] == {m: ["rtis_only"] for m in NEW_CLASSIC}
+    assert spec["primary_checkpoint"] == "final"
+    assert "early_stopping_patience" not in spec and "smoke" not in spec
+    assert spec["protocols"] == reference["protocols"]
+    for key in ("target_steps", "batch_size", "accumulation", "seeds", "collection_contract"):
+        assert spec[key] == reference[key]
+    smoke = yaml.safe_load(
+        (REPO / "configs/campaigns/rad_9_24_2026-fixed-grouped-all-smoke.yaml").read_text()
+    )
+    assert smoke["smoke"] is True and smoke["primary_checkpoint"] == "final"
+    assert smoke["dataset_config"] == spec["dataset_config"]
+    assert set(NEW_CLASSIC) <= set(smoke["models"]) <= set(ids)
+    assert smoke["model_protocols"] == spec["model_protocols"]

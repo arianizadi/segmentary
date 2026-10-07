@@ -1,0 +1,88 @@
+# rad_9_24_2026 scene-grouped split, every catalog model: ONE campaign on the fixed-grouped
+# dataset (whole scenes on one side), seed 0. Same recipe as rad_9_24_2026-fixed-grouped except
+# that nothing is selected on the validation images: no early stopping (the key is absent),
+# every job trains the full target_steps and the FINAL checkpoint is the primary result.
+# The five models added 2026-10-07 (BiSeNetV1/V2, ESPNet, DenseASPP-121/161) have no Cityscapes
+# or RailSem19 checkpoints yet, so they run from their recipe weights only (model_protocols).
+# GPUs are not chosen here: plan_rtis_campaign.py --gpus freezes the allowlist into plan.json.
+name: rad_9_24_2026-fixed-grouped-all
+dataset: rad_9_24_2026-fixed-grouped
+dataset_config: configs/datasets/rad_9_24_2026-fixed-grouped.yaml
+model_catalog: configs/campaigns/all_models_cityscapes_railsem19.yaml
+status: full-statistics
+publisher: false
+primary_checkpoint: final
+models:
+- bisenetv1_r18
+- bisenetv2
+- denseaspp121
+- denseaspp161
+- eomt_dinov3_large
+- eomt_large
+- espnet
+- hf_auto_beit_base_ade
+- hf_auto_mobilenetv2_deeplabv3
+- hf_auto_mobilevit_xxs_deeplabv3
+- hf_auto_mobilevitv2_deeplabv3
+- hf_auto_segformer_b0
+- hf_auto_upernet_swin_tiny
+- hrnet_w48_ocr
+- native_convnext_tiny_channelmapper_dpt
+- native_convnext_tiny_uper
+- native_efficientnet_b0_deeplabv3plus
+- native_mobilenetv3_large_deeplabv3plus
+- native_mobilenetv3_large_lraspp
+- native_resnet101_uper
+- native_resnet18_fpn_fcn
+- native_resnet18_fpn_segformer_aux
+- native_resnet50_aspp
+- native_resnet50_deeplabv3plus
+- native_resnet50_fpn_ocr
+- native_resnet50_psp
+- segformer_b0
+- segformer_b2
+- segformer_b5
+- smp_deeplabv3_resnet50
+- smp_deeplabv3plus_resnet101
+- smp_fpn_resnet50
+- smp_linknet_mobilenet_v2
+- smp_manet_efficientnet_b0
+- smp_pan_resnext50
+- smp_pspnet_mobilenet_v2
+- smp_unet_resnet34
+- smp_unetplusplus_efficientnet_b0
+- smp_upernet_mit_b0
+- smp_upernet_resnet101
+- upernet_convnext
+model_protocols:
+  bisenetv1_r18: [rtis_only]
+  bisenetv2: [rtis_only]
+  espnet: [rtis_only]
+  denseaspp121: [rtis_only]
+  denseaspp161: [rtis_only]
+seeds:
+- 0
+target_steps: 4000
+batch_size: 2
+accumulation: 8
+validation_interval: 250
+checkpoint_interval: 500
+num_workers: 2
+protocols:
+  rtis_only:
+    label: Recipe pretrained initialization -> RTIS
+    source_protocol: null
+  cityscapes_to_rtis:
+    label: Cityscapes -> RTIS
+    source_protocol: cityscapes
+  railsem19_to_rtis:
+    label: RailSem19 -> RTIS
+    source_protocol: railsem19
+  cityscapes_to_railsem19_to_rtis:
+    label: Cityscapes -> RailSem19 -> RTIS
+    source_protocol: cityscapes_to_railsem19
+collection_contract: rtis-full-statistics-v1
+selection_metric: val_iou/mud-pumping
+caveats:
+- Final checkpoint reported; the best-on-validation checkpoint is kept as secondary evidence only.
+- The five models added 2026-10-07 start from their recipe weights only.

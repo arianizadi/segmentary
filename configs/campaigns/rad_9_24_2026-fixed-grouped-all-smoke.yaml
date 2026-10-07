@@ -1,0 +1,47 @@
+# GPU preflight for rad_9_24_2026-fixed-grouped-all: a few steps per job on the same dataset,
+# no early stopping, final checkpoint primary. Covers the five models added 2026-10-07 (recipe
+# weights only) and the slow or stride-sensitive families. Its completed states feed
+# scripts/validate_rtis_launch.py for the main campaign planned from the same code revision;
+# it never produces results.
+name: rad_9_24_2026-fixed-grouped-all-smoke
+smoke: true
+dataset: rad_9_24_2026-fixed-grouped
+dataset_config: configs/datasets/rad_9_24_2026-fixed-grouped.yaml
+model_catalog: configs/campaigns/all_models_cityscapes_railsem19.yaml
+status: smoke
+publisher: false
+primary_checkpoint: final
+models:
+- bisenetv1_r18
+- bisenetv2
+- espnet
+- denseaspp121
+- denseaspp161
+- eomt_dinov3_large
+- hrnet_w48_ocr
+- smp_fpn_resnet50
+model_protocols:
+  bisenetv1_r18: [rtis_only]
+  bisenetv2: [rtis_only]
+  espnet: [rtis_only]
+  denseaspp121: [rtis_only]
+  denseaspp161: [rtis_only]
+seeds:
+- 0
+target_steps: 40
+batch_size: 2
+accumulation: 8
+validation_interval: 20
+checkpoint_interval: 20
+num_workers: 2
+protocols:
+  rtis_only:
+    label: Recipe pretrained initialization -> RTIS
+    source_protocol: null
+  cityscapes_to_rtis:
+    label: Cityscapes -> RTIS
+    source_protocol: cityscapes
+collection_contract: rtis-full-statistics-v1
+selection_metric: val_iou/mud-pumping
+caveats:
+- Smoke campaign; results are execution evidence only.
