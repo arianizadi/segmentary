@@ -6,7 +6,7 @@
 
 Stratified group 5-fold cross-validation: the 243 scored images in 17 scenes of `rad_9_24_2026-fixed-grouped` are divided into 5 folds of whole scenes, balanced on the rare classes. Each model trains on the other folds and is scored on its own, so every image is scored once by a model that never trained on its scene (*pooled* results add up those scores). The result is the final checkpoint after the full training budget, so nothing is picked on the scored images. The test images are never used.
 
-Percent, final checkpoint. 80 of 100 runs done; `*` = not all folds done yet (pooled over the finished folds only, not comparable). Train-camera images: a forward view from a camera on the train, the real use case.
+Percent, final checkpoint. 100 of 100 runs done; `*` = not all folds done yet (pooled over the finished folds only, not comparable). Train-camera images: a forward view from a camera on the train, the real use case.
 
 | Model | Starting point | Folds done | Mud-pumping IoU, train-camera images | Precision, train-camera | Recall, train-camera | mIoU (classes present), all images |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -18,7 +18,7 @@ Percent, final checkpoint. 80 of 100 runs done; `*` = not all folds done yet (po
 | `eomt_large` | Cityscapes | 5/5 | 23.7 | 49.8 | 31.2 | 58.1 |
 | `eomt_large` | RailSem19 | 5/5 | 20.5 | 67.0 | 22.8 | 57.8 |
 | `eomt_large` | recipe pretrained weights | 5/5 | 25.2 | 48.5 | 34.4 | 57.9 |
-| `segformer_b2` | Cityscapes → RailSem19 | 4/5 | 22.8* | 39.6* | 35.0* | 50.1* |
+| `segformer_b2` | Cityscapes → RailSem19 | 5/5 | 21.6 | 47.8 | 28.2 | 50.2 |
 | `segformer_b2` | Cityscapes | 5/5 | 20.4 | 53.1 | 24.9 | 46.1 |
 | `segformer_b2` | RailSem19 | 5/5 | 27.2 | 44.6 | 41.1 | 51.6 |
 | `segformer_b2` | recipe pretrained weights | 5/5 | 27.3 | 67.0 | 31.5 | 45.8 |
@@ -26,10 +26,10 @@ Percent, final checkpoint. 80 of 100 runs done; `*` = not all folds done yet (po
 | `segformer_b5` | Cityscapes | 5/5 | 27.6 | 49.7 | 38.3 | 47.1 |
 | `segformer_b5` | RailSem19 | 5/5 | 20.8 | 34.0 | 34.8 | 55.5 |
 | `segformer_b5` | recipe pretrained weights | 5/5 | 20.2 | 59.6 | 23.5 | 46.3 |
-| `smp_upernet_resnet101` | Cityscapes → RailSem19 | 0/5 | — | — | — | — |
-| `smp_upernet_resnet101` | Cityscapes | 0/5 | — | — | — | — |
-| `smp_upernet_resnet101` | RailSem19 | 0/5 | — | — | — | — |
-| `smp_upernet_resnet101` | recipe pretrained weights | 1/5 | 13.6* | 15.3* | 55.3* | 43.8* |
+| `smp_upernet_resnet101` | Cityscapes → RailSem19 | 5/5 | 13.2 | 20.2 | 27.7 | 45.1 |
+| `smp_upernet_resnet101` | Cityscapes | 5/5 | 12.3 | 18.0 | 28.2 | 41.6 |
+| `smp_upernet_resnet101` | RailSem19 | 5/5 | 17.7 | 31.2 | 29.1 | 45.0 |
+| `smp_upernet_resnet101` | recipe pretrained weights | 5/5 | 19.9 | 29.3 | 38.1 | 39.9 |
 
 **Fold caveat:** fold 1 holds 95.9% of all scored mud-pumping pixels, all from one scene (`trackside-maintenance`; 49 track-level images) and none of the train-camera ones. Pooled all-image numbers therefore mostly measure that scene, scored by models that never trained on it; the train-camera numbers are the headline.
 
@@ -55,7 +55,7 @@ Percent.
 | eomt_large | cityscapes_to_rtis | 0 | 5/5 | 58.1 | 2.4 | 16.5 | 23.7 | 27.7 | 57.2 (SD 4.6, n=5) | 8.8 (SD 9.5, n=5) | 22.0 (SD 20.9, n=5) | 17.1 (SD 12.6, n=4) | 26.6 (SD 21.0, n=4) |
 | eomt_large | railsem19_to_rtis | 0 | 5/5 | 57.8 | 1.2 | 11.2 | 20.5 | 19.3 | 57.2 (SD 4.1, n=5) | 10.6 (SD 12.0, n=5) | 18.2 (SD 20.0, n=5) | 18.0 (SD 13.1, n=4) | 22.8 (SD 19.8, n=4) |
 | eomt_large | rtis_only | 0 | 5/5 | 57.9 | 2.1 | 16.0 | 25.2 | 27.1 | 57.6 (SD 4.9, n=5) | 13.0 (SD 11.3, n=5) | 22.7 (SD 23.7, n=5) | 20.7 (SD 14.5, n=4) | 27.9 (SD 23.8, n=4) |
-| segformer_b2 | cityscapes_to_railsem19_to_rtis | 0 | 4/5 | 50.1* | 1.3* | 12.0* | 22.8* | 23.1* | 48.9 (SD 4.4, n=4) | 8.6 (SD 9.1, n=4) | 22.7 (SD 30.1, n=4) | 14.8 (SD 12.7, n=3) | 29.4 (SD 32.9, n=3) |
+| segformer_b2 | cityscapes_to_railsem19_to_rtis | 0 | 5/5 | 50.2 | 1.6 | 13.2 | 21.6 | 22.4 | 49.4 (SD 4.0, n=5) | 10.8 (SD 9.2, n=5) | 22.2 (SD 26.1, n=5) | 16.0 (SD 10.7, n=4) | 27.1 (SD 27.3, n=4) |
 | segformer_b2 | cityscapes_to_rtis | 0 | 5/5 | 46.1 | 1.4 | 13.8 | 20.4 | 23.6 | 45.5 (SD 5.2, n=5) | 9.5 (SD 8.0, n=5) | 20.4 (SD 22.2, n=5) | 15.3 (SD 10.8, n=4) | 24.5 (SD 23.4, n=4) |
 | segformer_b2 | railsem19_to_rtis | 0 | 5/5 | 51.6 | 1.9 | 16.2 | 27.2 | 27.7 | 52.5 (SD 5.4, n=5) | 13.3 (SD 12.9, n=5) | 22.9 (SD 23.4, n=5) | 21.3 (SD 14.1, n=4) | 28.1 (SD 23.5, n=4) |
 | segformer_b2 | rtis_only | 0 | 5/5 | 45.8 | 4.2 | 18.3 | 27.3 | 29.4 | 45.4 (SD 5.3, n=5) | 16.7 (SD 13.7, n=5) | 26.2 (SD 27.6, n=5) | 21.0 (SD 14.0, n=4) | 31.6 (SD 28.8, n=4) |
@@ -63,7 +63,10 @@ Percent.
 | segformer_b5 | cityscapes_to_rtis | 0 | 5/5 | 47.1 | 2.0 | 17.4 | 27.6 | 29.7 | 47.4 (SD 4.9, n=5) | 12.4 (SD 11.0, n=5) | 22.2 (SD 24.4, n=5) | 19.4 (SD 14.2, n=4) | 27.4 (SD 24.7, n=4) |
 | segformer_b5 | railsem19_to_rtis | 0 | 5/5 | 55.5 | 3.0 | 12.9 | 20.8 | 20.2 | 55.0 (SD 4.4, n=5) | 9.8 (SD 8.4, n=5) | 19.5 (SD 22.1, n=5) | 16.6 (SD 10.4, n=4) | 23.7 (SD 23.1, n=4) |
 | segformer_b5 | rtis_only | 0 | 5/5 | 46.3 | 1.5 | 14.6 | 20.2 | 24.7 | 46.0 (SD 5.1, n=5) | 10.5 (SD 9.1, n=5) | 23.7 (SD 27.4, n=5) | 17.3 (SD 9.5, n=4) | 30.2 (SD 27.2, n=4) |
-| smp_upernet_resnet101 | rtis_only | 0 | 1/5 | 43.8* | 8.3* | 48.4* | 13.6* | 48.4* | 43.8 (n=1) | 8.3 (n=1) | 48.4 (n=1) | 13.6 (n=1) | 48.4 (n=1) |
+| smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 0 | 5/5 | 45.1 | 10.9 | 12.9 | 13.2 | 13.5 | 44.4 (SD 5.3, n=5) | 7.1 (SD 5.5, n=5) | 18.1 (SD 21.6, n=5) | 7.6 (SD 8.5, n=4) | 18.2 (SD 25.8, n=4) |
+| smp_upernet_resnet101 | cityscapes_to_rtis | 0 | 5/5 | 41.6 | 5.9 | 11.1 | 12.3 | 14.8 | 41.4 (SD 5.0, n=5) | 6.5 (SD 5.6, n=5) | 17.0 (SD 20.2, n=5) | 8.4 (SD 7.8, n=4) | 19.3 (SD 22.6, n=4) |
+| smp_upernet_resnet101 | railsem19_to_rtis | 0 | 5/5 | 45.0 | 7.9 | 14.3 | 17.7 | 18.6 | 46.3 (SD 6.7, n=5) | 8.7 (SD 5.1, n=5) | 17.0 (SD 16.4, n=5) | 11.9 (SD 9.3, n=4) | 18.6 (SD 18.7, n=4) |
+| smp_upernet_resnet101 | rtis_only | 0 | 5/5 | 39.9 | 13.6 | 18.1 | 19.9 | 21.3 | 40.3 (SD 6.5, n=5) | 11.1 (SD 7.9, n=5) | 19.8 (SD 17.9, n=5) | 12.3 (SD 10.1, n=4) | 20.6 (SD 21.3, n=4) |
 
 ## Full report: Secondary (optimistic): best-on-val checkpoint
 
@@ -79,7 +82,7 @@ Selected on the same fold it is scored on; shown only to size that bias.
 | eomt_large | cityscapes_to_rtis | 0 | 5/5 | 57.1 | 2.4 | 16.7 | 23.5 | 27.9 | 56.3 (SD 5.0, n=5) | 9.0 (SD 9.7, n=5) | 22.3 (SD 20.8, n=5) | 17.2 (SD 12.7, n=4) | 26.8 (SD 21.0, n=4) |
 | eomt_large | railsem19_to_rtis | 0 | 5/5 | 57.7 | 1.8 | 11.7 | 20.7 | 19.5 | 57.1 (SD 3.9, n=5) | 10.9 (SD 12.0, n=5) | 18.7 (SD 19.8, n=5) | 18.0 (SD 13.5, n=4) | 22.9 (SD 20.2, n=4) |
 | eomt_large | rtis_only | 0 | 5/5 | 54.1 | 2.6 | 18.0 | 28.6 | 30.5 | 54.2 (SD 3.4, n=5) | 15.4 (SD 14.1, n=5) | 26.0 (SD 23.9, n=5) | 23.9 (SD 15.1, n=4) | 32.8 (SD 21.5, n=4) |
-| segformer_b2 | cityscapes_to_railsem19_to_rtis | 0 | 4/5 | 46.9* | 1.8* | 12.3* | 23.3* | 22.8* | 46.1 (SD 3.6, n=4) | 10.2 (SD 8.9, n=4) | 24.4 (SD 29.2, n=4) | 15.1 (SD 13.2, n=3) | 29.3 (SD 33.9, n=3) |
+| segformer_b2 | cityscapes_to_railsem19_to_rtis | 0 | 5/5 | 47.2 | 2.2 | 14.3 | 23.5 | 23.6 | 46.9 (SD 3.6, n=5) | 12.9 (SD 9.8, n=5) | 24.7 (SD 25.3, n=5) | 17.3 (SD 11.6, n=4) | 28.5 (SD 27.7, n=4) |
 | segformer_b2 | cityscapes_to_rtis | 0 | 5/5 | 44.3 | 2.8 | 14.9 | 21.9 | 24.2 | 44.6 (SD 5.0, n=5) | 12.8 (SD 8.8, n=5) | 22.4 (SD 19.8, n=5) | 16.9 (SD 11.4, n=4) | 25.0 (SD 22.2, n=4) |
 | segformer_b2 | railsem19_to_rtis | 0 | 5/5 | 51.6 | 2.4 | 17.0 | 28.9 | 28.7 | 52.7 (SD 5.2, n=5) | 16.0 (SD 16.3, n=5) | 23.9 (SD 23.1, n=5) | 23.8 (SD 16.4, n=4) | 29.2 (SD 23.1, n=4) |
 | segformer_b2 | rtis_only | 0 | 5/5 | 45.4 | 4.7 | 21.1 | 33.2 | 34.0 | 44.3 (SD 4.7, n=5) | 19.4 (SD 16.0, n=5) | 28.4 (SD 26.0, n=5) | 25.0 (SD 16.7, n=4) | 33.5 (SD 27.1, n=4) |
@@ -87,17 +90,20 @@ Selected on the same fold it is scored on; shown only to size that bias.
 | segformer_b5 | cityscapes_to_rtis | 0 | 5/5 | 46.4 | 3.5 | 18.1 | 28.7 | 29.5 | 47.0 (SD 5.6, n=5) | 14.8 (SD 12.6, n=5) | 23.5 (SD 24.1, n=5) | 21.3 (SD 14.4, n=4) | 28.5 (SD 24.6, n=4) |
 | segformer_b5 | railsem19_to_rtis | 0 | 5/5 | 55.1 | 3.4 | 13.8 | 21.7 | 21.5 | 54.8 (SD 4.3, n=5) | 11.0 (SD 9.6, n=5) | 20.6 (SD 22.0, n=5) | 17.5 (SD 10.9, n=4) | 24.9 (SD 22.8, n=4) |
 | segformer_b5 | rtis_only | 0 | 5/5 | 44.0 | 2.1 | 18.1 | 27.2 | 30.6 | 43.5 (SD 4.7, n=5) | 14.8 (SD 12.8, n=5) | 24.1 (SD 21.1, n=5) | 21.1 (SD 11.4, n=4) | 29.8 (SD 19.3, n=4) |
-| smp_upernet_resnet101 | rtis_only | 0 | 1/5 | 37.1* | 9.9* | 50.7* | 11.1* | 50.7* | 37.1 (n=1) | 9.9 (n=1) | 50.7 (n=1) | 11.1 (n=1) | 50.7 (n=1) |
+| smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 0 | 5/5 | 43.1 | 18.7 | 20.2 | 20.2 | 20.0 | 42.5 (SD 2.0, n=5) | 14.8 (SD 8.2, n=5) | 27.5 (SD 14.0, n=5) | 14.5 (SD 11.0, n=4) | 23.5 (SD 21.7, n=4) |
+| smp_upernet_resnet101 | cityscapes_to_rtis | 0 | 5/5 | 38.0 | 20.2 | 17.7 | 15.1 | 14.4 | 37.8 (SD 4.7, n=5) | 12.2 (SD 9.4, n=5) | 21.9 (SD 19.1, n=5) | 10.6 (SD 9.5, n=4) | 20.8 (SD 23.1, n=4) |
+| smp_upernet_resnet101 | railsem19_to_rtis | 0 | 5/5 | 45.1 | 14.8 | 19.8 | 22.2 | 22.5 | 46.6 (SD 7.2, n=5) | 13.5 (SD 7.4, n=5) | 21.3 (SD 13.7, n=5) | 16.4 (SD 11.1, n=4) | 21.4 (SD 17.3, n=4) |
+| smp_upernet_resnet101 | rtis_only | 0 | 5/5 | 39.2 | 22.5 | 22.4 | 19.6 | 21.7 | 38.9 (SD 4.2, n=5) | 13.8 (SD 9.2, n=5) | 22.5 (SD 18.3, n=5) | 12.1 (SD 10.0, n=4) | 21.5 (SD 22.0, n=4) |
 
 ## Full report: Coverage
 
 | fold | completed | not completed (status count) | jobs |
 |---|---|---|---:|
-| 0 | 17 | queued 2, training 1 | 20 |
-| 1 | 16 | queued 2, training 2 | 20 |
-| 2 | 16 | queued 2, training 2 | 20 |
-| 3 | 16 | queued 3, training 1 | 20 |
-| 4 | 15 | collecting 1, queued 3, training 1 | 20 |
+| 0 | 20 | — | 20 |
+| 1 | 20 | — | 20 |
+| 2 | 20 | — | 20 |
+| 3 | 20 | — | 20 |
+| 4 | 20 | — | 20 |
 
 ## Full report: Fold composition (labels only)
 

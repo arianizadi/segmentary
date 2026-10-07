@@ -1,4 +1,8 @@
 source,arm,model,protocol,label,checkpoint_owners,job,subset,images,images_with_mud_gt,mud_gt_pixels,mud_iou,mud_precision,mud_recall,mud_image_mean_iou,gt_class_miou,miou,top5_mud_share
+fork,fixed-grouped,,,paper-hrnet__rs19-paul__arm-fixed-grouped,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-fixed-grouped,all,37,18,1226250,0.105181,0.173095,0.211407,0.153843,0.522007,0.469807,0.442561
+fork,fixed-grouped,,,paper-hrnet__rs19-paul__arm-fixed-grouped,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-fixed-grouped,cab-view,27,17,1213322,0.190456,0.654390,0.211756,0.162158,0.608447,0.547603,0.447276
+fork,fixed-grouped,,,paper-hrnet__rs19-paul__arm-fixed-grouped,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-fixed-grouped,not-cab-view,10,1,12928,0.002071,0.002090,0.178682,0.012491,0.259203,0.172802,1.000000
+fork,fixed-grouped,,,paper-hrnet__rs19-paul__arm-fixed-grouped,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-fixed-grouped,excl-trackside-maintenance,37,18,1226250,0.105181,0.173095,0.211407,0.153843,0.522007,0.469807,0.442561
 fork,paul,,,paper-hrnet__rs19-paul__arm-paul,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-paul,all,37,13,7435760,0.880883,0.957818,0.916434,0.636578,0.654020,0.654020,0.949413
 fork,paul,,,paper-hrnet__rs19-paul__arm-paul,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-paul,cab-view,28,7,363290,0.469913,0.595930,0.689653,0.524318,0.610208,0.610208,0.889190
 fork,paul,,,paper-hrnet__rs19-paul__arm-paul,map_city:nvidia -> rs19:paul -> rad:ours,paper-hrnet__rs19-paul__arm-paul,not-cab-view,9,6,7072470,0.911304,0.980547,0.928083,0.767548,0.607747,0.405165,0.998182
