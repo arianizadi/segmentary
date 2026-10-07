@@ -977,6 +977,8 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
         + f" {pct(cv_fp)}% of the mud it predicts on train-camera images is not mud in the "
         "ground truth; figure 5 shows the images with the most (section 8)."
     ]
+    img_med_all = statistics.median(r.metrics["all"]["mud_image_mean_iou"] for r in runs)
+    img_med_cab = statistics.median(r.metrics[CAB]["mud_image_mean_iou"] for r in runs)
     L: list[str] = []
     L += [
         "# Where the stratified-split mud-pumping IoU comes from (RAD 9/24/2026)",
@@ -984,6 +986,13 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
         "A case file for the `rad_9_24_2026` comparison ([guide](rad-9-24-2026.md)). Every number, "
         "table and figure below is written by `scripts/make_rad_mud_case.py` from the prepared "
         "datasets and the campaign results; nothing is typed by hand. Validation split only.",
+        "",
+        "**Metric used here.** This case explains the mud-pumping IoU with pixels pooled over all "
+        "validation images, the number first reported for Paul's split. The study's results "
+        "pages now score mud-pumping on each image that contains it and average over those "
+        "images, which removes the pixel weighting examined below. Under that rule the "
+        f"{n_runs} `paul`-arm runs have a median of {pct(img_med_all)} on all val images with "
+        f"mud and {pct(img_med_cab)} on cab-view images with mud.",
         "",
         "## 1. Summary",
         "",

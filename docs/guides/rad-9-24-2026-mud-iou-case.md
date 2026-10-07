@@ -2,6 +2,8 @@
 
 A case file for the `rad_9_24_2026` comparison ([guide](rad-9-24-2026.md)). Every number, table and figure below is written by `scripts/make_rad_mud_case.py` from the prepared datasets and the campaign results; nothing is typed by hand. Validation split only.
 
+**Metric used here.** This case explains the mud-pumping IoU with pixels pooled over all validation images, the number first reported for Paul's split. The study's results pages now score mud-pumping on each image that contains it and average over those images, which removes the pixel weighting examined below. Under that rule the 40 `paul`-arm runs have a median of 59.7 on all val images with mud and 44.6 on cab-view images with mud.
+
 ## 1. Summary
 
 - **Where the score comes from.** On the stratified val split, 5 track-level frames from one scene group hold 94.9% of the val mud-pumping pixels. The high all-image mud IoU mostly reflects those frames.
