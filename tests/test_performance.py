@@ -175,3 +175,31 @@ def test_gpu_uuid_must_be_nonempty(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(performance.subprocess, "run", lambda *args, **kwargs: Completed())
     assert performance._gpu_uuid("8") is None
+
+
+def test_process_gpu_used_bytes_reads_this_pid_on_this_gpu(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Completed:
+        returncode = 0
+        stdout = "GPU-aaaa, 10, 500\nGPU-bbbb, 42, 9000\nGPU-aaaa, 42, 3210\ngarbage line\n"
+
+    monkeypatch.setattr(performance.subprocess, "run", lambda *args, **kwargs: Completed())
+    assert performance.process_gpu_used_bytes("GPU-aaaa", pid=42) == 3210 * 2**20
+    assert performance.process_gpu_used_bytes("GPU-aaaa", pid=7) is None
+    assert performance.process_gpu_used_bytes("GPU-cccc", pid=42) is None
+
+
+def test_process_gpu_used_bytes_is_none_when_the_driver_query_fails(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class Failed:
+        returncode = 9
+        stdout = ""
+
+    monkeypatch.setattr(performance.subprocess, "run", lambda *args, **kwargs: Failed())
+    assert performance.process_gpu_used_bytes("GPU-aaaa", pid=1) is None
+
+    def boom(*args, **kwargs):
+        raise OSError("no nvidia-smi")
+
+    monkeypatch.setattr(performance.subprocess, "run", boom)
+    assert performance.process_gpu_used_bytes("GPU-aaaa", pid=1) is None

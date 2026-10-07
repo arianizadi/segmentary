@@ -5,7 +5,8 @@ normalisation, data loading, sliding-window stitching, and post-processing.
 Every campaign model is measured through its public ``model(image)`` forward at
 batch one, 1024x1024, with PyTorch BF16 autocast on an NVIDIA L40S.  CUDA events
 provide device-side latency after a fixed warmup, while synchronized allocator
-statistics provide peak inference memory.
+statistics provide peak inference memory; the driver's per-process figure, which
+also counts the CUDA context, is recorded as the total a machine must provide.
 
 The output is a strict, immutable ``performance.json`` evidence record. It is
 model-level data measured exactly once from the model's RailSem19-only 21-class
@@ -217,6 +218,41 @@ def _gpu_uuid(physical_token: str) -> str | None:
     return value or None
 
 
+def process_gpu_used_bytes(gpu_uuid: str, pid: int | None = None) -> int | None:
+    """Device memory this process holds on ``gpu_uuid`` as the driver reports it.
+
+    Unlike the allocator's peak reserved bytes, this includes the CUDA context and
+    any library workspaces, so it is the figure another machine has to provide.
+    Returns ``None`` when ``nvidia-smi`` cannot attribute memory to this PID (for
+    example inside a PID namespace); callers record that rather than guessing.
+    """
+    pid = os.getpid() if pid is None else pid
+    try:
+        completed = subprocess.run(
+            [
+                "nvidia-smi",
+                "--query-compute-apps=gpu_uuid,pid,used_memory",
+                "--format=csv,noheader,nounits",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if completed.returncode != 0:
+        return None
+    for line in completed.stdout.splitlines():
+        fields = [field.strip() for field in line.split(",")]
+        if len(fields) != 3 or not fields[1].isdigit() or not fields[2].isdigit():
+            continue
+        if normalize_uuid(fields[0]) == normalize_uuid(gpu_uuid) and int(fields[1]) == pid:
+            mib = int(fields[2])
+            return mib * 2**20 if mib > 0 else None
+    return None
+
+
 def benchmark_uses_ema(result: dict[str, Any], *, explicit_ema: bool, auto_weights: bool) -> bool:
     """Resolve the benchmark endpoint without reinterpreting evaluation policy.
 
@@ -342,6 +378,9 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
         expected_channels=space.num_classes,
     )
     benchmark_wall_clock_s = time.perf_counter() - wall_started
+    # Sampled after the timed loop while the model and the allocator cache are still
+    # resident: CUDA context + weights + cached activation memory of the batch-one forward.
+    process_total_bytes = process_gpu_used_bytes(gpu_uuid)
     checkpoint_bytes = args.ckpt.stat().st_size
     now = datetime.now(UTC).isoformat(timespec="seconds")
     payload = {
@@ -401,6 +440,12 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
             "latency": timing,
             "peak_reserved_bytes": peak_bytes,
             "memory_kind": "pytorch_cuda_allocator_peak_reserved_excluding_context",
+            "process_total_bytes": process_total_bytes,
+            "process_total_kind": (
+                "nvidia-smi used_memory of this PID on the benchmark GPU after the timed "
+                "loop, including the CUDA context; null when the driver could not "
+                "attribute memory to this PID"
+            ),
             "benchmark_wall_clock_s": benchmark_wall_clock_s,
         },
         "started_at": started_at,
