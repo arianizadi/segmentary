@@ -15,7 +15,7 @@ Paul's split looks good (median 89.2 on all images) because 94.9% of its validat
 | --- | --- | --- | --- | --- |
 | Paul's split | 40 | median 89.2 (best 95.0) | median 42.7 (best 61.9) | median 60.8 (best 72.8) |
 | Scene-grouped split | 40 | median 6.9 (best 18.8) | median 13.4 (best 42.3) | median 44.6 (best 58.3) |
-| Cross-validation over scenes | 11 of 20 with all folds done | median 2.1 (best 4.4) | median 25.2 (best 32.6) | median 56.4 (best 60.7) |
+| Cross-validation over scenes | 15 of 20 with all folds done | median 2.1 (best 4.4) | median 25.2 (best 32.6) | median 55.7 (best 60.7) |
 
 Median and best over every finished model and starting point of each split. mIoU averages IoU over the classes present in the images.
 
@@ -59,15 +59,15 @@ Whole scenes kept on one side; 0 of its 3 validation scenes have images in train
 
 ### Cross-validation over scenes
 
-The scenes of the scene-grouped data are divided into 5 folds; each model trains on 4 folds and is scored on the remaining one, so every image is scored once by a model that never saw its scene. The result is the final checkpoint, so nothing is picked on the scored images. 57 of 100 runs done; `*` = not all folds done yet. [Full report](cross-validation/README.md).
+The scenes of the scene-grouped data are divided into 5 folds; each model trains on 4 folds and is scored on the remaining one, so every image is scored once by a model that never saw its scene. The result is the final checkpoint, so nothing is picked on the scored images. 80 of 100 runs done; `*` = not all folds done yet. [Full report](cross-validation/README.md).
 
 | Model | Best starting point | Mud-pumping IoU, train-camera images | Mud-pumping IoU, all images | mIoU (classes present) | Folds done |
 | --- | --- | --- | --- | --- | --- |
 | eomt_dinov3_large | recipe pretrained weights | 32.6 | 1.8 | 55.8 | 5/5 |
 | segformer_b5 | Cityscapes | 27.6 | 2.0 | 47.1 | 5/5 |
+| segformer_b2 | recipe pretrained weights | 27.3 | 4.2 | 45.8 | 5/5 |
 | eomt_large | Cityscapes → RailSem19 | 26.4 | 1.5 | 60.7 | 5/5 |
-| segformer_b2 | — | — | — | — | 0/5 |
-| smp_upernet_resnet101 | — | — | — | — | 0/5 |
+| smp_upernet_resnet101 | recipe pretrained weights | 13.6* | 8.3* | 43.8* | 1/5 |
 
 ## Paul's paper model
 
