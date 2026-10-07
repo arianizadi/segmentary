@@ -174,7 +174,9 @@ Verification covers synthetic anisotropic geometry, DICOM ordering/scaling, unkn
 python scripts/medical_gpu_smoke.py \
   --manifest /data/pancreas/manifests/task07.json \
   --output /data/pancreas/verification/gpu-smoke-new \
-  --backend-python /path/to/nnunet-env/bin/python --gpu 0
+  --backend-python /path/to/nnunet-env/bin/python --gpu 2
 ```
+
+GPUs 0 and 1 are always refused by `segmentary.gpu_policy` (they belong to other users on the shared host), so name another free physical GPU.
 
 This selects two small labeled volumes, creates a separate ResEnc M smoke configuration, interrupts after a recovery checkpoint appears, resumes, and evaluates native-space validation predictions. All failures and intermediate workspaces remain distinct. It checks execution, not convergence or a clinically meaningful segmentation score.

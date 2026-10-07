@@ -312,3 +312,39 @@ def test_raw_ontology_is_checked(prepared_reference):
     b._atomic_json(path, metadata)
     with pytest.raises(ValueError, match="ontology"):
         reference.import_reference(target)
+
+
+def _cv_target(prepared_reference, tmp_path, monkeypatch, fold):
+    original, target = prepared_reference
+    folds = [
+        {"train": ["train_a"], "val": ["val_b"]},
+        {"train": ["val_b"], "val": ["train_a"]},
+    ]
+    cv_path = tmp_path / "cv.json"
+    b._atomic_json(cv_path, {"folds": folds})
+    target = dataclasses.replace(
+        target, fold=fold, cv_splits=str(cv_path), cv_splits_sha256=b._sha(cv_path)
+    )
+    (target.preprocessed / "splits_final.json").unlink()
+    b._atomic_json(target.preprocessed / "splits_final.json", folds)
+    binding = b._json(target.root / "binding.json")
+    binding["config"] = dataclasses.asdict(target)
+    (target.root / "binding.json").unlink()
+    b._atomic_json(target.root / "binding.json", binding)
+    split = b._json(Path(binding["splits_path"]))
+    monkeypatch.setattr(b, "_documents", lambda m, s: ({}, split))
+    monkeypatch.setattr(b, "_cross_validation", lambda *a: {"folds": folds})
+    return original, target, folds
+
+
+def test_cv_fold_imports_fold_independent_cache_but_keeps_its_own_folds(
+    prepared_reference, tmp_path, monkeypatch
+):
+    original, target, folds = _cv_target(prepared_reference, tmp_path, monkeypatch, 1)
+    report = reference.import_reference(target)
+    assert report["development_cases"] == 2
+    assert b._json(target.preprocessed / "splits_final.json") == folds
+    assert b._json(original.preprocessed / "splits_final.json") == [folds[0]]
+    for relative in b._json(original.root / "plan-binding.json")["files"]:
+        if relative != "splits_final.json":
+            assert (target.preprocessed / relative).is_file()

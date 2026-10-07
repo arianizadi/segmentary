@@ -10,10 +10,14 @@ The campaign spec declares schema_version=1, campaign_id, source_root,
 source_commit, python (harness interpreter), manifest, splits, gpus, and runs.
 Each run declares id and config (an existing JSON/YAML recipe with explicit
 workspace/backend_python). Optional model/backend/workspace/comparison_group
-fields are descriptive only. The runner freezes a resolved JSON config when it
-assigns a GPU; that assignment persists across restarts. Optional evaluation
-contains bootstrap_samples, seed, surface_tolerance_mm, lesion_iou_threshold,
-and review_overlays. All scoring uses validation. Test access is not implemented.
+fields are descriptive only; an optional gpu pins the run to one campaign GPU.
+The runner freezes a resolved JSON config when it assigns a GPU; that assignment
+persists across restarts. GPUs in segmentary.gpu_policy's forbidden set are
+refused. Optional evaluation contains bootstrap_samples, seed,
+surface_tolerance_mm, lesion_iou_threshold, and review_overlays. All scoring uses
+validation (a recipe's cv_splits fold when declared). nnU-Net runs are scored
+from checkpoint_final.pth (primary) and checkpoint_best.pth (secondary, labelled
+selected-on-validation). Test access is not implemented.
 """
 
 from __future__ import annotations
@@ -35,7 +39,18 @@ from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Any
 
-STAGES = ("prepare", "preprocess", "train", "predict", "evaluate")
+STAGES = ("prepare", "preprocess", "train", "predict", "evaluate", "predict_best", "evaluate_best")
+# nnU-Net reports the terminal checkpoint first; its validation-selected best
+# checkpoint is scored separately because it was chosen on these same cases.
+PRIMARY_CHECKPOINT = {"nnunet": "checkpoint_final.pth", "torch": "checkpoint_best.pth"}
+CHECKPOINT_POLICY = {
+    "checkpoint_final.pth": "terminal: last epoch, no validation-based selection",
+    "checkpoint_best.pth": "selected on this validation fold",
+}
+SECONDARY_CHECKPOINT = {
+    "checkpoint": "checkpoint_best.pth",
+    "label": "secondary: best patch pseudo-Dice checkpoint, selected on this validation fold (optimistic)",
+}
 IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 
 
@@ -104,6 +119,19 @@ def load_recipe(path: Path) -> dict[str, Any]:
     return recipe
 
 
+def refuse_forbidden_gpus(gpus: list[str]) -> None:
+    """Fail closed on GPUs reserved for other users (segmentary.gpu_policy)."""
+    source = str(Path(__file__).resolve().parents[1] / "src")
+    if source not in sys.path:
+        sys.path.insert(0, source)
+    from segmentary.gpu_policy import GpuPolicyError, refuse_forbidden
+
+    try:
+        refuse_forbidden(gpus)
+    except GpuPolicyError as exc:
+        raise ValueError(f"Refusing campaign GPU: {exc}") from exc
+
+
 def nnunet_model_name(recipe: dict[str, Any]) -> str:
     architecture = recipe.get("architecture", "resenc")
     if architecture == "resenc":
@@ -143,6 +171,7 @@ def load_spec(path: Path) -> dict[str, Any]:
         or len(set(gpus)) != len(gpus)
     ):
         raise ValueError("gpus must contain unique physical numeric GPU strings")
+    refuse_forbidden_gpus(gpus)
     inherited = os.environ.get("CUDA_VISIBLE_DEVICES")
     if inherited is not None and not set(gpus).issubset(inherited.split(",")):
         raise ValueError("Campaign GPUs exceed inherited CUDA_VISIBLE_DEVICES")
@@ -160,8 +189,11 @@ def load_spec(path: Path) -> dict[str, Any]:
             "workspace",
             "comparison_group",
             "description",
+            "gpu",
         }:
             raise ValueError("Invalid run fields")
+        if "gpu" in run and run["gpu"] not in gpus:
+            raise ValueError("A pinned run gpu must be one of the campaign gpus")
         name = run.get("id", "")
         if not isinstance(name, str) or not IDENTIFIER.fullmatch(name) or name in ids:
             raise ValueError("Run ids must be unique filesystem-safe names")
@@ -216,7 +248,62 @@ def load_spec(path: Path) -> dict[str, Any]:
         for key in ("manifest", "splits"):
             if protocol.get(f"{key}_sha256") != sha256(Path(spec[key])):
                 raise ValueError("Recipe ablation manifest or splits changed after planning")
+    if protocol.get("preset") == SEED_FOLDS_PRESET:
+        validate_seed_folds(spec, recipes)
     return spec
+
+
+SEED_FOLDS_PRESET = "task07_nnunet_seed_folds_v1"
+SEED_FOLDS_FIXED = {
+    "backend": "nnunet",
+    "architecture": "resenc",
+    "resenc": "L",
+    "configuration": "3d_fullres",
+    "dataset_id": 707,
+    "use_mirroring": False,
+    "tile_step_size": 0.5,
+    "purpose": "baseline",
+    "num_epochs": None,
+    "num_iterations_per_epoch": None,
+    "num_val_iterations_per_epoch": None,
+    "deterministic": False,
+}
+
+
+def validate_seed_folds(spec: dict[str, Any], recipes: dict[str, dict[str, Any]]) -> None:
+    """Re-check the seed/fold planner's frozen inputs and recipes at every launch."""
+    protocol = spec["protocol"]
+    for key in ("manifest", "splits"):
+        if protocol.get(f"{key}_sha256") != sha256(Path(spec[key])):
+            raise ValueError("Seed/fold manifest or splits changed after planning")
+    cv_path = protocol.get("cv_splits")
+    if not isinstance(cv_path, str) or protocol.get("cv_splits_sha256") != sha256(Path(cv_path)):
+        raise ValueError("Seed/fold cross-validation manifest changed after planning")
+    cv = read_json(Path(cv_path))
+    if cv.get("fingerprint") != protocol.get("cv_fingerprint") or cv.get(
+        "base_splits_sha256"
+    ) != protocol.get("splits_sha256"):
+        raise ValueError("Seed/fold cross-validation manifest is not the planned one")
+    reference = protocol.get("reference", {}).get("plan_binding_sha256")
+    arms = set()
+    for run in spec["runs"]:
+        recipe = recipes[run["id"]]
+        fold, seed = recipe.get("fold"), recipe.get("seed")
+        if not isinstance(fold, int) or not 0 <= fold < len(cv.get("folds", [])):
+            raise ValueError(f"{run['id']}: fold is outside the cross-validation manifest")
+        if (
+            run["id"] != f"nnunet_resenc_l-fold{fold}-seed{seed}"
+            or (fold, seed) in arms
+            or run.get("gpu") is None
+            or recipe.get("gpu") != run["gpu"]
+            or recipe.get("cv_splits") != cv_path
+            or recipe.get("cv_splits_sha256") != protocol["cv_splits_sha256"]
+            or not reference
+            or recipe.get("reference_plan_binding_sha256") != reference
+            or any(recipe.get(key) != value for key, value in SEED_FOLDS_FIXED.items())
+        ):
+            raise ValueError(f"{run['id']}: recipe differs from the seed/fold plan")
+        arms.add((fold, seed))
 
 
 def check_source(spec: dict[str, Any]) -> None:
@@ -334,6 +421,15 @@ class Campaign:
             **{run["config"]: binding["recipes"][run["id"]] for run in self.spec["runs"]},
         }
         for run in self.spec["runs"]:
+            recipe = load_recipe(Path(run["config"]))
+            if recipe.get("cv_splits") is None:
+                continue
+            frozen = recipe.get("cv_splits_sha256")
+            if self.input_hashes.setdefault(recipe["cv_splits"], frozen) != frozen:
+                raise ValueError("Recipes bind one cross-validation manifest to different hashes")
+            if sha256(Path(recipe["cv_splits"])) != frozen:
+                raise ValueError(f"Cross-validation manifest changed: {recipe['cv_splits']}")
+        for run in self.spec["runs"]:
             name = run["id"]
             path = self.root / "runs" / f"{name}.json"
             if path.exists():
@@ -356,7 +452,8 @@ class Campaign:
             else:
                 recipe = load_recipe(Path(run["config"]))
                 state = {
-                    **run,
+                    **{key: value for key, value in run.items() if key != "gpu"},
+                    **({"pinned_gpu": run["gpu"]} if "gpu" in run else {}),
                     "id": name,
                     "recipe": run["config"],
                     "status": "queued",
@@ -401,7 +498,7 @@ class Campaign:
                     continue
                 if self.prepare_only and state["status"] == "prepared":
                     continue
-                if state.get("gpu", gpu) != gpu:
+                if state.get("gpu", state.get("pinned_gpu") or gpu) != gpu:
                     continue
                 self.claimed.add(state["id"])
                 if "gpu" not in state:
@@ -425,6 +522,7 @@ class Campaign:
         return None
 
     def environment(self, gpu: str) -> dict[str, str]:
+        refuse_forbidden_gpus([gpu])
         return dict(os.environ) | {
             "PYTHONPATH": str(Path(self.spec["source_root"]) / "src"),
             "PYTHONUNBUFFERED": "1",
@@ -449,20 +547,31 @@ class Campaign:
                 "--splits",
                 self.spec["splits"],
             ]
-        if stage == "evaluate":
+        if stage in {"evaluate", "evaluate_best"}:
+            scored = state if stage == "evaluate" else state["secondary"]
             argv += [
-                stage,
+                "evaluate",
                 "--manifest",
                 self.spec["manifest"],
                 "--splits",
                 self.spec["splits"],
                 "--predictions",
-                state["predictions"],
+                scored["predictions"],
                 "--output",
-                state["evaluation"],
+                scored["evaluation"],
                 "--partition",
                 "val",
             ]
+            recipe = read_json(Path(state["config"]))
+            if recipe.get("cv_splits") is not None:
+                argv += [
+                    "--cv-splits",
+                    recipe["cv_splits"],
+                    "--cv-splits-sha256",
+                    recipe["cv_splits_sha256"],
+                    "--fold",
+                    str(recipe.get("fold", 0)),
+                ]
             for key, value in self.spec.get("evaluation", {}).items():
                 if key == "review_overlays":
                     if value:
@@ -473,9 +582,20 @@ class Campaign:
         if stage == "train":
             index = Path(state["workspace"]) / "checkpoint-index.json"
             stage = "resume" if index.exists() else "train"
+        if stage == "predict_best":
+            return [
+                *argv,
+                "predict",
+                "--config",
+                config,
+                "--partition",
+                "val",
+                "--checkpoint",
+                SECONDARY_CHECKPOINT["checkpoint"],
+            ]
         argv += [stage, "--config", config]
         if stage == "predict":
-            argv += ["--partition", "val", "--checkpoint", "checkpoint_best.pth"]
+            argv += ["--partition", "val", "--checkpoint", PRIMARY_CHECKPOINT[state["backend"]]]
         return argv
 
     def execute(self, state: dict[str, Any], stage: str, argv: list[str]) -> dict[str, Any]:
@@ -536,8 +656,10 @@ class Campaign:
                 root / "scratch-origin.json",
                 root / "training-result.json",
             ]
-        elif stage == "predict":
-            prediction = Path(state["predictions"])
+        elif stage in {"predict", "predict_best"}:
+            prediction = Path(
+                state["predictions"] if stage == "predict" else state["secondary"]["predictions"]
+            )
             paths = sorted(prediction.glob("*.nii.gz"))
             paths += [
                 prediction
@@ -547,21 +669,51 @@ class Campaign:
                     else "prediction-record.json"
                 )
             ]
-        elif stage == "evaluate":
-            paths = [Path(state["evaluation"]) / name for name in ("report.json", "cases.csv")]
+        elif stage in {"evaluate", "evaluate_best"}:
+            scored = state if stage == "evaluate" else state["secondary"]
+            paths = [Path(scored["evaluation"]) / name for name in ("report.json", "cases.csv")]
         return {str(path): sha256(path) for path in paths}
 
     def complete_stage(self, state: dict[str, Any], stage: str, *, recovered: bool = False) -> None:
-        state["completed_stages"][stage] = {
-            "completed_at": utc_now(),
-            "recovered": recovered,
-            "artifacts": self.stage_artifacts(state, stage),
-        }
-        self.save(state)
+        artifacts = self.stage_artifacts(state, stage)
+        # Other runs' threads serialize every state in publish(); mutate under the lock.
+        with self.mutex:
+            state["completed_stages"][stage] = {
+                "completed_at": utc_now(),
+                "recovered": recovered,
+                "artifacts": artifacts,
+            }
+            self.save(state)
 
-    def check_evaluation(self, state: dict[str, Any]) -> None:
-        report = read_json(Path(state["evaluation"]) / "report.json")
-        expected = read_json(Path(self.spec["splits"]))["val"]
+    def set_aside_incomplete(self, state: dict[str, Any], evaluation: Path) -> None:
+        """Move an uncommitted evaluation folder aside so the evaluator can rerun.
+
+        The evaluator refuses a nonempty output folder. The stage is not yet
+        complete, so its partial outputs are kept for inspection but not trusted.
+        """
+        if not evaluation.exists() and not evaluation.is_symlink():
+            return
+        if evaluation.is_symlink() or not evaluation.is_dir():
+            raise ValueError(f"Evaluation output is not a directory: {evaluation}")
+        if not any(evaluation.iterdir()):
+            return
+        aside = evaluation.with_name(f"{evaluation.name}.incomplete-{time.time_ns()}")
+        evaluation.rename(aside)
+        incomplete = [*state.get("incomplete_evaluations", []), str(aside)]
+        self.save(state, incomplete_evaluations=incomplete)
+
+    def validation_cases(self, state: dict[str, Any]) -> list[str]:
+        recipe = read_json(Path(state["config"]))
+        if recipe.get("cv_splits") is not None:
+            path = Path(recipe["cv_splits"])
+            if sha256(path) != recipe.get("cv_splits_sha256"):
+                raise ValueError(f"Cross-validation manifest changed: {path}")
+            return read_json(path)["folds"][recipe.get("fold", 0)]["val"]
+        return read_json(Path(self.spec["splits"]))["val"]
+
+    def check_evaluation(self, state: dict[str, Any], evaluation: str | None = None) -> None:
+        report = read_json(Path(evaluation or state["evaluation"]) / "report.json")
+        expected = self.validation_cases(state)
         cases = report["cases"]
         if (
             len(cases) != len(expected)
@@ -591,6 +743,8 @@ class Campaign:
             for stage in stages:
                 if stage in completed:
                     continue
+                if stage in {"predict_best", "evaluate_best"} and state["backend"] != "nnunet":
+                    continue
                 if stage in {"prepare", "preprocess"}:
                     artifact = root / (
                         "binding.json" if stage == "prepare" else "plan-binding.json"
@@ -611,7 +765,13 @@ class Campaign:
                         self.complete_stage(state, stage, recovered=True)
                         continue
                 if stage == "evaluate":
-                    self.save(state, evaluation=str(self.root / "evaluations" / state["id"]))
+                    evaluation = self.root / "evaluations" / state["id"]
+                    self.set_aside_incomplete(state, evaluation)
+                    self.save(state, evaluation=str(evaluation))
+                if stage == "evaluate_best":
+                    evaluation = self.root / "evaluations-checkpoint-best" / state["id"]
+                    self.set_aside_incomplete(state, evaluation)
+                    self.save(state, secondary=state["secondary"] | {"evaluation": str(evaluation)})
                 result = self.execute(state, stage, self.command(state, stage))
                 if stage == "predict":
                     predictions = (
@@ -627,13 +787,29 @@ class Campaign:
                     self.save(
                         state,
                         predictions=predictions,
-                        checkpoint="checkpoint_best.pth",
+                        checkpoint=PRIMARY_CHECKPOINT[state["backend"]],
+                        checkpoint_policy=CHECKPOINT_POLICY[PRIMARY_CHECKPOINT[state["backend"]]],
+                        # Kept under the historical key names read by reports;
+                        # for nnU-Net this is the scored terminal checkpoint.
                         selection_evidence=str(evidence),
                         selected_checkpoint_sha256=read_json(evidence)["checkpoint_sha256"],
+                    )
+                if stage == "predict_best":
+                    evidence = Path(result["output"]) / "prediction-record.json"
+                    self.save(
+                        state,
+                        secondary={
+                            **SECONDARY_CHECKPOINT,
+                            "predictions": result["output"],
+                            "selection_evidence": str(evidence),
+                            "checkpoint_sha256": read_json(evidence)["checkpoint_sha256"],
+                        },
                     )
                 self.complete_stage(state, stage)
             if "evaluate" in completed:
                 self.check_evaluation(state)
+            if "evaluate_best" in completed:
+                self.check_evaluation(state, state["secondary"]["evaluation"])
             self.save(
                 state,
                 status="prepared"

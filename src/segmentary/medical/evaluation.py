@@ -461,8 +461,12 @@ def evaluate_predictions(
     seed: int = 0,
     review_overlays: bool = False,
     lesion_iou_threshold: float | None = None,
+    cohort: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Evaluate ``case_id.nii.gz`` predictions against an audited manifest.
+
+    ``cohort`` optionally records where ``case_ids`` came from (for example a
+    development cross-validation fold); it is stored outside ``protocol``.
 
     JSON/CSV and optional review PNGs belong in approved artifact storage. Case
     and patient keys are needed for scientific pairing; hashed PNG filenames
@@ -674,6 +678,8 @@ def evaluate_predictions(
         ],
         "cases": rows,
     }
+    if cohort is not None:
+        report["cohort"] = cohort
     if lesion_iou_threshold is not None:
         lesion_rows = [row["lesions"] for row in rows if "lesions" in row]
         successful_lesion_rows = [row for row in lesion_rows if not row.get("prediction_failed")]

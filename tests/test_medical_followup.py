@@ -73,7 +73,7 @@ def inputs(tmp_path, monkeypatch):
         capture_output=True,
     )
     values["reference_run_id"] = "dynunet-seed0"
-    values["gpus"] = ["1", "2", "3"]
+    values["gpus"] = ["2", "3", "4"]
     return values
 
 

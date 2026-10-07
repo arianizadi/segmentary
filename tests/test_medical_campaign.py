@@ -51,7 +51,7 @@ def spec_path(tmp_path, monkeypatch):
             "python": sys.executable,
             "manifest": str(tmp_path / "manifest.json"),
             "splits": str(tmp_path / "splits.json"),
-            "gpus": ["0", "1", "2"],
+            "gpus": ["2", "3", "4"],
             "runs": runs,
             "evaluation": {"bootstrap_samples": 100, "seed": 0, "surface_tolerance_mm": 2.0},
         },
@@ -127,7 +127,7 @@ def test_queue_uses_each_gpu_without_double_assigning_and_never_scores_test(spec
     runner = FakeCampaign(spec_path, tmp_path / "state")
     assert runner.run() == 0
     assert runner.concurrent_peak == 3
-    assert runner.peak == {"0": 1, "1": 1, "2": 1}
+    assert runner.peak == {"2": 1, "3": 1, "4": 1}
     assert len(runner.calls) == 7 * 5
     for state in runner.states.values():
         assert state["status"] == "completed"
@@ -236,7 +236,7 @@ def test_recipe_mutation_and_resolved_config_mutation_are_rejected(spec_path, tm
         FakeCampaign(spec_path, tmp_path / "state").run()
     recipe.write_bytes(old)
     resolved = Path(first.states["run-0"]["config"])
-    resolved.write_text(resolved.read_text().replace('"gpu": "0"', '"gpu": "9"'))
+    resolved.write_text(resolved.read_text().replace('"gpu": "2"', '"gpu": "9"'))
     with pytest.raises(ValueError, match="configuration was modified"):
         FakeCampaign(spec_path, tmp_path / "state").run()
 
@@ -264,7 +264,7 @@ def test_singleton_prevents_second_controller(spec_path, tmp_path):
     "edit",
     [
         lambda spec: spec["evaluation"].update(partition="test"),
-        lambda spec: spec.update(gpus=["0", "0"]),
+        lambda spec: spec.update(gpus=["2", "2"]),
         lambda spec: spec["runs"][1].update(id="run-0"),
         lambda spec: spec["runs"][0].update(id="../unsafe"),
         lambda spec: spec.update(source_commit="main"),
@@ -279,7 +279,7 @@ def test_invalid_or_test_access_specs_fail(spec_path, edit):
 
 
 def test_inherited_cuda_scope_is_not_broadened(spec_path, monkeypatch):
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "2")
     with pytest.raises(ValueError, match="exceed inherited"):
         campaign.load_spec(spec_path)
 
@@ -288,7 +288,7 @@ def test_stderr_failure_and_json_parsing_are_observable(tmp_path, spec_path):
     runner = FakeCampaign(spec_path, tmp_path / "state")
     runner.initialize()
     runner.claimed = set()
-    state = runner.claim("0")
+    state = runner.claim("2")
     assert state is not None
     result = campaign.Campaign.execute(
         runner,
@@ -355,7 +355,7 @@ def test_controller_stop_terminates_stage_and_preserves_restartable_state(spec_p
     runner = FakeCampaign(spec_path, tmp_path / "state")
     runner.initialize()
     runner.claimed = set()
-    state = runner.claim("0")
+    state = runner.claim("2")
     assert state is not None
     timer = threading.Timer(0.15, runner.stop_workers)
     timer.start()
@@ -382,7 +382,7 @@ def test_config_changed_after_assignment_is_rejected_before_stage(spec_path, tmp
     runner = FakeCampaign(spec_path, tmp_path / "state")
     runner.initialize()
     runner.claimed = set()
-    state = runner.claim("0")
+    state = runner.claim("2")
     assert state is not None
     config = Path(state["config"])
     config.write_text(config.read_text().replace("1e-05", "0.1"))
@@ -410,3 +410,175 @@ def test_completed_scratch_continuation_reuses_training_and_executes_prediction(
     assert stages == ["preprocess", "predict", "evaluate"]
     assert ("run-0", "train") in runner.verified
     assert runner.states["run-0"]["completed_stages"]["train"]["recovered"]
+
+
+class FakeNNUNetCampaign(FakeCampaign):
+    """nnU-Net stages return the backend's prediction directory and record."""
+
+    def execute(self, state, stage, argv):
+        if stage not in {"predict", "predict_best", "evaluate_best"}:
+            return super().execute(state, stage, argv)
+        self.save(state, stage=stage, argv=argv)
+        with self.mutex:
+            self.calls.append((state["id"], stage, list(argv)))
+        if stage == "evaluate_best":
+            output = Path(state["secondary"]["evaluation"])
+            campaign.write_json(
+                output / "report.json",
+                {
+                    "cases": [{"case_id": "case-1", "status": "ok"}],
+                    "manifest_fingerprint": "manifest",
+                    "coverage": {"valid_prediction_cases": 1},
+                },
+            )
+            (output / "cases.csv").write_text("case_id,status\ncase-1,ok\n")
+            return {}
+        checkpoint = argv[argv.index("--checkpoint") + 1]
+        output = Path(state["workspace"]) / "predictions" / f"val-{stage}"
+        campaign.write_json(
+            output / "prediction-record.json",
+            {"checkpoint": checkpoint, "checkpoint_sha256": f"{checkpoint}-digest"},
+        )
+        (output / "case-1.nii.gz").write_bytes(checkpoint.encode())
+        return {"output": str(output)}
+
+
+@pytest.fixture
+def nnunet_spec(spec_path, tmp_path):
+    cv = tmp_path / "cv.json"
+    campaign.write_json(cv, {"folds": [{"val": ["case-1"]}, {"val": ["case-1"]}]})
+    spec = campaign.read_json(spec_path)
+    spec["gpus"] = ["2", "3", "4"]
+    spec["runs"] = spec["runs"][:3]
+    for index, run in enumerate(spec["runs"]):
+        recipe = campaign.read_json(Path(run["config"]))
+        recipe.update(
+            backend="nnunet",
+            resenc="L",
+            fold=index % 2,
+            cv_splits=str(cv),
+            cv_splits_sha256=campaign.sha256(cv),
+        )
+        recipe.pop("model")
+        campaign.write_json(Path(run["config"]), recipe)
+        run["gpu"] = ["4", "2", "3"][index]
+    campaign.write_json(spec_path, spec)
+    return spec_path
+
+
+def test_nnunet_scores_final_then_labelled_best_on_its_cv_fold(nnunet_spec, tmp_path):
+    runner = FakeNNUNetCampaign(nnunet_spec, tmp_path / "state")
+    assert runner.run() == 0
+    assert {name: state["gpu"] for name, state in runner.states.items()} == {
+        "run-0": "4",
+        "run-1": "2",
+        "run-2": "3",
+    }
+    for name, state in runner.states.items():
+        stages = [stage for run, stage, _ in runner.calls if run == name]
+        assert stages == [
+            "prepare",
+            "preprocess",
+            "train",
+            "predict",
+            "evaluate",
+            "predict_best",
+            "evaluate_best",
+        ]
+        argv = {stage: args for run, stage, args in runner.calls if run == name}
+        assert argv["predict"][argv["predict"].index("--checkpoint") + 1] == "checkpoint_final.pth"
+        assert argv["predict_best"][1:4] == ["-m", "segmentary.medical.cli", "predict"]
+        assert "checkpoint_best.pth" in argv["predict_best"]
+        fold = str(int(name[-1]) % 2)
+        assert argv["evaluate"][argv["evaluate"].index("--fold") + 1] == fold
+        assert "--cv-splits" in argv["evaluate"]
+        for stage in ("evaluate", "evaluate_best"):
+            sha = argv[stage][argv[stage].index("--cv-splits-sha256") + 1]
+            assert sha == campaign.sha256(tmp_path / "cv.json")
+        assert state["checkpoint"] == "checkpoint_final.pth"
+        assert state["checkpoint_policy"].startswith("terminal")
+        assert state["selected_checkpoint_sha256"] == "checkpoint_final.pth-digest"
+        secondary = state["secondary"]
+        assert secondary["checkpoint"] == "checkpoint_best.pth"
+        assert secondary["checkpoint_sha256"] == "checkpoint_best.pth-digest"
+        assert "optimistic" in secondary["label"]
+        assert Path(secondary["evaluation"]).parent.name == "evaluations-checkpoint-best"
+        assert Path(state["evaluation"]).parent.name == "evaluations"
+        assert set(state["completed_stages"]) == set(campaign.STAGES)
+
+
+def test_changed_cv_manifest_stops_the_campaign_before_any_stage(nnunet_spec, tmp_path):
+    cv = tmp_path / "cv.json"
+    cv.write_text(cv.read_text() + " ")
+    runner = FakeNNUNetCampaign(nnunet_spec, tmp_path / "state")
+    with pytest.raises(ValueError, match="Cross-validation manifest changed"):
+        runner.run()
+    assert runner.calls == []
+
+
+def test_validation_cases_refuse_a_changed_cv_manifest(nnunet_spec, tmp_path):
+    runner = FakeNNUNetCampaign(nnunet_spec, tmp_path / "state")
+    assert runner.run() == 0
+    state = runner.states["run-1"]
+    assert runner.validation_cases(state) == ["case-1"]
+    cv = tmp_path / "cv.json"
+    cv.write_text(cv.read_text() + " ")
+    with pytest.raises(ValueError, match="Cross-validation manifest changed"):
+        runner.validation_cases(state)
+
+
+def test_interrupted_evaluations_are_set_aside_and_rerun(nnunet_spec, tmp_path):
+    state_dir = tmp_path / "state"
+    partial = {
+        folder: state_dir / folder / "run-0"
+        for folder in ("evaluations", "evaluations-checkpoint-best")
+    }
+    for path in partial.values():
+        path.mkdir(parents=True)
+        (path / "report.json.tmp").write_text("partial")
+    runner = FakeNNUNetCampaign(nnunet_spec, state_dir)
+    assert runner.run() == 0, [(s["id"], s.get("error")) for s in runner.states.values()]
+    state = runner.states["run-0"]
+    assert state["status"] == "completed"
+    assert len(state["incomplete_evaluations"]) == 2
+    for folder, path in partial.items():
+        (aside,) = (state_dir / folder).glob("run-0.incomplete-*")
+        assert (aside / "report.json.tmp").read_text() == "partial"
+        assert str(aside) in state["incomplete_evaluations"]
+        assert (path / "report.json").is_file()
+        assert not (path / "report.json.tmp").exists()
+
+
+def test_torch_runs_keep_a_single_best_checkpoint_evaluation(spec_path, tmp_path):
+    runner = FakeCampaign(spec_path, tmp_path / "state")
+    assert runner.run() == 0
+    assert {stage for _, stage, _ in runner.calls} == set(campaign.STAGES[:5])
+    assert all(state["checkpoint"] == "checkpoint_best.pth" for state in runner.states.values())
+    assert all("secondary" not in state for state in runner.states.values())
+
+
+@pytest.mark.parametrize(
+    "edit, message",
+    [
+        (lambda spec: spec.update(gpus=["1", "2"]), "forbidden"),
+        (lambda spec: spec.update(gpus=["0"]), "forbidden"),
+        (lambda spec: spec["runs"][0].update(gpu="5"), "pinned run gpu"),
+    ],
+)
+def test_forbidden_or_unlisted_gpus_are_refused_before_any_state(
+    spec_path, tmp_path, edit, message
+):
+    spec = campaign.read_json(spec_path)
+    edit(spec)
+    campaign.write_json(spec_path, spec)
+    with pytest.raises(ValueError, match=message):
+        FakeCampaign(spec_path, tmp_path / "state")
+    assert not (tmp_path / "state").exists()
+
+
+def test_stage_environment_rechecks_the_forbidden_set(spec_path, tmp_path, monkeypatch):
+    runner = FakeCampaign(spec_path, tmp_path / "state")
+    assert runner.environment("2")["CUDA_VISIBLE_DEVICES"] == "2"
+    monkeypatch.setenv("SEGMENTARY_FORBIDDEN_GPUS", "2")
+    with pytest.raises(ValueError, match="forbidden"):
+        runner.environment("2")

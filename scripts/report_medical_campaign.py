@@ -388,6 +388,38 @@ def _pipeline_markdown(pipeline: dict) -> str:
     return "\n".join(chunks)
 
 
+def _secondary_summary(secondary: dict | None) -> str:
+    if not secondary:
+        return "—"
+    scores = secondary.get("evaluation") or {}
+    mass = _number(scores.get("mass", {}).get("dice"))
+    pancreas = _number(scores.get("pancreas", {}).get("dice"))
+    return f"{mass} / {pancreas} ({secondary.get('label') or secondary.get('checkpoint')})"
+
+
+def _primary_selection(state: dict, binding: dict) -> str | None:
+    """How the primary scored checkpoint was chosen.
+
+    The binding records the trainer's best-checkpoint rule. When the runner
+    scores the terminal checkpoint instead, no validation selection applies to
+    the primary score; the best checkpoint is reported separately.
+    """
+    rule = binding.get("checkpoint_selection")
+    if state.get("checkpoint") == "checkpoint_final.pth":
+        return f"none: terminal checkpoint_final.pth (best checkpoint by {rule} scored separately)"
+    return rule
+
+
+def _fold_validation(recipe: dict, expected_ids: list[str]) -> list[str]:
+    """A recipe bound to a development CV manifest is scored on its own fold."""
+    if recipe.get("cv_splits") is None:
+        return expected_ids
+    cv = _read(Path(recipe["cv_splits"]))
+    if not cv or sha256_file(Path(recipe["cv_splits"])) != recipe.get("cv_splits_sha256"):
+        raise ValueError("Cross-validation manifest is missing or changed")
+    return list(cv["folds"][recipe.get("fold", 0)]["val"])
+
+
 def _evaluation(report: dict, expected_ids: list[str]) -> dict:
     """Retain aggregate scores and a reference-sensitive cohort digest only."""
     if not report:
@@ -576,7 +608,7 @@ def _collect_run(
         "objective": binding.get("architecture", {}).get(
             "objective", binding.get("architecture", {}).get("training_loss", {}).get("name")
         ),
-        "checkpoint_selection": binding.get("checkpoint_selection"),
+        "checkpoint_selection": _primary_selection(state, binding),
         "selected_checkpoint": state.get("checkpoint"),
         "selected_checkpoint_sha256": state.get("selected_checkpoint_sha256"),
         "manifest_fingerprint": binding.get("manifest_fingerprint"),
@@ -592,6 +624,18 @@ def _collect_run(
         "evaluation": _evaluation(
             _read(state_dir / "evaluations" / run["id"] / "report.json"), expected_ids
         ),
+        # Scored separately because it was selected on these same validation cases.
+        "secondary_evaluation": {
+            key: state["secondary"].get(key) for key in ("checkpoint", "label", "checkpoint_sha256")
+        }
+        | {
+            "evaluation": _evaluation(
+                _read(state_dir / "evaluations-checkpoint-best" / run["id"] / "report.json"),
+                expected_ids,
+            )
+        }
+        if isinstance(state.get("secondary"), dict)
+        else None,
         "screening_rank": None,
         "report_issues": [],
         # Failures are surfaced without copying traceback paths or scan names.
@@ -690,8 +734,9 @@ def _rank_groups(rows: list[dict]) -> dict:
             for row in members
         ):
             reasons.append("Required source, split or checkpoint provenance is unavailable")
-        if any(row.get("selected_checkpoint") != "checkpoint_best.pth" for row in members):
-            reasons.append("Evaluation is not bound to the declared best validation checkpoint")
+        primary = {row.get("selected_checkpoint") for row in members}
+        if len(primary) != 1 or not primary <= {"checkpoint_best.pth", "checkpoint_final.pth"}:
+            reasons.append("Evaluation is not bound to one declared checkpoint policy")
         if any(
             row.get("budget_steps") is None or row.get("completed_steps") != row.get("budget_steps")
             for row in members
@@ -727,6 +772,8 @@ def _rank_groups(rows: list[dict]) -> dict:
             )
         if any(row.get("evaluation", {}).get("mass", {}).get("dice") is None for row in members):
             reasons.append("Mass Dice is unavailable")
+        if len(members) < 2:
+            reasons.append("Only one run in this comparison group; there is nothing to rank")
         conclusions[name] = {
             "ranked": not reasons,
             "reasons": reasons,
@@ -785,7 +832,8 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
     for run in spec["runs"]:
         try:
             state = _read(state_dir / "runs" / f"{run['id']}.json")
-            row = _collect_run(run, state, state_dir, expected_ids, now)
+            run_expected = _fold_validation(_recipe(Path(run["config"])), expected_ids)
+            row = _collect_run(run, state, state_dir, run_expected, now)
             if followup is not None:
                 declared = followup["arms"][run["id"]]
                 if row["scientific_recipe_sha256"] != declared["scientific_recipe_sha256"]:
@@ -808,11 +856,11 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
                     "reference_binding_sha256": ablation["reference_binding_sha256"],
                     "reference_campaign_sha256": ablation["reference_campaign_sha256"],
                 }
-            row["expected_validation_cases"] = len(expected_ids)
+            row["expected_validation_cases"] = len(run_expected)
             if not row["clinical_metrics"].get("available"):
                 row["clinical_metrics"] = clinical_metrics(
                     campaign.parent / "clinical-detection" / run["id"] / "report.json",
-                    len(expected_ids),
+                    len(run_expected),
                     row.get("selected_checkpoint_sha256")
                     or row.get("performance", {}).get("prediction", {}).get("checkpoint_sha256"),
                 )
@@ -1025,7 +1073,15 @@ def render(snapshot: dict) -> dict[str, str]:
                     ["Parameters", row.get("parameters") or "—"],
                     ["Objective", row.get("objective") or "—"],
                     ["Checkpoint selection", row.get("checkpoint_selection") or "—"],
-                    ["Selected checkpoint SHA256", row.get("selected_checkpoint_sha256") or "—"],
+                    ["Primary scored checkpoint", row.get("selected_checkpoint") or "—"],
+                    [
+                        "Primary scored checkpoint SHA256",
+                        row.get("selected_checkpoint_sha256") or "—",
+                    ],
+                    [
+                        "Secondary checkpoint mass / pancreas Dice",
+                        _secondary_summary(row.get("secondary_evaluation")),
+                    ],
                     [
                         "Finished-stage allocated GPU-hours",
                         _number(resources.get("finished_stage_gpu_hours")),
@@ -1258,6 +1314,10 @@ def render(snapshot: dict) -> dict[str, str]:
         "code_fingerprint",
         "runtime_fingerprint",
         "continuation_action",
+        "primary_checkpoint",
+        "secondary_checkpoint",
+        "secondary_mass_dice",
+        "secondary_pancreas_dice",
     ]
     writer = csv.DictWriter(stream, fieldnames=fields)
     writer.writeheader()
@@ -1267,6 +1327,8 @@ def render(snapshot: dict) -> dict[str, str]:
         perf = row.get("performance", {})
         prediction = perf.get("prediction", {})
         standard = perf.get("model_only_inference", {})
+        secondary = row.get("secondary_evaluation") or {}
+        secondary_scores = secondary.get("evaluation") or {}
         writer.writerow(
             {
                 **{key: row.get(key) for key in fields[:8]},
@@ -1306,6 +1368,10 @@ def render(snapshot: dict) -> dict[str, str]:
                 "code_fingerprint": row.get("code_fingerprint"),
                 "runtime_fingerprint": row.get("runtime_fingerprint"),
                 "continuation_action": perf.get("lineage", {}).get("action"),
+                "primary_checkpoint": row.get("selected_checkpoint"),
+                "secondary_checkpoint": secondary.get("checkpoint"),
+                "secondary_mass_dice": secondary_scores.get("mass", {}).get("dice"),
+                "secondary_pancreas_dice": secondary_scores.get("pancreas", {}).get("dice"),
             }
         )
     files["results.csv"] = stream.getvalue()

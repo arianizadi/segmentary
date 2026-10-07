@@ -325,3 +325,29 @@ def test_no_rtis_script_chooses_gpus_outside_the_policy():
     assert not offenders, offenders
     source = (REPO / "scripts/run_rtis_campaign.py").read_text()
     assert 'add_argument("--gpus", default="' not in source
+
+
+def test_forbidden_set_defaults_to_gpus_zero_and_one_and_can_only_grow():
+    assert gpu_policy.forbidden_gpus({}) == frozenset({0, 1})
+    assert gpu_policy.forbidden_gpus({gpu_policy.FORBIDDEN_ENV: "7"}) == frozenset({0, 1, 7})
+    # Listing a subset never re-allows a default member.
+    assert gpu_policy.forbidden_gpus({gpu_policy.FORBIDDEN_ENV: "1"}) == frozenset({0, 1})
+    with pytest.raises(GpuPolicyError):
+        gpu_policy.forbidden_gpus({gpu_policy.FORBIDDEN_ENV: "none"})
+
+
+@pytest.mark.parametrize("gpus", [["0"], ["1"], [2, 1], ["9"]])
+def test_refuse_forbidden_fails_closed(gpus):
+    with pytest.raises(GpuPolicyError, match="forbidden"):
+        gpu_policy.refuse_forbidden(gpus, {gpu_policy.FORBIDDEN_ENV: "9"})
+
+
+@pytest.mark.parametrize("gpus", [["GPU-0000"], [""], [True], ["cpu"]])
+def test_refuse_forbidden_requires_physical_indices(gpus):
+    with pytest.raises(GpuPolicyError, match="physical numeric"):
+        gpu_policy.refuse_forbidden(gpus, {})
+
+
+def test_refuse_forbidden_allows_other_gpus():
+    gpu_policy.refuse_forbidden(["2", 3, "9"], {})
+    gpu_policy.refuse_forbidden([], {})

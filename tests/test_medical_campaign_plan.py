@@ -90,7 +90,7 @@ def inputs(tmp_path, monkeypatch):
         "manifest": manifest,
         "splits": splits,
         "cache_root": tmp_path / "cache",
-        "gpus": [str(gpu) for gpu in range(10)],
+        "gpus": [str(gpu) for gpu in range(2, 10)],
         "scan_backend": "native",
     }
 

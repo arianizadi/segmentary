@@ -624,3 +624,79 @@ def test_prediction_statistics_are_retained_with_case_ordinals(campaign):
     files = reporter.render(snapshot)
     assert "mass_probability_max" in files["inference-cases.csv"]
     assert "private-case-A" not in files["inference-cases.csv"]
+
+
+def test_final_primary_with_labelled_best_secondary_is_reported_and_rankable(
+    campaign: tuple[Path, Path],
+) -> None:
+    spec, state = campaign
+    for index, name in enumerate(("a", "b")):
+        run_state = reporter._read(state / f"runs/{name}.json")
+        run_state["checkpoint"] = "checkpoint_final.pth"
+        run_state["secondary"] = {
+            "checkpoint": "checkpoint_best.pth",
+            "label": "secondary: selected on this validation fold (optimistic)",
+            "checkpoint_sha256": f"best-{name}",
+            "evaluation": str(state / "evaluations-checkpoint-best" / name),
+        }
+        write(state / f"runs/{name}.json", run_state)
+        write(
+            state / "evaluations-checkpoint-best" / name / "report.json",
+            evaluation(0.9 - index * 0.1),
+        )
+    snapshot = reporter.collect(spec, state, now=1000)
+    assert [row["screening_rank"] for row in snapshot["runs"]] == [2, 1]
+    secondary = snapshot["runs"][0]["secondary_evaluation"]
+    assert secondary["checkpoint"] == "checkpoint_best.pth"
+    assert secondary["evaluation"]["mass"]["dice"] == pytest.approx(0.9)
+    files = reporter.render(snapshot)
+    assert str(spec.parent) not in "\n".join(files.values())
+    rows = list(csv.DictReader(io.StringIO(files["results.csv"])))
+    assert rows[0]["primary_checkpoint"] == "checkpoint_final.pth"
+    assert float(rows[0]["secondary_mass_dice"]) == pytest.approx(0.9)
+    assert "Primary scored checkpoint | checkpoint_final.pth" in files["models/a.md"]
+    assert snapshot["runs"][0]["checkpoint_selection"].startswith(
+        "none: terminal checkpoint_final.pth"
+    )
+    assert "Checkpoint selection | none: terminal checkpoint_final.pth" in files["models/a.md"]
+    assert "Primary scored checkpoint SHA256" in files["models/a.md"]
+    assert "Selected checkpoint SHA256" not in files["models/a.md"]
+    run_state = reporter._read(state / "runs/b.json")
+    run_state["checkpoint"] = "checkpoint_best.pth"
+    write(state / "runs/b.json", run_state)
+    snapshot = reporter.collect(spec, state, now=1000)
+    assert (
+        "Evaluation is not bound to one declared checkpoint policy"
+        in (snapshot["groups"]["torch10k"]["reasons"])
+    )
+
+
+def test_cv_fold_runs_are_scored_against_their_own_fold(campaign: tuple[Path, Path]) -> None:
+    spec, state = campaign
+    cv = spec.parent / "cv.json"
+    write(cv, {"folds": [{"val": ["other-case"]}, {"val": ["private-case-A"]}]})
+    config_path = spec.parent / "configs" / "a.json"
+    config = reporter._read(config_path)
+    config.update(cv_splits=str(cv), cv_splits_sha256=reporter.sha256_file(cv), fold=1)
+    write(config_path, config)
+    snapshot = reporter.collect(spec, state, now=1000)
+    assert snapshot["runs"][0]["status"] == "completed"
+    assert snapshot["runs"][0]["expected_validation_cases"] == 1
+    config["fold"] = 0
+    write(config_path, config)
+    assert reporter.collect(spec, state, now=1000)["runs"][0]["status"] == "invalid_report"
+    config.update(fold=1, cv_splits_sha256="0" * 64)
+    write(config_path, config)
+    assert reporter.collect(spec, state, now=1000)["runs"][0]["status"] == "invalid_report"
+
+
+def test_single_run_groups_are_not_ranked(campaign: tuple[Path, Path]) -> None:
+    spec, state = campaign
+    document = reporter._read(spec)
+    document["runs"][1]["comparison_group"] = "solo"
+    write(spec, document)
+    snapshot = reporter.collect(spec, state, now=1000)
+    assert all(row["screening_rank"] is None for row in snapshot["runs"])
+    for group in snapshot["groups"].values():
+        assert group["ranked"] is False
+        assert "Only one run in this comparison group; there is nothing to rank" in group["reasons"]

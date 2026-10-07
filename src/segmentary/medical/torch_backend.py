@@ -23,7 +23,18 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from .backend import _atomic_json, _check_hash, _digest, _documents, _json, _lock, _sha, _stop_child
+from .backend import (
+    _atomic_json,
+    _check_hash,
+    _digest,
+    _documents,
+    _json,
+    _lock,
+    _refuse_forbidden_gpu,
+    _require_worker_devices,
+    _sha,
+    _stop_child,
+)
 from .torch_config import TorchConfig
 
 
@@ -41,6 +52,8 @@ def _environment(config: TorchConfig) -> dict[str, str]:
     inherited = env.get("CUDA_VISIBLE_DEVICES")
     if config.gpu != "cpu" and inherited is not None and config.gpu not in inherited.split(","):
         raise ValueError("Requested GPU is outside inherited CUDA_VISIBLE_DEVICES")
+    if config.gpu != "cpu":
+        _refuse_forbidden_gpu(config.gpu)
     env.update(
         CUDA_VISIBLE_DEVICES="" if config.gpu == "cpu" else config.gpu,
         CUDA_DEVICE_ORDER="PCI_BUS_ID",
@@ -817,6 +830,7 @@ def _worker(request_path: Path) -> None:
 
     request = _json(request_path)
     config = TorchConfig(**request["config"])
+    _require_worker_devices(config.gpu)
     binding = _binding(config)
     if request["identity"] != _digest(binding):
         raise ValueError("Worker identity changed")

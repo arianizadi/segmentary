@@ -279,6 +279,8 @@ def test_prediction_status_records_loaded_checkpoint_bytes_without_per_case_reha
     config, _, splits, manifest_path, splits_path = experiment
     backend.prepare_dataset(manifest_path, splits_path, config)
     backend.plan_and_preprocess(config)
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
+    monkeypatch.setenv("CUDA_DEVICE_ORDER", "PCI_BUS_ID")
     backend._train_worker(config, {"resume": False}, backend._binding(config))
     checkpoint = backend._checkpoint(config, "checkpoint_best.pth")
     expected = backend._sha(checkpoint)

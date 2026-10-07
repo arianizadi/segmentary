@@ -33,7 +33,9 @@ def main() -> None:
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--backend-python", required=True)
-    parser.add_argument("--gpu", default="0")
+    # No default: GPUs 0 and 1 are always refused (segmentary.gpu_policy), so the
+    # operator must name a free physical GPU.
+    parser.add_argument("--gpu", required=True, help="Physical PCI-order GPU index; not 0 or 1")
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError("Use a new output directory for each smoke")

@@ -158,7 +158,7 @@ def inputs(tmp_path, monkeypatch):
         "reference_campaign": reference,
         "python": Path(sys.executable),
         "cache_root": tmp_path / "cache",
-        "gpus": [str(n) for n in range(1, 7)],
+        "gpus": [str(n) for n in range(2, 8)],
     }
 
 
@@ -168,7 +168,7 @@ def test_six_fresh_arms_preserve_original_recipe_and_separate_identities(inputs)
     }
     spec = planner.plan_ablation(**inputs)
     assert len(spec["runs"]) == 6
-    assert spec["gpus"] == ["1", "2", "3", "4", "5", "6"]
+    assert spec["gpus"] == ["2", "3", "4", "5", "6", "7"]
     assert len({run["id"] for run in spec["runs"]}) == 6
     assert len({run["workspace"] for run in spec["runs"]}) == 6
     configs = {run["id"]: json.loads(Path(run["config"]).read_text()) for run in spec["runs"]}
@@ -205,7 +205,7 @@ def test_explicit_seeds_get_separate_controls_and_comparison_groups(inputs):
 
 
 def test_planning_respects_gpu_subset_without_reallocating_historical_gpus(inputs, monkeypatch):
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "1,2,3,4,5,6")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "2,3,4,5,6,7")
     assert planner.plan_ablation(**inputs)["gpus"] == inputs["gpus"]
 
 

@@ -20,7 +20,7 @@ def simulated_gpu_allocation(monkeypatch):
     # These orchestration tests mock subprocesses/runtime. Give them a declared
     # allocation independent of the CPU CI runner's intentionally hidden CUDA.
     # Individual restriction tests override this value to exercise rejection.
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "2")
 
 
 @pytest.fixture
@@ -68,7 +68,7 @@ def prepared(tmp_path, monkeypatch):
     monkeypatch.setattr(
         b, "_runtime", lambda config: {"python": "test", "packages": {"nnunetv2": b.NNUNET_VERSION}}
     )
-    config = b.NNUNetConfig(str(tmp_path / "workspace"), deterministic=True)
+    config = b.NNUNetConfig(str(tmp_path / "workspace"), deterministic=True, gpu="2")
     b.prepare_dataset(manifest_path, splits_path, config)
     return config, manifest, splits, manifest_path, splits_path
 
@@ -284,7 +284,7 @@ def test_subprocess_lifecycle_and_safe_argv(prepared, monkeypatch, returncode, s
     argv, kwargs = calls[0]
     assert isinstance(argv, list) and "shell" not in kwargs
     assert argv[1:4] == ["-m", "segmentary.medical.backend", "_worker"]
-    assert kwargs["env"]["CUDA_VISIBLE_DEVICES"] == "0"
+    assert kwargs["env"]["CUDA_VISIBLE_DEVICES"] == "2"
     assert kwargs["env"]["nnUNet_n_proc_DA"] == "0"
     assert len(kwargs["pass_fds"]) == 2
     assert state["allocated_gpu_hours"] >= 0
@@ -363,7 +363,7 @@ def test_environment_does_not_modify_process_environment(prepared):
 
 
 def test_zero_augmentation_workers_are_exclusive_to_deterministic_training(tmp_path):
-    config = b.NNUNetConfig(str(tmp_path), workers=3, deterministic=True)
+    config = b.NNUNetConfig(str(tmp_path), workers=3, deterministic=True, gpu="2")
     for action in (None, "plan", "predict"):
         assert b._environment(config, action=action)["nnUNet_n_proc_DA"] == "3"
     assert b._environment(config, action="train")["nnUNet_n_proc_DA"] == "0"
@@ -372,7 +372,7 @@ def test_zero_augmentation_workers_are_exclusive_to_deterministic_training(tmp_p
 
 
 def test_default_recipe_uses_normal_nnunet_gpu_execution(tmp_path):
-    config = b.NNUNetConfig(str(tmp_path), workers=2)
+    config = b.NNUNetConfig(str(tmp_path), workers=2, gpu="2")
     assert config.deterministic is False
     assert b._environment(config, action="train")["nnUNet_n_proc_DA"] == "2"
     strict = dataclasses.replace(config, deterministic=True)
@@ -394,7 +394,7 @@ def test_planning_subprocess_receives_positive_thread_count(prepared, monkeypatc
 
 
 def test_external_backend_runtime_is_probed_independently(tmp_path, monkeypatch):
-    config = b.NNUNetConfig(str(tmp_path), backend_python="/separate env/bin/python")
+    config = b.NNUNetConfig(str(tmp_path), backend_python="/separate env/bin/python", gpu="2")
     calls = []
     expected = {
         "python": "worker-python",
@@ -417,15 +417,15 @@ def test_external_backend_runtime_is_probed_independently(tmp_path, monkeypatch)
 
 
 def test_inherited_gpu_restriction_is_respected(tmp_path, monkeypatch):
-    config = b.NNUNetConfig(str(tmp_path), gpu="0")
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "1,2")
+    config = b.NNUNetConfig(str(tmp_path), gpu="2")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "3,4")
     with pytest.raises(ValueError, match="outside inherited"):
         b._environment(config)
     monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "GPU-example")
     with pytest.raises(ValueError, match="unsupported UUID"):
         b._environment(config)
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0,1")
-    assert b._environment(config)["CUDA_VISIBLE_DEVICES"] == "0"
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "2,3")
+    assert b._environment(config)["CUDA_VISIBLE_DEVICES"] == "2"
 
 
 def test_parent_state_write_failure_stops_live_child(prepared, monkeypatch):
@@ -475,3 +475,112 @@ def test_official_nibabel_output_spatial_metadata_is_restored_without_hiding_mis
     with pytest.raises(ValueError, match="native CT geometry"):
         b._finalize_native_prediction(image, prediction)
     assert b._sha(prediction) == bad_hash
+
+
+@pytest.mark.parametrize("gpu", ["0", "1"])
+def test_forbidden_gpus_are_refused_even_when_visible(tmp_path, monkeypatch, gpu):
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0,1,2")
+    config = b.NNUNetConfig(str(tmp_path), gpu=gpu)
+    with pytest.raises(ValueError, match="forbidden"):
+        b._environment(config)
+    with pytest.raises(ValueError, match="forbidden"):
+        b._environment(config, action="train")
+    monkeypatch.setenv("SEGMENTARY_FORBIDDEN_GPUS", "2")
+    with pytest.raises(ValueError, match="forbidden"):
+        b._environment(b.NNUNetConfig(str(tmp_path), gpu="2"))
+
+
+def test_worker_refuses_a_forbidden_visible_gpu_before_any_work(tmp_path, monkeypatch):
+    request = tmp_path / "request.json"
+    b._atomic_json(request, {"config": dataclasses.asdict(b.NNUNetConfig(str(tmp_path), gpu="2"))})
+    monkeypatch.setattr(b, "_binding", lambda *a, **k: pytest.fail("worker continued"))
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "1")
+    with pytest.raises(ValueError, match="forbidden"):
+        b._worker(str(request))
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "GPU-0123")
+    with pytest.raises(ValueError, match="physical numeric"):
+        b._worker(str(request))
+
+
+@pytest.mark.parametrize(
+    "visible, order, message",
+    [
+        (None, "PCI_BUS_ID", "requires CUDA_VISIBLE_DEVICES"),
+        ("", "PCI_BUS_ID", "does not expose exactly GPU"),
+        ("3", "PCI_BUS_ID", "does not expose exactly GPU"),
+        ("2,3", "PCI_BUS_ID", "does not expose exactly GPU"),
+        ("2", None, "CUDA_DEVICE_ORDER=PCI_BUS_ID"),
+        ("2", "FASTEST_FIRST", "CUDA_DEVICE_ORDER=PCI_BUS_ID"),
+    ],
+)
+def test_worker_requires_exactly_its_gpu_in_pci_order(
+    tmp_path, monkeypatch, visible, order, message
+):
+    request = tmp_path / "request.json"
+    b._atomic_json(request, {"config": dataclasses.asdict(b.NNUNetConfig(str(tmp_path), gpu="2"))})
+    monkeypatch.setattr(b, "_binding", lambda *a, **k: pytest.fail("worker continued"))
+    for name, value in (("CUDA_VISIBLE_DEVICES", visible), ("CUDA_DEVICE_ORDER", order)):
+        if value is None:
+            monkeypatch.delenv(name, raising=False)
+        else:
+            monkeypatch.setenv(name, value)
+    with pytest.raises(ValueError, match=message):
+        b._worker(str(request))
+
+
+def test_worker_with_the_launcher_environment_passes_the_device_check(tmp_path, monkeypatch):
+    config = b.NNUNetConfig(str(tmp_path), gpu="2")
+    request = tmp_path / "request.json"
+    b._atomic_json(request, {"config": dataclasses.asdict(config)})
+
+    class Reached(Exception):
+        pass
+
+    def reached(*_args, **_kwargs):
+        raise Reached
+
+    monkeypatch.setattr(b, "_binding", reached)
+    monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
+    environment = b._environment(config)
+    for name in ("CUDA_VISIBLE_DEVICES", "CUDA_DEVICE_ORDER"):
+        monkeypatch.setenv(name, environment[name])
+    with pytest.raises(Reached):
+        b._worker(str(request))
+
+
+def test_code_identity_covers_the_gpu_guard():
+    assert "../gpu_policy.py" in b._code_identity()
+
+
+def test_torch_backend_refuses_forbidden_gpus_but_not_cpu(tmp_path, monkeypatch):
+    from segmentary.medical import torch_backend
+    from segmentary.medical.torch_config import TorchConfig
+
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0,1,2")
+    for gpu in ("0", "1"):
+        with pytest.raises(ValueError, match="forbidden"):
+            torch_backend._environment(TorchConfig(str(tmp_path), gpu=gpu))
+    assert (
+        torch_backend._environment(TorchConfig(str(tmp_path), gpu="2"))["CUDA_VISIBLE_DEVICES"]
+        == "2"
+    )
+    cpu = TorchConfig(str(tmp_path), gpu="cpu", precision="fp32")
+    assert torch_backend._environment(cpu)["CUDA_VISIBLE_DEVICES"] == ""
+
+
+def test_torch_worker_refuses_an_unset_or_mismatched_device_list(tmp_path, monkeypatch):
+    from segmentary.medical import torch_backend
+    from segmentary.medical.torch_config import TorchConfig
+
+    pytest.importorskip("torch")
+    request = tmp_path / "request.json"
+    config = TorchConfig(str(tmp_path), gpu="cpu", precision="fp32")
+    request.write_text(json.dumps({"config": torch_backend._config_record(config)}))
+    monkeypatch.setattr(torch_backend, "_binding", lambda *a, **k: pytest.fail("worker continued"))
+    monkeypatch.setenv("CUDA_DEVICE_ORDER", "PCI_BUS_ID")
+    monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
+    with pytest.raises(ValueError, match="requires CUDA_VISIBLE_DEVICES"):
+        torch_backend._worker(request)
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "2")
+    with pytest.raises(ValueError, match="does not expose exactly GPU 'cpu'"):
+        torch_backend._worker(request)

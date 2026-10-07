@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import dataclasses
+import os
 import shutil
 from pathlib import Path
+from unittest import mock
 
 import pytest
 import torch
@@ -26,7 +28,11 @@ def preprocess_in_process(config, request_path):
             "identity": _digest(binding),
         },
     )
-    backend._worker(request_path)
+    # The launcher always exposes exactly the configured device in PCI order.
+    with mock.patch.dict(
+        os.environ, {"CUDA_VISIBLE_DEVICES": "", "CUDA_DEVICE_ORDER": "PCI_BUS_ID"}
+    ):
+        backend._worker(request_path)
 
 
 @pytest.mark.parametrize("prefetch", [False, True])

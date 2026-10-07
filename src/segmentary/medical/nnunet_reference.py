@@ -57,7 +57,9 @@ def _official_plan(config: NNUNetConfig, source_binding: dict, plan: dict) -> di
     from .recipe_plan import RESENC_CLASS
 
     original = source_binding["config"]
-    for key in ("dataset_id", "dataset_name", "resenc", "configuration", "fold"):
+    # Preprocessing is fold independent; a bound CV manifest selects the fold.
+    keys = ("dataset_id", "dataset_name", "resenc", "configuration")
+    for key in keys if config.cv_splits is not None else (*keys, "fold"):
         if original.get(key) != getattr(config, key):
             raise ValueError(f"Reference recipe {key} does not match the destination")
     if (
@@ -181,6 +183,12 @@ def import_reference(config: NNUNetConfig) -> dict[str, Any]:
 
     split = b._json(Path(destination["splits_path"]))
     expected_split = [{"train": split["train"], "val": split["val"]}]
+    destination_split = expected_split
+    if config.cv_splits is not None:
+        manifest, documents = b._documents(destination["manifest_path"], destination["splits_path"])
+        destination_split = b._nnunet_folds(
+            b._cross_validation(config, manifest, documents, destination["splits_path"]), documents
+        )
     development = split["train"] + split["val"]
     if (
         development != source_binding["development_cases"]
@@ -188,7 +196,7 @@ def import_reference(config: NNUNetConfig) -> dict[str, Any]:
         or set(development) & set(source_binding["held_out_cases"])
         or split["test"] != source_binding["held_out_cases"]
         or b._json(cache / "splits_final.json") != expected_split
-        or b._json(config.preprocessed / "splits_final.json") != expected_split
+        or b._json(config.preprocessed / "splits_final.json") != destination_split
     ):
         raise ValueError("Reference development split or held-out exclusion changed")
     dataset = {
@@ -243,6 +251,8 @@ def import_reference(config: NNUNetConfig) -> dict[str, Any]:
         if _inventory(cache) != set(index):
             raise ValueError("Reference preprocessing cache membership changed during import")
         for child in sorted(staging.iterdir()):
+            if child.name == "splits_final.json" and config.cv_splits is not None:
+                continue  # keep the destination's bound cross-validation folds
             child.replace(config.preprocessed / child.name)
 
     return {

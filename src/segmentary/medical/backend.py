@@ -62,6 +62,8 @@ class NNUNetConfig:
     architecture: str = "resenc"
     reference_workspace: str | None = None
     reference_plan_binding_sha256: str | None = None
+    cv_splits: str | None = None
+    cv_splits_sha256: str | None = None
 
     def __post_init__(self):
         for name in ("dataset_id", "fold", "seed", "workers"):
@@ -106,9 +108,24 @@ class NNUNetConfig:
             self.reference_workspace is None or self.configuration != "3d_fullres"
         ):
             raise ValueError("Architecture transfer requires a reference workspace and 3d_fullres")
-        if self.fold != 0:
+        if self.cv_splits is not None:
+            if not isinstance(self.cv_splits, str) or not self.cv_splits:
+                raise ValueError("cv_splits must be a cross-validation manifest path string")
+            object.__setattr__(self, "cv_splits", str(Path(self.cv_splits).expanduser().resolve()))
+            if not isinstance(self.cv_splits_sha256, str) or not re.fullmatch(
+                r"[0-9a-f]{64}", self.cv_splits_sha256
+            ):
+                raise ValueError("cv_splits requires its frozen SHA256 in cv_splits_sha256")
+            from .cv_splits import MAX_FOLDS
+
+            # The bound manifest's own fold count is enforced before any write.
+            if not 0 <= self.fold < MAX_FOLDS:
+                raise ValueError(f"Cross-validation folds are 0 to {MAX_FOLDS - 1}")
+        elif self.cv_splits_sha256 is not None:
+            raise ValueError("cv_splits_sha256 requires cv_splits")
+        elif self.fold != 0:
             raise ValueError(
-                "This explicit train/val split is fold 0; use separate workspaces for other splits"
+                "This explicit train/val split is fold 0; set cv_splits for other folds"
             )
         if not re.fullmatch(r"[0-9]+", self.gpu) or self.workers < 1 or not 0 <= self.seed < 2**32:
             raise ValueError("Specify one numeric GPU, positive workers, and a uint32 seed")
@@ -170,7 +187,7 @@ class NNUNetConfig:
 
     @property
     def fold_folder(self) -> Path:
-        return self.model_folder / "fold_0"
+        return self.model_folder / f"fold_{self.fold}"
 
 
 def _sha(path: str | Path) -> str:
@@ -211,7 +228,10 @@ def _check_hash(path: str | Path, expected: str):
 
 
 def _code_identity() -> dict:
-    return {p.name: _sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
+    identity = {p.name: _sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
+    # Workers enforce the shared-host GPU guard, so it is part of the code identity.
+    identity["../gpu_policy.py"] = _sha(Path(__file__).parents[1] / "gpu_policy.py")
+    return identity
 
 
 def _documents(manifest_path: str | Path, splits_path: str | Path) -> tuple[dict, dict]:
@@ -233,6 +253,40 @@ def _documents(manifest_path: str | Path, splits_path: str | Path) -> tuple[dict
     return manifest, splits
 
 
+def _cross_validation(
+    config: NNUNetConfig, manifest: dict, splits: dict, splits_path
+) -> dict | None:
+    """The bound CV manifest for this config, verified against the frozen split."""
+    if config.cv_splits is None:
+        return None
+    from .cv_splits import validate_cv_splits
+
+    _check_hash(config.cv_splits, config.cv_splits_sha256 or "")
+    cv = _json(Path(config.cv_splits))
+    if cv.get("base_splits_sha256") != _sha(splits_path):
+        raise ValueError("Cross-validation manifest was derived from a different split file")
+    validate_cv_splits(manifest, splits, cv)
+    if not config.fold < len(cv["folds"]):
+        raise ValueError(f"Fold {config.fold} is outside the {len(cv['folds'])}-fold manifest")
+    return cv
+
+
+def _nnunet_folds(cv: dict | None, splits: dict) -> list[dict]:
+    from .cv_splits import nnunet_splits
+
+    return [{"train": splits["train"], "val": splits["val"]}] if cv is None else nnunet_splits(cv)
+
+
+def _fold_cases(config: NNUNetConfig, binding: dict, partition: str) -> list[str]:
+    """Training/validation case IDs for this config's fold; other partitions are unchanged."""
+    if config.cv_splits is None or partition not in {"train", "val"}:
+        return list(_json(Path(binding["splits_path"]))[partition])
+    manifest, splits = _documents(binding["manifest_path"], binding["splits_path"])
+    cv = _cross_validation(config, manifest, splits, binding["splits_path"])
+    assert cv is not None
+    return list(cv["folds"][config.fold][partition])
+
+
 def prepare_dataset(
     manifest_path: str | Path,
     splits_path: str | Path,
@@ -248,6 +302,8 @@ def prepare_dataset(
     """
     manifest_path, splits_path = Path(manifest_path).resolve(), Path(splits_path).resolve()
     manifest, splits = _documents(manifest_path, splits_path)
+    cv = _cross_validation(config, manifest, splits, splits_path)
+    folds = _nnunet_folds(cv, splits)
     if config.root.exists() and any(config.root.iterdir()):
         raise FileExistsError(f"Use an empty workspace: {config.root}")
     lookup = {c["case_id"]: c for c in manifest["cases"]}
@@ -278,12 +334,21 @@ def prepare_dataset(
         "initialization": "scratch",
         "checkpoint_selection": "official_ema_foreground_dice",
     }
+    if cv is not None:
+        binding["cross_validation"] = {
+            "path": config.cv_splits,
+            "sha256": config.cv_splits_sha256,
+            "fingerprint": cv["fingerprint"],
+            "fold": config.fold,
+            "fold_count": len(cv["folds"]),
+        }
     result = {
         "action": "prepare",
         "dry_run": dry_run,
         "workspace": config.workspace,
-        "train_cases": len(splits["train"]),
-        "val_cases": len(splits["val"]),
+        "fold": config.fold,
+        "train_cases": len(folds[config.fold]["train"]),
+        "val_cases": len(folds[config.fold]["val"]),
         "test_cases_excluded": len(splits["test"]),
         "identity": _digest(binding),
     }
@@ -313,10 +378,7 @@ def prepare_dataset(
             "overwrite_image_reader_writer": "NibabelIO",
         },
     )
-    _atomic_json(
-        config.preprocessed / "splits_final.json",
-        [{"train": splits["train"], "val": splits["val"]}],
-    )
+    _atomic_json(config.preprocessed / "splits_final.json", folds)
     _atomic_json(config.root / "binding.json", binding)
     _atomic_json(config.root / "resolved-config.json", dataclasses.asdict(config))
     _atomic_json(config.root / "preparation.json", result)
@@ -333,7 +395,8 @@ def _binding(config: NNUNetConfig, *, verify_development: bool = True) -> dict:
     _check_hash(binding["splits_path"], binding["splits_sha256"])
     if verify_development:
         manifest, splits = _documents(binding["manifest_path"], binding["splits_path"])
-        expected = [{"train": splits["train"], "val": splits["val"]}]
+        cv = _cross_validation(config, manifest, splits, binding["splits_path"])
+        expected = _nnunet_folds(cv, splits)
         if json.loads((config.preprocessed / "splits_final.json").read_text()) != expected:
             raise ValueError("nnU-Net development split changed")
         raw = config.root / "nnUNet_raw" / config.dataset
@@ -423,6 +486,36 @@ def _gpu_lock(config: NNUNetConfig) -> Path:
     return root / f"gpu-{config.gpu}.lock"
 
 
+def _refuse_forbidden_gpu(*gpus: str) -> None:
+    """Fail closed before exposing a GPU reserved for other users (see gpu_policy)."""
+    from segmentary.gpu_policy import GpuPolicyError, refuse_forbidden
+
+    try:
+        refuse_forbidden(gpus)
+    except GpuPolicyError as exc:
+        raise ValueError(str(exc)) from exc
+
+
+def _require_worker_devices(gpu: str) -> None:
+    """Fail closed unless the launcher exposed exactly ``gpu`` in PCI bus order.
+
+    Launchers always set both variables. A worker started by hand with
+    ``CUDA_VISIBLE_DEVICES`` unset would otherwise see every GPU, and
+    ``cuda:0`` would be physical GPU 0. ``gpu == "cpu"`` requires an empty list.
+    """
+    visible = os.environ.get("CUDA_VISIBLE_DEVICES")
+    if visible is None:
+        raise ValueError("Worker requires CUDA_VISIBLE_DEVICES from its launcher; refusing")
+    tokens = [token.strip() for token in visible.split(",") if token.strip()]
+    _refuse_forbidden_gpu(*tokens)
+    if tokens != ([] if gpu == "cpu" else [gpu]):
+        raise ValueError(
+            f"Worker CUDA_VISIBLE_DEVICES={visible!r} does not expose exactly GPU {gpu!r}"
+        )
+    if os.environ.get("CUDA_DEVICE_ORDER") != "PCI_BUS_ID":
+        raise ValueError("Worker requires CUDA_DEVICE_ORDER=PCI_BUS_ID")
+
+
 def _environment(config: NNUNetConfig, *, action: str | None = None) -> dict[str, str]:
     """Zero workers selects synchronous augmentation only in the training stage.
 
@@ -440,6 +533,7 @@ def _environment(config: NNUNetConfig, *, action: str | None = None) -> dict[str
             )
         if config.gpu not in {str(int(value)) for value in tokens}:
             raise ValueError("Requested GPU is outside inherited CUDA_VISIBLE_DEVICES")
+    _refuse_forbidden_gpu(config.gpu)
     env.update(
         {
             name: str(config.root / name)
@@ -804,10 +898,9 @@ def predict(
     binding = _binding(config, verify_development=False)
     checkpoint_item = _checkpoint(config, checkpoint)
     manifest = _json(Path(binding["manifest_path"]))
-    splits = _json(Path(binding["splits_path"]))
     lookup = {c["case_id"]: c for c in manifest["cases"]}
     identifiers = (
-        splits[partition]
+        _fold_cases(config, binding, partition)
         if partition != "unlabeled"
         else [c["case_id"] for c in manifest["cases"] if c["annotation_status"] == "unlabeled"]
     )
@@ -846,6 +939,8 @@ def predict(
         "dry_run": dry_run,
         "output": str(output),
         "cases": len(cases),
+        "fold": config.fold,
+        "checkpoint": checkpoint,
         "checkpoint_sha256": checkpoint_item["sha256"],
     }
     if dry_run:
@@ -886,6 +981,23 @@ def _seed_runtime(config: NNUNetConfig):
     torch.use_deterministic_algorithms(config.deterministic)
 
 
+def _guard_trainer_split(trainer, fold: int, expected: tuple[list[str], list[str]]) -> None:
+    """Make every ``trainer.do_split()`` call prove it returns the bound fold.
+
+    nnU-Net silently falls back to a random 80:20 split when the requested fold
+    is missing from ``splits_final.json``; this turns any such drift into an error.
+    """
+    original = trainer.do_split
+
+    def do_split():
+        train_keys, val_keys = original()
+        if (list(train_keys), list(val_keys)) != (list(expected[0]), list(expected[1])):
+            raise ValueError(f"nnU-Net trainer split differs from bound fold {fold}")
+        return train_keys, val_keys
+
+    trainer.do_split = do_split
+
+
 def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
     import random
 
@@ -911,6 +1023,12 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
         value = getattr(config, name)
         if value is not None:
             setattr(trainer, name, value)
+    split_binding = _binding(config, verify_development=False)
+    expected_split = (
+        _fold_cases(config, split_binding, "train"),
+        _fold_cases(config, split_binding, "val"),
+    )
+    _guard_trainer_split(trainer, config.fold, expected_split)
     # Record actual initialized capacity before any optimization. The official
     # trainer initializes only once; on_train_start reuses this same network.
     trainer.initialize()
@@ -1006,6 +1124,9 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
             "weight_decay": trainer.weight_decay,
             "oversample_foreground_percent": trainer.oversample_foreground_percent,
             "checkpoint_selection": "official_ema_foreground_dice",
+            "fold": config.fold,
+            "fold_cases": {"train": len(expected_split[0]), "val": len(expected_split[1])},
+            "split_guard": "trainer.do_split must equal the bound fold lists exactly",
             "seed": config.seed,
             "deterministic": config.deterministic,
             "reproducibility": "strict_deterministic_algorithms"
@@ -1066,7 +1187,7 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
     _checkpoint(config, "checkpoint_final.pth")
     binding = _binding(config, verify_development=False)
     manifest = _json(Path(binding["manifest_path"]))
-    splits = _json(Path(binding["splits_path"]))
+    validation_cases = _fold_cases(config, binding, "val")
     lookup = {c["case_id"]: c for c in manifest["cases"]}
     # Free training state before constructing an independent inference network.
     original_save = original_step = trainer = None
@@ -1080,7 +1201,7 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
         _predict_worker(
             config,
             {
-                "cases": [{"case_id": x, "image": lookup[x]["image"]} for x in splits["val"]],
+                "cases": [{"case_id": x, "image": lookup[x]["image"]} for x in validation_cases],
                 "checkpoint": "checkpoint_best.pth",
                 "output": str(validation_output),
             },
@@ -1096,7 +1217,9 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
         config.root / "training-validation.json",
         {
             "output": str(validation_output),
-            "cases": splits["val"],
+            "cases": validation_cases,
+            "fold": config.fold,
+            "checkpoint": "checkpoint_best.pth",
             "selection": "official_ema_foreground_dice",
             "use_mirroring": config.use_mirroring,
             "metrics": "Run the separate medical evaluator; patch Dice is not full-volume Dice",
@@ -1122,7 +1245,7 @@ def _predict_worker(config: NNUNetConfig, payload: dict):
     # Predictor enables benchmarking in its constructor; restore the frozen setting.
     torch.backends.cudnn.benchmark = not config.deterministic
     predictor.initialize_from_trained_model_folder(
-        str(config.model_folder), use_folds=(0,), checkpoint_name=payload["checkpoint"]
+        str(config.model_folder), use_folds=(config.fold,), checkpoint_name=payload["checkpoint"]
     )
     predictor.predict_from_files(
         [[c["image"]] for c in payload["cases"]],
@@ -1147,6 +1270,7 @@ def _predict_worker(config: NNUNetConfig, payload: dict):
 def _worker(request_path: str):
     request = _json(Path(request_path))
     config = NNUNetConfig(**request["config"])
+    _require_worker_devices(config.gpu)
     if (
         _digest(
             {"binding": _binding(config, verify_development=False), "runtime": _runtime(config)}

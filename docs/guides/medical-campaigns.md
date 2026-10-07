@@ -43,6 +43,8 @@ recipe needs a new run identity and workspace.
 
 For implementation-only source upgrades, use the [audited continuation procedure](medical-performance-continuation.md); preserve parent evidence and create a fresh workspace.
 
+GPUs 0 and 1 are always refused by the medical campaign runner and backends, and a run can pin its own GPU. nnU-Net runs are scored from the terminal checkpoint, with the validation-selected checkpoint reported separately. For folds 1–4 of a development cross-validation, see the [cross-validation guide](medical-cross-validation.md).
+
 ## Live dashboard
 
 The medical runner and both RTIS campaign launchers automatically open the same

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -62,6 +63,14 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--val-fraction", type=float, default=0.15)
     p.add_argument("--seed", type=int, default=0)
+    p = commands.add_parser(
+        "cv-split", help="Write a k-fold development manifest whose fold 0 is the frozen split"
+    )
+    p.add_argument("--manifest", type=Path, required=True)
+    p.add_argument("--splits", type=Path, required=True)
+    p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--folds", type=int, default=5)
+    p.add_argument("--seed", type=int, default=0)
     p = commands.add_parser("subset", help="Make a traceable subset for a separate smoke run")
     p.add_argument("--manifest", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
@@ -119,6 +128,11 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--splits", type=Path, required=True)
     p.add_argument("--partition", choices=("train", "val", "test"), default="val")
     p.add_argument("--final-test", action="store_true")
+    p.add_argument("--cv-splits", type=Path, help="Development CV manifest; requires --fold")
+    p.add_argument("--fold", type=int, help="Score this CV fold's train/val partition")
+    p.add_argument(
+        "--cv-splits-sha256", help="Frozen SHA256 of --cv-splits; required with --cv-splits"
+    )
     p.add_argument(
         "--pancreas-exclusive", action="store_true", help="Score label 1 instead of union 1+2"
     )
@@ -214,6 +228,12 @@ def dispatch(args: argparse.Namespace) -> Any:
         return make_pants_splits(
             args.manifest, args.output, val_fraction=args.val_fraction, seed=args.seed
         )
+    if command == "cv-split":
+        from .cv_splits import make_cv_splits
+
+        return make_cv_splits(
+            args.manifest, args.splits, args.output, folds=args.folds, seed=args.seed
+        )
     if command == "subset":
         from .data import subset_manifest
 
@@ -264,6 +284,34 @@ def dispatch(args: argparse.Namespace) -> Any:
         manifest = load_manifest(args.manifest)
         splits = json.loads(args.splits.read_text())
         validate_splits(manifest, splits)
+        if len({args.cv_splits is None, args.fold is None, args.cv_splits_sha256 is None}) != 1:
+            raise ValueError("--cv-splits, --cv-splits-sha256 and --fold must be given together")
+        cohort = None
+        if args.cv_splits is not None:
+            from .cv_splits import fold_splits, validate_cv_splits
+            from .geometry import sha256_file
+
+            if args.partition == "test":
+                raise ValueError("Cross-validation folds never include the held-out test")
+            # Read the bytes once so the checked hash and the parsed folds agree.
+            content = args.cv_splits.read_bytes()
+            digest = hashlib.sha256(content).hexdigest()
+            if digest != args.cv_splits_sha256:
+                raise ValueError("Cross-validation manifest SHA256 differs from its frozen value")
+            cv = json.loads(content)
+            validate_cv_splits(manifest, splits, cv)
+            if cv.get("base_splits_sha256") != sha256_file(args.splits):
+                raise ValueError(
+                    "Cross-validation manifest was derived from a different split file"
+                )
+            splits = fold_splits(splits, cv, args.fold)
+            cohort = {
+                "source": "development_cross_validation",
+                "cv_splits_sha256": digest,
+                "cv_fingerprint": cv["fingerprint"],
+                "fold": args.fold,
+                "partition": args.partition,
+            }
         return evaluate_predictions(
             args.manifest,
             args.predictions,
@@ -275,6 +323,7 @@ def dispatch(args: argparse.Namespace) -> Any:
             seed=args.seed,
             review_overlays=args.review_overlays,
             lesion_iou_threshold=args.lesion_iou_threshold,
+            cohort=cohort,
         )
     from . import backend, torch_backend
     from .torch_config import TorchConfig

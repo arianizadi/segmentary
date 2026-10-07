@@ -194,6 +194,8 @@ def test_same_run_resume_restores_optimizer_scheduler_and_all_sampling_rng(tmp_p
 def test_preprocessing_cache_contains_only_train_and_never_opens_heldout_payloads(
     tmp_path, monkeypatch
 ):
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
+    monkeypatch.setenv("CUDA_DEVICE_ORDER", "PCI_BUS_ID")
     from segmentary.medical import torch_data
 
     config = TorchConfig(workspace=str(tmp_path), gpu="cpu", patch_size=(4, 4, 4))

@@ -27,6 +27,10 @@ from typing import Any
 
 POLICY_ENV = "SEGMENTARY_GPU_POLICY"
 ASSIGNED_ENV = "SEGMENTARY_ASSIGNED_GPU"
+FORBIDDEN_ENV = "SEGMENTARY_FORBIDDEN_GPUS"
+# Physical (PCI_BUS_ID-ordered) indices that belong to other users on the shared
+# host. The environment variable can only add indices; nothing removes these.
+DEFAULT_FORBIDDEN_GPUS = frozenset({0, 1})
 DEVICE_ORDER = "PCI_BUS_ID"
 SCHEMA_VERSION = 1
 INVENTORY_ATTEMPTS = 3
@@ -55,6 +59,33 @@ def parse_gpus(text: str) -> tuple[int, ...]:
     if len(set(values)) != len(values):
         raise GpuPolicyError(f"GPU list contains duplicates: {text!r}")
     return values
+
+
+def forbidden_gpus(environ=None) -> frozenset[int]:
+    """``DEFAULT_FORBIDDEN_GPUS`` plus any indices listed in ``SEGMENTARY_FORBIDDEN_GPUS``.
+
+    The variable can only extend the set; a malformed value fails closed.
+    """
+    environ = os.environ if environ is None else environ
+    extra = str(environ.get(FORBIDDEN_ENV, "")).strip()
+    return DEFAULT_FORBIDDEN_GPUS | (frozenset(parse_gpus(extra)) if extra else frozenset())
+
+
+def refuse_forbidden(gpus, environ=None) -> None:
+    """Refuse to schedule or expose any physical GPU index in the forbidden set."""
+    forbidden = forbidden_gpus(environ)
+    requested = []
+    for gpu in gpus:
+        text = str(gpu).strip()
+        if isinstance(gpu, bool) or not text.isdigit():
+            raise GpuPolicyError(f"GPU must be a physical numeric index, got {gpu!r}")
+        requested.append(int(text))
+    blocked = sorted(set(requested) & forbidden)
+    if blocked:
+        raise GpuPolicyError(
+            f"GPU(s) {blocked} are forbidden on this host (forbidden set {sorted(forbidden)}); "
+            "choose other GPUs"
+        )
 
 
 def hostname() -> str:

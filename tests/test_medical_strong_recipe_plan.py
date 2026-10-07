@@ -27,6 +27,11 @@ def write(path, value):
 
 @pytest.fixture
 def inputs(tmp_path, monkeypatch):
+    return build_inputs(tmp_path, monkeypatch)
+
+
+def build_inputs(tmp_path, monkeypatch):
+    """Clean source, metadata-only cohort and frozen ResEnc L reference (shared fixture)."""
     monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
     source = tmp_path / "source"
     (source / "scripts").mkdir(parents=True)
@@ -151,7 +156,7 @@ def inputs(tmp_path, monkeypatch):
         "manifest": manifest,
         "splits": splits,
         "reference_workspace": reference,
-        "gpus": ["1", "2", "3"],
+        "gpus": ["2", "3", "4"],
     }
 
 
@@ -234,7 +239,7 @@ def test_gpu_pool_is_explicit_bounded_and_canonical(inputs, gpus):
 
 
 def test_existing_output_dirty_source_and_inherited_gpu_restriction(inputs, monkeypatch):
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "1,2")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "2,3")
     with pytest.raises(ValueError, match="inherited CUDA"):
         planner.plan_campaign(**inputs)
     monkeypatch.delenv("CUDA_VISIBLE_DEVICES")
