@@ -503,6 +503,17 @@ def test_readme_distinguishes_prediction_continuation_from_new_training(campaign
     assert "Prediction continuation:" not in reporter.render(snapshot)["README.md"]
 
 
+def test_readme_states_the_campaigns_initializations(campaign):
+    spec, state = campaign
+    snapshot = reporter.collect(spec, state)
+    scratch = reporter.render(snapshot)["README.md"]
+    assert "No pretrained weights are allowed" in scratch
+    snapshot["runs"][0]["initialization"] = "warm_start"
+    warm = reporter.render(snapshot)["README.md"]
+    assert "No pretrained weights are allowed" not in warm
+    assert "Initializations in this campaign: scratch, warm_start." in warm
+
+
 def test_standardized_inference_requires_matching_provenance_and_measured_samples(tmp_path):
     from segmentary.medical_reporting import _digest, standardized_inference
 
@@ -700,3 +711,55 @@ def test_single_run_groups_are_not_ranked(campaign: tuple[Path, Path]) -> None:
     for group in snapshot["groups"].values():
         assert group["ranked"] is False
         assert "Only one run in this comparison group; there is nothing to rank" in group["reasons"]
+
+
+def _warm_start(spec: Path, name: str, sha: str = "a" * 64, origin_sha: str | None = None):
+    workspace = spec.parent / name
+    binding = reporter._read(workspace / "binding.json")
+    binding.update(
+        initialization="warm_start",
+        initial_checkpoint={"path": "/frozen/checkpoint_final.pth", "sha256": sha},
+    )
+    write(workspace / "binding.json", binding)
+    (workspace / "scratch-origin.json").unlink(missing_ok=True)
+    write(
+        workspace / "initialization-origin.json",
+        {
+            "initialization": "warm_start",
+            "external_weight_loads": 1,
+            "init_checkpoint_sha256": origin_sha or sha,
+            "parameters": 1000,
+        },
+    )
+
+
+def test_warm_start_groups_rank_only_with_bound_matching_initial_checkpoints(campaign):
+    spec, state = campaign
+    for name in ("a", "b"):
+        _warm_start(spec, name)
+    snapshot = reporter.collect(spec, state, now=1000)
+    assert snapshot["groups"]["torch10k"]["ranked"], snapshot["groups"]["torch10k"]["reasons"]
+    assert all(row["origin_verified"] for row in snapshot["runs"])
+    assert {row["initialization"] for row in snapshot["runs"]} == {"warm_start"}
+    # The loaded checkpoint must be the bound one.
+    _warm_start(spec, "b", origin_sha="b" * 64)
+    snapshot = reporter.collect(spec, state, now=1000)
+    assert not snapshot["groups"]["torch10k"]["ranked"]
+    assert (
+        "Complete training-origin evidence is unavailable"
+        in (snapshot["groups"]["torch10k"]["reasons"])
+    )
+    # Arms of one group must start from the same checkpoint.
+    _warm_start(spec, "b", sha="c" * 64)
+    reasons = reporter.collect(spec, state, now=1000)["groups"]["torch10k"]["reasons"]
+    assert any("differs" in reason for reason in reasons)
+
+
+def test_scratch_and_warm_start_runs_are_never_ranked_together(campaign):
+    spec, state = campaign
+    _warm_start(spec, "b")
+    snapshot = reporter.collect(spec, state, now=1000)
+    group = snapshot["groups"]["torch10k"]
+    assert not group["ranked"]
+    assert any("never ranked together" in reason for reason in group["reasons"])
+    assert all(row["screening_rank"] is None for row in snapshot["runs"])

@@ -56,4 +56,6 @@ The Torch backend keeps one evaluation of its selected-best checkpoint. The nnU-
 
 `scripts/plan_medical_seed_folds.py` freezes ResEnc L `3d_fullres` runs from one verified preprocessing reference. Each `--run GPU:FOLD:SEED` becomes one pinned run that uses the full official budget, no mirroring and tile step 0.5. The planner reads metadata only and launches nothing. Its campaigns carry the preset `task07_nnunet_seed_folds_v1`; whenever the runner loads such a spec it re-checks the manifest, split and CV hashes against the plan and checks that every recipe keeps the planned fixed fields, reference plan, CV binding, GPU pin and `nnunet_resenc_l-fold<k>-seed<s>` identity.
 
+With `--arm NAME=resenc|hrc[:MODE]` and `--run GPU:FOLD:SEED:ARM`, the same planner freezes warm-start arm sets instead, each run starting from its own fold's sha256-bound checkpoint; see the [HRC guide](medical-hrc.md).
+
 Region-based (overlapping pancreas ⊇ mass) labels are not implemented. The reference-cache import copies label-based preprocessing, including foreground sampling locations, so a region option needs its own planned and verified cache.

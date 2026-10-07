@@ -11,18 +11,27 @@ from segmentary.medical import backend as b
 from segmentary.medical import nnunet_reference
 from test_medical_backend import fake_checkpoint, fake_plan
 from test_medical_backend import prepared as prepared_backend  # noqa: F401
+from test_medical_recipe_plan import _seven_stage_plan
 from test_medical_recipe_plan import plan as official_plan  # noqa: F401
 
 
 @pytest.fixture
 def transfer(prepared_backend, official_plan, monkeypatch, tmp_path):  # noqa: F811
+    return _transfer(prepared_backend, official_plan, monkeypatch, tmp_path)
+
+
+def _transfer(prepared_backend, official_plan, monkeypatch, tmp_path, **changes):  # noqa: F811
     original, _, _, manifest, splits = prepared_backend
+    workspace = str(tmp_path / changes.pop("name", "transfer"))
     config = dataclasses.replace(
         original,
-        workspace=str(tmp_path / "transfer"),
-        architecture="plainconv",
-        reference_workspace=original.workspace,
-        reference_plan_binding_sha256="a" * 64,
+        **{
+            "workspace": workspace,
+            "architecture": "plainconv",
+            "reference_workspace": original.workspace,
+            "reference_plan_binding_sha256": "a" * 64,
+            **changes,
+        },
     )
     b.prepare_dataset(manifest, splits, config)
     plan = copy.deepcopy(official_plan)
@@ -71,6 +80,41 @@ def test_import_freezes_adapted_plan_and_records_reference_without_training(tran
     assert receipt["changes"]["nonarchitecture_plan_fields_unchanged"] is True
     assert not (config.root / "scratch-origin.json").exists()
     assert b.train(config, dry_run=True)["resume"] is False
+
+
+def test_hrc_transfer_checks_its_output_channels_against_the_dataset(
+    prepared_backend,  # noqa: F811
+    official_plan,  # noqa: F811
+    monkeypatch,
+    tmp_path,
+):
+    plan = _seven_stage_plan(copy.deepcopy(official_plan))
+    config, *_ = _transfer(
+        prepared_backend, plan, monkeypatch, tmp_path, architecture="hrc", deterministic=False
+    )
+    b.plan_and_preprocess(config)
+    receipt = b._json(config.root / "recipe-transfer.json")
+    assert receipt["changes"]["hrc_outputs"] == {
+        "output_mode": "softmax",
+        "host": ["pancreas"],
+        "lesion": ["mass"],
+    }
+    assert receipt["changes"]["network_construction"] == "architecture_default_initialization"
+    assert "initialization" not in receipt["changes"]
+    regions = {"output_mode": "regions", "host_channels": [0], "lesion_channels": [1]}
+    config, *_ = _transfer(
+        prepared_backend,
+        plan,
+        monkeypatch,
+        tmp_path,
+        name="regions",
+        architecture="hrc",
+        deterministic=False,
+        hrc_options=regions,
+    )
+    with pytest.raises(ValueError, match="regions_class_order"):
+        b.plan_and_preprocess(config)
+    assert not (config.root / "plan-binding.json").exists()
 
 
 def test_transfer_dry_run_does_not_import_or_mutate(transfer):

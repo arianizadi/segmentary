@@ -34,6 +34,13 @@ from typing import Any
 
 NNUNET_VERSION = "2.8.1"
 _CASE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
+# Bound trainer allowlist: nnU-Net's own classes are found by name; Segmentary's
+# are constructed directly and need manual predictor initialization.
+BUILTIN_TRAINERS = frozenset({"nnUNetTrainer"})
+SEGMENTARY_TRAINERS = frozenset({"nnUNetTrainerFinetune"})
+TRAINERS = BUILTIN_TRAINERS | SEGMENTARY_TRAINERS
+INITIALIZATIONS = ("scratch", "warm_start", "pretrained")
+PURPOSES = ("baseline", "smoke", "overfit", "pilot")
 
 
 @dataclass(frozen=True)
@@ -64,6 +71,13 @@ class NNUNetConfig:
     reference_plan_binding_sha256: str | None = None
     cv_splits: str | None = None
     cv_splits_sha256: str | None = None
+    trainer: str = "nnUNetTrainer"
+    initial_lr: float | None = None
+    initialization: str = "scratch"
+    init_checkpoint: str | None = None
+    init_checkpoint_sha256: str | None = None
+    init_allowed_missing_prefixes: list[str] | None = None
+    hrc_options: dict[str, Any] | None = None
 
     def __post_init__(self):
         for name in ("dataset_id", "fold", "seed", "workers"):
@@ -89,8 +103,20 @@ class NNUNetConfig:
             raise ValueError("Use dataset_id 1..999 and an alphanumeric dataset_name")
         if self.resenc not in {"M", "L", "XL"} or self.configuration not in {"3d_fullres", "2d"}:
             raise ValueError("Supported recipes are ResEnc M/L/XL, 3d_fullres or 2d")
-        if self.architecture not in {"resenc", "plainconv", "dynunet"}:
-            raise ValueError("architecture must be resenc, plainconv, or dynunet")
+        if self.architecture not in {"resenc", "plainconv", "dynunet", "hrc"}:
+            raise ValueError("architecture must be resenc, plainconv, dynunet, or hrc")
+        if self.architecture == "hrc":
+            from .recipe_plan import validate_hrc_options
+
+            # Bind the complete option set so defaults cannot drift silently.
+            object.__setattr__(self, "hrc_options", validate_hrc_options(self.hrc_options))
+            if self.deterministic is True:
+                # HRC differentiates through avg_pool3d and trilinear interpolation,
+                # which have no deterministic CUDA backward in PyTorch.
+                raise ValueError("architecture=hrc cannot train with deterministic=true")
+        elif self.hrc_options is not None:
+            raise ValueError("hrc_options requires architecture=hrc")
+        self._validate_trainer_and_initialization()
         if self.reference_workspace is not None:
             if not isinstance(self.reference_workspace, str) or not self.reference_workspace:
                 raise ValueError("reference_workspace must be a workspace path string")
@@ -131,8 +157,8 @@ class NNUNetConfig:
             raise ValueError("Specify one numeric GPU, positive workers, and a uint32 seed")
         if self.nnunet_version != NNUNET_VERSION:
             raise ValueError(f"This adapter is verified for nnunetv2=={NNUNET_VERSION} only")
-        if self.purpose not in {"baseline", "smoke", "overfit"}:
-            raise ValueError("purpose must be baseline, smoke, or overfit")
+        if self.purpose not in PURPOSES:
+            raise ValueError("purpose must be baseline, smoke, overfit, or pilot")
         overrides = [
             self.num_epochs,
             self.num_iterations_per_epoch,
@@ -144,13 +170,69 @@ class NNUNetConfig:
         ):
             raise ValueError("Runtime overrides must be positive integers")
         if self.purpose == "baseline" and any(x is not None for x in overrides):
-            raise ValueError("Runtime overrides require purpose=smoke or overfit")
+            raise ValueError("Runtime overrides require purpose=smoke, overfit, or pilot")
+        if self.purpose == "pilot" and any(x is not None for x in overrides[1:]):
+            # A pilot changes only the epoch count; every epoch keeps 250 updates.
+            raise ValueError("A pilot may override num_epochs only")
         if (
             isinstance(self.tile_step_size, bool)
             or not isinstance(self.tile_step_size, (int, float))
             or not 0 < self.tile_step_size <= 1
         ):
             raise ValueError("tile_step_size must be in (0, 1]")
+
+    def _validate_trainer_and_initialization(self) -> None:
+        if self.trainer not in TRAINERS:
+            raise ValueError(f"trainer must be one of {sorted(TRAINERS)}")
+        if self.initial_lr is not None:
+            if (
+                isinstance(self.initial_lr, bool)
+                or not isinstance(self.initial_lr, (int, float))
+                or not 0 < self.initial_lr <= 1
+            ):
+                raise ValueError("initial_lr must be a positive number no larger than 1")
+            if self.trainer not in SEGMENTARY_TRAINERS:
+                raise ValueError("initial_lr is a fine-tuning trainer setting")
+            object.__setattr__(self, "initial_lr", float(self.initial_lr))
+        if self.initialization not in INITIALIZATIONS:
+            raise ValueError(f"initialization must be one of {INITIALIZATIONS}")
+        if self.trainer in SEGMENTARY_TRAINERS and (
+            self.initialization == "scratch" or self.purpose not in {"pilot", "smoke"}
+        ):
+            # Its defaults (lr 1e-3, 150 epochs) are a fine-tuning recipe, never a baseline.
+            raise ValueError(f"{self.trainer} needs a non-scratch pilot or smoke run")
+        if self.purpose == "baseline" and self.trainer != "nnUNetTrainer":
+            raise ValueError("A baseline uses the official nnUNetTrainer recipe")
+        prefixes = self.init_allowed_missing_prefixes
+        if prefixes is None:
+            prefixes = []
+        if not isinstance(prefixes, (list, tuple)) or any(
+            not isinstance(prefix, str) or not re.fullmatch(r"[A-Za-z0-9_.]+\.", prefix)
+            for prefix in prefixes
+        ):
+            raise ValueError("init_allowed_missing_prefixes must be module prefixes ending in '.'")
+        object.__setattr__(self, "init_allowed_missing_prefixes", sorted(set(prefixes)))
+        if self.initialization == "scratch":
+            if (
+                self.init_checkpoint is not None
+                or self.init_checkpoint_sha256 is not None
+                or self.init_allowed_missing_prefixes
+            ):
+                raise ValueError("Scratch initialization takes no initial checkpoint")
+            return
+        if (
+            not isinstance(self.init_checkpoint, str)
+            or not Path(self.init_checkpoint).is_absolute()
+        ):
+            raise ValueError("Non-scratch initialization needs an absolute init_checkpoint")
+        if not isinstance(self.init_checkpoint_sha256, str) or not re.fullmatch(
+            r"[0-9a-f]{64}", self.init_checkpoint_sha256
+        ):
+            raise ValueError("Non-scratch initialization needs init_checkpoint_sha256")
+        checkpoint = Path(self.init_checkpoint).resolve()
+        if checkpoint.is_relative_to(self.workspace):
+            raise ValueError("The initial checkpoint must live outside this workspace")
+        object.__setattr__(self, "init_checkpoint", str(checkpoint))
 
     @property
     def dataset(self) -> str:
@@ -182,7 +264,7 @@ class NNUNetConfig:
             self.root
             / "nnUNet_results"
             / self.dataset
-            / f"nnUNetTrainer__{self.plans}__{self.configuration}"
+            / f"{self.trainer}__{self.plans}__{self.configuration}"
         )
 
     @property
@@ -306,6 +388,9 @@ def prepare_dataset(
     folds = _nnunet_folds(cv, splits)
     if config.root.exists() and any(config.root.iterdir()):
         raise FileExistsError(f"Use an empty workspace: {config.root}")
+    initial = _initial_checkpoint_record(
+        config, manifest_sha256=_sha(manifest_path), splits_sha256=_sha(splits_path)
+    )
     lookup = {c["case_id"]: c for c in manifest["cases"]}
     development = [lookup[x] for x in splits["train"] + splits["val"]]
     for case in development:
@@ -331,9 +416,11 @@ def prepare_dataset(
         "planning_scope": "train_and_val_only",
         "development_cases": [c["case_id"] for c in development],
         "held_out_cases": list(splits["test"]),
-        "initialization": "scratch",
+        "initialization": config.initialization,
         "checkpoint_selection": "official_ema_foreground_dice",
     }
+    if initial is not None:
+        binding["initial_checkpoint"] = initial
     if cv is not None:
         binding["cross_validation"] = {
             "path": config.cv_splits,
@@ -385,6 +472,82 @@ def prepare_dataset(
     return result
 
 
+def _segmentary_workspace(checkpoint: Path) -> Path | None:
+    """The Segmentary workspace that wrote an nnU-Net checkpoint, if any."""
+    for parent in checkpoint.parents:
+        if (parent / "binding.json").is_file():
+            return parent
+    return None
+
+
+def _warm_start_source(
+    config: NNUNetConfig, *, manifest_sha256: str, splits_sha256: str
+) -> dict[str, Any]:
+    """Prove a warm start never saw this fold's validation cases.
+
+    The checkpoint must be one indexed by a Segmentary nnU-Net workspace that
+    trained the same dataset, cohort, CV manifest and fold. Without this, a
+    hand-written recipe could initialise fold k from a fold-j checkpoint whose
+    training set contains fold k's validation cases.
+    """
+    checkpoint = Path(str(config.init_checkpoint))
+    workspace = _segmentary_workspace(checkpoint)
+    if (
+        workspace is None
+        or len(checkpoint.relative_to(workspace).parts) != 5
+        or checkpoint.relative_to(workspace).parts[0] != "nnUNet_results"
+    ):
+        raise ValueError("A warm start must use a checkpoint from a Segmentary nnU-Net workspace")
+    binding = _json(workspace / "binding.json")
+    source = binding.get("config", {})
+    index = _json(workspace / "checkpoint-index.json")
+    if index.get(checkpoint.name, {}).get("sha256") != config.init_checkpoint_sha256:
+        raise ValueError("The initial checkpoint is not the one its workspace indexed")
+    if (
+        Path(str(source.get("workspace"))).resolve() != workspace.resolve()
+        or source.get("dataset_id") != config.dataset_id
+        or source.get("configuration") != config.configuration
+        or source.get("fold") != config.fold
+        or source.get("cv_splits_sha256") != config.cv_splits_sha256
+        or binding.get("manifest_sha256") != manifest_sha256
+        or binding.get("splits_sha256") != splits_sha256
+    ):
+        raise ValueError(
+            "A warm start must come from the same dataset, cohort, CV manifest and fold"
+        )
+    return {
+        "source_workspace": str(workspace),
+        "source_binding_sha256": _sha(workspace / "binding.json"),
+        "source_fold": source.get("fold"),
+        "source_seed": source.get("seed"),
+        "source_initialization": binding.get("initialization", "scratch"),
+        "source_cv_splits_sha256": source.get("cv_splits_sha256"),
+    }
+
+
+def _initial_checkpoint_record(
+    config: NNUNetConfig, *, manifest_sha256: str, splits_sha256: str
+) -> dict | None:
+    """Verify a non-scratch initial checkpoint against its bound SHA256 and origin."""
+    if config.initialization == "scratch":
+        return None
+    assert config.init_checkpoint is not None and config.init_checkpoint_sha256 is not None
+    _check_hash(config.init_checkpoint, config.init_checkpoint_sha256)
+    record: dict[str, Any] = {
+        "path": config.init_checkpoint,
+        "sha256": config.init_checkpoint_sha256,
+        "allowed_missing_prefixes": list(config.init_allowed_missing_prefixes or []),
+    }
+    if config.initialization == "warm_start":
+        record["source"] = _warm_start_source(
+            config, manifest_sha256=manifest_sha256, splits_sha256=splits_sha256
+        )
+    elif _segmentary_workspace(Path(config.init_checkpoint)) is not None:
+        # Segmentary checkpoints saw development cases; only warm_start proves the fold.
+        raise ValueError("Checkpoints from a Segmentary workspace need initialization=warm_start")
+    return record
+
+
 def _binding(config: NNUNetConfig, *, verify_development: bool = True) -> dict:
     binding = _json(config.root / "binding.json")
     if binding["config"] != dataclasses.asdict(config) or binding["code"] != _code_identity():
@@ -426,7 +589,7 @@ def _binding(config: NNUNetConfig, *, verify_development: bool = True) -> dict:
     return binding
 
 
-def _runtime(config: NNUNetConfig) -> dict:
+def _runtime(config: NNUNetConfig, *, environment: dict[str, str] | None = None) -> dict:
     """Probe the worker interpreter, independently of the RGB harness environment.
 
     nnU-Net's dynamic-network-architectures dependency constrains packages
@@ -440,7 +603,7 @@ def _runtime(config: NNUNetConfig) -> dict:
     )
     completed = subprocess.run(
         [str(config.backend_python), "-c", code],
-        env=_environment(config),
+        env=_environment(config) if environment is None else environment,
         capture_output=True,
         text=True,
         timeout=30,
@@ -718,12 +881,19 @@ def plan_and_preprocess(config: NNUNetConfig, *, dry_run: bool = False) -> dict:
         state = _run(config, "plan", {})
     else:
         from .nnunet_reference import import_reference
-        from .recipe_plan import transfer_plan
+        from .recipe_plan import check_hrc_dataset, transfer_plan
 
         with _lock(config.root / ".stage.lock"):
             reference = import_reference(config)
             plan_path = config.preprocessed / f"{config.plans}.json"
-            transferred, changes = transfer_plan(_json(plan_path), config.architecture)
+            transferred, changes = transfer_plan(
+                _json(plan_path), config.architecture, config.hrc_options
+            )
+            if config.hrc_options is not None:
+                # Fail closed unless the bound channels mean host and lesion here.
+                changes["hrc_outputs"] = check_hrc_dataset(
+                    config.hrc_options, _json(config.preprocessed / "dataset.json")
+                )
             _atomic_json(plan_path, transferred)
             _atomic_json(
                 config.root / "recipe-transfer.json",
@@ -797,6 +967,16 @@ def train(
         raise ValueError("resume_checkpoint requires resume=True")
     elif config.fold_folder.exists():
         raise FileExistsError("Training output exists; explicitly resume or use a new workspace")
+    prepared = _json(config.root / "binding.json")
+    initial = (
+        None
+        if resume
+        else _initial_checkpoint_record(
+            config,
+            manifest_sha256=prepared["manifest_sha256"],
+            splits_sha256=prepared["splits_sha256"],
+        )
+    )
     result = {
         "action": "train",
         "dry_run": dry_run,
@@ -805,6 +985,9 @@ def train(
         "resume_checkpoint": resume_checkpoint,
         "checkpoint_sha256": checkpoint["sha256"] if checkpoint else None,
         "purpose": config.purpose,
+        "trainer": config.trainer,
+        "initialization": config.initialization,
+        "init_checkpoint_sha256": initial["sha256"] if initial else None,
         "resume_granularity": "saved_epoch_not_bitwise_mid_epoch",
         "deterministic": config.deterministic,
         "augmentation_workers": 0 if config.deterministic else config.workers,
@@ -998,31 +1181,158 @@ def _guard_trainer_split(trainer, fold: int, expected: tuple[list[str], list[str
     trainer.do_split = do_split
 
 
+def _trainer_class(name: str) -> Any:
+    """Resolve an allowlisted trainer class inside the backend interpreter."""
+    if name in BUILTIN_TRAINERS:
+        from nnunetv2.utilities.find_objects import recursive_find_trainer_class_by_name
+
+        return recursive_find_trainer_class_by_name(name)
+    if name in SEGMENTARY_TRAINERS:
+        from . import nnunet_trainers
+
+        return getattr(nnunet_trainers, name)
+    raise ValueError(f"Trainer is not allowlisted: {name}")
+
+
+def _build_trainer(config: NNUNetConfig, *, continue_training: bool, device: Any) -> Any:
+    if config.trainer in BUILTIN_TRAINERS:
+        from nnunetv2.run.run_training import get_trainer_from_args
+
+        return get_trainer_from_args(
+            config.dataset,
+            config.configuration,
+            config.fold,
+            trainer_name=config.trainer,
+            plans_identifier=config.plans,
+            continue_training=continue_training,
+            device=device,
+        )
+    # The same steps as nnU-Net's get_trainer_from_args, without its by-name
+    # class search, which only looks inside the nnunetv2 package.
+    plans = _json(config.preprocessed / f"{config.plans}.json")
+    plans["continue_training"] = continue_training
+    dataset_json = _json(config.preprocessed / "dataset.json")
+    return _trainer_class(config.trainer)(
+        plans=plans,
+        configuration=config.configuration,
+        fold=config.fold,
+        dataset_json=dataset_json,
+        device=device,
+    )
+
+
+def _state_digest(state: dict) -> str:
+    """SHA256 over a state dict's names, dtypes, shapes and raw bytes."""
+    import torch
+
+    digest = hashlib.sha256()
+    for key in sorted(state):
+        tensor = state[key].detach().cpu().contiguous()
+        digest.update(f"{key}|{tensor.dtype}|{tuple(tensor.shape)}|".encode())
+        digest.update(tensor.reshape(-1).view(torch.uint8).numpy().tobytes())
+    return digest.hexdigest()
+
+
+def _load_initial_weights(network: Any, config: NNUNetConfig) -> dict:
+    """Load a sha-bound nnU-Net checkpoint's weights; only allowlisted keys may be new.
+
+    The checkpoint bytes are hashed and deserialized from the same buffer.
+    Optimizer state, epoch counter and logs are not loaded: training restarts
+    at epoch 0 with this trainer's optimizer and schedule.
+    """
+    import io
+
+    import torch
+
+    assert config.init_checkpoint is not None
+    data = Path(config.init_checkpoint).read_bytes()
+    if hashlib.sha256(data).hexdigest() != config.init_checkpoint_sha256:
+        raise ValueError(f"Initial checkpoint hash changed: {config.init_checkpoint}")
+    checkpoint = torch.load(io.BytesIO(data), map_location="cpu", weights_only=False)
+    del data
+    source = checkpoint.get("network_weights") if isinstance(checkpoint, dict) else None
+    if not isinstance(source, dict) or not source:
+        raise ValueError("Initial checkpoint has no nnU-Net network_weights")
+    module = getattr(network, "_orig_mod", network)
+    target = module.state_dict()
+    prefixes = tuple(config.init_allowed_missing_prefixes or ())
+    missing = sorted(set(target) - set(source))
+    unexpected = sorted(set(source) - set(target))
+    disallowed = [key for key in missing if not prefixes or not key.startswith(prefixes)]
+    mismatched = sorted(
+        key for key in set(source) & set(target) if source[key].shape != target[key].shape
+    )
+    if unexpected or disallowed or mismatched:
+        raise ValueError(
+            "Initial checkpoint does not match this network: "
+            f"unexpected={unexpected[:5]} missing_outside_allowlist={disallowed[:5]} "
+            f"shape_mismatch={mismatched[:5]}"
+        )
+    module.load_state_dict({key: source.get(key, target[key]) for key in target}, strict=True)
+    return {
+        "initialization": config.initialization,
+        "external_weight_loads": 1,
+        "init_checkpoint": config.init_checkpoint,
+        "init_checkpoint_sha256": config.init_checkpoint_sha256,
+        "source_trainer_name": checkpoint.get("trainer_name"),
+        "source_epoch": checkpoint.get("current_epoch"),
+        "loaded_keys": len(source),
+        "missing_keys": missing,
+        "allowed_missing_prefixes": list(prefixes),
+        "unexpected_keys": [],
+        "initial_weights_sha256": _state_digest(module.state_dict()),
+        "optimizer_state_loaded": False,
+        "epoch_counter": "restarts_at_0",
+    }
+
+
+def _origin_path(config: NNUNetConfig) -> Path:
+    name = (
+        "scratch-origin.json"
+        if config.initialization == "scratch"
+        else "initialization-origin.json"
+    )
+    return config.root / name
+
+
+def _check_resume_origin(config: NNUNetConfig, identity: str) -> dict:
+    """Resume only on top of this experiment's own scratch or initial-weight record."""
+    path = _origin_path(config)
+    origin = _json(path) if path.is_file() else {}
+    if (
+        origin.get("identity") != identity
+        or origin.get("initialization") != config.initialization
+        or origin.get("init_checkpoint_sha256") != config.init_checkpoint_sha256
+    ):
+        raise ValueError("Resume requires the matching initialization-origin record")
+    return origin
+
+
 def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
     import random
 
     import numpy as np
     import torch
-    from nnunetv2.run.run_training import get_trainer_from_args
 
     # Match the official CUDA training CLI's Torch thread limits. The separate
     # nnUNet_n_proc_DA=0 switch controls synchronous augmentation, not Torch.
     torch.set_num_threads(1)
     torch.set_num_interop_threads(1)
     _seed_runtime(config)
-    trainer = get_trainer_from_args(
-        config.dataset,
-        config.configuration,
-        config.fold,
-        trainer_name="nnUNetTrainer",
-        plans_identifier=config.plans,
+    trainer = _build_trainer(
+        config,
         continue_training=payload["resume_checkpoint"] is not None,
         device=torch.device("cuda", 0),
     )
+    if type(trainer).__name__ != config.trainer:
+        raise ValueError("Constructed trainer differs from the bound trainer")
     for name in ("num_epochs", "num_iterations_per_epoch", "num_val_iterations_per_epoch"):
         value = getattr(config, name)
         if value is not None:
             setattr(trainer, name, value)
+    if config.initial_lr is not None:
+        # initialize() builds the optimizer and schedule from this value.
+        trainer.initial_lr = config.initial_lr
     split_binding = _binding(config, verify_development=False)
     expected_split = (
         _fold_cases(config, split_binding, "train"),
@@ -1032,13 +1342,17 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
     # Record actual initialized capacity before any optimization. The official
     # trainer initializes only once; on_train_start reuses this same network.
     trainer.initialize()
-    origin_path = config.root / "scratch-origin.json"
+    origin_path = _origin_path(config)
     if payload["resume_checkpoint"] is None:
+        initial = (
+            {"initialization": "scratch", "external_weight_loads": 0}
+            if config.initialization == "scratch"
+            else _load_initial_weights(trainer.network, config)
+        )
         _atomic_json(
             origin_path,
             {
-                "initialization": "scratch",
-                "external_weight_loads": 0,
+                **initial,
                 "identity": identity,
                 "architecture": config.architecture,
                 "network_class": type(trainer.network).__module__
@@ -1051,8 +1365,8 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
                 "plan_sha256": _sha(config.preprocessed / f"{config.plans}.json"),
             },
         )
-    elif not origin_path.is_file() or _json(origin_path).get("identity") != identity:
-        raise ValueError("Resume requires the matching scratch-origin record")
+    else:
+        _check_resume_origin(config, identity)
     original_save = trainer.save_checkpoint
 
     def save_checkpoint(filename: str):
@@ -1116,7 +1430,8 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
         config.root / "trainer-settings.json",
         {
             "purpose": config.purpose,
-            "trainer": "nnUNetTrainer",
+            "trainer": config.trainer,
+            "initialization": config.initialization,
             "num_epochs": trainer.num_epochs,
             "num_iterations_per_epoch": trainer.num_iterations_per_epoch,
             "num_val_iterations_per_epoch": trainer.num_val_iterations_per_epoch,
@@ -1227,6 +1542,58 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
     )
 
 
+def initialize_predictor(
+    predictor: Any, model_folder: Path, fold: int, checkpoint_name: str, trainer: str
+) -> None:
+    """Load one trained fold into an nnU-Net 2.8.1 predictor (read-only).
+
+    Built-in trainers use the official ``initialize_from_trained_model_folder``.
+    nnU-Net cannot find Segmentary trainers by name, so for those this repeats
+    its steps and hands the network to ``manual_initialization``, the API the
+    official trainer itself uses for final validation.
+    """
+    if trainer not in TRAINERS:
+        raise ValueError(f"Trainer is not allowlisted: {trainer}")
+    if trainer in BUILTIN_TRAINERS:
+        predictor.initialize_from_trained_model_folder(
+            str(model_folder), use_folds=(fold,), checkpoint_name=checkpoint_name
+        )
+        return
+    import torch
+    from nnunetv2.utilities.label_handling.label_handling import determine_num_input_channels
+    from nnunetv2.utilities.plans_handling.plans_handler import PlansManager
+
+    dataset_json = _json(model_folder / "dataset.json")
+    plans_manager = PlansManager(_json(model_folder / "plans.json"))
+    checkpoint = torch.load(
+        model_folder / f"fold_{fold}" / checkpoint_name,
+        map_location=torch.device("cpu"),
+        weights_only=False,
+    )
+    if checkpoint.get("trainer_name") != trainer:
+        raise ValueError("Checkpoint was written by a different trainer")
+    configuration_manager = plans_manager.get_configuration(
+        checkpoint["init_args"]["configuration"]
+    )
+    network = _trainer_class(trainer).build_network_architecture(
+        plans_manager,
+        configuration_manager,
+        determine_num_input_channels(plans_manager, configuration_manager, dataset_json),
+        plans_manager.get_label_manager(dataset_json).num_segmentation_heads,
+        enable_deep_supervision=False,
+    )
+    network.load_state_dict(checkpoint["network_weights"])
+    predictor.manual_initialization(
+        network,
+        plans_manager,
+        configuration_manager,
+        [checkpoint["network_weights"]],
+        dataset_json,
+        trainer,
+        checkpoint.get("inference_allowed_mirroring_axes"),
+    )
+
+
 def _predict_worker(config: NNUNetConfig, payload: dict):
     import torch
     from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
@@ -1244,8 +1611,8 @@ def _predict_worker(config: NNUNetConfig, payload: dict):
     )
     # Predictor enables benchmarking in its constructor; restore the frozen setting.
     torch.backends.cudnn.benchmark = not config.deterministic
-    predictor.initialize_from_trained_model_folder(
-        str(config.model_folder), use_folds=(config.fold,), checkpoint_name=payload["checkpoint"]
+    initialize_predictor(
+        predictor, config.model_folder, config.fold, payload["checkpoint"], config.trainer
     )
     predictor.predict_from_files(
         [[c["image"]] for c in payload["cases"]],

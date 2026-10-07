@@ -534,7 +534,12 @@ def _collect_run(
         curves.append(values)
     progress = _read(workspace / "progress.json")
     training = _read(workspace / "training-result.json")
-    origin = _read(workspace / "scratch-origin.json")
+    initialization = binding.get("initialization", config.get("initialization", "scratch"))
+    origin = _read(
+        workspace
+        / ("scratch-origin.json" if initialization == "scratch" else "initialization-origin.json")
+    )
+    bound_initial = binding.get("initial_checkpoint") or {}
     result: dict[str, Any] = {
         "id": run["id"],
         "model": config.get("model", run.get("model", run["id"])),
@@ -548,9 +553,20 @@ def _collect_run(
         "finished_at": state.get("finished_at"),
         "last_update": state.get("updated_at"),
         "seed": config.get("seed"),
-        "initialization": binding.get("initialization", config.get("initialization")),
+        "initialization": initialization,
         "scratch_origin_verified": origin.get("initialization") == "scratch"
         and origin.get("external_weight_loads") == 0,
+        # Scratch runs prove no external weights; warm-start and pretrained runs
+        # prove that exactly their sha-bound checkpoint was loaded.
+        "origin_verified": (
+            origin.get("initialization") == "scratch" and origin.get("external_weight_loads") == 0
+        )
+        if initialization == "scratch"
+        else origin.get("initialization") == initialization
+        and origin.get("external_weight_loads") == 1
+        and bool(bound_initial.get("sha256"))
+        and origin.get("init_checkpoint_sha256") == bound_initial.get("sha256"),
+        "init_checkpoint_sha256": bound_initial.get("sha256"),
         "parameters": origin.get("parameters"),
         "training_complete": training.get("completed", False),
         "completed_steps": training.get("steps", curves[-1]["step"] if curves else 0),
@@ -716,11 +732,17 @@ def _rank_groups(rows: list[dict]) -> dict:
             reasons.append("A result record failed validation")
         if any(not row.get("evaluation", {}).get("complete_coverage") for row in members):
             reasons.append("Native validation coverage is incomplete")
+        if len({row.get("initialization") for row in members}) != 1:
+            reasons.append(
+                "Members differ in initialization; scratch, warm-start and pretrained runs "
+                "are never ranked together"
+            )
         if any(
-            not row.get("training_complete") or not row.get("scratch_origin_verified")
+            not row.get("training_complete")
+            or not row.get("origin_verified", row.get("scratch_origin_verified"))
             for row in members
         ):
-            reasons.append("Complete scratch training evidence is unavailable")
+            reasons.append("Complete training-origin evidence is unavailable")
         if any(
             not all(
                 row.get(key)
@@ -755,6 +777,8 @@ def _rank_groups(rows: list[dict]) -> dict:
                         "code": row.get("code_fingerprint"),
                         "budget": row.get("budget_steps"),
                         "seed": row.get("seed"),
+                        "initialization": row.get("initialization"),
+                        "init_checkpoint": row.get("init_checkpoint_sha256"),
                         "selection": row.get("checkpoint_selection"),
                         "batch_size": row.get("recipe", {}).get("batch_size"),
                         "inference_batch_size": row.get("recipe", {}).get("inference_batch_size"),
@@ -958,6 +982,19 @@ inputs also have different spatial context. Equal optimizer steps are not equal
 GPU-hours, voxels seen, or an architecture-specific tuning budget. Loss magnitudes
 are useful within a run; they are not an accuracy ranking across objectives.
 """
+
+
+def _initialization_sentence(rows: list[dict]) -> str:
+    kinds = sorted({row.get("initialization") or "scratch" for row in rows})
+    if kinds in ([], ["scratch"]):
+        return (
+            "No pretrained weights are allowed; resuming an existing scratch-origin run is allowed."
+        )
+    return (
+        f"Initializations in this campaign: {', '.join(kinds)}. Non-scratch runs load exactly "
+        "their sha256-bound initial checkpoint and are ranked only within their own "
+        "warm_start or pretrained comparison group; resuming requires the run's own origin record."
+    )
 
 
 def render(snapshot: dict) -> dict[str, str]:
@@ -1268,7 +1305,8 @@ def render(snapshot: dict) -> dict[str, str]:
                 "",
                 f"Frozen split counts: {snapshot['split_counts']['train']} training, {snapshot['split_counts']['val']} validation, {snapshot['split_counts']['test']} held-out test. Grouping status: `{snapshot['grouping_status']}`. Split SHA256: `{snapshot['split_sha256']}`.",
                 "",
-                "The scheduler runs one job on each available GPU and advances through the explicit queue. A completed run means its training, native validation prediction and evaluation have finished. Queued, failed and incomplete runs remain visible. No pretrained weights are allowed; resuming an existing scratch-origin run is allowed.",
+                "The scheduler runs one job on each available GPU and advances through the explicit queue. A completed run means its training, native validation prediction and evaluation have finished. Queued, failed and incomplete runs remain visible. "
+                + _initialization_sentence(rows),
                 "",
                 _INTERPRETATION,
                 "[Medical model guide](../../../../guides/medical-models.md) · [Results by dataset](../../../README.md)",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run an explicit scratch medical campaign, one immutable experiment per GPU.
+"""Run an explicit medical campaign, one immutable experiment per GPU.
 
 Run with ``--spec campaign.json --state-dir /data/campaign-state`` inside a
 durable terminal session. Restart the same command after interruption. A failed
@@ -18,6 +18,13 @@ surface_tolerance_mm, lesion_iou_threshold, and review_overlays. All scoring use
 validation (a recipe's cv_splits fold when declared). nnU-Net runs are scored
 from checkpoint_final.pth (primary) and checkpoint_best.pth (secondary, labelled
 selected-on-validation). Test access is not implemented.
+
+Runs are scratch-initialised unless their recipe declares
+``initialization: warm_start`` or ``pretrained`` with a sha256-bound
+``init_checkpoint``. Such a run must sit in a comparison group named for its
+initialization (for example ``warm_start_fold0_seed0_37500_steps``), and a
+scratch run may not. The reporter ranks only within a group, so scratch,
+warm-start and pretrained results are never ranked against each other.
 """
 
 from __future__ import annotations
@@ -52,6 +59,22 @@ SECONDARY_CHECKPOINT = {
     "label": "secondary: best patch pseudo-Dice checkpoint, selected on this validation fold (optimistic)",
 }
 IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
+INITIALIZATIONS = ("scratch", "warm_start", "pretrained")
+_GROUP_INITIALIZATION = re.compile(r"(?<![A-Za-z0-9])(warm_start|pretrained)(?![A-Za-z0-9])")
+
+
+def group_initialization(group: Any) -> str:
+    """The initialization a comparison group name declares; untagged groups are scratch."""
+    found = {match.group(1) for match in _GROUP_INITIALIZATION.finditer(str(group or ""))}
+    if len(found) > 1:
+        raise ValueError(f"Comparison group declares several initializations: {group}")
+    return found.pop() if found else "scratch"
+
+
+def origin_record_name(recipe: dict[str, Any]) -> str:
+    if recipe.get("initialization", "scratch") == "scratch":
+        return "scratch-origin.json"
+    return "initialization-origin.json"
 
 
 def utc_now() -> str:
@@ -114,8 +137,15 @@ def load_recipe(path: Path) -> dict[str, Any]:
         raise ValueError("Only torch and nnunet backends are supported")
     absolute_path(recipe.get("workspace"), "recipe workspace")
     absolute_path(recipe.get("backend_python"), "recipe backend_python")
-    if recipe.get("initialization", "scratch") != "scratch":
-        raise ValueError("Campaigns must initialize from scratch")
+    initialization = recipe.get("initialization", "scratch")
+    if initialization not in INITIALIZATIONS:
+        raise ValueError(f"Recipe initialization must be one of {INITIALIZATIONS}")
+    if initialization != "scratch":
+        if recipe.get("backend", "nnunet") != "nnunet":
+            raise ValueError("Only nnU-Net recipes may load an initial checkpoint")
+        absolute_path(recipe.get("init_checkpoint"), "recipe init_checkpoint")
+        if not re.fullmatch(r"[0-9a-f]{64}", str(recipe.get("init_checkpoint_sha256"))):
+            raise ValueError("A non-scratch recipe must bind init_checkpoint_sha256")
     return recipe
 
 
@@ -200,6 +230,12 @@ def load_spec(path: Path) -> dict[str, Any]:
         ids.add(name)
         recipe = load_recipe(absolute_path(run.get("config"), "run config"))
         recipes[name] = recipe
+        initialization = recipe.get("initialization", "scratch")
+        if group_initialization(run.get("comparison_group")) != initialization:
+            raise ValueError(
+                f"{name}: {initialization} runs need a comparison_group tagged "
+                "warm_start or pretrained, and scratch runs must not carry such a tag"
+            )
         workspace = absolute_path(recipe["workspace"], "workspace")
         if workspace in workspaces:
             raise ValueError("Each run must own a distinct immutable workspace")
@@ -250,6 +286,8 @@ def load_spec(path: Path) -> dict[str, Any]:
                 raise ValueError("Recipe ablation manifest or splits changed after planning")
     if protocol.get("preset") == SEED_FOLDS_PRESET:
         validate_seed_folds(spec, recipes)
+    if protocol.get("preset") == WARM_START_PRESET:
+        validate_warm_start(spec, recipes)
     return spec
 
 
@@ -267,6 +305,15 @@ SEED_FOLDS_FIXED = {
     "num_iterations_per_epoch": None,
     "num_val_iterations_per_epoch": None,
     "deterministic": False,
+}
+# Fields added after Wave 1 was planned; an absent key means its scratch default.
+SEED_FOLDS_DEFAULTS = {
+    "trainer": "nnUNetTrainer",
+    "initialization": "scratch",
+    "initial_lr": None,
+    "init_checkpoint": None,
+    "init_checkpoint_sha256": None,
+    "hrc_options": None,
 }
 
 
@@ -301,9 +348,85 @@ def validate_seed_folds(spec: dict[str, Any], recipes: dict[str, dict[str, Any]]
             or not reference
             or recipe.get("reference_plan_binding_sha256") != reference
             or any(recipe.get(key) != value for key, value in SEED_FOLDS_FIXED.items())
+            or any(recipe.get(key, value) != value for key, value in SEED_FOLDS_DEFAULTS.items())
+            or recipe.get("init_allowed_missing_prefixes") not in (None, [])
         ):
             raise ValueError(f"{run['id']}: recipe differs from the seed/fold plan")
         arms.add((fold, seed))
+
+
+WARM_START_PRESET = "task07_nnunet_warm_start_v1"
+WARM_START_FIXED = {
+    "backend": "nnunet",
+    "resenc": "L",
+    "configuration": "3d_fullres",
+    "dataset_id": 707,
+    "use_mirroring": False,
+    "tile_step_size": 0.5,
+    "purpose": "pilot",
+    "trainer": "nnUNetTrainerFinetune",
+    "initialization": "warm_start",
+    "num_iterations_per_epoch": None,
+    "num_val_iterations_per_epoch": None,
+    "deterministic": False,
+}
+
+
+def validate_warm_start(spec: dict[str, Any], recipes: dict[str, dict[str, Any]]) -> None:
+    """Re-check a warm-start pilot: frozen inputs, arms, and sha-bound initial checkpoints."""
+    protocol = spec["protocol"]
+    for key in ("manifest", "splits"):
+        if protocol.get(f"{key}_sha256") != sha256(Path(spec[key])):
+            raise ValueError("Warm-start manifest or splits changed after planning")
+    cv_path = protocol.get("cv_splits")
+    if not isinstance(cv_path, str) or protocol.get("cv_splits_sha256") != sha256(Path(cv_path)):
+        raise ValueError("Warm-start cross-validation manifest changed after planning")
+    arms = protocol.get("arms")
+    checkpoints = protocol.get("initial_checkpoints")
+    pilot = protocol.get("pilot", {})
+    reference = protocol.get("reference", {}).get("plan_binding_sha256")
+    if not isinstance(arms, dict) or not arms or not isinstance(checkpoints, dict):
+        raise ValueError("Warm-start protocol must declare its arms and initial checkpoints")
+    seen = set()
+    for run in spec["runs"]:
+        recipe = recipes[run["id"]]
+        fold, seed = recipe.get("fold"), recipe.get("seed")
+        arm = next(
+            (
+                name
+                for name in arms
+                if run["id"] == f"{arms[name]['model']}-{name}-fold{fold}-seed{seed}"
+            ),
+            None,
+        )
+        bound = checkpoints.get(f"fold{fold}-seed{seed}", {})
+        if (
+            arm is None
+            or (arm, fold, seed) in seen
+            or run.get("gpu") is None
+            or recipe.get("gpu") != run["gpu"]
+            or recipe.get("architecture") != arms[arm]["architecture"]
+            or recipe.get("hrc_options") != arms[arm].get("hrc_options")
+            or recipe.get("init_allowed_missing_prefixes")
+            != arms[arm]["init_allowed_missing_prefixes"]
+            or recipe.get("num_epochs") != pilot.get("num_epochs")
+            or recipe.get("initial_lr") != pilot.get("initial_lr")
+            or recipe.get("cv_splits") != cv_path
+            or recipe.get("cv_splits_sha256") != protocol["cv_splits_sha256"]
+            or not reference
+            or recipe.get("reference_plan_binding_sha256") != reference
+            or recipe.get("init_checkpoint") != bound.get("path")
+            or recipe.get("init_checkpoint_sha256") != bound.get("sha256")
+            or run.get("comparison_group")
+            != f"warm_start_fold{fold}_seed{seed}_{pilot.get('optimizer_steps')}_steps"
+            or any(recipe.get(key) != value for key, value in WARM_START_FIXED.items())
+        ):
+            raise ValueError(f"{run['id']}: recipe differs from the warm-start plan")
+        seen.add((arm, fold, seed))
+    for key, bound in checkpoints.items():
+        path = Path(bound["path"])
+        if not path.is_file() or sha256(path) != bound["sha256"]:
+            raise ValueError(f"Warm-start initial checkpoint changed or is missing: {key}")
 
 
 def check_source(spec: dict[str, Any]) -> None:
@@ -324,8 +447,22 @@ def make_binding(spec_path: Path, spec: dict[str, Any]) -> dict[str, Any]:
         "manifest_sha256": sha256(Path(spec["manifest"])),
         "splits_sha256": sha256(Path(spec["splits"])),
         "recipes": {run["id"]: sha256(Path(run["config"])) for run in spec["runs"]},
+        "initial_checkpoints": initial_checkpoints(spec),
         "runner_sha256": sha256(Path(__file__)),
     }
+
+
+def initial_checkpoints(spec: dict[str, Any]) -> dict[str, dict[str, str]]:
+    """Each non-scratch run's bound initial checkpoint (verified before training)."""
+    bound = {}
+    for run in spec["runs"]:
+        recipe = load_recipe(Path(run["config"]))
+        if recipe.get("initialization", "scratch") != "scratch":
+            bound[run["id"]] = {
+                "path": recipe["init_checkpoint"],
+                "sha256": recipe["init_checkpoint_sha256"],
+            }
+    return bound
 
 
 def process_start(pid: int) -> str | None:
@@ -631,6 +768,15 @@ class Campaign:
             raise RuntimeError(f"{stage} exited {returncode}; {log}\n{tail}")
         return output_json(log)
 
+    def check_initial_checkpoint(self, state: dict[str, Any]) -> None:
+        """The backend verifies again when loading; fail before launching the stage."""
+        recipe = read_json(Path(state["config"]))
+        if recipe.get("initialization", "scratch") == "scratch":
+            return
+        path = Path(recipe["init_checkpoint"])
+        if not path.is_file() or sha256(path) != recipe["init_checkpoint_sha256"]:
+            raise ValueError(f"Initial checkpoint changed or is missing: {path}")
+
     def verify(self, state: dict[str, Any], stage: str) -> None:
         argv = [
             self.spec["python"],
@@ -653,7 +799,10 @@ class Campaign:
         elif stage == "train":
             paths = [
                 root / "checkpoint-index.json",
-                root / "scratch-origin.json",
+                root
+                / origin_record_name(
+                    read_json(Path(state["config"])) if state.get("config") else {}
+                ),
                 root / "training-result.json",
             ]
         elif stage in {"predict", "predict_best"}:
@@ -764,6 +913,8 @@ class Campaign:
                         self.verify(state, stage)
                         self.complete_stage(state, stage, recovered=True)
                         continue
+                if stage == "train":
+                    self.check_initial_checkpoint(state)
                 if stage == "evaluate":
                     evaluation = self.root / "evaluations" / state["id"]
                     self.set_aside_incomplete(state, evaluation)
