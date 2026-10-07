@@ -8,9 +8,10 @@ A case file for the `rad_9_24_2026` comparison ([guide](rad-9-24-2026.md)). Ever
 - **Cab-view is much lower.** Over 40 single-seed runs the median mud IoU is 89.2 on all val images and 42.7 on cab-view images; 40 of 40 runs score lower on cab-view. The models do segment cab-view mud in part: the best run reaches 61.9.
 - **Same-scene frames are in train.** All 17 of 17 val scene groups also have train frames, including neighbouring frames of the same stretch of track.
 - **Optimistic and unreplicated.** One seed per run, and checkpoints are selected on this same val split.
-- **Scene-grouped results: pending** (0 of 40 jobs completed).
+- **Scene-grouped results: see section 7.**
+- **Cross-validation false positives.** For eomt_dinov3_large `rtis_only`, the best cross-validation run, 37.4% of the mud it predicts on train-camera images is not mud in the ground truth; figure 5 shows the images with the most (section 8).
 
-In more detail: 5 track-level frames from the `trackside-maintenance` scene group hold 94.9% of all mud-pumping ground-truth pixels on the stratified val split, and the 7 cab-view images that contain mud hold 4.9%. Because mud IoU is aggregated over pixels, the headline number mostly measures those frames: across the 40 `paul`-arm runs the median mud IoU is 89.2 on all val images but 42.7 on the cab-view images, and 40 of 40 runs score lower on cab-view. The best cab-view run (segformer_b5 cityscapes_to_railsem19_to_rtis) reaches 61.9. For all 5 track-level frames the most similar train frame is from the same scene group. For 3 of them (0081, 0089, 0091) it scores at least 0.93, against at most 0.701 for any train frame from another group; figure 3 shows them side by side with their nearest train frames. For 0071 and 0076 the best score is only 0.53 and 0.54, so these are neighbouring frames, not copies. The high all-image number therefore mostly measures segmentation of large, close-range mud on a stretch of track whose neighbouring frames are in training; it says little about spotting small mud patches from the cab. The scene-grouped arm, the closest test we have of that, has 0 of 40 jobs completed, so the comparison is still pending.
+In more detail: 5 track-level frames from the `trackside-maintenance` scene group hold 94.9% of all mud-pumping ground-truth pixels on the stratified val split, and the 7 cab-view images that contain mud hold 4.9%. Because mud IoU is aggregated over pixels, the headline number mostly measures those frames: across the 40 `paul`-arm runs the median mud IoU is 89.2 on all val images but 42.7 on the cab-view images, and 40 of 40 runs score lower on cab-view. The best cab-view run (segformer_b5 cityscapes_to_railsem19_to_rtis) reaches 61.9. For all 5 track-level frames the most similar train frame is from the same scene group. For 3 of them (0081, 0089, 0091) it scores at least 0.93, against at most 0.701 for any train frame from another group; figure 3 shows them side by side with their nearest train frames. For 0071 and 0076 the best score is only 0.53 and 0.54, so these are neighbouring frames, not copies. The high all-image number therefore mostly measures segmentation of large, close-range mud on a stretch of track whose neighbouring frames are in training; it says little about spotting small mud patches from the cab. All 40 scene-grouped jobs are completed; see section 7.
 
 The `paul` arm uses a stratified random split over frames (multi-label iterative stratification, see the guide), a standard choice that keeps rare classes in every split. The issue here is not the split rule: many frames in this dataset are neighbouring views of the same scene, so a random frame-level split puts such neighbours in both train and val.
 
@@ -148,16 +149,84 @@ On the grouped split the cab-view val mud sits in 1 scene group: `rural-overcast
 
 ## 7. What the scene-grouped arm will tell us
 
-The `fixed-grouped` arm keeps every val scene group out of train. If the stratified numbers are inflated by same-scene frames, its mud IoU should fall to (or below) the stratified cab-view numbers rather than near the stratified all-image numbers. Three things are not separated by this test: the grouped arm also uses the re-rendered labels (a small effect on average, see section 9), it changes the training set (227 vs 217 train images) and its val mud is 17 of 17 cab-view images from one camera setup (`rural-overcast-cab-view`), so it is a different and narrower val set, not the same val set with same-group frames removed.
+The `fixed-grouped` arm keeps every val scene group out of train. If the stratified numbers are inflated by same-scene frames, its mud IoU should fall to (or below) the stratified cab-view numbers rather than near the stratified all-image numbers. Three things are not separated by this test: the grouped arm also uses the re-rendered labels (a small effect on average, see section 10), it changes the training set (227 vs 217 train images) and its val mud is 17 of 17 cab-view images from one camera setup (`rural-overcast-cab-view`), so it is a different and narrower val set, not the same val set with same-group frames removed.
 
 | arm | completed jobs | other statuses |
 |---|---:|---|
 | `paul` | 40 / 40 | — |
-| `fixed-grouped` | 0 / 40 | evaluating 1, queued 36, training 3 |
+| `fixed-grouped` | 40 / 40 | — |
 
-Pending: 40 of 40 `fixed-grouped` jobs are not completed. Regenerate this document with `scripts/make_rad_mud_case.py` when they are.
+Completed `fixed-grouped` jobs (40 of 40), percent:
 
-## 8. Comparison with the published RAD results
+| model | protocol | mud IoU all | mud IoU cab | stratified (`paul`) mud IoU cab |
+|---|---|---:|---:|---:|
+| `eomt_dinov3_large` | `cityscapes_to_railsem19_to_rtis` | 8.2 | 12.1 | 38.9 |
+| `eomt_dinov3_large` | `cityscapes_to_rtis` | 10.6 | 42.3 | 26.4 |
+| `eomt_dinov3_large` | `railsem19_to_rtis` | 18.8 | 37.2 | 39.7 |
+| `eomt_dinov3_large` | `rtis_only` | 8.7 | 40.7 | 41.9 |
+| `eomt_large` | `cityscapes_to_railsem19_to_rtis` | 15.7 | 34.6 | 46.0 |
+| `eomt_large` | `cityscapes_to_rtis` | 9.4 | 25.3 | 40.3 |
+| `eomt_large` | `railsem19_to_rtis` | 3.3 | 10.4 | 50.7 |
+| `eomt_large` | `rtis_only` | 12.7 | 33.6 | 42.6 |
+| `hrnet_w48_ocr` | `cityscapes_to_railsem19_to_rtis` | 6.5 | 6.6 | 34.1 |
+| `hrnet_w48_ocr` | `cityscapes_to_rtis` | 12.0 | 12.2 | 33.9 |
+| `hrnet_w48_ocr` | `railsem19_to_rtis` | 2.4 | 8.2 | 46.3 |
+| `hrnet_w48_ocr` | `rtis_only` | 3.6 | 7.0 | 49.3 |
+| `native_convnext_tiny_uper` | `cityscapes_to_railsem19_to_rtis` | 9.1 | 12.0 | 45.0 |
+| `native_convnext_tiny_uper` | `cityscapes_to_rtis` | 3.1 | 3.6 | 45.2 |
+| `native_convnext_tiny_uper` | `railsem19_to_rtis` | 2.1 | 4.7 | 48.5 |
+| `native_convnext_tiny_uper` | `rtis_only` | 6.9 | 13.3 | 47.5 |
+| `segformer_b2` | `cityscapes_to_railsem19_to_rtis` | 15.9 | 16.6 | 42.7 |
+| `segformer_b2` | `cityscapes_to_rtis` | 16.8 | 23.1 | 29.7 |
+| `segformer_b2` | `railsem19_to_rtis` | 6.1 | 13.1 | 57.0 |
+| `segformer_b2` | `rtis_only` | 10.1 | 19.9 | 58.7 |
+| `segformer_b5` | `cityscapes_to_railsem19_to_rtis` | 5.0 | 25.2 | 61.9 |
+| `segformer_b5` | `cityscapes_to_rtis` | 4.7 | 26.9 | 46.8 |
+| `segformer_b5` | `railsem19_to_rtis` | 5.6 | 14.7 | 55.2 |
+| `segformer_b5` | `rtis_only` | 5.2 | 14.9 | 53.4 |
+| `smp_deeplabv3plus_resnet101` | `cityscapes_to_railsem19_to_rtis` | 3.7 | 8.0 | 39.9 |
+| `smp_deeplabv3plus_resnet101` | `cityscapes_to_rtis` | 1.4 | 3.4 | 45.6 |
+| `smp_deeplabv3plus_resnet101` | `railsem19_to_rtis` | 5.6 | 13.7 | 47.2 |
+| `smp_deeplabv3plus_resnet101` | `rtis_only` | 6.6 | 10.8 | 12.1 |
+| `smp_fpn_resnet50` | `cityscapes_to_railsem19_to_rtis` | 14.4 | 15.8 | 38.7 |
+| `smp_fpn_resnet50` | `cityscapes_to_rtis` | 8.2 | 9.1 | 18.4 |
+| `smp_fpn_resnet50` | `railsem19_to_rtis` | 12.8 | 20.7 | 47.4 |
+| `smp_fpn_resnet50` | `rtis_only` | 4.8 | 10.3 | 38.1 |
+| `smp_upernet_resnet101` | `cityscapes_to_railsem19_to_rtis` | 15.9 | 19.3 | 28.1 |
+| `smp_upernet_resnet101` | `cityscapes_to_rtis` | 16.3 | 25.5 | 24.9 |
+| `smp_upernet_resnet101` | `railsem19_to_rtis` | 8.7 | 12.4 | 42.7 |
+| `smp_upernet_resnet101` | `rtis_only` | 6.8 | 8.1 | 37.5 |
+| `upernet_convnext` | `cityscapes_to_railsem19_to_rtis` | 2.4 | 5.9 | 42.3 |
+| `upernet_convnext` | `cityscapes_to_rtis` | 3.2 | 17.5 | 38.3 |
+| `upernet_convnext` | `railsem19_to_rtis` | 7.8 | 13.4 | 40.1 |
+| `upernet_convnext` | `rtis_only` | 4.7 | 11.7 | 50.6 |
+
+## 8. Cross-validation: where the best model predicts mud that is not there
+
+Run: **eomt_dinov3_large, `rtis_only`** (recipe pretrained weights) of the `cv-seed0-20261006` cross-validation ([guide](cross-validation.md#worked-example-rad_9_24_2026)), the best of the 20 complete setups by pooled train-camera mud IoU. Final checkpoint (`final-auto-val`). Each image is scored by the fold model that never saw its scene group. Ground truth is our re-rendered labels (the `rad_9_24_2026-cv` folds), not the `paul` masks used above. On the 172 train-camera (cab-view) images the pooled mud precision is 62.6%, so 37.4% of the pixels predicted as mud are false positives.
+
+- **624,072 false-positive mud pixels** on train-camera images, in 111 of 172 images.
+- 258,050 (41.3%) are on 45 images with no mud in the ground truth; 366,022 (58.7%) are on 66 images that have mud, outside the true patch.
+- The 8 images with the most (figure 5) hold 49.3%.
+
+**Figure 5.** The 8 train-camera images with the most false-positive mud pixels. The first column is the whole frame with the prediction and the zoom box; the other columns are the zoomed region without and with the prediction. The zoom box sits where it holds the most false-positive pixels; false positives outside it are counted in the caption.
+
+![Train-camera false-positive mud in cross-validation](assets/rad-9-24-2026-mud-iou/fig5-cv-false-positives.jpg)
+
+| image | scene group | fold | mud GT | GT mud px | FP px | share of train-camera FP | image mud IoU |
+|---|---|---:|---|---:|---:|---:|---:|
+| `0032` | `miscellaneous-numbered-cab-views` | 0 | no | 0 | 87,173 | 14.0% | — |
+| `0146` | `sunny-mainline-cab-view` | 2 | yes | 42,873 | 56,564 | 9.1% | 19.2 |
+| `0230` | `sunny-mountain-stations` | 4 | no | 0 | 51,651 | 8.3% | — |
+| `0154` | `sunny-mainline-cab-view` | 2 | yes | 16,416 | 35,320 | 5.7% | 29.6 |
+| `0157` | `sunny-mainline-cab-view` | 2 | yes | 23,537 | 21,044 | 3.4% | 49.8 |
+| `0143` | `sunny-mainline-cab-view` | 2 | yes | 44,344 | 19,058 | 3.1% | 39.1 |
+| `0153` | `sunny-mainline-cab-view` | 2 | yes | 21,415 | 18,780 | 3.0% | 48.2 |
+| `0151` | `sunny-mainline-cab-view` | 2 | yes | 23,838 | 18,332 | 2.9% | 4.0 |
+
+In the pictures the false positives sit on pale ground in the track area: the gravel and concrete around the rack track in `0032`, the paved crossing over the tracks in `0230`, and light ballast along and between the rails in the `sunny-mainline-cab-view` frames, often as a fringe around the true patches. In `0151` the predicted mud is a strip of ballast beside a rail, away from the true patches, which are mostly missed.
+
+## 9. Comparison with the published RAD results
 
 The paper this dataset comes from (Stanik et al., IEEE journal manuscript, Rail Anomalies Dataset) reports the same pattern. Quoted facts, from its Section IV-C and Table II:
 
@@ -173,7 +242,7 @@ The paper this dataset comes from (Stanik et al., IEEE journal manuscript, Rail 
 
 All three published models, including the older FRRN-B baseline, score 84-89 on mud-pumping, well above their own mIoU. That is consistent with this document's finding: on a frame-level split of a dataset whose mud-pumping comes mostly from one close-range video, pixel-aggregated mud IoU mostly measures those close-range frames. The published numbers are on a different (2022, 19-class) version of the data and a 16-image test set, so they are not directly comparable with the values above; the point is the shared pattern, not the exact figures.
 
-## 9. Caveats
+## 10. Caveats
 
 - **Single seed.** Every run is seed 0; there are no repeats or intervals, so differences of a few points between runs are not established.
 - **Optimistic checkpoints.** Each run's checkpoint is selected (and early stopped) on val mud IoU of this same val split, so every number here is an optimistic val score, not a held-out estimate.
@@ -182,7 +251,7 @@ All three published models, including the older FRRN-B baseline, score 84-89 on 
 - **Scene groups are layout names,** assigned from visual evidence, not confirmed recording provenance. The similarity in figure 3 is a generic ImageNet appearance score.
 - **Mask-conversion differences in the delivered `masks_machine/` masks** (used by the `paul` arm). The conversion labels pixels covered by no polygon as `person` and ignores polygon holes (see the guide); this is mechanical, not an annotation judgement. The figures use those masks because the runs were scored against them. A third arm with our re-rendered masks on the stratified split was stopped on 2026-10-05 at 8 of 40 jobs: over 8 matched eomt runs the label fix changed cab-view mud IoU on stratified val by -3.3 to +4.7 points, -0.1 on average.
 
-## 10. Reproduce
+## 11. Reproduce
 
 On the GPU host, from a repository checkout, with a Python environment that has torch and torchvision (read-only on the data; writes only this document and its assets). The ResNet-50 ImageNet weights are fetched once into the torch hub cache. Runs on CPU.
 
@@ -205,3 +274,4 @@ Inputs used for this version:
 - samples `fixed-grouped`: sha256 `46e5b404cb1e`
 - similarity weights: torchvision `resnet50-11ad3fa6.pth`
 - campaigns: `paul-seed0-20261005-r2`, `fixed-grouped-seed0-20261005-r2`
+- cross-validation: `cv-seed0-20261006` (`rad_9_24_2026-cv-spec.json` sha256 `85e1661b0353`)

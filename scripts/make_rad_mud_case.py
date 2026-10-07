@@ -19,6 +19,15 @@ Figures use the ``paul`` arm's own ground truth (the masks the runs were scored 
 the saved ``best-auto-val`` prediction PNGs; the script checks that the mud TP/FP/FN it
 recounts from those PNGs equals the per-image confusion of the run. Validation split only;
 the test split is never read. Output is deterministic for fixed inputs.
+
+The cross-validation section reads the ``cv-seed0-20261006`` campaign (under
+``--campaign-root``) through ``scripts/cv_report.build`` (fold-dataset, spec and confusion
+hashes, per-fold val coverage) and the fold datasets ``rad_9_24_2026-cv/fold-<k>`` (under
+``--datasets-root``). It shows one run (``CV_RUN``) at its final checkpoint
+(``final-auto-val``), each image scored by the fold model that held its scene out; every
+CV-scored image of ``configs/datasets/rad_9_24_2026-cv-spec.json`` must be scored exactly once,
+and the mud TP/FP/FN recounted from every prediction PNG must equal the run's per-image
+confusion.
 """
 
 from __future__ import annotations
@@ -36,9 +45,13 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
+from scripts import cv_report as cvr
 from scripts import rad_report as report
 from scripts import rad_subset_metrics as subsets
 from scripts.collect_rtis_statistics import mud_counts
+
+from segmentary.data.group_cv import CvError, fold_splits
 
 DEFAULT_CAMPAIGN_ROOT = report.RUNS / "rad_9_24_2026"
 CAMPAIGN_DIR = "{arm}-seed0-20261005-r2"
@@ -58,6 +71,14 @@ NEIGHBOURS = 3  # train frames per val frame
 DUPLICATE = 0.93
 REDUCE = 4  # integer downscale (PIL ``Image.reduce``) applied before the standard transform
 FONT = 24  # figure text; figures are ~1600 px wide and GitHub shows them at ~880 px
+# Cross-validation section: scene-grouped 5-fold CV on the re-rendered (fixed-grouped) labels.
+CV_CAMPAIGN = "cv-seed0-20261006"
+CV_DATASET = "rad_9_24_2026-cv"
+CV_SPEC = ROOT / "configs/datasets/rad_9_24_2026-cv-spec.json"
+CV_RUN = ("eomt_dinov3_large", "rtis_only", 0)  # model, protocol, seed
+CV_START = "recipe pretrained weights"  # plain name of the rtis_only starting point
+CV_SHOWN = 8  # train-camera images with the most false-positive mud in figure 5
+MUD_NAME = "mud-pumping"
 
 # Categorical slots 1-3 of the dataviz reference palette (validated all-pairs, light mode).
 BLUE, ORANGE, GREEN = (42, 120, 214), (235, 104, 52), (27, 175, 122)
@@ -155,20 +176,205 @@ class Arm:
         return mask
 
 
-def prediction(run: Run, key: str, gt: np.ndarray, counts: dict[str, Any]) -> np.ndarray:
-    pred = read_mask(run.diagnostics / "predictions" / f"{key}.png")
+def checked_prediction(
+    path: Path, label: str, gt: np.ndarray, counts: dict[str, Any]
+) -> np.ndarray:
+    """The prediction PNG, after checking its mud TP/FP/FN against the run's confusion."""
+    pred = read_mask(path)
     if pred.shape != gt.shape:
-        raise CaseError(f"{run.job} {key}: prediction shape {pred.shape} != mask {gt.shape}")
+        raise CaseError(f"{label}: prediction shape {pred.shape} != mask {gt.shape}")
     valid = gt != IGNORE
     tp = int(((gt == MUD) & (pred == MUD)).sum())
     fp = int(((gt != MUD) & valid & (pred == MUD)).sum())
     fn = int(((gt == MUD) & (pred != MUD)).sum())
     if (tp, fp, fn) != (counts["tp"], counts["fp"], counts["fn"]):
         raise CaseError(
-            f"{run.job} {key}: prediction PNG gives mud TP/FP/FN {(tp, fp, fn)}, the run's "
+            f"{label}: prediction PNG gives mud TP/FP/FN {(tp, fp, fn)}, the run's "
             f"per-image confusion {(counts['tp'], counts['fp'], counts['fn'])}"
         )
     return pred
+
+
+def prediction(run: Run, key: str, gt: np.ndarray, counts: dict[str, Any]) -> np.ndarray:
+    path = run.diagnostics / "predictions" / f"{key}.png"
+    return checked_prediction(path, f"{run.job} {key}", gt, counts)
+
+
+# ----------------------------------------------------------------------------- cross-validation
+
+
+@dataclass
+class CvFold:
+    fold: int
+    job: str
+    arm: Arm  # the fold dataset (val = this fold's scored images)
+    predictions: Path
+
+
+@dataclass
+class CvImage:
+    key: str
+    fold: int
+    group: str
+    viewpoint: str
+    counts: dict[str, Any]  # mud_counts of the image's per-image confusion
+
+    @property
+    def fp(self) -> int:
+        return int(self.counts["fp"])
+
+    @property
+    def gt(self) -> int:
+        return int(self.counts["support"])
+
+
+@dataclass
+class CvCase:
+    campaign: str
+    folds: dict[int, CvFold]
+    images: list[CvImage]
+    pooled: dict[str, dict[str, Any]]  # cv_report.pooled of the run, by subset
+    rank: int  # of the run among complete setups, by pooled cab-view mud IoU
+    setups: int
+    spec_sha256: str
+
+
+def check_cv_coverage(spec: dict, scored: dict[int, list[tuple[str, str]]]) -> None:
+    """Every CV-scored image of the spec is scored exactly once, by the fold that holds it out.
+
+    ``scored`` maps fold -> [(key, image_sha256)] of the run's per-image confusions."""
+    folds = int(spec["method"]["folds"])
+    if sorted(scored) != list(range(folds)):
+        raise CaseError(f"cross-validation folds {sorted(scored)}, the spec has {folds}")
+    seen: dict[str, int] = {}
+    for fold, rows in sorted(scored.items()):
+        keys = [k for k, _ in rows]
+        expected = fold_splits(spec, fold)[0]["val"]
+        if sorted(keys) != sorted(expected) or len(set(keys)) != len(keys):
+            missing = sorted(set(expected) - set(keys))
+            extra = sorted(set(keys) - set(expected))
+            raise CaseError(
+                f"fold {fold}: scored images differ from the spec's val fold "
+                f"(missing {missing}, extra {extra}, {len(keys) - len(set(keys))} duplicates)"
+            )
+        for key, sha in rows:
+            if key in seen:
+                raise CaseError(f"{key} is scored in folds {seen[key]} and {fold}")
+            seen[key] = fold
+            if sha != spec["assignments"][key]["image_sha256"]:
+                raise CaseError(f"{key}: image sha256 differs from the cross-validation spec")
+    wanted = {k for k, row in spec["assignments"].items() if row["scored"]}
+    if set(seen) != wanted:
+        raise CaseError(f"scored images differ from the spec: {sorted(wanted ^ set(seen))}")
+
+
+def load_cv(
+    cv_root: Path,
+    viewpoints_path: Path,
+    viewpoints: dict,
+    maps: list[tuple[str, str]],
+    spec_path: Path = CV_SPEC,
+) -> CvCase:
+    rep = cvr.build(cv_root, viewpoints_path, MUD_NAME, maps)
+    if rep.names[MUD] != MUD_NAME:
+        raise CaseError(f"class {MUD} of {cv_root.name} is {rep.names[MUD]!r}, not {MUD_NAME}")
+    cv = rep.campaign["cross_validation"]
+    if sha256_file(spec_path) != cv["spec_sha256"]:
+        raise CaseError(f"{spec_path} is not the spec of {cv_root}")
+    spec = report.read(spec_path)
+    model, protocol, seed = CV_RUN
+    setups = cvr.groups_of(rep)
+    runs = setups.get(CV_RUN, {})
+    if set(runs) != set(rep.folds):
+        raise CaseError(f"{model} {protocol} seed {seed}: folds {sorted(runs)} of {rep.folds}")
+    check_cv_coverage(
+        spec,
+        {k: [(i.key, i.image_sha256) for i in r.images[cvr.PRIMARY]] for k, r in runs.items()},
+    )
+    pooled = cvr.pooled(runs, cvr.PRIMARY, rep)
+    if pooled is None or pooled[CAB]["focus_iou"] is None:
+        raise CaseError(f"{model} {protocol}: no pooled {CAB} mud IoU")
+    complete = {
+        key: cvr.pooled(r, cvr.PRIMARY, rep)
+        for key, r in setups.items()
+        if set(r) == set(rep.folds)
+    }
+
+    def cab_iou(p: dict | None) -> float:
+        value = (p or {}).get(CAB, {}).get("focus_iou")
+        return -1.0 if value is None else float(value)
+
+    scores = sorted((-cab_iou(p), key) for key, p in complete.items())
+    folds, images = {}, []
+    for k, run in sorted(runs.items()):
+        state = report.read(cv_root / "state" / f"{run.job}.json")
+        result = state["collection"]["diagnostics"]["results"][cvr.PRIMARY]
+        root = report.remap(cv["fold_datasets"][str(k)]["root"], maps)
+        folds[k] = CvFold(
+            k, run.job, Arm(root, viewpoints), report.remap(result["prediction_directory"], maps)
+        )
+        for i in run.images[cvr.PRIMARY]:
+            group = spec["assignments"][i.key]["group"]
+            images.append(CvImage(i.key, k, group, str(i.subset), mud_counts(i.matrix, MUD)))
+    case = CvCase(
+        cv_root.name,
+        folds,
+        sorted(images, key=lambda i: i.key),
+        pooled,
+        [key for _, key in scores].index(CV_RUN) + 1,
+        len(complete),
+        cv["spec_sha256"],
+    )
+    for image in case.images:  # the recount check on every scored image, not only those shown
+        cv_prediction(case, image)
+    return case
+
+
+def cv_prediction(case: CvCase, image: CvImage) -> tuple[np.ndarray, np.ndarray]:
+    """(ground truth, checked prediction) of one cross-validation image."""
+    fold = case.folds[image.fold]
+    gt = fold.arm.mask(image.key)
+    path = fold.predictions / f"{image.key}.png"
+    return gt, checked_prediction(path, f"{fold.job} {image.key}", gt, image.counts)
+
+
+def rank_false_positives(images: list[CvImage], n: int = CV_SHOWN) -> list[CvImage]:
+    """The train-camera images with the most false-positive mud pixels (ties by key)."""
+    cab = [i for i in images if i.viewpoint == CAB and i.fp > 0]
+    return sorted(cab, key=lambda i: (-i.fp, i.key))[:n]
+
+
+def fp_zoom_box(
+    mask: np.ndarray,
+    aspect: float = 16 / 9,
+    min_w: int = 480,
+    max_zoom_w: float = 0.5,
+    step: int = 8,
+) -> tuple[int, int, int, int]:
+    """A zoom window on the false-positive pixels of ``mask``.
+
+    Width as in ``zoom_box`` (1.6x the extent, 16:9) but over the central 90% of the pixels
+    (5th-95th percentile on each axis) and at most ``max_zoom_w`` of the frame width (at least a
+    2x zoom); placed, on a ``step``-pixel grid, where it holds the most pixels of ``mask`` (the
+    first such position in raster order)."""
+    h, w = mask.shape
+    ys, xs = np.nonzero(mask)
+    if not len(xs):
+        raise CaseError("no false-positive pixel to zoom on")
+    x0, x1 = np.percentile(xs, [5, 95])
+    y0, y1 = np.percentile(ys, [5, 95])
+    cw = max(min_w, int(1.6 * (x1 - x0 + 1)), int(1.6 * (y1 - y0 + 1) * aspect))
+    cw = min(cw, int(w * max_zoom_w), int(h * aspect))
+    ch = round(cw / aspect)
+    table = np.zeros((h + 1, w + 1), np.int64)
+    table[1:, 1:] = mask.astype(np.int64).cumsum(0).cumsum(1)
+    tops = np.unique(np.r_[np.arange(0, h - ch + 1, step), h - ch])
+    lefts = np.unique(np.r_[np.arange(0, w - cw + 1, step), w - cw])
+    t, left = np.meshgrid(tops, lefts, indexing="ij")
+    inside = table[t + ch, left + cw] - table[t, left + cw] - table[t + ch, left] + table[t, left]
+    i, j = np.unravel_index(int(np.argmax(inside)), inside.shape)
+    top, lft = int(tops[i]), int(lefts[j])
+    return lft, top, lft + cw, top + ch
 
 
 # ----------------------------------------------------------------------------- drawing
@@ -412,6 +618,54 @@ def figure_cab(arm: Arm, keys: list[str], runs: list[Run], counts, path: Path) -
     return notes
 
 
+def cv_caption(image: CvImage, zoom: float, fp_outside: int) -> str:
+    bits = [image.key.rsplit("/", 1)[-1], image.group, f"fold {image.fold}"]
+    if image.gt:
+        bits += [f"mud GT {image.gt:,} px", f"FP {image.fp:,} px"]
+        bits.append(f"image mud IoU {pct(image.counts['iou'])}")
+    else:
+        bits += ["no mud in GT", f"FP {image.fp:,} px"]
+    bits += [f"zoom {zoom:.1f}x", f"FP outside zoom {fp_outside:,} px"]
+    return " · ".join(bits)
+
+
+def figure_cv_fp(case: CvCase, shown: list[CvImage], path: Path) -> list[dict]:
+    size = (432, 243)
+    widths = [size[0]] * 3
+    titles = ["full frame: prediction (white box = zoom)", "zoom: image", "zoom: prediction"]
+    total_w = sum(widths) + 4 * (len(widths) - 1)
+    rows = [legend_strip(total_w, PRED_LEGEND), header_row(widths, titles)]
+    notes = []
+    for image in shown:
+        gt, pred = cv_prediction(case, image)
+        rgb = case.folds[image.fold].arm.image(image.key)
+        fp = (gt != MUD) & (gt != IGNORE) & (pred == MUD)
+        box = fp_zoom_box(fp)
+        full = panel(rgb, pred_layers(gt, pred), size)
+        sx, sy = size[0] / gt.shape[1], size[1] / gt.shape[0]
+        ImageDraw.Draw(full).rectangle(
+            (box[0] * sx, box[1] * sy, box[2] * sx - 1, box[3] * sy - 1),
+            outline=(255, 255, 255),
+            width=3,
+        )
+        crop = rgb.crop(box)
+        sub = (slice(box[1], box[3]), slice(box[0], box[2]))
+        cells = [
+            full,
+            crop.resize(size, Image.Resampling.LANCZOS),
+            panel(crop, pred_layers(gt[sub], pred[sub]), size),
+        ]
+        fp_outside = image.fp - int(fp[sub].sum())
+        zoom = gt.shape[1] / (box[2] - box[0])
+        rows += [
+            caption_row(total_w, cv_caption(image, zoom, fp_outside)),
+            stack(cells, horizontal=True),
+        ]
+        notes.append({"key": image.key, "box": box, "fp_outside": fp_outside})
+    save_jpeg(stack(rows), path)
+    return notes
+
+
 class Embedder:
     """Global-average-pooled ImageNet ResNet-50 features (torchvision ``IMAGENET1K_V2``), CPU.
 
@@ -576,6 +830,115 @@ def table(headers: list[str], rows: list[list[str]], right: set[int]) -> list[st
     ]
 
 
+CV_FIGURE = "fig5-cv-false-positives.jpg"
+# What figure 5 visibly shows, written after looking at it. Printed only while the figure shows
+# exactly these images, so a change of data cannot leave a stale description behind.
+CV_OBSERVED_KEYS: tuple[str, ...] = (
+    "miscellaneous-numbered-cab-views/0032",
+    "sunny-mainline-cab-view/0146",
+    "sunny-mountain-stations/0230",
+    "sunny-mainline-cab-view/0154",
+    "sunny-mainline-cab-view/0157",
+    "sunny-mainline-cab-view/0143",
+    "sunny-mainline-cab-view/0153",
+    "sunny-mainline-cab-view/0151",
+)
+CV_OBSERVED = (
+    "In the pictures the false positives sit on pale ground in the track area: the gravel and "
+    "concrete around the rack track in `0032`, the paved crossing over the tracks in `0230`, "
+    "and light ballast along and between the rails in the `sunny-mainline-cab-view` frames, "
+    "often as a fringe around the true patches. In `0151` the predicted mud is a strip of "
+    "ballast beside a rail, away from the true patches, which are mostly missed."
+)
+
+
+def cv_title(case: CvCase) -> str:
+    who = "the best model" if case.rank == 1 else f"the {CV_RUN[0]} model"
+    return f"Cross-validation: where {who} predicts mud that is not there"
+
+
+def cv_section(case: CvCase, shown: list[CvImage], number: int, figure: int, rel: str) -> list[str]:
+    model, protocol, _ = CV_RUN
+    cab = [i for i in case.images if i.viewpoint == CAB]
+    fp_total = sum(i.fp for i in cab)
+    if not fp_total or not shown:
+        raise CaseError(f"{model} {protocol}: no false-positive mud on {CAB} images")
+    no_gt = [i for i in cab if i.fp and not i.gt]
+    with_gt = [i for i in cab if i.fp and i.gt]
+    fp_no_gt, fp_gt = sum(i.fp for i in no_gt), sum(i.fp for i in with_gt)
+    precision = case.pooled[CAB]["focus_precision"]
+
+    def share(value: int) -> str:
+        return f"{100 * value / fp_total:.1f}%"
+
+    def images(n: int) -> str:
+        return f"{n} image{'s' if n != 1 else ''}"
+
+    best = (
+        f"the best of the {case.setups} complete setups"
+        if case.rank == 1
+        else f"rank {case.rank} of the {case.setups} complete setups"
+    )
+    L = [
+        f"## {number}. {cv_title(case)}",
+        "",
+        f"Run: **{model}, `{protocol}`** ({CV_START}) of the `{case.campaign}` cross-validation "
+        f"([guide](cross-validation.md#worked-example-rad_9_24_2026)), {best} by pooled "
+        "train-camera mud IoU. Final checkpoint (`final-auto-val`). Each image is scored by the "
+        "fold model that never saw its scene group. Ground truth is our re-rendered labels (the "
+        f"`{CV_DATASET}` folds), not the `paul` masks used above. On the "
+        f"{case.pooled[CAB]['images']} train-camera (cab-view) images the pooled mud precision is "
+        f"{pct(precision)}%, so {pct(1 - precision)}% of the pixels predicted as mud are false "
+        "positives.",
+        "",
+        f"- **{fp_total:,} false-positive mud pixels** on train-camera images, in "
+        f"{len(no_gt) + len(with_gt)} of {len(cab)} images.",
+        f"- {fp_no_gt:,} ({share(fp_no_gt)}) are on {images(len(no_gt))} with no mud in the "
+        f"ground truth; {fp_gt:,} ({share(fp_gt)}) are on {images(len(with_gt))} that have mud, "
+        "outside the true patch.",
+        f"- The {len(shown)} images with the most (figure {figure}) hold "
+        f"{share(sum(i.fp for i in shown))}.",
+        "",
+        f"**Figure {figure}.** The {len(shown)} train-camera images with the most false-positive "
+        "mud pixels. The first column is the whole frame with the prediction and the zoom box; "
+        "the other columns are the zoomed region without and with the prediction. The zoom box "
+        "sits where it holds the most false-positive pixels; false positives outside it are "
+        "counted in the caption.",
+        "",
+        f"![Train-camera false-positive mud in cross-validation]({rel}/{CV_FIGURE})",
+        "",
+    ]
+    L += table(
+        [
+            "image",
+            "scene group",
+            "fold",
+            "mud GT",
+            "GT mud px",
+            "FP px",
+            "share of train-camera FP",
+            "image mud IoU",
+        ],
+        [
+            [
+                f"`{i.key.rsplit('/', 1)[-1]}`",
+                f"`{i.group}`",
+                str(i.fold),
+                "yes" if i.gt else "no",
+                f"{i.gt:,}",
+                f"{i.fp:,}",
+                share(i.fp),
+                pct(i.counts["iou"]) if i.gt else "—",
+            ]
+            for i in shown
+        ],
+        {2, 4, 5, 6, 7},
+    )
+    if CV_OBSERVED and tuple(i.key for i in shown) == CV_OBSERVED_KEYS:
+        L += [CV_OBSERVED, ""]
+    return L
+
+
 def write_doc(ctx: dict[str, Any], path: Path) -> None:
     c = ctx
     arm, comp = c["arm"], c["comp"]
@@ -606,6 +969,14 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
     close_share = f"{100 * close_px / total:.1f}%"
     best_cab = pct(best.metrics[CAB]["mud_iou"])
     pending = fg_done < fg_total
+    cv_case: CvCase = c["cv"]
+    cv_fp = 1 - cv_case.pooled[CAB]["focus_precision"]
+    cv_bullet = [
+        f"- **Cross-validation false positives.** For {CV_RUN[0]} `{CV_RUN[1]}`"
+        + (", the best cross-validation run," if cv_case.rank == 1 else "")
+        + f" {pct(cv_fp)}% of the mud it predicts on train-camera images is not mud in the "
+        "ground truth; figure 5 shows the images with the most (section 8)."
+    ]
     L: list[str] = []
     L += [
         "# Where the stratified-split mud-pumping IoU comes from (RAD 9/24/2026)",
@@ -634,6 +1005,7 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
             if pending
             else "see section 7.**"
         ),
+        *cv_bullet,
         "",
         "In more detail: "
         f"{len(close)} track-level frames from the `{CLOSEUP_GROUP}` scene group hold "
@@ -979,7 +1351,7 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
         "numbers are inflated by same-scene frames, its mud IoU should fall to (or below) the "
         "stratified cab-view numbers rather than near the stratified all-image numbers. Three "
         "things are not separated by this test: the grouped arm also uses the re-rendered labels "
-        "(a small effect on average, see section 9), it changes the training set "
+        "(a small effect on average, see section 10), it changes the training set "
         f"({len(strat['train_images'])} vs {len(grouped['train_images'])} train images) and its "
         f"val mud is {grouped_top_n} of {grouped_cab['with_mud']} cab-view images from one camera "
         f"setup (`{grouped_top_group}`), so it is a different and narrower val set, not the same "
@@ -1016,8 +1388,9 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
             "Regenerate this document with `scripts/make_rad_mud_case.py` when they are.",
             "",
         ]
+    L += cv_section(c["cv"], c["cv_shown"], 8, 5, rel)
     L += [
-        "## 8. Comparison with the published RAD results",
+        "## 9. Comparison with the published RAD results",
         "",
         "The paper this dataset comes from (Stanik et al., IEEE journal manuscript, "
         "Rail Anomalies Dataset) reports the same pattern. Quoted facts, from its "
@@ -1049,7 +1422,7 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
         "16-image test set, so they are not directly comparable with the values above; the "
         "point is the shared pattern, not the exact figures.",
         "",
-        "## 9. Caveats",
+        "## 10. Caveats",
         "",
         "- **Single seed.** Every run is seed 0; there are no repeats or intervals, so differences "
         "of a few points between runs are not established.",
@@ -1069,7 +1442,7 @@ def write_doc(ctx: dict[str, Any], path: Path) -> None:
         "figures use those masks because the runs were scored against them. "
         + report.LABEL_ARM_STOPPED,
         "",
-        "## 10. Reproduce",
+        "## 11. Reproduce",
         "",
         "On the GPU host, from a repository checkout, with a Python environment that has torch "
         "and torchvision (read-only on the data; writes only this document and its assets). The "
@@ -1119,6 +1492,13 @@ def build(
     ref = by_job[REFERENCE_JOB]
     shown = [best, ref] if best.job != ref.job else [best]
     counts = {r.job: per_image(r) for r in shown}
+    cv_maps = []
+    if campaign_root.resolve() != DEFAULT_CAMPAIGN_ROOT:
+        cv_maps.append((str(DEFAULT_CAMPAIGN_ROOT), str(campaign_root)))
+    if datasets.resolve() != report.DEFAULT_DATASETS:
+        cv_maps.append((str(report.DEFAULT_DATASETS), str(datasets)))
+    cv_case = load_cv(campaign_root / CV_CAMPAIGN, viewpoints_path, viewpoints, cv_maps)
+    cv_shown = rank_false_positives(cv_case.images)
 
     val = [s for s in arm.samples if s["split"] == "val"]
     mud_px = {s["key"]: int(s["class_pixels"].get(str(MUD), 0)) for s in val}
@@ -1140,6 +1520,7 @@ def build(
     labelled = {r.job: f"#{i + 1} cab-view: {r.name}" for i, r in enumerate(top)}
     labelled.setdefault(ref.job, f"reference: {ref.name}")
     scatter_svg(runs, labelled, assets / "fig4-all-vs-cab.svg")
+    figure_cv_fp(cv_case, cv_shown, assets / CV_FIGURE)
 
     train = [s for s in arm.samples if s["split"] == "train"]
     done, status = {}, {}
@@ -1164,6 +1545,8 @@ def build(
         "best": best,
         "ref": ref,
         "counts": counts,
+        "cv": cv_case,
+        "cv_shown": cv_shown,
         "mud_px": mud_px,
         "mud_keys": mud_keys,
         "val_keys": sorted(mud_px),
@@ -1192,6 +1575,8 @@ def build(
             **{f"samples `{a}`": f"sha256 `{arms.cache[a][2][:12]}`" for a in report.ARMS},
             "similarity weights": f"torchvision `{embed.weights}`",
             "campaigns": ", ".join(f"`{CAMPAIGN_DIR.format(arm=a)}`" for a in report.ARMS),
+            "cross-validation": f"`{CV_CAMPAIGN}` (`{CV_SPEC.name}` sha256 "
+            f"`{cv_case.spec_sha256[:12]}`)",
         },
     }
     write_doc(ctx, doc)
@@ -1208,7 +1593,13 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     try:
         build(args.datasets_root, args.campaign_root, args.viewpoints, args.doc, args.assets)
-    except (CaseError, report.ReportError, subsets.SubsetError) as error:
+    except (
+        CaseError,
+        report.ReportError,
+        subsets.SubsetError,
+        cvr.CvReportError,
+        CvError,
+    ) as error:
         raise SystemExit(f"make_rad_mud_case: {error}") from error
     for f in sorted(args.assets.iterdir()):
         print(f"{f.stat().st_size:>10,}  {f}")
