@@ -98,11 +98,23 @@ python scripts/cv_report.py --campaign <campaign-root> --out <report-dir> \
 ```
 
 - **Pooled out-of-fold** (the headline): per model × protocol, the per-image confusions of all
-  folds' val images are summed, so each scored image counts once, scored by the model that never
+  folds' val images are pooled, so each scored image counts once, scored by the model that never
   trained on its group.
 - **Per fold:** the same metrics per fold, mean and sample standard deviation (SD) over folds.
-- Metrics: GT-class mIoU, and for the focus class (default: the spec's first required class)
-  pixel-aggregated IoU and image-mean IoU, on all images and on each viewpoint subset.
+- **Metrics** count each class only on the images that contain it (at least one ground-truth
+  pixel of it, 255 ignored; `segmentary.engine.present_image`), on all images and on each
+  viewpoint subset:
+  - focus-class IoU (default focus: the spec's first required class) = mean over the images with
+    the class of the per-image IoU TP/(TP+FP+FN). Images without the class are left out, so
+    false positives on them do not count; an image with the class but nothing predicted scores 0.
+  - focus-class precision and recall = TP/(TP+FP) and TP/(TP+FN), summing TP, FP and FN over
+    those images only.
+  - per-class IoU = the same present-image IoU for every class (empty when no image contains
+    it), in the CSV as `iou_present_images:<class>` with the image count `images_present:<class>`.
+  - mIoU = mean, over the classes present in at least one image, of that class's present-image
+    IoU.
+- The pixel-pooled metrics of the summed confusion (focus-class IoU/precision/recall, GT-class
+  mIoU, campaign mIoU) stay in the CSV as `*_pixel_pooled` columns.
 - **Coverage** of completed jobs per fold; a model whose folds are not all done is marked `*`.
 
 `<report-dir>/cv-report.csv` holds every metric, subset, fold and checkpoint.
@@ -126,7 +138,10 @@ has no other image, so it trains in every fold. 243 images in 17 groups are scor
 Mud-pumping comes from six scene groups, so the folds cannot be even: fold 1 holds the
 `trackside-maintenance` close-ups (95.9% of scored mud pixels, all track-level), and the cab-view
 mud is split between `sunny-mainline-cab-view` (fold 2) and `rural-overcast-cab-view` (fold 4).
-Read pooled cab-view mud IoU first; the all-image number mostly measures fold 1. No
+The headline metrics weigh every image with mud the same, so fold 1's pixel share decides only
+the pixel-pooled CSV columns: by images, fold 1 holds 49 and fold 2 48 of the 118 scored images
+with mud, and no fold holds over half. Fold 2's `sunny-mainline-cab-view` does hold 48 of the 68
+cab-view images with mud, so pooled cab-view mud IoU mostly measures that one scene. No
 stratification label misses a fold. Presence is read from the masks, which makes `tram-track`
 (49 painted images) rare as well.
 

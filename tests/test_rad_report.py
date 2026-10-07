@@ -83,6 +83,20 @@ def test_subset_math_matches_hand_computation():
     assert everything["gt_class_miou"] == pytest.approx(sum(gt_classes) / 3)
     assert everything["miou"] == pytest.approx(sum(gt_classes) / 4)  # + class 2, IoU 0
     assert everything["top5_mud_share"] == pytest.approx(1.0)
+    # Present-image metrics: mud on A (0.6) and B (0.9); classes 0 (A, B), 1 (C) and mud.
+    assert everything["mud_present_iou"] == pytest.approx((0.6 + 0.9) / 2)
+    assert everything["mud_present_precision"] == pytest.approx(96 / 98)
+    assert everything["mud_present_recall"] == pytest.approx(96 / 108)
+    class0 = (10 / 14 + 20 / 30) / 2  # A: TP 10, FP 2 (mud -> 0), FN 2; B: TP 20, FP 10
+    assert everything["present_miou"] == pytest.approx((class0 + 4 / 5 + 0.75) / 3)
+    assert everything["present_miou_classes"] == 3
+    per_class = everything["present_class_iou"]
+    assert list(per_class) == NAMES and per_class[NAMES[0]] == pytest.approx(class0)
+    assert per_class[NAMES[1]] == pytest.approx(0.8) and per_class["mud-pumping"] == 0.75
+    assert per_class[NAMES[2]] is None  # predicted on C but in no ground truth: "—", not 0
+    assert sum(v is not None for v in per_class.values()) == everything["present_miou_classes"]
+    images = everything["present_class_images"]
+    assert images[NAMES[0]] == 2 and images[NAMES[1]] == 1 and images[NAMES[2]] == 0
 
     cab = result["cab-view"]
     assert cab["keys"] == ["g-cab/0001", "g-cab/0003"]
@@ -93,15 +107,46 @@ def test_subset_math_matches_hand_computation():
     assert excl["keys"] == ["g-cab/0001", "g-cab/0003"] and excl["mud_gt_pixels"] == 8
 
 
+def test_mud_on_images_without_mud_is_not_counted():
+    images = {i.stem: i for i in joined()}
+    clean = rsm.Image(
+        key="g-cab/0009",
+        stem="0009",
+        group="g-cab",
+        image_sha256=sha("0009"),
+        viewpoint="cab-view",
+        matrix=matrix({(0, 0): 50, (0, MUD): 50}),  # no mud GT, 50 pixels predicted as mud
+    )
+    result = rsm.subset_metrics([images["0001"], clean], NAMES)
+    assert result["images_with_mud_gt"] == 1
+    assert result["mud_present_iou"] == pytest.approx(0.6)  # A alone: 6 / (6 + 2 + 2)
+    assert result["mud_present_precision"] == pytest.approx(6 / 8)
+    assert result["mud_present_recall"] == pytest.approx(6 / 8)
+    assert result["mud_iou"] == pytest.approx(6 / (6 + 52 + 2))  # pixel-pooled counts them
+    assert result["mud_precision"] == pytest.approx(6 / 58)
+
+
+def test_present_mud_iou_equals_the_image_mean_mud_iou():
+    """The headline mud IoU and the earlier image-mean field are the same rule."""
+    images = joined()
+    subsets_of = [images, images[:1], images[1:], images[2:], []]
+    for subset in [*subsets_of, *(rsm.members(images, s) for s in rsm.SUBSETS)]:
+        result = rsm.subset_metrics(subset, NAMES)
+        assert result["mud_present_iou"] == result["mud_image_mean_iou"]
+
+
 def test_top_k_share_and_empty_subset(monkeypatch):
     monkeypatch.setattr(rsm, "TOP_K", 1)
     images = joined()
     assert rsm.subset_metrics(images, NAMES)["top5_mud_share"] == pytest.approx(100 / 108)
     empty = rsm.subset_metrics([], NAMES)
     assert empty["images"] == 0 and empty["mud_iou"] is None and empty["miou"] is None
+    assert empty["mud_present_iou"] is None and empty["present_miou"] is None
     no_mud = rsm.subset_metrics([i for i in images if i.stem == "0003"], NAMES)
     assert no_mud["mud_iou"] is None and no_mud["top5_mud_share"] is None
     assert no_mud["mud_image_mean_iou"] is None and no_mud["gt_class_miou"] == 0.8
+    assert no_mud["mud_present_iou"] is None and no_mud["mud_present_precision"] is None
+    assert no_mud["present_miou"] == 0.8 and no_mud["present_miou_classes"] == 1
 
 
 def test_join_is_by_image_sha256_not_stem():
@@ -281,12 +326,24 @@ def test_report_renders_tables_csv_and_coverage(tmp_path):
     assert rad_report.main([*args, "--out", str(out)]) == 0
     readme = (out / "README.md").read_text()
     rows = (out / "rad-comparison.csv").read_text().splitlines()
-    assert rows[0].split(",") == list(rad_report.CSV_FIELDS)
+    assert rows[0].split(",") == rad_report.csv_fields(NAMES)
+    assert rows[0].split(",")[: len(rad_report.CSV_FIELDS)] == list(rad_report.CSV_FIELDS)
     assert len(rows) == 1 + 3 * len(rsm.SUBSETS)  # two campaign jobs + one fork run
     fork_all = next(r for r in rows if r.startswith("fork,") and ",all," in r)
     assert "paper-hrnet__rs19-paul__arm-paul" in fork_all
     assert "map_city:nvidia -> rs19:paul -> rad:ours" in fork_all
-    assert f",{96 / 110:.6f}," in fork_all
+    assert f",{96 / 110:.6f}," in fork_all  # mud_iou_pixel_pooled
+    assert (
+        dict(zip(rows[0].split(","), fork_all.split(","), strict=True))["mud_iou_present_images"]
+        == f"{0.75:.6f}"
+    )
+    assert "mud_image_mean_iou" not in rows[0] and "mud_precision_pixel_pooled" in rows[0]
+    fork = dict(zip(rows[0].split(","), fork_all.split(","), strict=True))
+    assert fork["iou_present_images:mud-pumping"] == f"{0.75:.6f}"
+    assert fork["images_present:mud-pumping"] == "2" and fork["images_present:rail-track"] == "0"
+    assert fork[f"iou_present_images:{NAMES[1]}"] == f"{0.8:.6f}"  # class 1: image C only
+    assert fork[f"iou_present_images:{NAMES[2]}"] == ""  # predicted on C, never in its GT
+    assert fork[f"images_present:{NAMES[2]}"] == "0"
 
     # headline: P and FG cells for m1; cab-view mud IoU 60.0 (P) vs 80.0 (FG); m2 not completed
     headline = next(line for line in readme.splitlines() if line.startswith("| m1 |"))
@@ -316,10 +373,14 @@ def test_report_renders_tables_csv_and_coverage(tmp_path):
     assert "cannot be attributed to the split" in readme
     assert "Split = FG - P" in readme
     assert "mud IoU cab P (n=1)" in readme and "mud IoU P (n=2)" in readme
-    assert "1 track-level close-ups from the `trackside-maintenance` scene group" in readme
+    assert "1 of the 2 images with mud GT are track-level and 1 cab-view; 1 come from" in readme
+    assert "images without mud are not counted" in readme and "`*_pixel_pooled`" in readme
     assert "one maintenance sequence" not in readme and "shares recordings" not in readme
     assert "`rs19-paul` means the RS19 stage uses Paul's checkpoint" in readme
-    assert "All 1 come from the `g-cab` scene group." in readme
+    assert (
+        "1 of the 2 images with mud GT are cab-view. All 1 cab-view ones come from the `g-cab`"
+        in (readme)
+    )
     assert "mostly measure that one camera setup" in readme
 
 

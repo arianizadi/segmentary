@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import csv
 import gzip
 import hashlib
+import io
 import itertools
 import json
 import os
@@ -472,24 +474,47 @@ def test_cv_report_pools_out_of_fold_confusions(tmp_path, cv_root):
     assert cv_report.main([*args, "--viewpoints", str(tmp_path / "viewpoints.yaml")]) == 0
     pooled = sum(m for fold in finals.values() for m in fold.values())
     tp = pooled[MUD, MUD]
-    expected = tp / (pooled[MUD].sum() + pooled[:, MUD].sum() - tp)
-    rows = (out / "cv-report.csv").read_text().splitlines()
-    assert rows[0].split(",") == list(cv_report.CSV_FIELDS)
-    row = next(r for r in rows if r.startswith("m1,p,0,final,pooled,3,all,")).split(",")
-    assert row[7] == "10" and float(row[10]) == pytest.approx(expected)
-    assert any(r.startswith("m1,p,0,best,pooled,3,all,10,4,") and ",1.000000," in r for r in rows)
+    pixel_pooled = tp / (pooled[MUD].sum() + pooled[:, MUD].sum() - tp)
+
+    def image_mean(matrices):  # mean per-image mud IoU over the images with mud ground truth
+        ious = [m[MUD, MUD] / (m[MUD].sum() + m[:, MUD].sum() - m[MUD, MUD]) for m in matrices]
+        return [float(v) for v, m in zip(ious, matrices, strict=True) if m[MUD].sum()]
+
+    present = image_mean([m for fold in finals.values() for m in fold.values()])
+    expected = sum(present) / len(present)
+    assert 0 < expected < 1
+    text = (out / "cv-report.csv").read_text()
+    header = text.splitlines()[0].split(",")
+    assert header[: len(cv_report.CSV_FIELDS)] == list(cv_report.CSV_FIELDS)
+    assert "iou_present_images:mud-pumping" in header and "images_present:terrain" in header
+    rows = list(csv.DictReader(io.StringIO(text)))
+    row = next(
+        r for r in rows if (r["checkpoint"], r["scope"], r["subset"]) == ("final", "pooled", "all")
+    )
+    assert row["images"] == "10" and row["images_with_focus_gt"] == str(len(present))
+    assert float(row["focus_iou_present_images"]) == pytest.approx(expected)
+    assert row["iou_present_images:mud-pumping"] == row["focus_iou_present_images"]
+    assert row["images_present:mud-pumping"] == row["images_with_focus_gt"]
+    assert float(row["focus_iou_pixel_pooled"]) == pytest.approx(pixel_pooled)
+    assert float(row["focus_recall_present_images"]) == pytest.approx(
+        float(row["focus_recall_pixel_pooled"])  # no image without mud predicts mud here
+    )
+    best = next(
+        r for r in rows if (r["checkpoint"], r["scope"], r["subset"]) == ("best", "pooled", "all")
+    )
+    assert best["images_with_focus_gt"] == "4" and best["focus_iou_present_images"] == "1.000000"
+    assert best["miou_present_images"] == "1.000000"
     per_fold = []
     for fold in finals.values():
-        total = sum(fold.values())
-        if total[MUD].sum():
-            per_fold.append(
-                100 * total[MUD, MUD] / (total[MUD].sum() + total[:, MUD].sum() - total[MUD, MUD])
-            )
+        values = image_mean(list(fold.values()))
+        if values:
+            per_fold.append(100 * sum(values) / len(values))
     readme = (out / "README.md").read_text()
     line = next(x for x in readme.splitlines() if x.startswith("| m1 | p | 0 | 3/3 |"))
     assert f"| {100 * expected:.1f} |" in line
     assert f"{np.mean(per_fold):.1f} (SD {np.std(per_fold, ddof=1):.1f}, n={len(per_fold)})" in line
-    assert "mud-pumping IoU cab-view" in readme and "mud-pumping IoU track-level" not in readme
+    assert "mud-pumping IoU cab-view (n=" in readme and "mud-pumping IoU track-level" not in readme
+    assert "pooled mIoU |" in readme and "GT-class" not in readme
     assert "| 0 | 1 | queued 1 | 2 |" in readme and "## Fold composition" in readme
     assert "Secondary (optimistic)" in readme
 
@@ -497,6 +522,22 @@ def test_cv_report_pools_out_of_fold_confusions(tmp_path, cv_root):
     assert cv_report.main(["--campaign", str(partial), "--out", str(tmp_path / "o2")]) == 0
     line = next(x for x in (tmp_path / "o2/README.md").read_text().splitlines() if "| 2/2 |" in x)
     assert "*" not in line  # only folds 0 and 1 were planned: complete for this campaign
+
+
+def test_cv_present_focus_iou_equals_the_image_mean_focus_iou(tmp_path, cv_root):
+    """The headline focus-class IoU and the earlier image-mean field are the same rule."""
+    from scripts import cv_report
+
+    root, _ = fake_campaign(tmp_path, cv_root)
+    report = cv_report.build(root, tmp_path / "viewpoints.yaml", None, [])
+    runs = cv_report.groups_of(report)[("m1", "p", 0)]
+    for variant in (cv_report.PRIMARY, cv_report.SECONDARY):
+        scopes = [cv_report.pooled(runs, variant, report)]
+        scopes += list(cv_report.per_fold(runs, variant, report).values())
+        for metrics in scopes:
+            assert metrics is not None
+            for values in metrics.values():
+                assert values["focus_present_iou"] == values["focus_image_mean_iou"]
 
 
 def test_cv_report_refuses_selection_on_the_held_out_fold(tmp_path, cv_root):

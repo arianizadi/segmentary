@@ -374,6 +374,9 @@ def test_study_page_renders_arms_audit_forks_and_resolving_links(tmp_path, monke
     assert "HRNet-OCR, Paul's RailSem19 checkpoint | Paul's split | not scored yet" in short
     caveats = short.split("## Caveats", 1)[1].split("## Details", 1)[0]
     assert 0 < caveats.count("\n- ") <= 5
+    assert "Images without mud-pumping are not counted" in caveats
+    assert "still selected on the older mud-pumping IoU with pixels pooled" in caveats
+    assert "each validation image that contains mud-pumping" in short
     assert " arm" not in short and "protocol" not in short and "±" not in short
     readme = files[pub.DETAILS]
     assert "Not rendered this cycle: samples changed" in readme
@@ -404,6 +407,22 @@ def test_study_page_renders_arms_audit_forks_and_resolving_links(tmp_path, monke
     assert arm.startswith("# RAD 9/24: Paul's split (`paul`)")
     assert "[RAD 9/24 study](../README.md)" in arm and "none_stratified" in arm
     assert "Every model on this page was trained by us" in arm
+    # Present-image tables (no comparison this cycle: unavailable cells), pooled runs relabelled.
+    assert "Validation **mIoU (%)**: each class's IoU averaged over the validation images" in arm
+    assert "All images with mud:" in arm and "Train-camera images with mud:" in arm
+    assert "| Mud IoU, pixels pooled (%) |" in arm and "| Mud IoU (%) |" not in arm
+    assert files["paul/results.csv"].startswith("Model,Initialization path,Seed,Status")
+    assert "Mud IoU, pixels pooled (%)" in files["paul/results.csv"].splitlines()[0]
+    page = files["paul/models/m/README.md"]
+    assert "Study metrics, counting each class only on the validation images" in page
+    assert f"| {pub.MUD_CAB} (%) | {pub.MUD_ALL} (%) |" in page
+    assert "| rtis_only | 0 | — | — | — | — | — |" in page
+    assert "**mud-pumping validation IoU, pixels pooled over all validation images**" in page
+    assert "| Mud IoU, pixels pooled (%) |" in page
+    assert f"## {pub.PER_CLASS}\n\nValidation IoU (%) of every class" in arm
+    assert f"{pub.PER_CLASS}: IoU (%) of every class" in page
+    assert page.count("Not available this cycle.") == 1  # no comparison: no per-class values
+    assert f"[IoU of every class](paul/README.md{pub.PER_CLASS_ANCHOR})" in short
     assert "`rtis_only` = recipe pretrained weights" in arm
     assert "[RAD 9/24: Paul's split](../../README.md)" in files["paul/models/m/README.md"]
     assert "RTIS comparison" not in files["paul/models/m/README.md"]
@@ -636,7 +655,9 @@ def test_cv_pages_render_with_partial_coverage_and_resolving_links(tmp_path, cv_
     assert cv_error is None
     cv_readme = files[f"{pub.CV_DIR}/README.md"]
     csv_rows = files[f"{pub.CV_DIR}/cv-report.csv"].splitlines()
-    assert csv_rows[0].split(",") == list(pub.cv_report.CSV_FIELDS)
+    header = csv_rows[0].split(",")
+    assert header[: len(pub.cv_report.CSV_FIELDS)] == list(pub.cv_report.CSV_FIELDS)
+    assert "iou_present_images:mud-pumping" in header
     assert any(r.startswith("m1,p,0,final,pooled,2,cab-view,") for r in csv_rows)
     assert "Generated:" not in cv_readme  # deterministic: unchanged records, no new commit
     assert cv_readme.startswith("# RAD 9/24: cross-validation over scenes (`synthetic-cv`)")
@@ -649,13 +670,24 @@ def test_cv_pages_render_with_partial_coverage_and_resolving_links(tmp_path, cv_
     assert p_row.count("*") == 4
     assert "| `m1` | q | 0/3 | — | — | — | — |" in cv_readme
     assert "| 2 | 0 | no state 1 | 1 |" in cv_readme  # cv_report's coverage table
-    assert "Fold caveat" not in cv_readme  # no fold holds over half of the mud pixels here
+    assert "Fold caveat" not in cv_readme  # fold 2 has no scored run yet: counts incomplete
+    assert "Mud-pumping IoU, train-camera images with mud (n=" in cv_readme
+    per_class = cv_readme.split(f"## {pub.PER_CLASS}", 1)[1].split("\n## ", 1)[0]
+    assert "| Model | Starting point | mIoU (each class over images that contain it) |" in (
+        per_class
+    )
+    assert "mud-pumping (n=" in per_class and "| `m1` | q* | — |" in per_class
+    assert "mIoU (each class over images that contain it), all images" in cv_readme
     # The study page: CV section with folds done, link, and the caveat bullet.
     short = files["README.md"]
     section = short.split("### Cross-validation over scenes", 1)[1].split("## ", 1)[0]
     assert "3 of 4 runs done" not in section and "2 of 4 runs done" in section
     assert f"[Full report]({pub.CV_DIR}/README.md)" in section
-    assert "| m1 | p | " in section and "* | 2/3 |" in section
+    # No performance records in the synthetic campaign: speed, memory and parameters are "—".
+    assert "| m1 | p | 50.0* | " in section and "* | — | — | — | 2/3 |" in section
+    costs = " | ".join(pub.COST_HEADERS)
+    assert f"| {pub.MUD_CAB} | {pub.MUD_ALL} | {pub.MIOU} | {costs} | Folds done |" in section
+    assert pub.ALLOCATOR_NOTE not in section  # no allocator-only memory cell to explain
     assert f"[Cross-validation report]({pub.CV_DIR}/README.md)" in short
     assert_documentation_rules(write_checkout(tmp_path / "checkout", files))
 
@@ -735,40 +767,95 @@ def test_cv_campaign_flag_is_an_input_the_clone_must_not_overlap(tmp_path, repos
         )
 
 
-def test_fold_caveat_names_the_dominant_fold_from_the_spec():
-    def fold(k, groups, share, cab, views):
+def test_fold_caveat_counts_images_with_the_class_per_fold():
+    import numpy as np
+
+    cv_report = pub.cv_report
+    mud, clean = np.array([[3, 1], [1, 5]]), np.array([[4, 0], [0, 0]])
+
+    def scored(fold, n, view, group, matrix=mud):
+        return [
+            cv_report.Scored(f"{group}/{fold}{i}{view}", "sha", view, matrix, group)
+            for i in range(n)
+        ]
+
+    def make(folds):
+        runs = [
+            cv_report.Run("m", "p", 0, k, f"m--p--fold-{k}", {cv_report.PRIMARY: images})
+            for k, images in folds.items()
+        ]
+        names = ["background", "mud-pumping"]
+        report = cv_report.Report({}, [0, 1], names, "mud-pumping", ["cab-view"], runs, {}, None)
+        return pub.CrossValidation(report, [])
+
+    # All images: 3 vs 3 (no fold dominates); train-camera: 3 of 4 in fold 0, one scene.
+    folds = {
+        0: scored(0, 3, "cab-view", "cab-scene") + scored(0, 1, "cab-view", "dry", clean),
+        1: scored(1, 2, "track-level", "trackside-maintenance") + scored(1, 1, "cab-view", "x"),
+    }
+    assert pub.fold_caveat(make(folds), short=True) == (
+        "fold 0 holds 3 of the 4 scored train-camera images with mud-pumping, all from one "
+        "scene (`cab-scene`), so the train-camera numbers mostly measure that scene."
+    )
+    assert pub.fold_caveat(make(folds)) == (
+        "Fold 0 holds 3 of the 4 scored train-camera images with mud-pumping, all from one "
+        "scene (`cab-scene`). Pooled, the train-camera numbers mostly measure that scene, "
+        "scored by models that never trained on it."
+    )
+    # One more track-level mud image: fold 1 now holds 4 of the 7 images with mud-pumping.
+    folds[1].append(cv_report.Scored("t/9", "sha", "track-level", mud, "trackside-maintenance"))
+    assert pub.fold_caveat(make(folds), short=True) == (
+        "fold 1 holds 4 of the 7 scored images with mud-pumping, from 2 scenes "
+        "(`trackside-maintenance`, `x`), so the all-images numbers mostly measure those scenes; "
+        "fold 0 holds 3 of the 4 scored train-camera images with mud-pumping, all from one "
+        "scene (`cab-scene`), so the train-camera numbers mostly measure that scene."
+    )
+    # Balanced folds, a fold without a scored run yet, or no focus class: no caveat.
+    balanced = {0: scored(0, 2, "cab-view", "a"), 1: scored(1, 2, "cab-view", "b")}
+    assert pub.fold_caveat(make(balanced)) is None
+    assert pub.fold_caveat(make({0: folds[0]})) is None
+    unfocused = make(folds)
+    unfocused.report.focus = None
+    assert pub.fold_caveat(unfocused) is None
+
+
+def test_inference_cost_prefers_the_process_total_and_marks_allocator_only_memory():
+    def record(**measurements):
         return {
-            "fold": k,
-            "groups": groups,
-            "label_pixel_share": {"mud-pumping": share},
-            "label_pixel_share_by_viewpoint": {"cab-view": {"mud-pumping": cab}},
-            "label_images_by_viewpoint": {v: {"mud-pumping": n} for v, n in views.items()},
+            "status": "complete",
+            "model": {"parameter_count": 314_917_910},
+            "measurements": {"latency": {"fps": 38.35}, **measurements},
         }
 
-    spec = {
-        "report": {
-            "label_scored_groups": {"mud-pumping": ["trackside-maintenance", "cab-scene"]},
-            "folds": [
-                fold(0, ["cab-scene", "dry"], 0.041, 1.0, {"cab-view": 17, "track-level": 0}),
-                fold(1, ["roadside", "trackside-maintenance"], 0.959, 0.0, {"track-level": 49}),
-            ],
-        }
+    allocator = pub.cost_of(record(peak_reserved_bytes=3_359_637_504))
+    assert allocator is not None and allocator.cells() == ["38.4", "3.36†", "314.9"]
+    total = pub.cost_of(
+        record(peak_reserved_bytes=3_359_637_504, process_total_bytes=3_900_000_000)
+    )
+    assert total is not None and total.cells() == ["38.4", "3.90", "314.9"]
+    assert pub.cost_of(record(process_total_bytes=None, peak_reserved_bytes=1)).cells()[1] == (
+        "0.00†"
+    )
+    assert pub.cost_of({"status": "waiting_for_idle_gpu"}) is None
+    assert pub.cost_cells(None) == ["—", "—", "—"]
+    # Several folds: mean FPS, the largest memory, total only when every record has it.
+    both = pub.combined_cost([allocator, total])
+    assert both is not None and both.cells() == ["38.4", "3.90†", "314.9"]
+    assert pub.combined_cost([]) is None
+    rows = [["m", *allocator.cells()]]
+    assert pub.allocator_note(rows) == [pub.ALLOCATOR_NOTE, ""]
+    assert "excludes the CUDA context" in pub.ALLOCATOR_NOTE
+    assert pub.allocator_note([["m", *total.cells()]]) == []
+
+
+def test_per_class_table_shows_every_class_and_dashes_for_absent_ones():
+    metrics = {
+        "present_miou": 0.5,
+        "present_class_iou": {"rail": 0.75, "sky": None, "mud-pumping": 0.25},
+        "present_class_images": {"rail": 3, "sky": 0, "mud-pumping": 2},
     }
-    report = pub.cv_report.Report({}, [0, 1], [], "mud-pumping", [], [], {}, spec)
-    cv = pub.CrossValidation(report, [])
-    assert pub.fold_caveat(cv, short=True) == (
-        "fold 1 holds 95.9% of all scored mud-pumping pixels, all from one scene "
-        "(`trackside-maintenance`; 49 track-level images) and none of the train-camera ones, "
-        "so the all-images numbers mostly measure that one scene."
-    )
-    assert pub.fold_caveat(cv).endswith("the train-camera numbers are the headline.")
-    spec["report"]["folds"][1]["label_pixel_share"]["mud-pumping"] = 0.5
-    assert pub.fold_caveat(cv) is None
-    assert (
-        pub.fold_caveat(
-            pub.CrossValidation(
-                pub.cv_report.Report({}, [0], [], "mud-pumping", [], [], {}, None), []
-            )
-        )
-        is None
-    )
+    lines = pub.per_class_table(["Model"], [(["a"], metrics), (["b"], None)])
+    assert lines[0] == (f"| Model | {pub.MIOU} | rail (n=3) | sky (n=0) | mud-pumping (n=2) |")
+    assert lines[2] == "| a | 50.00 | 75.00 | — | 25.00 |"
+    assert lines[3] == "| b | — | — | — | — |"
+    assert pub.per_class_table(["Model"], [(["b"], None)]) == ["Not available this cycle."]

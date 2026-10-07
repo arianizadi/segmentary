@@ -14,15 +14,22 @@ budget, so nothing is chosen on the held-out fold. The best-on-val checkpoint
 (``best-auto-val``) is reported only as a labelled, optimistic secondary.
 
 - Pooled out-of-fold: per model x protocol x seed the per-image confusions of all folds' val
-  images are summed, so each scored image counts once, scored by the model that never trained
-  on its group. Complete when every planned fold is.
+  images are scored together, so each scored image counts once, scored by the model that never
+  trained on its group. Complete when every planned fold is.
 - Per fold: the same metrics per fold; mean and sample standard deviation over folds (focus
   class metrics only over folds whose subset has focus-class ground truth).
 - Subsets: ``all`` plus one per viewpoint when ``--viewpoints`` (YAML ``images: {sha256:
   {viewpoint}}``) is given, joined by image SHA-256.
-- Metrics: GT-class mIoU (``publish_rtis_results.fixed_miou``: classes with ground truth in the
-  subset), headline mIoU, and for ``--focus-class`` (default: the spec's first required class)
-  pixel-aggregated IoU/precision/recall and the image-mean IoU over images with its ground truth.
+- Headline metrics count each class only on the images that contain it
+  (``segmentary.engine.present_image``): for ``--focus-class`` (default: the spec's first
+  required class) the mean per-image IoU over the images with its ground truth (images without
+  it are left out, a missed image scores 0) and precision/recall summed over those images only;
+  and mIoU = each class's present-image IoU averaged over the classes present in the subset.
+- Kept in the CSV for traceability, from the summed (pixel-pooled) confusion: focus-class
+  IoU/precision/recall, GT-class mIoU (``publish_rtis_results.fixed_miou``: classes with ground
+  truth in the subset) and the campaign mIoU (classes with non-zero union), in columns named
+  ``*_pixel_pooled``. Per class the CSV also has the present-image IoU and image count
+  (``iou_present_images:<class>``, ``images_present:<class>``).
 - Fail closed: fold datasets must match the hashes the campaign recorded, every confusion
   artifact its SHA-256, per-image matrices must cover the fold's val split exactly, sum to the
   recorded total and (when ``class_pixels`` is audited) match each image's ground truth.
@@ -54,12 +61,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.collect_rtis_statistics import matrix_metrics, mud_counts
 from scripts.publish_rtis_results import fixed_miou
 
+from segmentary.engine.present_image import present_image_metrics
+
 PRIMARY = "final-auto-val"
 SECONDARY = "best-auto-val"
 ANCHOR = {PRIMARY: "final", SECONDARY: "best"}
 METRICS = (
     "images",
     "images_with_focus_gt",
+    "focus_present_iou",
+    "focus_present_precision",
+    "focus_present_recall",
+    "present_miou",
+    "present_miou_classes",
     "focus_gt_pixels",
     "focus_iou",
     "focus_precision",
@@ -68,11 +82,41 @@ METRICS = (
     "gt_class_miou",
     "miou",
 )
-CSV_FIELDS = ("model", "protocol", "seed", "checkpoint", "scope", "folds_done", "subset", *METRICS)
-FOCUS_HEADLINE = (
-    ("{focus} IoU", "focus_iou"),
-    ("img-mean {focus} IoU", "focus_image_mean_iou"),
+# CSV column -> metric: present-image headline metrics, then the pixel-pooled ones (the summed
+# confusion of the scope's images) under names that say so. ``focus_image_mean_iou`` is an
+# independent computation of ``focus_present_iou`` and is not repeated in the CSV.
+CSV_METRICS = {
+    "images": "images",
+    "images_with_focus_gt": "images_with_focus_gt",
+    "focus_iou_present_images": "focus_present_iou",
+    "focus_precision_present_images": "focus_present_precision",
+    "focus_recall_present_images": "focus_present_recall",
+    "miou_present_images": "present_miou",
+    "miou_present_images_classes": "present_miou_classes",
+    "focus_gt_pixels": "focus_gt_pixels",
+    "focus_iou_pixel_pooled": "focus_iou",
+    "focus_precision_pixel_pooled": "focus_precision",
+    "focus_recall_pixel_pooled": "focus_recall",
+    "gt_class_miou_pixel_pooled": "gt_class_miou",
+    "miou_pixel_pooled": "miou",
+}
+# Per class: present-image IoU and the number of scored images with it.
+CLASS_COLUMNS = (
+    ("iou_present_images:{name}", "present_class_iou"),
+    ("images_present:{name}", "present_class_images"),
 )
+CSV_FIELDS = (
+    "model",
+    "protocol",
+    "seed",
+    "checkpoint",
+    "scope",
+    "folds_done",
+    "subset",
+    *CSV_METRICS,
+)
+# (title, metric) of the focus class per subset in the summary tables (present-image rule).
+FOCUS_HEADLINE = (("{focus} IoU", "focus_present_iou"),)
 
 
 class CvReportError(ValueError):
@@ -85,6 +129,7 @@ class Scored:
     image_sha256: str
     subset: str | None
     matrix: np.ndarray
+    group: str | None = None
 
 
 @dataclass
@@ -185,7 +230,7 @@ def join(
             subset = viewpoints.get(sample["image_sha256"])
             if subset is None:
                 raise CvReportError(f"{key}: image sha256 has no viewpoint")
-        scored.append(Scored(key, sample["image_sha256"], subset, matrix))
+        scored.append(Scored(key, sample["image_sha256"], subset, matrix, sample.get("group")))
     return scored
 
 
@@ -197,17 +242,31 @@ def subset_metrics(images: list[Scored], names: list[str], focus: str | None) ->
     n = len(names)
     out: dict[str, Any] = dict.fromkeys(METRICS)
     out["images"] = len(images)
+    out["present_miou_classes"] = 0
+    present = present_image_metrics((i.matrix for i in images), n)
+    # every class: present-image IoU (None without a present image) and its image count
+    out["present_class_iou"] = {c: s.iou for c, s in zip(names, present.classes, strict=True)}
+    out["present_class_images"] = {c: s.images for c, s in zip(names, present.classes, strict=True)}
     if not images:
         return out
     total = sum((i.matrix for i in images), np.zeros((n, n), np.int64))
     metrics = matrix_metrics(total, names)
-    out.update(gt_class_miou=_finite(fixed_miou(metrics)), miou=_finite(metrics["miou"]))
+    out.update(
+        gt_class_miou=_finite(fixed_miou(metrics)),
+        miou=_finite(metrics["miou"]),
+        present_miou=present.miou,
+        present_miou_classes=present.miou_classes,
+    )
     if focus is not None:
         index = names.index(focus)
         with_gt = [i for i in images if i.matrix[index].sum() > 0]
         counts = mud_counts(total, index)
         per_image = [mud_counts(i.matrix, index)["iou"] for i in with_gt]
+        score = present.classes[index]
         out.update(
+            focus_present_iou=score.iou,
+            focus_present_precision=score.precision,
+            focus_present_recall=score.recall,
             images_with_focus_gt=len(with_gt),
             focus_gt_pixels=counts["support"],
             focus_iou=counts["iou"],
@@ -424,9 +483,23 @@ def table(headers: list[str], rows: list[list[str]]) -> list[str]:
     ]
 
 
+def focus_images(report: Report, subset: str = "all") -> dict[int, list[Scored]]:
+    """Per fold, the scored images of ``subset`` with focus-class ground truth: a label-only
+    fact, the same for every model (taken from whichever completed runs scored the fold)."""
+    if report.focus is None:
+        return {}
+    index = report.names.index(report.focus)
+    found: dict[int, dict[str, Scored]] = {}
+    for run in report.runs:
+        for image in run.images.get(PRIMARY, []):
+            if (subset == "all" or image.subset == subset) and image.matrix[index].sum() > 0:
+                found.setdefault(run.fold, {})[image.key] = image
+    return {fold: list(images.values()) for fold, images in sorted(found.items())}
+
+
 def headline(report: Report) -> list[tuple[str, str, str]]:
     """(title, subset, metric) columns of the summary tables."""
-    cols = [("GT-class mIoU", "all", "gt_class_miou")]
+    cols = [("mIoU", "all", "present_miou")]
     if report.focus is not None:
         for subset in ["all", *report.table_subsets]:
             for title, metric in FOCUS_HEADLINE:
@@ -436,8 +509,15 @@ def headline(report: Report) -> list[tuple[str, str, str]]:
 
 def summary(report: Report, variant: str) -> list[str]:
     cols = headline(report)
+
+    def pooled_title(title: str, subset: str, metric: str) -> str:
+        if not metric.startswith("focus"):
+            return f"pooled {title}"
+        n = sum(len(images) for images in focus_images(report, subset).values())
+        return f"pooled {title} (n={n})"  # scored images with focus-class ground truth
+
     headers = ["model", "protocol", "seed", "folds"]
-    headers += [f"pooled {t}" for t, _, _ in cols] + [f"per-fold {t}" for t, _, _ in cols]
+    headers += [pooled_title(*c) for c in cols] + [f"per-fold {t}" for t, _, _ in cols]
     rows = []
     for (model, protocol, seed), runs in sorted(groups_of(report).items()):
         pool = pooled(runs, variant, report)
@@ -451,9 +531,19 @@ def summary(report: Report, variant: str) -> list[str]:
     return table(headers, rows) if rows else ["No completed job yet."]
 
 
+def csv_cell(value: Any) -> Any:
+    return "" if value is None else f"{value:.6f}" if isinstance(value, float) else value
+
+
+def csv_fields(names: list[str]) -> list[str]:
+    """The CSV header: CSV_FIELDS, then per class its present-image IoU and image count."""
+    return [*CSV_FIELDS, *(c.format(name=n) for n in names for c, _ in CLASS_COLUMNS)]
+
+
 def csv_text(report: Report) -> str:
     buffer = io.StringIO()
-    writer = csv.DictWriter(buffer, fieldnames=CSV_FIELDS, lineterminator="\n")
+    fields = csv_fields(report.names)
+    writer = csv.DictWriter(buffer, fieldnames=fields, lineterminator="\n")
     writer.writeheader()
     for (model, protocol, seed), runs in sorted(groups_of(report).items()):
         for variant in (PRIMARY, SECONDARY):
@@ -471,8 +561,12 @@ def csv_text(report: Report) -> str:
                             "folds_done": len(runs),
                             "subset": subset,
                             **{
-                                k: "" if v is None else f"{v:.6f}" if isinstance(v, float) else v
-                                for k, v in values.items()
+                                column: csv_cell(values[key]) for column, key in CSV_METRICS.items()
+                            },
+                            **{
+                                column.format(name=n): csv_cell(values[key][n])
+                                for n in report.names
+                                for column, key in CLASS_COLUMNS
                             },
                         }
                     )
@@ -496,13 +590,17 @@ def render(report: Report, generated_at: str) -> str:
         "nothing is chosen on the held-out fold. The best-on-val checkpoint "
         f"(`{SECONDARY}`) is selected on the fold it is scored on and appears only in the "
         "secondary table.",
-        "- **Pooled** sums the per-image confusions of every fold's val images, so each scored "
-        "image counts once; `*` marks a model whose folds are not all done (not comparable). "
+        "- **Pooled** scores every fold's val images together, so each scored image counts "
+        "once; `*` marks a model whose folds are not all done (not comparable). "
         "**Per-fold** is the mean over folds with the sample SD and n folds; focus-class metrics only over folds "
         "whose subset has focus-class ground truth.",
-        "- Pixel-aggregated IoU is dominated by images with large areas of the class; the "
-        "image-mean IoU averages per-image IoU over images with ground truth of the class. "
-        "GT-class mIoU averages over classes with ground truth in the subset.",
+        "- Every metric counts a class only on the images that contain it: the focus-class IoU "
+        "is the mean of per-image IoU over the images with its ground truth (images without it "
+        "are not counted, so false positives on them do not lower it; a missed image scores 0), "
+        "and mIoU averages each class's IoU over the images that contain it, then over the "
+        "classes present in the subset. The pixel-pooled metrics (confusions summed first, so "
+        "images with large "
+        "areas of a class dominate) are in the CSV as `*_pixel_pooled`.",
         "- One seed per job unless several seeds are listed: the per-fold spread mixes model "
         "variance with very different fold compositions (see below).",
         "",

@@ -11,6 +11,13 @@ subsets for every completed job and writes ``<out>/rad-comparison.csv`` and
 ``<out>/README.md``. Read-only on every input; ``--out`` must lie outside the campaign and
 fork roots.
 
+The README's headline metrics count each class only on the images that contain it (mud IoU =
+mean per-image mud IoU over the images with mud ground truth; mud precision/recall over those
+images; mIoU over each class's images, then over the classes present; see
+``segmentary.engine.present_image``). The CSV carries those plus the pixel-pooled metrics of
+the summed confusion, in columns named ``*_pixel_pooled``, and per class the present-image IoU
+and image count (``iou_present_images:<class>``, ``images_present:<class>``).
+
 - Segmentary job: completed when ``state/<job>.json`` has ``status: completed`` and
   ``collection.diagnostics.results["best-auto-val"]`` (the selected best checkpoint with the
   campaign's auto raw/EMA weights, validation split). Its ``per-image-confusion.json.gz`` must
@@ -52,6 +59,11 @@ LABEL_ARM_STOPPED = (
     "at 8 of 40 jobs: over 8 matched eomt runs the label fix changed cab-view mud IoU on "
     "stratified val by -3.3 to +4.7 points, -0.1 on average."
 )
+# The same, naming the metric it was measured with now that the headline metrics count only
+# images with mud (LABEL_ARM_STOPPED stays as it was for scripts/make_rad_mud_case.py).
+LABEL_ARM_STOPPED_POOLED = LABEL_ARM_STOPPED.replace(
+    "cab-view mud IoU", "cab-view mud IoU (pixels pooled)"
+)
 DATASET = "rad_9_24_2026-{arm}"
 SELECTED = "best-auto-val"
 SPLIT = "val"
@@ -64,17 +76,29 @@ DEFAULT_VIEWPOINTS = (
 )
 CAB = "cab-view"
 EXCL = f"excl-{subsets.EXCLUDED_GROUP}"
-CSV_METRICS = (
-    "images",
-    "images_with_mud_gt",
-    "mud_gt_pixels",
-    "mud_iou",
-    "mud_precision",
-    "mud_recall",
-    "mud_image_mean_iou",
-    "gt_class_miou",
-    "miou",
-    "top5_mud_share",
+# CSV column -> subset metric. Headline: present-image metrics (each class only on the images
+# that contain it); the pixel-pooled columns (one summed confusion per subset) stay for
+# traceability under names that say so.
+CSV_METRICS = {
+    "images": "images",
+    "images_with_mud_gt": "images_with_mud_gt",
+    "mud_iou_present_images": "mud_present_iou",
+    "mud_precision_present_images": "mud_present_precision",
+    "mud_recall_present_images": "mud_present_recall",
+    "miou_present_images": "present_miou",
+    "miou_present_images_classes": "present_miou_classes",
+    "mud_gt_pixels": "mud_gt_pixels",
+    "mud_iou_pixel_pooled": "mud_iou",
+    "mud_precision_pixel_pooled": "mud_precision",
+    "mud_recall_pixel_pooled": "mud_recall",
+    "gt_class_miou_pixel_pooled": "gt_class_miou",
+    "miou_pixel_pooled": "miou",
+    "top5_mud_share": "top5_mud_share",
+}
+# Per class (every class of the arm): present-image IoU and the number of images with it.
+CLASS_COLUMNS = (
+    ("iou_present_images:{name}", "present_class_iou"),
+    ("images_present:{name}", "present_class_images"),
 )
 CSV_FIELDS = (
     "source",
@@ -435,9 +459,24 @@ def fmt(value: Any) -> str:
     return str(value)
 
 
+def class_names_of(report: Report) -> list[str]:
+    """The classes of the scored runs, in class-id order (the same 21 for every arm)."""
+    names: list[str] = []
+    for r in report.results:
+        for name in r.metrics["all"]["present_class_iou"]:
+            if name not in names:
+                names.append(name)
+    return names
+
+
+def csv_fields(names: list[str]) -> list[str]:
+    return [*CSV_FIELDS, *(c.format(name=n) for n in names for c, _ in CLASS_COLUMNS)]
+
+
 def csv_text(report: Report) -> str:
     buffer = io.StringIO()
-    writer = csv.DictWriter(buffer, fieldnames=CSV_FIELDS, lineterminator="\n")
+    names = class_names_of(report)
+    writer = csv.DictWriter(buffer, fieldnames=csv_fields(names), lineterminator="\n")
     writer.writeheader()
     for r in sorted(report.results, key=lambda r: (r.source, r.arm, r.model, r.protocol, r.job)):
         for subset in subsets.SUBSETS:
@@ -452,7 +491,12 @@ def csv_text(report: Report) -> str:
                     "checkpoint_owners": r.owners,
                     "job": r.job,
                     "subset": subset,
-                    **{k: fmt(m[k]) for k in CSV_METRICS},
+                    **{column: fmt(m[key]) for column, key in CSV_METRICS.items()},
+                    **{
+                        column.format(name=n): fmt(m[key].get(n))
+                        for n in names
+                        for column, key in CLASS_COLUMNS
+                    },
                 }
             )
     return buffer.getvalue()
@@ -474,11 +518,13 @@ def table(headers: list[str], rows: list[list[str]]) -> list[str]:
     ]
 
 
+# (title, subset, metric): present-image metrics, see How to read this.
 HEADLINE = (
-    ("GT-class mIoU", "all", "gt_class_miou"),
-    ("mud IoU", "all", "mud_iou"),
-    ("mud IoU cab", CAB, "mud_iou"),
-    ("img-mean mud IoU cab", CAB, "mud_image_mean_iou"),
+    ("mIoU", "all", "present_miou"),
+    ("mud IoU", "all", "mud_present_iou"),
+    ("mud IoU cab", CAB, "mud_present_iou"),
+    ("mud precision cab", CAB, "mud_present_precision"),
+    ("mud recall cab", CAB, "mud_present_recall"),
 )
 
 
@@ -512,25 +558,28 @@ def how_to_read(report: Report) -> list[str]:
             if comp
             else ""
         )
-        + "; the test split is never read. Mud IoU is pixel-aggregated: confusions are "
-        "summed over the subset's images first, so a few images with large mud areas decide it. "
-        "The image-mean mud IoU averages per-image IoU over the images that have mud ground "
-        "truth (false-positive mud on images without mud GT only lowers the pixel-aggregated "
-        "IoU). GT-class mIoU is the campaign's `fixed_miou` rule (mean over classes with ground "
-        "truth in the subset). `n=` in a column header is the number of val images with mud GT "
-        "behind that arm's mud IoU.",
+        + "; the test split is never read. Every metric counts a class only on the images "
+        "that contain it. Mud IoU is the mean of per-image mud IoU over the images with mud "
+        "ground truth: images without mud are not counted, so mud predicted on clean track does "
+        "not lower it, and a mud image with no mud predicted scores 0. Mud precision and recall "
+        "sum mud pixels over those same images only. mIoU averages each class's IoU over the "
+        "images that contain it, then over the classes present in the subset. `n=` in a column "
+        "header is the number of val images with mud GT behind that arm's mud metrics. The "
+        "pixel-pooled numbers (confusions summed over the subset first, as used for checkpoint "
+        "selection) stay in `rad-comparison.csv` as the `*_pixel_pooled` columns.",
         "",
         "**Arms.** All campaign models are trained by us. `paul` = Paul's delivered masks "
         "(the `masks_machine` copies) with the stratified split; `fixed-grouped` = our "
         "re-rendered masks with the scene-grouped split. P / FG below name these label/split "
-        "arms, not who trained the model. " + LABEL_ARM_STOPPED,
+        "arms, not who trained the model. " + LABEL_ARM_STOPPED_POOLED,
         "",
         "**Caveats.**",
         "",
         "- **These val numbers are optimistic.** The reported checkpoint is the one selected on "
         "this same val split"
         + (
-            f" (campaign selection and early stopping on `{'`, `'.join(selections)}`"
+            f" (campaign selection and early stopping on `{'`, `'.join(selections)}`, "
+            "with pixels pooled over the whole split"
             if selections
             else ""
         )
@@ -548,38 +597,44 @@ def how_to_read(report: Report) -> list[str]:
         top = stratified["top5"]
         total = stratified["mud_pixels"]
         top_share = sum(t["mud_pixels"] for t in top) / total
+        with_mud = sum(v["with_mud"] for v in stratified["viewpoints"].values())
+        in_group = stratified["group_images_with_mud"]
         group = f"`{subsets.EXCLUDED_GROUP}`"
-        if (stratified["group_mud_share"] or 0) > 0.5:
+        if in_group > with_mud / 2:
             lead = (
-                "- **The stratified split's pixel-aggregated mud IoU is dominated by "
-                f"{stratified['group_images_with_mud']} track-level close-ups from the {group} "
-                "scene group.** "
+                "- **The stratified split's all-image mud IoU is dominated by "
+                f"{in_group} track-level close-ups from the {group} scene group.** "
             )
-        elif track["mud_pixels"] > total / 2:
-            lead = "- **The stratified split's pixel-aggregated mud IoU is dominated by track-level images.** "
+        elif track["with_mud"] > with_mud / 2:
+            lead = "- **The stratified split's all-image mud IoU is dominated by track-level images.** "
         else:
             lead = "- "
         lines += [
-            lead + f"On the stratified val split (`paul` masks) {track['with_mud']} track-level "
-            f"images with mud GT hold {share(track['mud_pixels'], total)}% of all mud GT "
-            f"pixels and {cab['with_mud']} cab-view images {share(cab['mud_pixels'], total)}%; "
-            f"the {group} scene group alone holds {pct(stratified['group_mud_share'])}%, and the "
-            f"five largest images ({', '.join('`' + t['key'] + '`' for t in top)}) "
-            f"{pct(top_share)}%. Scene groups are directory layout names assigned from visual "
-            "evidence, not confirmed recording provenance.",
+            lead + f"On the stratified val split (`paul` masks) {track['with_mud']} of the "
+            f"{with_mud} images with mud GT are track-level and {cab['with_mud']} cab-view; "
+            f"{in_group} come from the {group} scene group. By pixels that group holds "
+            f"{pct(stratified['group_mud_share'])}% of all mud GT and the five largest images "
+            f"({', '.join('`' + t['key'] + '`' for t in top)}) {pct(top_share)}%, which "
+            "decides only the pixel-pooled CSV columns. Scene groups are directory layout names "
+            "assigned from visual evidence, not confirmed recording provenance.",
         ]
     if grouped and grouped["mud_pixels"]:
         cab = grouped["viewpoints"][CAB]
+        with_mud = sum(v["with_mud"] for v in grouped["viewpoints"].values())
         line = (
-            f"- On the grouped val split {cab['with_mud']} cab-view images with mud GT hold "
-            f"{share(cab['mud_pixels'], grouped['mud_pixels'])}% of the mud GT pixels, so its "
-            "`all` and `cab-view` mud IoU nearly coincide."
+            f"- On the grouped val split {cab['with_mud']} of the {with_mud} images with mud GT "
+            "are cab-view"
+            + (
+                ", so its `all` and `cab-view` mud IoU nearly coincide."
+                if cab["with_mud"] >= 0.8 * with_mud
+                else "."
+            )
         )
         if grouped["cab_mud_groups"]:
             name, count = next(iter(grouped["cab_mud_groups"].items()))
             share_text = "All" if count == cab["with_mud"] else f"{count} of"
             line += f" {share_text} {count if count == cab['with_mud'] else cab['with_mud']}"
-            line += f" come from the `{name}` scene group"
+            line += f" cab-view ones come from the `{name}` scene group"
             note = GROUP_NOTES.get(name)
             line += f"; judged visually, {note}." if note else "."
             if count > cab["with_mud"] / 2:
@@ -590,8 +645,7 @@ def how_to_read(report: Report) -> list[str]:
         lines += [line]
     lines += [
         "- **`cab-view` is the deployment-relevant subset** (a camera on a moving train). Compare "
-        "arms and models on mud IoU (cab-view) and image-mean mud IoU (cab-view); read `all` "
-        "with the composition above in mind.",
+        "arms and models on cab-view mud IoU; read `all` with the composition above in mind.",
         "- Viewpoints come from `configs/datasets/rad_9_24_2026-viewpoints.yaml`, joined by image "
         "SHA-256: visual judgement only, from two labelling passes by AI model subagents with "
         "adjudication of disagreements. Both passes are the same model, so their agreement is "
@@ -760,16 +814,13 @@ def fork_section(report: Report) -> list[str]:
         "label",
         "run directory",
         "checkpoint owners",
-        "GT-class mIoU",
-        "mud IoU",
-        "mud IoU cab",
-        "img-mean mud IoU cab",
+        *(title for title, _, _ in HEADLINE),
         f"mud IoU {EXCL}",
     ]
     rows = [
         [f"`{r.label}`", f"`{r.job}`", r.owners]
         + [pct(metric(r, s, k)) for _, s, k in HEADLINE]
-        + [pct(metric(r, EXCL, "mud_iou"))]
+        + [pct(metric(r, EXCL, "mud_present_iou"))]
         for r in forks
     ]
     return (

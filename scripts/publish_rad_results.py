@@ -24,6 +24,21 @@ One cycle (every ``--interval-seconds``, default three hours to bound public his
    cross-validation report (``scripts/cv_report.py`` in-process, ``--viewpoints`` subsets)
    in ``cross-validation/`` (``README.md`` + ``cv-report.csv``). A partial CV campaign renders
    with its coverage (unfinished models marked ``*``).
+
+   Headline metrics count each class only on the images that contain it
+   (``segmentary.engine.present_image``): mud-pumping IoU is the mean per-image IoU over the
+   images with mud-pumping ground truth (images without it are not counted, a missed one scores
+   0), mud precision/recall sum pixels over those images, and mIoU averages each class over
+   the images that contain it, then over the classes present. They head the study page, the
+   per-split pages' Quality and Mud-pumping tables, a table on every model page and the CV
+   page; "best starting point" is chosen by the train-camera mud-pumping IoU. The campaign's
+   own pixel-pooled numbers (which selected the checkpoints) stay in the CSVs as
+   ``*_pixel_pooled`` and in the per-run tables of the arm and model pages, labelled so. The
+   per-split, model and CV pages also carry a per-class IoU table (every class by the same
+   present-image rule; ``—`` where no image contains it), and the study tables show speed,
+   inference GPU memory and parameters from the performance records: memory is the
+   whole-process ``process_total_bytes`` when recorded, else the allocator's
+   ``peak_reserved_bytes`` marked as excluding the CUDA context.
 3. Size guard (tree and per-file caps); prediction directories, test-split evidence and
    file types other than the evidence formats are never published. The repository's docs
    checks (legacy name, resolving links) run on the rendered tree before anything is staged.
@@ -42,7 +57,9 @@ Campaign, fork-run and dataset directories are only read. ``publisher-status.jso
 from __future__ import annotations
 
 import argparse
+import csv
 import fcntl
+import io
 import json
 import os
 import re
@@ -115,6 +132,25 @@ DETAILS = "details.md"
 CV_DIR = "cross-validation"
 # The CV README's tables show these viewpoint subsets (cv_report --subset); the CSV has all.
 CV_TABLE_SUBSETS = ("cab-view",)
+# Column titles of the study tables (present-image metrics, see the module docstring).
+MUD_CAB = "Mud-pumping IoU, train-camera images with mud"
+MUD_ALL = "Mud-pumping IoU, all images with mud"
+MIOU = "mIoU (each class over images that contain it)"
+# The shared RTIS per-run table, relabelled on RAD pages: its numbers pool pixels.
+POOLED_HEADERS = [
+    "Model",
+    "Initialization path",
+    "Seed",
+    "Status",
+    "Steps",
+    "Best step",
+    "Mud IoU, pixels pooled (%)",
+    "Mud precision, pixels pooled (%)",
+    "Mud recall, pixels pooled (%)",
+    "Final mud IoU (trainer val, pixels pooled, %)",
+    "mIoU, pixels pooled (%)",
+    "Fixed GT-class mIoU, pixels pooled (%)",
+]
 CASE_GUIDE = Path("docs/guides/rad-9-24-2026-mud-iou-case.md")
 CV_GUIDE = Path("docs/guides/cross-validation.md")
 GIT_ENV = {**os.environ, "GIT_TERMINAL_PROMPT": "0", "LC_ALL": "C"}
@@ -175,38 +211,236 @@ def arm_of(root: Path) -> str:
     return arm
 
 
-def arm_files(data: dict, arm: str) -> dict[str, str | bytes]:
-    """The RTIS v2 rendering of one arm, with the page title and dataset facts of RAD."""
+PER_CLASS = "Per-class IoU"
+PER_CLASS_ANCHOR = "#per-class-iou"
+PER_CLASS_NOTE = (
+    "IoU (%) of every class, each averaged only over the validation images that contain the "
+    "class (n = those images); — = no image contains it. mIoU averages the classes with at least "
+    "one such image."
+)
+
+
+def per_class_table(
+    lead: list[str],
+    entries: list[tuple[list[Any], dict[str, Any] | None]],
+    pct=None,
+    mark: str = "",
+) -> list[str]:
+    """One row per entry (lead cells + a subset's metrics, or None), columns mIoU and every
+    class with its image count (label-only, taken from the first scored entry)."""
+    pct = pct or reports.pct
+    scored = next((m for _, m in entries if m is not None), None)
+    if scored is None:
+        return ["Not available this cycle."]
+    names = list(scored["present_class_iou"])
+    counts = scored["present_class_images"]
+    headers = [*lead, MIOU, *(f"{c} (n={counts[c]})" for c in names)]
+    rows = []
+    for cells, m in entries:
+        if m is None:
+            rows.append([*cells, *(["—"] * (1 + len(names)))])
+            continue
+        values = [m["present_miou"], *(m["present_class_iou"][c] for c in names)]
+        rows.append([*cells, *(pct(v) + (mark if v is not None else "") for v in values)])
+    return reports.table(headers, rows).splitlines()
+
+
+def replace_once(text: str, old: str, new: str, where: str) -> str:
+    """Replace a known passage of the shared RTIS rendering; fail loudly if it moved."""
+    if old not in text:
+        raise ValueError(f"{where}: the shared RTIS page no longer contains {old[:60]!r}")
+    return text.replace(old, new, 1)
+
+
+def table_header(headers: list[str]) -> str:
+    return reports.table(headers, []).splitlines()[0]
+
+
+def csv_header(headers: list[str]) -> str:
+    buffer = io.StringIO()
+    csv.writer(buffer, lineterminator="\n").writerow(headers)
+    return buffer.getvalue()
+
+
+def arm_files(
+    data: dict, arm: str, report: rad_report.Report | None = None
+) -> dict[str, str | bytes]:
+    """The RTIS v2 rendering of one arm, with the page title and dataset facts of RAD, and the
+    present-image metrics of ``report`` (``—`` without one) in place of the pooled tables."""
     files = reports.artifacts(data)
+    jobs = data["jobs"]
     grouping = data["campaign"].get("grouping_status", "unrecorded")
     labels, split = ARM_TEXT[arm]
     starts = ", ".join(f"`{p}` = {START[p]}" for p in START)
+    by_job = {(r.model, r.protocol): r for r in split_results(report, arm)}
+    with_mud = ((report.composition if report else {}).get(arm) or {}).get("viewpoints") or {}
+    n_all = sum(v["with_mud"] for v in with_mud.values()) if with_mud else None
+    n_cab = with_mud[rad_report.CAB]["with_mud"] if with_mud else None
+
+    def value(subset: str, name: str):
+        return lambda row: rad_report.metric(
+            by_job.get((row["model"], row["protocol"])), subset, name
+        )
+
+    def n(count: int | None) -> str:
+        return "" if count is None else f" (n={count})"
+
+    def metrics_of(row: dict) -> dict[str, Any] | None:
+        result = by_job.get((row["model"], row["protocol"]))
+        return None if result is None else result.metrics["all"]
+
+    def percent(count: int | None) -> str:
+        return "(%)" if count is None else f"(%, n={count})"
+
     intro = (
         f"# RAD 9/24: {SPLIT_NAME[arm]} (`{arm}`)\n\n"
         f"Every model and starting point trained on {SPLIT_PHRASE[arm]} (labels: {labels}; "
         f"split: {split}). Every model on this page was trained by us. The tables keep the "
         "shared RTIS report's names: an *initialization path* is the starting point "
-        f"(pretraining before training on these images): {starts}. Mud IoU here is on all "
-        "validation images; the [study page](../README.md) adds train-camera images (a forward "
-        "view from a camera on the train, the real use case)."
+        f"(pretraining before training on these images): {starts}. The Quality, Mud-pumping "
+        f"and [{PER_CLASS}]({PER_CLASS_ANCHOR}) tables count each class only on the validation "
+        "images that contain it; "
+        "the per-run table, `results.csv` and the model pages also keep the campaign's own "
+        "pixel-pooled numbers, which selected the checkpoints. The [study page](../README.md) "
+        "compares the splits."
     )
-    files["README.md"] = (
-        files["README.md"]
-        .replace("# RTIS model comparison", intro, 1)
-        .replace("[Dataset and preparation](../README.md)", "[RAD 9/24 study](../README.md)", 1)
-        .replace(
-            "Validation groups are provisional and lack person, truck and on-rails ground truth.",
-            f"Split grouping status: `{grouping}`.",
-            1,
+    readme = files["README.md"]
+    readme = replace_once(readme, "# RTIS model comparison", intro, "arm README")
+    readme = replace_once(
+        readme, "[Dataset and preparation](../README.md)", "[RAD 9/24 study](../README.md)", arm
+    )
+    readme = readme.replace(
+        "Validation groups are provisional and lack person, truck and on-rails ground truth.",
+        f"Split grouping status: `{grouping}`.",
+        1,
+    )
+    readme = replace_once(
+        readme,
+        "Validation **mIoU (%)** across classes. Cells show the mean over completed seeds. "
+        "Per-seed values are retained on model pages and in machine records. Partial groups "
+        "are provisional; — means unavailable. These are the existing selected-checkpoint "
+        "evaluations, not newly selected mIoU-best checkpoints. Raw/EMA settings are recorded "
+        "on each model page.\n\n" + reports.seed_summary(jobs),
+        "Validation **mIoU (%)**: each class's IoU averaged over the validation images that "
+        "contain it, then over the classes present. Cells show the mean over completed seeds; "
+        "— means unavailable. Raw/EMA settings are recorded on each model page.\n\n"
+        + reports.comparison_table(jobs, value("all", "present_miou")),
+        f"{arm} README quality",
+    )
+    readme = replace_once(
+        readme,
+        "Validation **mud-pumping IoU (%)** for the same checkpoints. Precision, recall, "
+        "per-class scores and examples are on each model page and in the CSV.\n\n"
+        + reports.comparison_table(
+            jobs,
+            lambda r: (
+                r.get("evaluation", {}).get("metrics", {}).get("per_class_iou", {}).get(reports.MUD)
+            ),
+        ),
+        "Validation **mud-pumping IoU (%)** for the same checkpoints, averaged over the "
+        "validation images with mud-pumping (images without it are not counted). Precision, "
+        "recall and examples are on each model page.\n\n"
+        f"All images with mud{n(n_all)}:\n\n"
+        + reports.comparison_table(jobs, value("all", "mud_present_iou"))
+        + f"\n\nTrain-camera images with mud{n(n_cab)}:\n\n"
+        + reports.comparison_table(jobs, value(rad_report.CAB, "mud_present_iou")),
+        f"{arm} README mud-pumping",
+    )
+    readme = readme.replace(
+        "Both overall mIoU and mud IoU above describe that same selected checkpoint. This "
+        "report layout does not change the training objective or selection policy. mIoU "
+        "averages classes with nonzero union;",
+        "The Quality and Mud-pumping tables above describe that same selected checkpoint, "
+        "counting each class only on the images that contain it; the selection itself used the "
+        "mud IoU with pixels pooled over all validation images, shown in the per-run table. "
+        "Pooled mIoU there averages classes with nonzero union;",
+        1,
+    )
+    order = {p: i for i, p in enumerate(START)}
+    entries = [
+        (
+            [f"[{r['model']}](models/{r['model']}/README.md)", r["protocol"], r.get("seed", 0)],
+            metrics_of(r),
         )
+        for r in sorted(jobs, key=lambda r: (r["model"], order.get(r["protocol"], 99)))
+    ]
+    readme = replace_once(
+        readme,
+        "## Standardized model-only inference",
+        f"## {PER_CLASS}\n\nValidation {PER_CLASS_NOTE}\n\n"
+        + "\n".join(per_class_table(["Model", "Initialization path", "Seed"], entries))
+        + "\n\n## Standardized model-only inference",
+        f"{arm} README per-class",
+    )
+    pooled = table_header(POOLED_HEADERS)
+    readme = replace_once(readme, table_header(reports.HEADERS), pooled, f"{arm} README runs")
+    files["README.md"] = readme
+    files["results.csv"] = replace_once(
+        str(files["results.csv"]),
+        csv_header(reports.HEADERS),
+        csv_header(POOLED_HEADERS),
+        f"{arm} results.csv",
     )
     for name, content in files.items():
-        if re.fullmatch(r"models/[^/]+/README\.md", name) and isinstance(content, str):
-            files[name] = content.replace(
-                "[RTIS comparison](../../README.md)",
-                f"[RAD 9/24: {SPLIT_NAME[arm]}](../../README.md)",
-                1,
+        match = re.fullmatch(r"models/([^/]+)/README\.md", name)
+        if not match or not isinstance(content, str):
+            continue
+        content = replace_once(
+            content,
+            "[RTIS comparison](../../README.md)",
+            f"[RAD 9/24: {SPLIT_NAME[arm]}](../../README.md)",
+            name,
+        )
+        content = content.replace(
+            "Primary selection and early stopping: **mud-pumping validation IoU**.",
+            "Primary selection and early stopping: **mud-pumping validation IoU, pixels pooled "
+            "over all validation images**.",
+            1,
+        )
+        rows = [r for r in jobs if r["model"] == match.group(1)]
+        study = [
+            [
+                r["protocol"],
+                r.get("seed", 0),
+                *(
+                    reports.pct(value(subset, key)(r))
+                    for subset, key in (
+                        (rad_report.CAB, "mud_present_iou"),
+                        ("all", "mud_present_iou"),
+                        ("all", "mud_present_precision"),
+                        ("all", "mud_present_recall"),
+                        ("all", "present_miou"),
+                    )
+                ),
+            ]
+            for r in rows
+        ]
+        headers = [
+            "Initialization path",
+            "Seed",
+            f"{MUD_CAB} {percent(n_cab)}",
+            f"{MUD_ALL} {percent(n_all)}",
+            "Mud precision, all images with mud (%)",
+            "Mud recall, all images with mud (%)",
+            f"{MIOU} (%)",
+        ]
+        block = (
+            "Study metrics, counting each class only on the validation images that contain "
+            "it: mud-pumping IoU is the mean per-image IoU over the images with mud-pumping, "
+            "precision and recall sum pixels over those images, and mIoU averages each class "
+            "over the images that contain it, then over the classes present.\n\n"
+            + reports.table(headers, study)
+            + f"\n\n{PER_CLASS}: {PER_CLASS_NOTE}\n\n"
+            + "\n".join(
+                per_class_table(
+                    ["Initialization path", "Seed"],
+                    [([r["protocol"], r.get("seed", 0)], metrics_of(r)) for r in rows],
+                )
             )
+            + "\n\nEverything below is the campaign's own record, with pixels pooled over all "
+            "validation images (the checkpoint was selected on that pooled mud IoU).\n\n" + pooled
+        )
+        files[name] = replace_once(content, table_header(reports.HEADERS), block, name)
     return {f"{arm}/{name}": content for name, content in files.items()}
 
 
@@ -400,7 +634,7 @@ def fork_section(rows: list[dict]) -> list[str]:
         "arm",
         "checkpoint owners",
         "status",
-        "scored: GT-class mIoU / mud IoU / mud IoU cab / img-mean mud IoU cab",
+        "scored: " + " / ".join(title for title, _, _ in rad_report.HEADLINE),
         "fork's own in-training best (not comparable)",
     ]
     lines += reports.table(headers, table).splitlines()
@@ -525,12 +759,15 @@ def study_details(
         "",
         "The `rad_9_24_2026` delivery (314 rail images with polygon labels) trained two ways "
         "with the same 10-model x 4-initialization-path catalog (40 jobs per arm, seed 0, "
-        "checkpoint selection and early stopping on validation mud-pumping IoU), plus Paul "
+        "checkpoint selection and early stopping on validation mud-pumping IoU with pixels "
+        "pooled over all validation images), plus Paul "
         "Stanik's two paper recipes, retrained by us with his fork code. The question: how much "
         "does Paul's random stratified split flatter the results compared with a scene-grouped "
         "split (`paul` vs `fixed-grouped`)? The two arms also differ in labels. "
-        + rad_report.LABEL_ARM_STOPPED
-        + " Validation only; the test split is held out and never read.",
+        + rad_report.LABEL_ARM_STOPPED_POOLED
+        + " Validation only; the test split is held out and never read. Mud-pumping IoU and "
+        "mIoU below count each class only on the validation images that contain it (see *How "
+        "to read this*); the pixel-pooled numbers are in the CSV.",
         "",
         guide + (" · [Comparison CSV](rad-comparison.csv)" if report is not None else ""),
         "",
@@ -602,6 +839,8 @@ class CrossValidation:
     report: cv_report.Report
     planned: list[tuple[str, str, int]]
     rows: list[dict[str, Any]] = field(default_factory=list)
+    # Inference cost per model x protocol x seed over its folds' performance records.
+    costs: dict[tuple[str, str, int], Cost] = field(default_factory=dict)
 
 
 def cv_why(error: Exception) -> str:
@@ -617,6 +856,13 @@ def cv_build(root: Path, viewpoints: Path) -> CrossValidation:
     planned = sorted({(j["model"], j["protocol"], int(j["seed"])) for j in jobs})
     cv = CrossValidation(report, planned)
     cv.rows = pooled_rows(cv)
+    measured: dict[tuple[str, str, int], list[Cost]] = {}
+    for job in jobs:
+        path = root / "performance" / f"{job['name']}.json"
+        cost = cost_of(read_json(path)) if path.is_file() else None
+        if cost is not None:
+            measured.setdefault((job["model"], job["protocol"], int(job["seed"])), []).append(cost)
+    cv.costs = {key: c for key, found in measured.items() if (c := combined_cost(found))}
     return cv
 
 
@@ -654,45 +900,51 @@ def cv_jobs(cv: CrossValidation) -> tuple[int, int]:
 
 
 def fold_caveat(cv: CrossValidation, short: bool = False) -> str | None:
-    """The fold holding most (over half) of the pool's focus-class pixels, from the tracked
-    spec; None when no fold does."""
+    """A fold holding over half of the scored images with focus-class ground truth, on all
+    images or on train-camera images (every such image weighs the same in the present-image
+    metrics); None when no fold does or while a fold has no scored run yet. Counted from the
+    scored images themselves (labels only, the same for every model)."""
     report, focus = cv.report, cv.report.focus
-    if report.spec is None or focus is None:
+    scored = {run.fold for run in report.runs if cv_report.PRIMARY in run.images}
+    if focus is None or not set(report.folds) <= scored:
         return None
-    spec = report.spec["report"]
-    folds = [f for f in spec["folds"] if f["label_pixel_share"].get(focus) is not None]
-    if not folds:
-        return None
-    top = max(folds, key=lambda f: f["label_pixel_share"][focus])
-    if top["label_pixel_share"][focus] <= 0.5:
-        return None  # no fold dominates the pooled all-image numbers
-    groups = [g for g in top["groups"] if g in spec["label_scored_groups"].get(focus, [])]
-    views = {
-        v: c[focus] for v, c in (top.get("label_images_by_viewpoint") or {}).items() if c[focus]
-    }
-    cab = ((top.get("label_pixel_share_by_viewpoint") or {}).get(rad_report.CAB) or {}).get(focus)
-    where = (
-        f"all from one scene (`{groups[0]}`"
-        if len(groups) == 1
-        else f"from {len(groups)} scenes ({', '.join(f'`{g}`' for g in groups)}"
-    )
-    if views:
-        where += "; " + ", ".join(f"{n} {v} images" for v, n in sorted(views.items()))
-    text = (
-        f"fold {top['fold']} holds {cv_report.pct(top['label_pixel_share'][focus])}% of all "
-        f"scored {focus} pixels, {where})"
-    )
-    if cab is not None:
-        text += (
-            " and none of the train-camera ones"
-            if cab == 0
-            else f" and {cv_report.pct(cab)}% of the train-camera ones"
+    found = []
+    for subset, kind in (("all", ""), (rad_report.CAB, "train-camera ")):
+        if subset != "all" and subset not in report.subsets:
+            continue
+        by_fold = cv_report.focus_images(report, subset)
+        total = sum(len(images) for images in by_fold.values())
+        if not total:
+            continue
+        fold, images = max(by_fold.items(), key=lambda kv: (len(kv[1]), -kv[0]))
+        if 2 * len(images) <= total:
+            continue  # no fold dominates this subset's pooled numbers
+        groups = sorted({i.group for i in images if i.group})
+        where = (
+            f", all from one scene (`{groups[0]}`)"
+            if len(groups) == 1
+            else f", from {len(groups)} scenes ({', '.join(f'`{g}`' for g in groups)})"
+            if groups
+            else ""
         )
+        numbers = "all-images" if subset == "all" else "train-camera"
+        one = len(groups) == 1
+        found.append(
+            (
+                f"fold {fold} holds {len(images)} of the {total} scored {kind}images with "
+                f"{focus}{where}",
+                f"the {numbers} numbers mostly measure {'that scene' if one else 'those scenes'}",
+                "it" if one else "them",
+            )
+        )
+    if not found:
+        return None
     if short:
-        return text + ", so the all-images numbers mostly measure that one scene."
-    return (
-        text + ". Pooled all-image numbers therefore mostly measure that scene, scored by models "
-        "that never trained on it; the train-camera numbers are the headline."
+        return "; ".join(f"{fact}, so {effect}" for fact, effect, _ in found) + "."
+    return " ".join(
+        f"{fact[0].upper()}{fact[1:]}. Pooled, {effect}, scored by models that never trained "
+        f"on {it}."
+        for fact, effect, it in found
     )
 
 
@@ -724,20 +976,22 @@ def cv_readme(cv: CrossValidation, guides: frozenset[Path]) -> str:
                 START.get(row["protocol"], row["protocol"])
                 + (f", seed {row['seed']}" if len({p[2] for p in cv.planned}) > 1 else ""),
                 f"{row['done']}/{k}",
-                cell(rad_report.CAB, "focus_iou"),
-                cell(rad_report.CAB, "focus_precision"),
-                cell(rad_report.CAB, "focus_recall"),
-                cell("all", "gt_class_miou"),
+                cell(rad_report.CAB, "focus_present_iou"),
+                cell(rad_report.CAB, "focus_present_precision"),
+                cell(rad_report.CAB, "focus_present_recall"),
+                cell("all", "present_miou"),
             ]
         )
+    with_focus = "mud" if report.focus == "mud-pumping" else report.focus
+    n_cab = sum(len(i) for i in cv_report.focus_images(report, rad_report.CAB).values())
     headers = [
         "Model",
         "Starting point",
         "Folds done",
-        f"{focus} IoU, train-camera images",
-        "Precision, train-camera",
-        "Recall, train-camera",
-        "mIoU (classes present), all images",
+        f"{focus} IoU, train-camera images with {with_focus} (n={n_cab})",
+        f"Precision, train-camera images with {with_focus}",
+        f"Recall, train-camera images with {with_focus}",
+        f"{MIOU}, all images",
     ]
     caveat = fold_caveat(cv)
     lines = [
@@ -752,19 +1006,39 @@ def cv_readme(cv: CrossValidation, guides: frozenset[Path]) -> str:
         f"Stratified group {k}-fold cross-validation: {pool} are divided into {k} folds of whole "
         "scenes, balanced on the rare classes. Each model trains on the other folds and is "
         "scored on its own, so every image is scored once by a model that never trained on its "
-        "scene (*pooled* results add up those scores). The result is the final checkpoint "
+        "scene (*pooled* results average over all those images). The result is the final checkpoint "
         "after the full training budget, so nothing is picked on the scored images. The test "
         "images are never used.",
         "",
         f"Percent, final checkpoint. {done} of {total} runs done; `*` = not all folds done yet "
         "(pooled over the finished folds only, not comparable). Train-camera images: a forward "
-        "view from a camera on the train, the real use case.",
+        f"view from a camera on the train, the real use case. {focus} IoU is the per-image IoU "
+        f"averaged over the scored images with {with_focus} (images without it are not "
+        "counted); precision and recall sum pixels over those images; mIoU scores each class "
+        "on the images that contain it, then averages over the classes.",
         "",
         *reports.table(headers, rows).splitlines(),
         "",
     ]
     if caveat:
         lines += [f"**Fold caveat:** {caveat}", ""]
+    entries = []
+    for row in cv_rows(cv):
+        mark = "" if row["complete"] else "*"
+        entries.append(
+            (
+                [f"`{row['model']}`", START.get(row["protocol"], row["protocol"]) + mark],
+                (row["pool"] or {}).get("all"),
+            )
+        )
+    lines += [
+        f"## {PER_CLASS}",
+        "",
+        f"Pooled over all scored images, final checkpoint. {PER_CLASS_NOTE}",
+        "",
+        *per_class_table(["Model", "Starting point"], entries, pct=cv_report.pct),
+        "",
+    ]
     for line in cv_report.render(report, "").splitlines():
         if line.startswith(("Generated:", "# ")):
             continue
@@ -797,22 +1071,93 @@ def spread(values: list[float | None]) -> str:
     return f"median {rad_report.pct(median(values))} (best {rad_report.pct(best(values))})"
 
 
-def performance_of(arms: dict[str, dict]) -> tuple[dict[tuple[str, str, str], float], str | None]:
-    """FPS per (split, model, protocol) and the benchmark settings, from the arms' records."""
-    fps, settings = {}, None
+# Inference memory of a performance record: the whole process including the CUDA context when
+# recorded (``process_total_bytes``), else PyTorch's allocator peak reserved bytes, which
+# exclude the context and are marked ALLOCATOR_MARK on the page.
+TOTAL_MEMORY = "process_total_bytes"
+ALLOCATOR_MEMORY = "peak_reserved_bytes"
+ALLOCATOR_MARK = "†"
+ALLOCATOR_NOTE = (
+    f"{ALLOCATOR_MARK} Allocator only (PyTorch peak reserved memory in the speed benchmark): "
+    "excludes the CUDA context (driver overhead, a few hundred MB)."
+)
+COST_HEADERS = ["Speed (FPS)", "GPU memory, total (GB)", "Parameters (M)"]
+
+
+@dataclass(frozen=True)
+class Cost:
+    """Inference cost from a performance record (or the mean/max over several)."""
+
+    fps: float
+    memory_bytes: int | None
+    total_memory: bool  # memory_bytes includes the CUDA context
+    parameters: int | None
+
+    def cells(self) -> list[str]:
+        memory = "—"
+        if self.memory_bytes is not None:
+            memory = f"{self.memory_bytes / 1e9:.2f}" + (
+                "" if self.total_memory else ALLOCATOR_MARK
+            )
+        params = "—" if self.parameters is None else f"{self.parameters / 1e6:.1f}"
+        return [f"{self.fps:.1f}", memory, params]
+
+
+def cost_of(perf: dict) -> Cost | None:
+    measurements = perf.get("measurements") or {}
+    fps = (measurements.get("latency") or {}).get("fps")
+    if perf.get("status") != "complete" or fps is None:
+        return None
+    total = measurements.get(TOTAL_MEMORY)
+    memory = total if total is not None else measurements.get(ALLOCATOR_MEMORY)
+    return Cost(
+        float(fps),
+        None if memory is None else int(memory),
+        total is not None,
+        (perf.get("model") or {}).get("parameter_count"),
+    )
+
+
+def combined_cost(costs: list[Cost]) -> Cost | None:
+    """Several measurements of one model (e.g. one per CV fold): mean FPS, largest memory."""
+    if not costs:
+        return None
+    memories = [c for c in costs if c.memory_bytes is not None]
+    top = max(memories, key=lambda c: (c.memory_bytes or 0, not c.total_memory), default=None)
+    return Cost(
+        statistics.fmean(c.fps for c in costs),
+        None if top is None else top.memory_bytes,
+        top is not None and all(c.total_memory for c in memories),
+        costs[0].parameters,
+    )
+
+
+def cost_cells(cost: Cost | None) -> list[str]:
+    return cost.cells() if cost is not None else ["—"] * len(COST_HEADERS)
+
+
+def allocator_note(rows: list[list[str]]) -> list[str]:
+    """The footnote for marked memory cells, when a table has any."""
+    return [ALLOCATOR_NOTE, ""] if any(ALLOCATOR_MARK in c for r in rows for c in r) else []
+
+
+def performance_of(arms: dict[str, dict]) -> tuple[dict[tuple[str, str, str], Cost], str | None]:
+    """Inference cost per (split, model, protocol) and the benchmark settings, from the arms'
+    performance records."""
+    costs, settings = {}, None
     for arm, data in arms.items():
         for row in data["jobs"]:
             perf = row.get("performance") or {}
-            value = ((perf.get("measurements") or {}).get("latency") or {}).get("fps")
-            if perf.get("status") != "complete" or value is None:
+            cost = cost_of(perf)
+            if cost is None:
                 continue
-            fps[(arm, row["model"], row["protocol"])] = float(value)
+            costs[(arm, row["model"], row["protocol"])] = cost
             contract, gpu = perf.get("contract") or {}, (perf.get("hardware") or {}).get("gpu_name")
             shape = contract.get("input_shape_nchw") or []
             if settings is None and gpu and len(shape) == 4:
                 precision = str(contract.get("precision", "?")).removesuffix("_autocast").upper()
                 settings = (
-                    f"model-only forward passes per second on one {gpu}, batch "
+                    f"model-only forward passes on one {gpu}, batch "
                     f"{contract.get('batch_size', shape[0])}, {shape[2]}x{shape[3]} input, "
                     f"{precision}"
                     + (
@@ -821,7 +1166,7 @@ def performance_of(arms: dict[str, dict]) -> tuple[dict[tuple[str, str, str], fl
                         else ""
                     )
                 )
-    return fps, settings
+    return costs, settings
 
 
 def split_results(report: rad_report.Report | None, arm: str) -> list[rad_report.Result]:
@@ -849,34 +1194,27 @@ def model_link(model: str, arm: str, files: dict[str, str | bytes]) -> str:
 def split_table(
     report: rad_report.Report,
     arm: str,
-    fps: dict[tuple[str, str, str], float],
+    costs: dict[tuple[str, str, str], Cost],
     files: dict[str, str | bytes],
 ) -> list[str]:
     def cab(r: rad_report.Result) -> float | None:
-        return rad_report.metric(r, rad_report.CAB, "mud_iou")
+        return rad_report.metric(r, rad_report.CAB, "mud_present_iou")
 
     rows = [
         [
             model_link(r.model, arm, files),
             START.get(r.protocol, r.protocol),
             rad_report.pct(cab(r)),
-            rad_report.pct(rad_report.metric(r, "all", "mud_iou")),
-            rad_report.pct(rad_report.metric(r, "all", "gt_class_miou")),
-            f"{fps[(arm, r.model, r.protocol)]:.1f}" if (arm, r.model, r.protocol) in fps else "—",
+            rad_report.pct(rad_report.metric(r, "all", "mud_present_iou")),
+            rad_report.pct(rad_report.metric(r, "all", "present_miou")),
+            *cost_cells(costs.get((arm, r.model, r.protocol))),
         ]
         for r in best_per_model(split_results(report, arm), cab)
     ]
     if not rows:
         return ["No finished run yet.", ""]
-    headers = [
-        "Model",
-        "Best starting point",
-        "Mud-pumping IoU, train-camera images",
-        "Mud-pumping IoU, all images",
-        "mIoU (classes present)",
-        "Speed (FPS)",
-    ]
-    return [*reports.table(headers, rows).splitlines(), ""]
+    headers = ["Model", "Best starting point", MUD_CAB, MUD_ALL, MIOU, *COST_HEADERS]
+    return [*reports.table(headers, rows).splitlines(), "", *allocator_note(rows)]
 
 
 def cv_table(cv: CrossValidation) -> list[str]:
@@ -887,7 +1225,7 @@ def cv_table(cv: CrossValidation) -> list[str]:
     candidates = [r for r in rows if r["complete"] or r["model"] not in finished]
 
     def cab(r: dict[str, Any]) -> float | None:
-        return cv_value(r, rad_report.CAB, "focus_iou")
+        return cv_value(r, rad_report.CAB, "focus_present_iou")
 
     out = []
     for r in best_per_model(candidates, cab):
@@ -901,21 +1239,15 @@ def cv_table(cv: CrossValidation) -> list[str]:
             [
                 r["model"],
                 START.get(r["protocol"], r["protocol"]) if r["done"] else "—",
-                cell(rad_report.CAB, "focus_iou"),
-                cell("all", "focus_iou"),
-                cell("all", "gt_class_miou"),
+                cell(rad_report.CAB, "focus_present_iou"),
+                cell("all", "focus_present_iou"),
+                cell("all", "present_miou"),
+                *cost_cells(cv.costs.get((r["model"], r["protocol"], r["seed"]))),
                 f"{r['done']}/{k}",
             ]
         )
-    headers = [
-        "Model",
-        "Best starting point",
-        "Mud-pumping IoU, train-camera images",
-        "Mud-pumping IoU, all images",
-        "mIoU (classes present)",
-        "Folds done",
-    ]
-    return [*reports.table(headers, out).splitlines(), ""]
+    headers = ["Model", "Best starting point", MUD_CAB, MUD_ALL, MIOU, *COST_HEADERS, "Folds done"]
+    return [*reports.table(headers, out).splitlines(), "", *allocator_note(out)]
 
 
 def key_table(
@@ -925,36 +1257,30 @@ def key_table(
     rows, cab_values = [], {}
     for arm in rad_report.ARMS:
         results = split_results(report, arm)
-        cab = [rad_report.metric(r, rad_report.CAB, "mud_iou") for r in results]
+        cab = [rad_report.metric(r, rad_report.CAB, "mud_present_iou") for r in results]
         cab_values[arm] = cab
         rows.append(
             [
                 SPLIT_NAME[arm],
                 str(len(results)) if results else "—",
-                spread([rad_report.metric(r, "all", "mud_iou") for r in results]),
+                spread([rad_report.metric(r, "all", "mud_present_iou") for r in results]),
                 spread(cab),
-                spread([rad_report.metric(r, "all", "gt_class_miou") for r in results]),
+                spread([rad_report.metric(r, "all", "present_miou") for r in results]),
             ]
         )
     planned = cv_rows(cv) if cv is not None else []
     finished = [r for r in planned if r["complete"]]
-    cab_values["cv"] = [cv_value(r, rad_report.CAB, "focus_iou") for r in finished]
+    cab_values["cv"] = [cv_value(r, rad_report.CAB, "focus_present_iou") for r in finished]
     rows.append(
         [
             "Cross-validation over scenes",
             f"{len(finished)} of {len(planned)} with all folds done" if planned else "—",
-            spread([cv_value(r, "all", "focus_iou") for r in finished]),
+            spread([cv_value(r, "all", "focus_present_iou") for r in finished]),
             spread(cab_values["cv"]),
-            spread([cv_value(r, "all", "gt_class_miou") for r in finished]),
+            spread([cv_value(r, "all", "present_miou") for r in finished]),
         ]
     )
-    headers = [
-        "Split",
-        "Model runs",
-        "Mud-pumping IoU, all images",
-        "Mud-pumping IoU, train-camera images",
-        "mIoU (classes present)",
-    ]
+    headers = ["Split", "Model runs", MUD_ALL, MUD_CAB, MIOU]
     return reports.table(headers, rows).splitlines(), cab_values
 
 
@@ -962,18 +1288,25 @@ def takeaway(report: rad_report.Report | None, cab_values: dict[str, list]) -> s
     comp = report.composition if report is not None else {}
     paul = comp.get("paul")
     parts = []
-    all_paul = [rad_report.metric(r, "all", "mud_iou") for r in split_results(report, "paul")]
+    all_paul = [
+        rad_report.metric(r, "all", "mud_present_iou") for r in split_results(report, "paul")
+    ]
     if report is not None and paul and median(all_paul) is not None:
         text = (
-            f"Paul's split looks good (median {rad_report.pct(median(all_paul))} on all images) "
-            f"because {rad_report.pct(paul['group_mud_share'])}% of its validation mud-pumping "
-            f"pixels come from one scene, `{rad_report.subsets.EXCLUDED_GROUP}`"
+            f"Paul's split looks good (median {rad_report.pct(median(all_paul))} on all images "
+            "with mud-pumping"
         )
-        top_views = {t["viewpoint"] for t in paul.get("top5", [])}
-        if top_views == {"track-level"}:
-            text += " (track-level close-ups)"
+        if median(cab_values.get("paul", [])) is not None:
+            text += f", {rad_report.pct(median(cab_values['paul']))} on train-camera ones"
+        text += ")"
         if paul["val_groups"] and paul["val_groups_in_train"] == paul["val_groups"]:
-            text += ", and every validation scene of that split also has images in training"
+            text += " because every validation scene of that split also has images in training"
+        with_mud = sum(v["with_mud"] for v in paul["viewpoints"].values())
+        if paul["group_images_with_mud"]:
+            text += (
+                f"; {paul['group_images_with_mud']} of its {with_mud} validation images with "
+                f"mud-pumping come from one scene, `{rad_report.subsets.EXCLUDED_GROUP}`"
+            )
         parts.append(text + ".")
     unseen = []
     if median(cab_values.get("fixed-grouped", [])) is not None:
@@ -1024,20 +1357,14 @@ def paper_model(forks: list[dict]) -> list[str]:
                 [
                     name,
                     SPLIT_NAME[arm],
-                    rad_report.pct(rad_report.metric(result, rad_report.CAB, "mud_iou")),
-                    rad_report.pct(rad_report.metric(result, "all", "mud_iou")),
-                    rad_report.pct(rad_report.metric(result, "all", "gt_class_miou")),
+                    rad_report.pct(rad_report.metric(result, rad_report.CAB, "mud_present_iou")),
+                    rad_report.pct(rad_report.metric(result, "all", "mud_present_iou")),
+                    rad_report.pct(rad_report.metric(result, "all", "present_miou")),
                 ]
             )
     if not rows:
         return ["No retraining of Paul's recipes has started yet.", ""]
-    headers = [
-        "Paul's recipe, retrained by us",
-        "Split",
-        "Mud-pumping IoU, train-camera images",
-        "Mud-pumping IoU, all images",
-        "mIoU (classes present)",
-    ]
+    headers = ["Paul's recipe, retrained by us", "Split", MUD_CAB, MUD_ALL, MIOU]
     return [*reports.table(headers, rows).splitlines(), ""]
 
 
@@ -1084,8 +1411,9 @@ def study_readme(
         f"- **Data:** {data}, including mud-pumping (the track defect we look for).",
         "- **Question:** how well do models find mud-pumping in scenes (videos) they did *not* "
         "see in training? We score mud-pumping IoU (overlap of predicted and true mud-pumping "
-        "pixels, in percent; 100 = perfect) on all validation images and on train-camera images "
-        "(a forward view from a camera on the train, the real use case).",
+        "pixels, in percent; 100 = perfect) on each validation image that contains mud-pumping "
+        "and average it over those images: all of them, and the train-camera ones (a forward "
+        "view from a camera on the train, the real use case).",
         "- **Three ways to split the images into training and validation:** (a) Paul's split, "
         "random by image, so frames of one video can be on both sides; (b) a scene-grouped "
         "split that keeps whole scenes on one side; (c) "
@@ -1109,7 +1437,7 @@ def study_readme(
         *table,
         "",
         "Median and best over every finished model and starting point of each split. mIoU "
-        "averages IoU over the classes present in the images.",
+        "scores each class on the images that contain it, then averages over the classes.",
         "",
         "## Results by split",
         "",
@@ -1118,9 +1446,9 @@ def study_readme(
         + ", ".join(START.values())
         + " (public street and rail datasets).",
     ]
-    fps, settings = performance_of(arms)
+    costs, settings = performance_of(arms)
     if settings:
-        lines[-1] += f" Speed (FPS): {settings}."
+        lines[-1] += f" Speed and memory: {settings}."
     lines.append("")
     for arm in rad_report.ARMS:
         data_arm = arms.get(arm)
@@ -1143,12 +1471,17 @@ def study_readme(
                 )
         if sizes:
             what += f" ({sizes['train']} training, {sizes['val']} validation images)"
-        link = f" [Every model and starting point]({arm}/README.md)." if data_arm else ""
+        link = (
+            f" [Every model and starting point]({arm}/README.md); "
+            f"[IoU of every class]({arm}/README.md{PER_CLASS_ANCHOR})."
+            if data_arm
+            else ""
+        )
         lines += [what + "." + link, ""]
         if report is None:
             lines += [f"Not available this cycle: {report_error}", ""]
         else:
-            lines += split_table(report, arm, fps, files)
+            lines += split_table(report, arm, costs, files)
     lines += ["### Cross-validation over scenes", ""]
     cv_page = f"{CV_DIR}/README.md" in files
     if cv is not None:
@@ -1159,7 +1492,8 @@ def study_readme(
             "scored once by a model that never saw its scene. The result is the final "
             "checkpoint, so nothing is picked on the scored images. "
             f"{done} of {total} runs done; `*` = not all folds done yet. "
-            f"[Full report]({CV_DIR}/README.md).",
+            f"[Full report]({CV_DIR}/README.md); "
+            f"[IoU of every class]({CV_DIR}/README.md{PER_CLASS_ANCHOR}).",
             "",
             *cv_table(cv),
         ]
@@ -1209,8 +1543,12 @@ def short_caveats(report: rad_report.Report | None, cv: CrossValidation | None) 
     lines = [
         "- One training run per model and starting point (seed 0): differences of a few points "
         "are not established.",
+        "- Images without mud-pumping are not counted, so mud predicted on clean track does "
+        "not lower the mud-pumping IoU.",
         "- Paul's split and the scene-grouped split report the checkpoint that scored best on "
-        "the same validation images (flattering); cross-validation reports the final one.",
+        "the same validation images (flattering), and that checkpoint was still selected on the "
+        "older mud-pumping IoU with pixels pooled over all validation images (training is "
+        "unchanged); cross-validation reports the final checkpoint.",
     ]
     counts = []
     for arm, c in comp.items():
@@ -1279,7 +1617,9 @@ def caveats(report: rad_report.Report | None) -> list[str]:
         "- **Single seed.** Every result is one training run (seed 0); there are no repeats or "
         "confidence intervals, so differences of a few IoU points are not established.",
         "- **Optimistic validation numbers.** Checkpoints are selected (and training early "
-        "stopped) on the same val split that is reported; fork runs pick their epoch on it too.",
+        "stopped) on the same val split that is reported, by the mud IoU with pixels pooled over "
+        "all val images rather than the present-image mud IoU shown; fork runs pick their epoch "
+        "on that split too.",
         "- **Small cab-view subsets.** Val images with mud ground truth behind the "
         "deployment-relevant cab-view mud IoU: " + (cab or "not available yet") + ".",
         "- **The stratified split shares scenes.** Frames of one recording can sit in train and "
@@ -1315,8 +1655,6 @@ def render_tree(
         if arm in arms:
             raise ValueError(f"two campaign roots for the {arm} arm")
         arms[arm] = reports.capture(root)
-        files.update(arm_files(arms[arm], arm))
-        arms[arm] = {**arms[arm], "root": str(root)}
         roots.append(root)
     report, error = None, None
     try:
@@ -1324,6 +1662,10 @@ def render_tree(
         files["rad-comparison.csv"] = rad_report.csv_text(report)
     except (rad_report.ReportError, ValueError, OSError, KeyError) as exc:
         error = rad_report.why(exc)
+    for root in roots:
+        arm = arm_of(root)
+        files.update(arm_files(arms[arm], arm, report))
+        arms[arm] = {**arms[arm], "root": str(root)}
     forks = fork_rows(fork_runs if fork_runs and fork_runs.is_dir() else None, report)
     cv, cv_error = None, None
     cv_files: dict[str, str | bytes]

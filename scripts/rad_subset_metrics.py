@@ -24,14 +24,24 @@ the viewpoint file's stem is only a checked annotation. Validation (fail closed)
 Subsets: ``all``, ``cab-view``, ``not-cab-view`` (track-level + other) and
 ``excl-trackside-maintenance`` (every image whose scene group, the ``group`` of
 ``samples.json``, is not ``trackside-maintenance``; groups are layout names, not recording
-provenance). Per subset: images, images with mud GT, mud GT pixels, pixel-aggregated mud
-IoU/precision/recall (``collect_rtis_statistics.mud_counts`` of the summed matrix), the
-image-mean mud IoU over images with mud GT, the GT-class mIoU
-(``publish_rtis_results.fixed_miou`` of ``collect_rtis_statistics.matrix_metrics``, the
-campaign's own rule: mean IoU over classes with ground truth in the subset), the campaign
-headline mIoU (``matrix_metrics`` ``miou``: classes with non-zero union) and the share of the
-subset's mud GT pixels contributed by its five images with the most mud GT. The test split
-is refused.
+provenance).
+
+Headline metrics per subset count each class only on the images that contain it
+(``segmentary.engine.present_image``): ``mud_present_iou`` is the mean per-image mud IoU over
+the subset's images with mud ground truth (``images_with_mud_gt`` of them; images without mud
+are left out, so their false-positive mud does not count, and a missed mud image scores 0),
+``mud_present_precision`` / ``mud_present_recall`` sum mud TP/FP/FN over those images only,
+and ``present_miou`` averages the present-image IoU over the ``present_miou_classes`` classes
+that have at least one image in the subset. ``present_class_iou`` / ``present_class_images``
+give every class's present-image IoU (``None`` when no image contains it) and image count.
+
+Kept for traceability, from the subset's summed (pixel-pooled) matrix: images, mud GT pixels,
+mud IoU/precision/recall (``collect_rtis_statistics.mud_counts``), the GT-class mIoU
+(``publish_rtis_results.fixed_miou`` of ``collect_rtis_statistics.matrix_metrics``: mean IoU
+over classes with ground truth in the subset), the campaign mIoU (``matrix_metrics``
+``miou``: classes with non-zero union), ``mud_image_mean_iou`` (an independent computation of
+``mud_present_iou``) and the share of the subset's mud GT pixels contributed by its five
+images with the most mud GT. The test split is refused.
 """
 
 from __future__ import annotations
@@ -51,6 +61,8 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.collect_rtis_statistics import matrix_metrics, mud_counts
 from scripts.publish_rtis_results import fixed_miou
+
+from segmentary.engine.present_image import present_image_metrics
 
 NUM_CLASSES = 21
 MUD = "mud-pumping"
@@ -223,6 +235,7 @@ def subset_metrics(images: list[Image], names: list[str]) -> dict[str, Any]:
     supports = sorted((int(i.matrix[mud].sum()) for i in images), reverse=True)
     mud_pixels = sum(supports)
     with_mud = [i for i in images if i.matrix[mud].sum() > 0]
+    present = present_image_metrics((i.matrix for i in images), NUM_CLASSES)
     result: dict[str, Any] = {
         "images": len(images),
         "images_with_mud_gt": len(with_mud),
@@ -233,6 +246,14 @@ def subset_metrics(images: list[Image], names: list[str]) -> dict[str, Any]:
         "mud_image_mean_iou": None,
         "gt_class_miou": None,
         "miou": None,
+        "mud_present_iou": None,
+        "mud_present_precision": None,
+        "mud_present_recall": None,
+        "present_miou": None,
+        "present_miou_classes": 0,
+        # every class: present-image IoU (None without a present image) and its image count
+        "present_class_iou": {n: s.iou for n, s in zip(names, present.classes, strict=True)},
+        "present_class_images": {n: s.images for n, s in zip(names, present.classes, strict=True)},
         "top5_mud_share": sum(supports[:TOP_K]) / mud_pixels if mud_pixels else None,
         "keys": [i.key for i in images],
     }
@@ -242,7 +263,13 @@ def subset_metrics(images: list[Image], names: list[str]) -> dict[str, Any]:
     counts = mud_counts(total, mud)
     metrics = matrix_metrics(total, names)
     per_image = [mud_counts(i.matrix, mud)["iou"] for i in with_mud]
+    focus = present.classes[mud]
     result.update(
+        mud_present_iou=focus.iou,
+        mud_present_precision=focus.precision,
+        mud_present_recall=focus.recall,
+        present_miou=present.miou,
+        present_miou_classes=present.miou_classes,
         mud_iou=counts["iou"],
         mud_precision=counts["precision"],
         mud_recall=counts["recall"],
