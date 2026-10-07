@@ -1,4 +1,4 @@
-Model,Initialization path,Seed,Status,Steps,Best step,Mud IoU (%),Mud precision (%),Mud recall (%),"Final mud IoU (trainer val, %)",mIoU (%),Fixed GT-class mIoU (%)
+Model,Initialization path,Seed,Status,Steps,Best step,"Mud IoU, pixels pooled (%)","Mud precision, pixels pooled (%)","Mud recall, pixels pooled (%)","Final mud IoU (trainer val, pixels pooled, %)","mIoU, pixels pooled (%)","Fixed GT-class mIoU, pixels pooled (%)"
 eomt_large,rtis_only,0,completed,2333,1555,12.73,16.54,35.57,10.44,47.84,53.16
 eomt_large,cityscapes_to_rtis,0,completed,3370,2074,9.40,12.31,28.47,9.09,53.42,56.38
 eomt_large,railsem19_to_rtis,0,completed,2074,777,3.33,4.46,11.57,3.14,49.72,58.01

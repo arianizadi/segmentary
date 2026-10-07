@@ -2,9 +2,29 @@
 
 [RAD 9/24: Scene-grouped split](../../README.md) · [Full model records](record.json)
 
-Primary selection and early stopping: **mud-pumping validation IoU**. A job is complete only after full statistics and isolated profiling are verified.
+Primary selection and early stopping: **mud-pumping validation IoU, pixels pooled over all validation images**. A job is complete only after full statistics and isolated profiling are verified.
 
-| Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU (%) | Mud precision (%) | Mud recall (%) | Final mud IoU (trainer val, %) | mIoU (%) | Fixed GT-class mIoU (%) |
+Study metrics, counting each class only on the validation images that contain it: mud-pumping IoU is the mean per-image IoU over the images with mud-pumping, precision and recall sum pixels over those images, and mIoU averages each class over the images that contain it, then over the classes present.
+
+| Initialization path | Seed | Mud-pumping IoU, train-camera images with mud (%, n=17) | Mud-pumping IoU, all images with mud (%, n=18) | Mud precision, all images with mud (%) | Mud recall, all images with mud (%) | mIoU (each class over images that contain it) (%) |
+| --- | --- | --- | --- | --- | --- | --- |
+| rtis_only | 0 | 12.44 | 11.91 | 42.03 | 16.14 | 37.20 |
+| cityscapes_to_rtis | 0 | 22.79 | 21.60 | 27.30 | 29.88 | 39.80 |
+| railsem19_to_rtis | 0 | 14.29 | 13.64 | 38.85 | 15.44 | 47.62 |
+| cityscapes_to_railsem19_to_rtis | 0 | 22.59 | 21.44 | 33.97 | 27.37 | 44.38 |
+
+Per-class IoU: IoU (%) of every class, each averaged only over the validation images that contain the class (n = those images); — = no image contains it. mIoU averages the classes with at least one such image.
+
+| Initialization path | Seed | mIoU (each class over images that contain it) | person (n=0) | truck (n=0) | rail-track (n=37) | vegetation-overgrowth (n=13) | car (n=3) | on-rails (n=0) | traffic-sign (n=9) | road (n=11) | sidewalk (n=12) | construction (n=12) | tram-track (n=2) | pole (n=21) | traffic-light (n=3) | mud-pumping (n=18) | fence (n=7) | terrain (n=35) | sky (n=28) | rail-embedded (n=3) | rail-raised (n=37) | trackbed (n=37) | standing-water (n=9) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| rtis_only | 0 | 37.20 | — | — | 55.73 | 35.01 | 15.74 | — | 19.72 | 9.31 | 13.99 | 42.08 | 7.59 | 67.69 | 39.60 | 11.91 | 5.46 | 88.22 | 96.58 | 18.96 | 72.61 | 63.04 | 6.34 |
+| cityscapes_to_rtis | 0 | 39.80 | — | — | 52.60 | 29.37 | 35.92 | — | 29.84 | 13.33 | 11.52 | 31.85 | 23.29 | 69.81 | 44.58 | 21.60 | 18.34 | 86.22 | 96.61 | 16.65 | 72.75 | 55.20 | 6.97 |
+| railsem19_to_rtis | 0 | 47.62 | — | — | 61.60 | 41.03 | 35.71 | — | 46.93 | 17.13 | 16.69 | 56.43 | 48.26 | 73.95 | 46.52 | 13.64 | 30.59 | 87.39 | 96.76 | 40.87 | 74.72 | 64.98 | 3.99 |
+| cityscapes_to_railsem19_to_rtis | 0 | 44.38 | — | — | 57.87 | 42.88 | 36.17 | — | 40.24 | 11.57 | 9.47 | 30.38 | 33.50 | 72.27 | 46.18 | 21.44 | 27.55 | 87.17 | 96.74 | 35.98 | 75.12 | 64.37 | 9.88 |
+
+Everything below is the campaign's own record, with pixels pooled over all validation images (the checkpoint was selected on that pooled mud IoU).
+
+| Model | Initialization path | Seed | Status | Steps | Best step | Mud IoU, pixels pooled (%) | Mud precision, pixels pooled (%) | Mud recall, pixels pooled (%) | Final mud IoU (trainer val, pixels pooled, %) | mIoU, pixels pooled (%) | Fixed GT-class mIoU, pixels pooled (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | segformer_b5 | rtis_only | 0 | completed | 2333 | 1037 | 5.19 | 7.12 | 16.14 | 1.06 | 35.71 | 41.66 |
 | segformer_b5 | cityscapes_to_rtis | 0 | completed | 4000 | 2851 | 4.69 | 5.27 | 29.88 | 4.44 | 39.76 | 44.18 |
