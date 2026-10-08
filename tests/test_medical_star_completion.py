@@ -202,6 +202,8 @@ def test_ellipsoid_rays_match_the_analytic_surface(geometry):
     axes = (20.0, 12.0, 8.0)
     ellipsoid = _ellipsoid(shape, (18, 50, 50), axes)
     targets = sc.compute_case_targets(ellipsoid.astype(np.uint8) * 2, SPACING, [2], geometry)
+    # The EDT maximum is a plateau along the long axis; the centroid breaks the tie.
+    assert np.array_equal(targets.centres[0], (18, 50, 50))
     expected = _ellipsoid_radius(geometry.directions, axes)
     error = targets.rays_mm[0] - expected
     assert np.abs(np.median(error)) < 0.5 and np.abs(error).max() < 1.5

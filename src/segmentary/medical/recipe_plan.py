@@ -269,7 +269,7 @@ STARC_TARGET_MANIFEST = "manifest.json"
 STARC_TARGET_METHOD: dict[str, Any] = {
     "connectivity": 26,
     "directions": "fibonacci_sphere_zyx",
-    "centre": "maximum_position of the zero-padded mm EDT",
+    "centre": "zero-padded mm EDT maximum plateau voxel nearest the component centroid",
     "march": {
         "lookup": "nearest voxel",
         "step_fraction_of_min_spacing": 0.25,

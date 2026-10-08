@@ -275,6 +275,30 @@ class CaseTargets:
         return {name: getattr(self, name) for name in self.__dataclass_fields__}
 
 
+def _plateau_centres(
+    edt: np.ndarray,
+    components: np.ndarray,
+    max_edt: np.ndarray,
+    centroids: np.ndarray,
+    spacing: np.ndarray,
+    tolerance_mm: float = 1e-3,
+) -> np.ndarray:
+    """The EDT-maximal voxel of each component that lies closest to its centroid.
+
+    Elongated lesions have an EDT plateau along their long axis, where
+    ``maximum_position`` would pick whichever voxel wins last-bit rounding
+    differences between platforms. Choosing the plateau voxel nearest the
+    centroid (then the lowest index) makes the centre a property of the shape.
+    """
+    centres = np.zeros((len(max_edt), 3), np.float64)
+    for k, peak in enumerate(max_edt, start=1):
+        candidates = np.argwhere((components == k) & (edt >= peak - tolerance_mm))
+        distance = np.linalg.norm((candidates - centroids[k - 1]) * spacing, axis=1)
+        nearest = np.flatnonzero(distance <= distance.min() + tolerance_mm)
+        centres[k - 1] = candidates[nearest[0]]
+    return centres
+
+
 def compute_case_targets(
     segmentation: np.ndarray,
     spacing: Sequence[float],
@@ -288,8 +312,8 @@ def compute_case_targets(
     """Instances (26-connected components of the lesion labels), inner centres and rays.
 
     The inner centre is the maximum of the mm Euclidean distance transform of
-    the zero-padded component (``ndimage.maximum_position``, deterministic); the
-    rays are first exits from it in volume mm, as in S0.
+    the zero-padded component, taking the plateau voxel nearest the centroid
+    (``_plateau_centres``); the rays are first exits from it in volume mm, as in S0.
     """
     from scipy import ndimage
 
@@ -330,7 +354,8 @@ def compute_case_targets(
     edt = np.where(crop, edt, 0.0)
     index = np.arange(1, count + 1)
     max_edt = np.asarray(ndimage.maximum(edt, components, index), dtype=np.float64)
-    centres = np.asarray(ndimage.maximum_position(edt, components, index), dtype=np.float64)
+    centroids = np.asarray(ndimage.center_of_mass(crop, components, index), dtype=np.float64)
+    centres = _plateau_centres(edt, components, max_edt, centroids, spacing_array)
     voxels = np.bincount(components.ravel(), minlength=count + 1)[1:]
     volume = voxels * float(np.prod(spacing_array))
     radius = (3 * volume / (4 * np.pi)) ** (1 / 3)

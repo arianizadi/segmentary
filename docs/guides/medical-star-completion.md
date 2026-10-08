@@ -100,7 +100,7 @@ The prior-art review found that targets taken from the patch are wrong: a lesion
 | `instances` | uint16 component labels (26-connected components of the union of `lesion_labels`), cropped to the bounding box of all lesion voxels plus a 2-voxel border |
 | `crop_origin`, `shape`, `spacing` | the crop's origin in the preprocessed array, the full array shape, the plan spacing |
 | `edt_mm` | float16 distance to the component boundary in mm (EDT of the zero-padded crop with `sampling = spacing`), 0 outside lesions |
-| `centres` | float64 inner centre of each component, the `maximum_position` of `edt_mm` (deterministic) |
+| `centres` | float64 inner centre of each component, the `edt_mm` maximum, taking the plateau voxel nearest the component centroid (platform-independent) |
 | `max_edt_mm`, `volume_mm3`, `equivalent_radius_mm`, `bbox_diagonal_mm`, `labels` | per component |
 | `rays_mm` | float32, (K, 96): first-exit distances from the inner centre along the 96 rays in volume mm. The march uses steps of 0.25 x the smallest spacing and is refined by 6 bisection steps. These are the S0 representability rays at the preprocessed spacing. |
 
