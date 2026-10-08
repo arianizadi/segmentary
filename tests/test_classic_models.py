@@ -365,6 +365,12 @@ def test_campaign_catalog_and_planner_recognise_the_new_models() -> None:
     manifest = campaign.load_campaign_manifest()
     jobs = [job for job in campaign.campaign_jobs(manifest, (0,)) if job.model.id in IDS]
     assert len(jobs) == len(IDS) * 3
-    # The RAD 9/24 manifests are deliberately unchanged.
+    # Only the all-model scene-grouped manifests use the new models, and only from their
+    # recipe weights (no Cityscapes or RailSem19 checkpoints exist for them yet).
     for path in (ROOT / "configs/campaigns").glob("rad_9_24_2026-*.yaml"):
-        assert not set(yaml.safe_load(path.read_text()).get("models", [])) & set(IDS)
+        spec = yaml.safe_load(path.read_text())
+        used = set(spec.get("models", [])) & set(IDS)
+        if path.stem.startswith("rad_9_24_2026-fixed-grouped-all"):
+            assert used and spec["model_protocols"] == {m: ["rtis_only"] for m in IDS}
+        else:
+            assert not used
