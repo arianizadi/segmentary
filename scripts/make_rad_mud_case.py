@@ -126,7 +126,7 @@ def load_campaigns(
         runs[arm] = []
         for r in results:
             state = report.read(root / "state" / f"{r.job}.json")
-            artifact = state["collection"]["artifacts"][report.SELECTED]
+            artifact = state["collection"]["artifacts"][report.VARIANT[r.checkpoint]]
             path = report.remap(artifact["per-image-confusion.json.gz"]["path"], maps)
             runs[arm].append(Run(r.job, r.model, r.protocol, r.metrics, path.parent))
     return runs, coverage

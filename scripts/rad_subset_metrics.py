@@ -4,13 +4,16 @@
     PYTHONPATH=.:src python scripts/rad_subset_metrics.py \\
         --confusion <diagnostics>/best-auto-val/per-image-confusion.json.gz \\
         --total <state>.json --samples <arm>/audit/samples.json \\
-        --viewpoints configs/datasets/rad_9_24_2026-viewpoints.yaml [--split val] [--out x.json]
+        --viewpoints configs/datasets/rad_9_24_2026-viewpoints.yaml [--split val] \\
+        [--checkpoint best|final] [--out x.json]
 
 Inputs are a run's per-image confusion matrices (``{key: 21x21 rows=GT, cols=prediction}``,
 gzip JSON as written by ``scripts/collect_rtis_statistics.py`` and by
 ``scripts/paul_forks/score_predictions.py``), the run's reported total confusion (a campaign
 state JSON, whose ``evaluation.metrics.confusion`` is used after checking it equals the
-``best-auto-val`` diagnostics confusion, a fork ``results-<split>.json`` or
+``best-auto-val`` diagnostics confusion, or with ``--checkpoint final`` (campaigns with
+``primary_checkpoint: final``, ``final-auto-val/per-image-confusion.json.gz``) its
+``final-auto-val`` diagnostics confusion; a fork ``results-<split>.json`` or
 a ``metrics.json``), the arm's ``audit/samples.json`` and the tracked viewpoint file.
 
 Images are joined to viewpoints by ``image_sha256`` from the arm's samples, never by stem;
@@ -71,6 +74,9 @@ EXCLUDED_GROUP = "trackside-maintenance"
 SUBSETS = ("all", "cab-view", "not-cab-view", f"excl-{EXCLUDED_GROUP}")
 SPLITS = ("train", "val")
 TOP_K = 5
+# Campaign diagnostics results of the two primary checkpoints (auto raw/EMA weights, val).
+BEST, FINAL = "best-auto-val", "final-auto-val"
+VARIANTS = {"best": BEST, "final": FINAL}
 
 
 class SubsetError(ValueError):
@@ -130,13 +136,26 @@ def load_confusion(path: Path) -> dict[str, np.ndarray]:
     return matrices
 
 
-def reported_total(record: dict[str, Any]) -> np.ndarray:
+def reported_total(record: dict[str, Any], variant: str = BEST) -> np.ndarray:
     """The run's own total confusion: campaign state, fork results or a metrics.json.
 
-    For a campaign state the total is ``evaluation.metrics.confusion`` and must equal the
-    ``best-auto-val`` diagnostics confusion the per-image file belongs to, when recorded."""
+    For a campaign state and ``variant`` ``best-auto-val`` (the checkpoint selected on
+    validation) the total is ``evaluation.metrics.confusion`` and must equal the
+    ``best-auto-val`` diagnostics confusion the per-image file belongs to, when recorded. For
+    ``final-auto-val`` (campaigns with ``primary_checkpoint: final``) the standalone evaluation
+    scored the best checkpoint, so the total is the ``final-auto-val`` diagnostics confusion."""
+    if variant not in VARIANTS.values():
+        raise SubsetError(f"checkpoint result {variant!r} is not one of {list(VARIANTS.values())}")
     diagnostics = ((record.get("collection") or {}).get("diagnostics") or {}).get("results")
-    selected = ((diagnostics or {}).get("best-auto-val") or {}).get("metrics") or {}
+    if variant == FINAL:
+        final = ((diagnostics or {}).get(FINAL) or {}).get("metrics") or {}
+        if "confusion" not in final:
+            raise SubsetError(f"record carries no {FINAL} confusion")
+        total = np.asarray(final["confusion"], dtype=np.int64)
+        if total.shape != (NUM_CLASSES, NUM_CLASSES):
+            raise SubsetError("reported total confusion is not 21x21")
+        return total
+    selected = ((diagnostics or {}).get(BEST) or {}).get("metrics") or {}
     if "confusion" in selected:
         evaluated = (record.get("evaluation") or {}).get("metrics") or {}
         if not np.array_equal(
@@ -309,12 +328,19 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--viewpoints", type=Path, required=True)
     p.add_argument("--classes", type=Path, help="the arm's classes.json (default: taxonomy)")
     p.add_argument("--split", choices=SPLITS, default="val")
+    p.add_argument(
+        "--checkpoint",
+        choices=list(VARIANTS),
+        default="best",
+        help="campaign state: the checkpoint --confusion belongs to (final for campaigns with "
+        "primary_checkpoint: final); default best",
+    )
     p.add_argument("--out", type=Path, help="write JSON here instead of stdout")
     args = p.parse_args(argv)
     try:
         result = run_subsets(
             args.confusion,
-            reported_total(json.loads(args.total.read_text())),
+            reported_total(json.loads(args.total.read_text()), VARIANTS[args.checkpoint]),
             json.loads(args.samples.read_text()),
             load_viewpoints(args.viewpoints),
             args.split,

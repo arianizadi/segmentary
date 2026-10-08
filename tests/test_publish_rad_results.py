@@ -848,6 +848,185 @@ def test_inference_cost_prefers_the_process_total_and_marks_allocator_only_memor
     assert pub.allocator_note([["m", *total.cells()]]) == []
 
 
+# ----------------------------------------------------------------------------- campaigns per split
+
+
+def fake_capture(root: Path) -> dict:
+    """reports.capture without tensorboard or configs: the campaign and each job's status."""
+    campaign = json.loads((root / "campaign.json").read_text())
+    jobs = []
+    for job in json.loads((root / "plan.json").read_text())["jobs"]:
+        state = json.loads((root / "state" / f"{job['name']}.json").read_text())
+        jobs.append(
+            {k: job[k] for k in ("name", "model", "protocol")}
+            | {"seed": 0, "status": state["status"]}
+        )
+    defaults = {
+        "code_sha": "c" * 40,
+        "split_sha256": "s",
+        "dataset_sizes": {"train": 1, "val": 3, "test": 0},
+        "grouping_status": "provisional",
+        "collection_contract": "rtis-full-statistics-v1",
+    }
+    return {"campaign": defaults | campaign, "jobs": jobs}
+
+
+@pytest.fixture
+def split_campaigns(tmp_path, monkeypatch):
+    """``paul`` (best), the first ``fixed-grouped`` run (best, 2 models, created 10-05) and a
+    newer all-model ``fixed-grouped`` run (final, created 10-07) with nothing finished yet."""
+    import yaml
+
+    from test_rad_report import make_campaign, make_final_campaign, viewpoints
+
+    monkeypatch.setattr(reports, "capture", fake_capture)
+    datasets = tmp_path / "datasets"
+    paul = make_campaign(tmp_path, datasets, "paul")
+    first = make_campaign(tmp_path, datasets, "fixed-grouped", 2, "2026-10-05T03:14:59+00:00")
+    new = make_final_campaign(tmp_path, datasets, completed=())
+    vp = tmp_path / "viewpoints.yaml"
+    vp.write_text(yaml.safe_dump({"images": viewpoints()}))
+    return [paul, first, new], datasets, vp
+
+
+def scene_grouped(readme: str) -> str:
+    return readme.split("### Scene-grouped split", 1)[1].split("### ", 1)[0]
+
+
+def test_split_keeps_the_older_campaign_until_the_new_one_finishes_a_run(tmp_path, split_campaigns):
+    campaigns, datasets, vp = split_campaigns
+    files, error, _ = pub.render_tree(campaigns, None, datasets, vp)
+    assert error is None
+    section = scene_grouped(files["README.md"])
+    # The first (best-checkpoint) run still fills the table: cab-view mud IoU 80.0.
+    assert "| [m1](fixed-grouped/models/m1/README.md) | recipe pretrained weights | 80.0 |" in (
+        section
+    )
+    assert "each at its" not in files["README.md"]  # both splits as before, plus coverage line
+    assert (
+        "A newer run on this split (2 models, final checkpoint after the full training budget) "
+        "has 0 of 3 runs done; this table switches to it once its first run finishes." in section
+    )
+    assert "*" not in section.split("|", 1)[1]  # the shown campaign is complete for m1
+    assert not any(name.startswith("earlier-runs/") for name in files)
+    # Both splits still report best-on-validation checkpoints: the caveat stays as it was.
+    assert (
+        "Paul's split and the scene-grouped split report the checkpoint that scored best"
+        in (files["README.md"])
+    )
+    details = files[pub.DETAILS]
+    assert "`fixed-grouped`: 2 models, final checkpoint after the full training budget, shown " in (
+        details
+    )
+    assert "Checkpoints are selected (and training early stopped)" in details
+    assert "trained two ways with the same" in details
+    assert "Selected checkpoint `best-auto-val`." in details
+    arm = files["fixed-grouped/README.md"]
+    assert "This campaign reports the **final checkpoint**" not in arm
+    assert_documentation_rules(write_checkout(tmp_path / "checkout", files))
+
+
+def test_new_final_campaign_takes_over_the_split_with_its_first_finished_run(
+    tmp_path, split_campaigns
+):
+    from test_rad_report import final_state, write_json
+
+    campaigns, datasets, vp = split_campaigns
+    new = campaigns[2]
+    for name in ("m1--rtis_only--seed-0", "m3--rtis_only--seed-0"):
+        write_json(new / "state" / f"{name}.json", final_state(new, name))
+    files, error, _ = pub.render_tree(campaigns, None, datasets, vp)
+    assert error is None
+    readme = files["README.md"]
+    section = scene_grouped(readme)
+    # The final checkpoint (cab-view 77.8), not the first run's best one (80.0) or its own
+    # best-on-validation checkpoint (60.0); m1 still has a starting point to run: `*`.
+    assert "| [m1](fixed-grouped/models/m1/README.md)* | recipe pretrained weights | 77.8 |" in (
+        section
+    )
+    assert "| [m3](fixed-grouped/models/m3/README.md) | recipe pretrained weights (only " in (
+        section
+    )
+    assert "80.0" not in section and "60.0" not in section
+    assert "No finished run yet" not in section  # every planned model has a finished run
+    paul = readme.split("### Paul's split", 1)[1].split("### ", 1)[0]
+    assert "No finished run yet: `m2`." in paul  # m2 is planned but still queued
+    assert "2 models, each at its best-on-validation checkpoint (flattering)." in paul
+    assert "each at its final checkpoint after the full training budget, so nothing is " in section
+    assert "2 of 3 runs done; `*` = not all starting points of that model done yet." in section
+    assert "A newer run" not in section
+    heading = "First scene-grouped run (2 models, best-on-validation checkpoint)"
+    link = f"[the details](details.md{pub.anchor(heading)})"
+    assert link == (
+        "[the details](details.md#first-scene-grouped-run-2-models-best-on-validation-checkpoint)"
+    )
+    assert (
+        f"The first scene-grouped run (2 models, best-on-validation checkpoint) is in {link}"
+        in (section)
+    )
+    key = readme.split("## Key result", 1)[1].split("## ", 1)[0]
+    assert (
+        "| Scene-grouped split | 2 of 3 done |" in key and "| Paul's split | 1 of 2 done |" in key
+    )
+    # No "selected on validation" caveat for the final-checkpoint split; kept for Paul's.
+    caveats = readme.split("## Caveats", 1)[1].split("## Details", 1)[0]
+    assert "- Paul's split reports the checkpoint that scored best on the same validation" in (
+        caveats
+    )
+    assert (
+        "the scene-grouped split and cross-validation report the final checkpoint after the "
+        "full training budget, so nothing is picked on their scored images." in caveats
+    )
+    assert "Paul's split and the scene-grouped split report" not in caveats
+    details = files[pub.DETAILS]
+    assert f"## {heading}" in details
+    assert "Replaced on the study page by `fixed-grouped-all-final`" in details
+    first = details.split(f"## {heading}", 1)[1].split("\n## ", 1)[0]
+    assert "| m1 | recipe pretrained weights | 80.0 |" in first  # no arm page: no link
+    assert "[All its runs (CSV)](earlier-runs/fixed-grouped-seed0.csv)" in first
+    assert files["earlier-runs/fixed-grouped-seed0.csv"].count("\nsegmentary,") == 4
+    assert "`fixed-grouped`: 2 models, best-on-validation checkpoint, superseded" in details
+    assert "`fixed-grouped` with 2 models (3 jobs, seed 0, the final checkpoint" in details
+    assert "For `paul` checkpoints are selected" in details
+    assert "`fixed-grouped` reports the final checkpoint after the full step budget" in details
+    assert "Checkpoint: P `best-auto-val` (selected on validation), FG `final-auto-val`" in details
+    csv_rows = files["rad-comparison.csv"].splitlines()
+    assert any(
+        ",fixed-grouped,m1,rtis_only,,,m1--rtis_only--seed-0,final,all," in r for r in csv_rows
+    )
+    # The split's pages describe the final checkpoint; the per-run table is the best one.
+    arm = files["fixed-grouped/README.md"]
+    assert "score the final checkpoint after the full training budget" in arm
+    assert "This campaign reports the **final checkpoint**" in arm
+    assert "selects checkpoints and early-stops" not in arm and "stop after five checks" not in arm
+    assert "every job trains the full 4,000 steps" in arm
+    assert "| Best-checkpoint mud IoU, pixels pooled (%) |" in arm
+    assert "Best-checkpoint mud IoU, pixels pooled (%)" in files["fixed-grouped/results.csv"]
+    page = files["fixed-grouped/models/m1/README.md"]
+    assert "Primary result: the **final checkpoint** after the full step budget" in page
+    assert "Study metrics of the final checkpoint" in page
+    assert "| rtis_only | 0 | 77.78 |" in page
+    assert "Primary selection and early stopping" not in page
+    assert "**Models:** 2 segmentation models, each from up to 2 starting points" in readme
+    assert "on these images); 1 of them only from recipe pretrained weights. Test" in readme
+    assert_documentation_rules(write_checkout(tmp_path / "checkout", files))
+
+
+def test_smoke_campaigns_and_repeated_roots_are_refused(tmp_path, split_campaigns):
+    campaigns, datasets, vp = split_campaigns
+    record = json.loads((campaigns[2] / "campaign.json").read_text())
+    (campaigns[2] / "campaign.json").write_text(json.dumps(record | {"smoke": True}))
+    with pytest.raises(ValueError, match="smoke campaign"):
+        pub.render_tree(campaigns, None, datasets, vp)
+    with pytest.raises(ValueError, match="given twice"):
+        pub.render_tree([campaigns[0], campaigns[0]], None, datasets, vp)
+
+
+def test_new_campaign_frozen_checkout_is_guarded_by_default(tmp_path):
+    args = pub.parse(["--checkout", str(tmp_path / "clone")])
+    assert Path("/data/izadia1/projects/segmentary-rad-fgall-fce0ea0a") in args.frozen_checkout
+
+
 def test_per_class_table_shows_every_class_and_dashes_for_absent_ones():
     metrics = {
         "present_miou": 0.5,

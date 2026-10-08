@@ -18,10 +18,19 @@ images; mIoU over each class's images, then over the classes present; see
 the summed confusion, in columns named ``*_pixel_pooled``, and per class the present-image IoU
 and image count (``iou_present_images:<class>``, ``images_present:<class>``).
 
-- Segmentary job: completed when ``state/<job>.json`` has ``status: completed`` and
-  ``collection.diagnostics.results["best-auto-val"]`` (the selected best checkpoint with the
-  campaign's auto raw/EMA weights, validation split). Its ``per-image-confusion.json.gz`` must
-  match the SHA-256 the collector recorded and sum to ``evaluation.metrics.confusion``.
+- Segmentary job: completed when ``state/<job>.json`` has ``status: completed`` and the
+  diagnostics of the campaign's primary checkpoint with its auto raw/EMA weights on the
+  validation split (``collection.diagnostics.results[...]``). That is ``best-auto-val`` (the
+  checkpoint selected on validation) unless the campaign records ``primary_checkpoint: final``
+  (``campaign.json``; ``plan.json`` must agree), whose result is ``final-auto-val``: the final
+  checkpoint, accepted only when the job trained the whole ``target_steps`` budget (final
+  checkpoint at that step, stopping reason ``budget_complete``, the result scored on the
+  recorded final checkpoint), so nothing was selected on the validation images, as in
+  ``scripts/cv_report.py``. The ``per-image-confusion.json.gz`` must match the SHA-256 the
+  collector recorded and sum to the run's reported total (``evaluation.metrics.confusion`` for
+  best, which must equal the diagnostics confusion; the ``final-auto-val`` confusion for final).
+  The CSV's ``checkpoint`` column says which (``best`` / ``final``; fork runs ``best``, their
+  ``best_mud_epoch``), the README's headline says it per arm.
 - Fork run: completed when ``<run>/results-val.json`` (``score_predictions.py``, split val,
   whole-image single-scale) and its ``results-val-per-image-confusion.json.gz`` exist; runs
   with a probe, dry-run or pins override are excluded. Test results are never read.
@@ -65,7 +74,11 @@ LABEL_ARM_STOPPED_POOLED = LABEL_ARM_STOPPED.replace(
     "cab-view mud IoU", "cab-view mud IoU (pixels pooled)"
 )
 DATASET = "rad_9_24_2026-{arm}"
-SELECTED = "best-auto-val"
+# A campaign's primary checkpoint (``primary_checkpoint``, default best) -> the diagnostics
+# result scored on it (auto raw/EMA weights, validation split).
+BEST, FINAL = subsets.BEST, subsets.FINAL
+VARIANT = subsets.VARIANTS
+SELECTED = BEST  # the primary result of campaigns that record no primary_checkpoint
 SPLIT = "val"
 RUNS = Path("/data/izadia1/projects/segmentary-runs")
 DEFAULT_CAMPAIGNS = tuple(RUNS / "rad_9_24_2026" / f"{arm}-seed0-20261005-r2" for arm in ARMS)
@@ -108,11 +121,12 @@ CSV_FIELDS = (
     "label",
     "checkpoint_owners",
     "job",
+    "checkpoint",
     "subset",
     *CSV_METRICS,
 )
 FORK_SKIP_FLAGS = ("dry_run", "probe_epochs", "pins_override")
-NO_DIAGNOSTICS = f"completed, no {SELECTED} diagnostics"
+NO_DIAGNOSTICS = "completed, no {variant} diagnostics"
 # Visual remarks on scene groups that decide a subset, shown when that group does.
 GROUP_NOTES = {
     "rural-overcast-cab-view": (
@@ -138,6 +152,7 @@ class Result:
     owners: str = ""
     selection: str = ""
     seed: str = ""
+    checkpoint: str = "best"  # "best" (selected on validation) or "final" (full budget)
     metrics: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
@@ -156,6 +171,8 @@ class Report:
     composition: dict[str, dict[str, Any]]
     inputs: dict[str, str]
     missing_arms: list[str] = field(default_factory=list)
+    # The primary checkpoint ("best" / "final") of each scanned campaign, by arm.
+    checkpoints: dict[str, str] = field(default_factory=dict)
 
 
 def sha256_file(path: Path) -> str:
@@ -263,6 +280,22 @@ def composition(arms: Arms, viewpoints: dict) -> tuple[dict[str, dict[str, Any]]
     return out, missing
 
 
+def primary_checkpoint(campaign: dict, plan: dict, root: Path) -> str:
+    """``best`` or ``final``: the campaign's ``primary_checkpoint`` (default best, as for the
+    campaigns planned before the key existed); a plan that records one must agree."""
+    primary = campaign.get("primary_checkpoint", plan.get("primary_checkpoint", "best"))
+    if plan.get("primary_checkpoint", primary) != primary:
+        raise ReportError(f"{root}: campaign.json and plan.json disagree on primary_checkpoint")
+    if primary not in VARIANT:
+        raise ReportError(f"{root}: primary_checkpoint {primary!r} is not one of {list(VARIANT)}")
+    return str(primary)
+
+
+def campaign_checkpoint(root: Path) -> str:
+    """The primary checkpoint of the campaign at ``root`` (``best`` / ``final``)."""
+    return primary_checkpoint(read(root / "campaign.json"), read(root / "plan.json"), root)
+
+
 def scan_campaign(
     root: Path, arms: Arms, viewpoints: dict, maps: list[tuple[str, str]]
 ) -> tuple[str, list[Result], list[Coverage]]:
@@ -273,23 +306,35 @@ def scan_campaign(
     samples, names, samples_sha = arms.get(arm)
     if samples_sha != campaign.get("dataset_audit_sha256"):
         raise ReportError(f"{root}: {arm} audit/samples.json differs from the campaign's")
+    plan = read(root / "plan.json")
+    primary = primary_checkpoint(campaign, plan, root)
+    variant = VARIANT[primary]
     results, coverage = [], []
-    for job in sorted(read(root / "plan.json")["jobs"], key=lambda j: j["name"]):
+    for job in sorted(plan["jobs"], key=lambda j: j["name"]):
         state_path = root / "state" / f"{job['name']}.json"
         state = read(state_path) if state_path.is_file() else {}
         status = str(state.get("status", "no state"))
         diagnostics = ((state.get("collection") or {}).get("diagnostics") or {}).get("results")
-        selected = (diagnostics or {}).get(SELECTED)
+        selected = (diagnostics or {}).get(variant)
         if status == "completed" and not selected:
-            status = NO_DIAGNOSTICS
+            status = NO_DIAGNOSTICS.format(variant=variant)
         if status != "completed":
             coverage.append(Coverage("segmentary", arm, job["name"], status))
             continue
         try:
             results.append(
-                campaign_result(state, selected, arm, job, samples, names, viewpoints, maps)
+                campaign_result(
+                    state, selected, arm, job, samples, names, viewpoints, maps, campaign, primary
+                )
             )
-        except (ReportError, subsets.SubsetError, KeyError, TypeError, OSError) as error:
+        except (
+            ReportError,
+            subsets.SubsetError,
+            KeyError,
+            TypeError,
+            ValueError,
+            OSError,
+        ) as error:
             raise ReportError(f"{state_path}: {why(error)}") from error
         coverage.append(Coverage("segmentary", arm, job["name"], "completed"))
     return arm, results, coverage
@@ -304,16 +349,29 @@ def campaign_result(
     names: list[str],
     viewpoints: dict,
     maps: list[tuple[str, str]],
+    campaign: dict | None = None,
+    primary: str = "best",
 ) -> Result:
+    variant = VARIANT[primary]
     if selected.get("split") != SPLIT:
-        raise ReportError(f"{SELECTED} is not the {SPLIT} split")
-    artifact = state["collection"]["artifacts"][SELECTED]["per-image-confusion.json.gz"]
+        raise ReportError(f"{variant} is not the {SPLIT} split")
+    if primary == "final":
+        # As scripts/cv_report.py: the final checkpoint at the full step budget, with no early
+        # stop, so nothing was chosen on the validation images it is scored on.
+        final = state["checkpoints"]["final"]
+        if int(final["global_step"]) != int((campaign or {})["target_steps"]):
+            raise ReportError(f"final checkpoint at step {final['global_step']}, not the budget")
+        if (state.get("stopping") or {}).get("reason") != "budget_complete":
+            raise ReportError("training did not run the full budget (selection on validation)")
+        if selected.get("checkpoint_sha256") != final["sha256"]:
+            raise ReportError(f"{variant} was not scored on the final checkpoint")
+    artifact = state["collection"]["artifacts"][variant]["per-image-confusion.json.gz"]
     path = remap(artifact["path"], maps)
     if sha256_file(path) != artifact["sha256"]:
         raise ReportError(f"{path} differs from the SHA-256 recorded for it")
-    total = subsets.reported_total(state)
+    total = subsets.reported_total(state, variant)
     if not np.array_equal(total, np.asarray(selected["metrics"]["confusion"])):
-        raise ReportError(f"{SELECTED} confusion differs from the evaluation")
+        raise ReportError(f"{variant} confusion differs from the evaluation")
     train = ((state.get("training") or {}).get("config") or {}).get("train") or {}
     monitor = train.get("selection_metric") or (state.get("stopping") or {}).get("monitor")
     seed = (state.get("training") or {}).get("seed", train.get("seed"))
@@ -325,6 +383,7 @@ def campaign_result(
         protocol=job["protocol"],
         selection=str(monitor or "unrecorded"),
         seed="" if seed is None else str(seed),
+        checkpoint=primary,
         metrics=subsets.run_subsets(path, total, samples, viewpoints, SPLIT, names),
     )
 
@@ -420,12 +479,14 @@ def build(
     viewpoints = subsets.load_viewpoints(viewpoints_path)
     arms = Arms(datasets)
     results, coverage = [], []
-    seen = {}
+    seen: dict[str, Path] = {}
+    checkpoints: dict[str, str] = {}
     for root in campaigns:
         arm, found, covered = scan_campaign(root, arms, viewpoints, maps)
         if arm in seen:
             raise ReportError(f"{root} and {seen[arm]} are both the {arm} arm")
         seen[arm] = root
+        checkpoints[arm] = campaign_checkpoint(root)
         results += found
         coverage += covered
     if fork_runs is not None:
@@ -445,7 +506,7 @@ def build(
     composed, missing = composition(arms, viewpoints)
     for arm in missing:
         inputs[f"samples {arm}"] = f"not found under {datasets}"
-    return Report(results, coverage, composed, inputs, missing)
+    return Report(results, coverage, composed, inputs, missing, checkpoints)
 
 
 # ----------------------------------------------------------------------------- rendering
@@ -490,6 +551,7 @@ def csv_text(report: Report) -> str:
                     "label": r.label,
                     "checkpoint_owners": r.owners,
                     "job": r.job,
+                    "checkpoint": r.checkpoint,
                     "subset": subset,
                     **{column: fmt(m[key]) for column, key in CSV_METRICS.items()},
                     **{
@@ -544,10 +606,80 @@ def share(part: int, whole: int) -> str:
     return pct(part / whole) if whole else "—"
 
 
+CHECKPOINT_TEXT = {
+    "best": "selected on validation",
+    "final": "final checkpoint after the full step budget",
+}
+
+
+def arm_names(arms: list[str]) -> str:
+    return " and ".join(f"`{arm}` ({SHORT[arm]})" for arm in arms)
+
+
+def finals_of(report: Report) -> list[str]:
+    """The arms whose campaign reports the final checkpoint."""
+    return [arm for arm in ARMS if report.checkpoints.get(arm) == "final"]
+
+
+def checkpoint_sentence(report: Report) -> str:
+    """Which checkpoint the headline reports, per arm."""
+    if not finals_of(report):
+        return f"Selected checkpoint `{SELECTED}`."
+    return (
+        "Checkpoint: "
+        + ", ".join(
+            f"{SHORT[arm]} `{VARIANT[report.checkpoints[arm]]}` "
+            f"({CHECKPOINT_TEXT[report.checkpoints[arm]]})"
+            for arm in ARMS
+            if arm in report.checkpoints
+        )
+        + "."
+    )
+
+
+def optimism_caveat(report: Report, selections: list[str]) -> str:
+    """The caveat on checkpoints chosen on the reported val split. A final-checkpoint campaign
+    selects nothing on it, so the caveat names only the arms (and fork runs) that do."""
+    selection = (
+        f" (campaign selection and early stopping on `{'`, `'.join(selections)}`, "
+        "with pixels pooled over the whole split)"
+        if selections
+        else ""
+    )
+    forks = "fork runs report their `best_mud_epoch` checkpoint, also chosen on this val split. "
+    finals = finals_of(report)
+    if not finals:
+        return (
+            "- **These val numbers are optimistic.** The reported checkpoint is the one selected "
+            f"on this same val split{selection}; {forks}"
+            "They are not held-out estimates, mud IoU least of all."
+        )
+    best = [arm for arm in ARMS if report.checkpoints.get(arm, "best") == "best"]
+    final = (
+        f"{arm_names(finals)} {'reports' if len(finals) == 1 else 'report'} the final checkpoint "
+        f"(`{FINAL}`) after the full step budget, with no early stopping, so nothing is selected "
+        "on its val images; it is still one val split, not a cross-validated estimate."
+    )
+    if best:
+        return (
+            "- **Best-checkpoint val numbers are optimistic.** For "
+            f"{arm_names(best)} the reported checkpoint is the one selected on this same val "
+            f"split{selection}; {forks}They are not held-out estimates, mud IoU least of all. "
+            + final
+        )
+    return (
+        "- **Fork numbers are optimistic.** Fork runs report their `best_mud_epoch` checkpoint, "
+        "chosen on this val split, so they are not held-out estimates. " + final
+    )
+
+
 def how_to_read(report: Report) -> list[str]:
     comp = report.composition
     stratified, grouped = (comp.get(a) for a in ARMS)
-    selections = sorted({r.selection for r in report.results if r.source == "segmentary"})
+    # Only best-checkpoint campaigns select on validation; a final checkpoint selects nothing.
+    selections = sorted(
+        {r.selection for r in report.results if r.source == "segmentary" and r.checkpoint == "best"}
+    )
     seeds = sorted({r.seed for r in report.results if r.source == "segmentary"})
     lines = [
         "## How to read this",
@@ -575,17 +707,7 @@ def how_to_read(report: Report) -> list[str]:
         "",
         "**Caveats.**",
         "",
-        "- **These val numbers are optimistic.** The reported checkpoint is the one selected on "
-        "this same val split"
-        + (
-            f" (campaign selection and early stopping on `{'`, `'.join(selections)}`, "
-            "with pixels pooled over the whole split"
-            if selections
-            else ""
-        )
-        + (")" if selections else "")
-        + "; fork runs report their `best_mud_epoch` checkpoint, also chosen on this val split. "
-        "They are not held-out estimates, mud IoU least of all.",
+        optimism_caveat(report, selections),
         "- **Single seed, no uncertainty.** "
         + (f"Every campaign result is seed {', '.join(seeds)}; " if seeds else "One seed per run; ")
         + "there are no repeats or confidence intervals, and the subsets are small (see `n=`), "
@@ -705,7 +827,7 @@ def render(report: Report, generated_at: str) -> str:
         "## Headline: Segmentary campaign models",
         "",
         "Percent; columns per arm: P = `paul`, FG = `fixed-grouped`. "
-        "Selected checkpoint `best-auto-val`. Empty = job not completed.",
+        f"{checkpoint_sentence(report)} Empty = job not completed.",
         "",
     ]
     headers = ["model", "protocol"] + [
@@ -730,7 +852,15 @@ def render(report: Report, generated_at: str) -> str:
         "Differences in IoU points for model x protocol pairs completed in both arms, single "
         "seed, no uncertainty. Split = FG - P: different labels, val images and train images "
         "(the label part is small on average but up to about 5 points per run; see How to read "
-        "this).",
+        "this)."
+        + (
+            " The arms also report different checkpoints ("
+            + ", ".join(f"{SHORT[a]} {report.checkpoints[a]}" for a in ARMS)
+            + "), which the difference mixes in too."
+            if all(a in report.checkpoints for a in ARMS)
+            and len({report.checkpoints[a] for a in ARMS}) > 1
+            else ""
+        ),
         "",
     ]
     effect_rows = []

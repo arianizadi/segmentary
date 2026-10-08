@@ -227,12 +227,15 @@ def make_arm(datasets: Path, arm: str) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def make_campaign(tmp: Path, datasets: Path, arm: str, scale: int = 1) -> Path:
+def make_campaign(
+    tmp: Path, datasets: Path, arm: str, scale: int = 1, created_at: str | None = None
+) -> Path:
     root = tmp / "runs" / f"{arm}-seed0"
     audit = make_arm(datasets, arm)
     write_json(
         root / "campaign.json",
-        {"dataset": f"rad_9_24_2026-{arm}", "dataset_audit_sha256": audit},
+        {"dataset": f"rad_9_24_2026-{arm}", "dataset_audit_sha256": audit}
+        | ({"created_at": created_at} if created_at else {}),
     )
     jobs = [
         {"name": "m1--rtis_only--seed-0", "model": "m1", "protocol": "rtis_only"},
@@ -264,6 +267,77 @@ def make_campaign(tmp: Path, datasets: Path, arm: str, scale: int = 1) -> Path:
         },
     )
     write_json(root / "state" / f"{jobs[1]['name']}.json", {"status": "queued"})
+    return root
+
+
+# A final-checkpoint campaign's two checkpoints differ on image A: best (selected on val) 6 TP /
+# 2 FN / 2 FP mud, cab-view mud IoU 0.6; final (full budget) 7 TP / 1 FN / 1 FP, IoU 7/9.
+FINAL_MATRICES = dict(MATRICES) | {
+    "g-cab/0001": matrix({(0, 0): 11, (0, MUD): 1, (MUD, MUD): 7, (MUD, 0): 1})
+}
+FINAL_JOBS = (
+    ("m1", "rtis_only"),
+    ("m1", "cityscapes_to_rtis"),
+    ("m3", "rtis_only"),  # a model planned from its recipe weights only
+)
+
+
+def final_state(root: Path, name: str, step: int = 4000, stopping: str = "budget_complete") -> dict:
+    """A completed job of a ``primary_checkpoint: final`` campaign (best and final scored)."""
+    totals, artifacts = {}, {}
+    for variant, matrices in (("best", MATRICES), ("final", FINAL_MATRICES)):
+        totals[variant] = sum(matrices.values(), np.zeros((N, N), np.int64)).tolist()
+        path = root / f"future-runs/{name}/diagnostics/{variant}-auto-val/pic.json.gz"
+        artifacts[f"{variant}-auto-val"] = {"per-image-confusion.json.gz": write_gz(path, matrices)}
+    return {
+        "status": "completed",
+        "training": {"seed": 0, "config": {"train": {"selection_metric": "val_iou/mud-pumping"}}},
+        "stopping": {"reason": stopping},
+        "checkpoints": {
+            "best": {"sha256": "b" * 64, "global_step": 1000},
+            "final": {"sha256": "f" * 64, "global_step": step},
+        },
+        "evaluation": {"metrics": {"confusion": totals["best"]}},  # scores the best checkpoint
+        "collection": {
+            "diagnostics": {
+                "results": {
+                    f"{v}-auto-val": {
+                        "split": "val",
+                        "checkpoint_sha256": v[0] * 64,
+                        "metrics": {"confusion": totals[v]},
+                    }
+                    for v in ("best", "final")
+                }
+            },
+            "artifacts": artifacts,
+        },
+    }
+
+
+def make_final_campaign(
+    tmp: Path, datasets: Path, arm: str = "fixed-grouped", completed: tuple[str, ...] = ("m1",)
+) -> Path:
+    """Every job queued except the ``rtis_only`` runs of ``completed`` models."""
+    root = tmp / "runs" / f"{arm}-all-final"
+    audit = make_arm(datasets, arm)
+    write_json(
+        root / "campaign.json",
+        {
+            "dataset": f"rad_9_24_2026-{arm}",
+            "dataset_audit_sha256": audit,
+            "created_at": "2026-10-07T23:31:05+00:00",
+            "target_steps": 4000,
+            "primary_checkpoint": "final",
+        },
+    )
+    jobs = [
+        {"name": f"{m}--{p}--seed-0", "model": m, "protocol": p, "seed": 0} for m, p in FINAL_JOBS
+    ]
+    write_json(root / "plan.json", {"jobs": jobs, "primary_checkpoint": "final"})
+    for job in jobs:
+        done = job["model"] in completed and job["protocol"] == "rtis_only"
+        state = final_state(root, job["name"]) if done else {"status": "queued"}
+        write_json(root / "state" / f"{job['name']}.json", state)
     return root
 
 
@@ -544,3 +618,132 @@ def test_reported_total_checks_selected_diagnostics():
     ] += 1
     with pytest.raises(rsm.SubsetError, match="differs from the evaluation"):
         rsm.reported_total(state)
+
+
+# ----------------------------------------------------------------------------- final checkpoint
+
+
+def final_fixture(tmp_path: Path) -> tuple[list[str], Path]:
+    """``paul`` from a best-checkpoint campaign, ``fixed-grouped`` from a final one."""
+    args = fixture(tmp_path)
+    final = make_final_campaign(tmp_path, tmp_path / "datasets")
+    args[3] = str(final)  # replaces the best-checkpoint fixed-grouped campaign
+    return args, final
+
+
+def test_final_checkpoint_campaign_is_scored_on_final_auto_val(tmp_path):
+    args, _ = final_fixture(tmp_path)
+    out = tmp_path / "out"
+    assert rad_report.main([*args, "--out", str(out)]) == 0
+    readme = (out / "README.md").read_text()
+    rows = (out / "rad-comparison.csv").read_text().splitlines()
+    header = rows[0].split(",")
+    cells = [dict(zip(header, r.split(","), strict=True)) for r in rows[1:]]
+    cab = {
+        (c["arm"], c["model"]): c
+        for c in cells
+        if c["subset"] == "cab-view" and c["source"] == "segmentary"
+    }
+    # Final (7/9) differs from best (0.6): the final-auto-val confusions were read.
+    fg = cab[("fixed-grouped", "m1")]
+    assert fg["checkpoint"] == "final" and fg["mud_iou_present_images"] == f"{7 / 9:.6f}"
+    assert cab[("paul", "m1")]["checkpoint"] == "best"
+    assert all(c["checkpoint"] == "best" for c in cells if c["source"] == "fork")
+    headline = next(line for line in readme.splitlines() if line.startswith("| m1 |"))
+    assert [c.strip() for c in headline.strip("|").split("|")][6:8] == ["60.0", "77.8"]
+    assert "Selected checkpoint `best-auto-val`" not in readme
+    assert (
+        "Checkpoint: P `best-auto-val` (selected on validation), FG `final-auto-val` (final "
+        "checkpoint after the full step budget)." in readme
+    )
+    # The selection caveat names only the best-checkpoint arm; the final arm selects nothing.
+    assert "These val numbers are optimistic" not in readme
+    assert "**Best-checkpoint val numbers are optimistic.** For `paul` (P) the reported" in readme
+    assert "`fixed-grouped` (FG) reports the final checkpoint (`final-auto-val`)" in readme
+    assert "nothing is selected on its val images" in readme
+    assert "The arms also report different checkpoints (P best, FG final)" in readme
+    assert "| segmentary | fixed-grouped | 1/3 | queued 2 |" in readme
+
+
+def test_best_checkpoint_campaigns_keep_their_wording_and_record_best(tmp_path):
+    out = tmp_path / "out"
+    assert rad_report.main([*fixture(tmp_path), "--out", str(out)]) == 0
+    readme = (out / "README.md").read_text()
+    assert "Selected checkpoint `best-auto-val`. Empty = job not completed." in readme
+    assert "- **These val numbers are optimistic.** The reported checkpoint is the one " in readme
+    assert "final-auto-val" not in readme and "different checkpoints" not in readme
+    rows = (out / "rad-comparison.csv").read_text().splitlines()
+    column = rows[0].split(",").index("checkpoint")
+    assert {r.split(",")[column] for r in rows[1:]} == {"best"}
+
+
+def edit_final_state(final: Path, change) -> None:
+    path = final / "state" / "m1--rtis_only--seed-0.json"
+    state = json.loads(path.read_text())
+    change(state)
+    path.write_text(json.dumps(state))
+
+
+def final_result(state: dict) -> dict:
+    return state["collection"]["diagnostics"]["results"]["final-auto-val"]
+
+
+@pytest.mark.parametrize(
+    ("change", "message"),
+    [
+        (lambda s: s["stopping"].update(reason="validation_plateau"), "did not run the full"),
+        (
+            lambda s: s["checkpoints"]["final"].update(global_step=2074),
+            "final checkpoint at step 2074, not the budget",
+        ),
+        (
+            lambda s: final_result(s).update(checkpoint_sha256="b" * 64),
+            "final-auto-val was not scored on the final checkpoint",
+        ),
+        (
+            lambda s: final_result(s)["metrics"]["confusion"][0].__setitem__(0, 11),
+            "do not sum",
+        ),
+    ],
+)
+def test_final_job_that_stopped_early_or_mismatches_is_refused(tmp_path, change, message):
+    args, final = final_fixture(tmp_path)
+    edit_final_state(final, change)
+    with pytest.raises(SystemExit, match=message):
+        rad_report.main([*args, "--out", str(tmp_path / "out")])
+
+
+def test_final_campaign_without_final_diagnostics_or_with_a_disagreeing_plan(tmp_path):
+    args, final = final_fixture(tmp_path)
+    edit_final_state(
+        final, lambda s: s["collection"]["diagnostics"]["results"].pop("final-auto-val")
+    )
+    out = tmp_path / "out"
+    assert rad_report.main([*args, "--out", str(out)]) == 0
+    assert "completed, no final-auto-val diagnostics 1" in (out / "README.md").read_text()
+    plan = json.loads((final / "plan.json").read_text())
+    write_json(final / "plan.json", plan | {"primary_checkpoint": "best"})
+    with pytest.raises(SystemExit, match="disagree on primary_checkpoint"):
+        rad_report.main([*args, "--out", str(tmp_path / "out2")])
+
+
+def test_reported_total_of_the_final_checkpoint():
+    finals = sum(FINAL_MATRICES.values(), np.zeros((N, N), np.int64))
+    state = {
+        "evaluation": {"metrics": {"confusion": total().tolist()}},
+        "collection": {
+            "diagnostics": {
+                "results": {
+                    "best-auto-val": {"metrics": {"confusion": total().tolist()}},
+                    "final-auto-val": {"metrics": {"confusion": finals.tolist()}},
+                }
+            }
+        },
+    }
+    assert np.array_equal(rsm.reported_total(state, rsm.FINAL), finals)
+    assert np.array_equal(rsm.reported_total(state), total())  # best: the evaluation
+    del state["collection"]["diagnostics"]["results"]["final-auto-val"]
+    with pytest.raises(rsm.SubsetError, match="no final-auto-val confusion"):
+        rsm.reported_total(state, rsm.FINAL)
+    with pytest.raises(rsm.SubsetError, match="is not one of"):
+        rsm.reported_total(state, "final-auto-test")
