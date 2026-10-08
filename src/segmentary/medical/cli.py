@@ -11,6 +11,10 @@ from pathlib import Path
 from typing import Any
 
 
+def _surface_tolerance(value: str) -> float | str:
+    return value if value == "official" else float(value)
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -18,10 +22,28 @@ def _parser() -> argparse.ArgumentParser:
     p = commands.add_parser("doctor", help="Check optional packages and GPU visibility")
     p.add_argument("--require-training", action="store_true")
     p.add_argument("--backend-python", help="Dedicated nnU-Net environment interpreter")
-    p = commands.add_parser("audit", help="Fully audit Task07 volumes and write a manifest")
+    p = commands.add_parser(
+        "audit", help="Fully audit an MSD release (Task07 or Task03) and write a manifest"
+    )
     p.add_argument("--dataset-root", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--groups", type=Path)
+    p.add_argument(
+        "--dataset",
+        choices=("task07", "lits"),
+        default="task07",
+        help="Label ontology: Task07 pancreas/mass or MSD Task03 liver/tumor",
+    )
+    _audit_options(p)
+    p = commands.add_parser(
+        "audit-kits23", help="Fully audit the KiTS23 case_* layout and write a manifest"
+    )
+    p.add_argument(
+        "--dataset-root", type=Path, required=True, help="The KiTS23 repository's dataset dir"
+    )
+    p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--groups", type=Path)
+    _audit_options(p)
     p = commands.add_parser(
         "audit-pants", help="Audit PanTS binary masks and preserve official partitions"
     )
@@ -81,6 +103,11 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--train-fraction", type=float, default=0.7)
     p.add_argument("--val-fraction", type=float, default=0.15)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument(
+        "--stratify-lesion-volume",
+        action="store_true",
+        help="Balance summed annotated lesion volume across train/val/test groups",
+    )
     p = commands.add_parser("convert-dicom", help="Convert one regular CT series to NIfTI")
     p.add_argument("--series", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
@@ -136,7 +163,11 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--pancreas-exclusive", action="store_true", help="Score label 1 instead of union 1+2"
     )
-    p.add_argument("--surface-tolerance-mm", type=float)
+    p.add_argument(
+        "--surface-tolerance-mm",
+        type=_surface_tolerance,
+        help="Surface-Dice tolerance in mm, or 'official' for the benchmark's per-region values",
+    )
     p.add_argument("--bootstrap-samples", type=int, default=1000)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--review-overlays", action="store_true")
@@ -145,7 +176,9 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--left", type=Path, required=True)
     p.add_argument("--right", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
-    p.add_argument("--region", choices=("pancreas", "mass"), default="mass")
+    p.add_argument(
+        "--region", help="A region of both reports (default: the reports' lesion region)"
+    )
     p.add_argument("--metric", choices=("dice", "surface_dice", "hd95_mm"), default="dice")
     p.add_argument("--bootstrap-samples", type=int, default=1000)
     p.add_argument("--seed", type=int, default=0)
@@ -153,6 +186,33 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--input", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
     return parser
+
+
+def _audit_options(p: argparse.ArgumentParser) -> None:
+    p.add_argument(
+        "--duplicate-links",
+        type=Path,
+        help="JSON of confirmed content-duplicate links kept in one partition",
+    )
+    p.add_argument(
+        "--qform-sform-atol-mm",
+        type=float,
+        default=1e-4,
+        help="Opt-in qform/sform agreement tolerance up to 1e-3 mm (recorded in the manifest)",
+    )
+    p.add_argument(
+        "--unknown-units-as-mm",
+        action="store_true",
+        help="Opt-in: read undeclared NIfTI spatial units as mm (recorded in the manifest)",
+    )
+
+
+def _geometry(args: argparse.Namespace) -> dict[str, Any] | None:
+    from .geometry import geometry_policy
+
+    return geometry_policy(
+        qform_sform_atol_mm=args.qform_sform_atol_mm, unknown_units_as_mm=args.unknown_units_as_mm
+    )
 
 
 def _config(path: Path) -> Any:
@@ -203,9 +263,26 @@ def dispatch(args: argparse.Namespace) -> Any:
 
         return doctor(require_training=args.require_training, backend_python=args.backend_python)
     if command == "audit":
-        from .data import audit_task07
+        from .data import audit_msd
 
-        return audit_task07(args.dataset_root, args.output, groups_path=args.groups)
+        return audit_msd(
+            args.dataset_root,
+            args.output,
+            profile=args.dataset,
+            groups_path=args.groups,
+            duplicate_links_path=args.duplicate_links,
+            geometry=_geometry(args),
+        )
+    if command == "audit-kits23":
+        from .data import audit_kits23
+
+        return audit_kits23(
+            args.dataset_root,
+            args.output,
+            groups_path=args.groups,
+            duplicate_links_path=args.duplicate_links,
+            geometry=_geometry(args),
+        )
     if command == "audit-pants":
         from .pants import audit_pants
 
@@ -247,6 +324,7 @@ def dispatch(args: argparse.Namespace) -> Any:
             train_fraction=args.train_fraction,
             val_fraction=args.val_fraction,
             seed=args.seed,
+            stratify=args.stratify_lesion_volume,
         )
     if command == "convert-dicom":
         from .geometry import convert_dicom_series
@@ -257,10 +335,12 @@ def dispatch(args: argparse.Namespace) -> Any:
 
         if args.output.exists():
             raise FileExistsError(f"Comparison output already exists: {args.output}")
+        left = json.loads(args.left.read_text())
+        region = args.region or left.get("protocol", {}).get("lesion_region", "mass")
         result = paired_comparison(
-            json.loads(args.left.read_text()),
+            left,
             json.loads(args.right.read_text()),
-            region=args.region,
+            region=region,
             metric=args.metric,
             bootstrap_samples=args.bootstrap_samples,
             seed=args.seed,

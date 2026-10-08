@@ -9,6 +9,15 @@ Official interfaces were checked against the 2.8.1 wheel: ``get_trainer_from_arg
 ``plan_and_preprocess_entry``, and ``nnUNetPredictor``. This module delegates the
 network, preprocessing, augmentation, optimizer, losses, and training loop to
 that release. It adds experiment guards and atomic checkpoint/RNG sidecars.
+
+Two opt-in variants keep the frozen reference preprocessing. ``output_mode:
+regions`` trains nnU-Net region heads that decode to the same native label map
+(``nnunet_regions``). ``backend_runtime: nnunet-master-nnssl`` runs a separate
+nnU-Net master environment, bound by its ``pip freeze`` hash and nnU-Net commit,
+for nnFoundation-style pretrained encoders (``nnunet_pretrained``).
+``architecture: starc`` (``star_completion``) trains ``nnUNetTrainerStarC`` on
+sha256-bound full-volume ray targets kept outside ``nnUNet_preprocessed`` and
+predicts with the two-pass ``StarCPredictor`` (``nnunet_star_trainer``).
 Resume recovers at the saved epoch; it does not reproduce discarded prefetched
 batches or an interrupted epoch bit for bit.
 """
@@ -37,10 +46,21 @@ _CASE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
 # Bound trainer allowlist: nnU-Net's own classes are found by name; Segmentary's
 # are constructed directly and need manual predictor initialization.
 BUILTIN_TRAINERS = frozenset({"nnUNetTrainer"})
-SEGMENTARY_TRAINERS = frozenset({"nnUNetTrainerFinetune"})
+PRETRAINED_TRAINER = "nnUNetTrainerPretrainedDS"
+STARC_TRAINER = "nnUNetTrainerStarC"
+STARC_FINETUNE_TRAINER = "nnUNetTrainerStarCFinetune"
+STARC_TRAINERS = frozenset({STARC_TRAINER, STARC_FINETUNE_TRAINER})
+# Their defaults (lr 1e-3, 150 epochs) are a fine-tuning recipe, never a baseline.
+FINETUNE_TRAINERS = frozenset({"nnUNetTrainerFinetune", STARC_FINETUNE_TRAINER})
+SEGMENTARY_TRAINERS = frozenset({"nnUNetTrainerFinetune", PRETRAINED_TRAINER}) | STARC_TRAINERS
 TRAINERS = BUILTIN_TRAINERS | SEGMENTARY_TRAINERS
 INITIALIZATIONS = ("scratch", "warm_start", "pretrained")
-PURPOSES = ("baseline", "smoke", "overfit", "pilot")
+# ``finetune``: a pretrained-encoder recipe; like ``pilot`` it may change only num_epochs.
+PURPOSES = ("baseline", "smoke", "overfit", "pilot", "finetune")
+OFFICIAL_RUNTIME = "nnunet-2.8.1"
+NNSSL_RUNTIME = "nnunet-master-nnssl"
+BACKEND_RUNTIMES = (OFFICIAL_RUNTIME, NNSSL_RUNTIME)
+TASK07_ONTOLOGY = {"background": 0, "pancreas": 1, "mass": 2}
 
 
 @dataclass(frozen=True)
@@ -78,6 +98,20 @@ class NNUNetConfig:
     init_checkpoint_sha256: str | None = None
     init_allowed_missing_prefixes: list[str] | None = None
     hrc_options: dict[str, Any] | None = None
+    backend_runtime: str = OFFICIAL_RUNTIME
+    runtime_freeze_sha256: str | None = None
+    nnunet_commit: str | None = None
+    pretrained_plan_name: str | None = None
+    output_mode: str = "labels"
+    # Ordered [[name, [labels]], ...]: nnU-Net orders region heads by dataset.json labels.
+    label_regions: list[list[Any]] | None = None
+    regions_class_order: list[int] | None = None
+    # architecture=starc: complete options, an external ray-target folder bound by
+    # its manifest sha256, and the two-pass predictor settings.
+    starc_options: dict[str, Any] | None = None
+    starc_targets: str | None = None
+    starc_targets_manifest_sha256: str | None = None
+    starc_inference: dict[str, Any] | None = None
 
     def __post_init__(self):
         for name in ("dataset_id", "fold", "seed", "workers"):
@@ -103,8 +137,8 @@ class NNUNetConfig:
             raise ValueError("Use dataset_id 1..999 and an alphanumeric dataset_name")
         if self.resenc not in {"M", "L", "XL"} or self.configuration not in {"3d_fullres", "2d"}:
             raise ValueError("Supported recipes are ResEnc M/L/XL, 3d_fullres or 2d")
-        if self.architecture not in {"resenc", "plainconv", "dynunet", "hrc"}:
-            raise ValueError("architecture must be resenc, plainconv, dynunet, or hrc")
+        if self.architecture not in {"resenc", "plainconv", "dynunet", "hrc", "starc"}:
+            raise ValueError("architecture must be resenc, plainconv, dynunet, hrc, or starc")
         if self.architecture == "hrc":
             from .recipe_plan import validate_hrc_options
 
@@ -117,6 +151,7 @@ class NNUNetConfig:
         elif self.hrc_options is not None:
             raise ValueError("hrc_options requires architecture=hrc")
         self._validate_trainer_and_initialization()
+        self._validate_runtime_and_outputs()
         if self.reference_workspace is not None:
             if not isinstance(self.reference_workspace, str) or not self.reference_workspace:
                 raise ValueError("reference_workspace must be a workspace path string")
@@ -130,6 +165,7 @@ class NNUNetConfig:
                 raise ValueError("A reference workspace requires its frozen plan-binding SHA256")
         elif self.reference_plan_binding_sha256 is not None:
             raise ValueError("reference_plan_binding_sha256 requires reference_workspace")
+        self._validate_starc()
         if self.architecture != "resenc" and (
             self.reference_workspace is None or self.configuration != "3d_fullres"
         ):
@@ -171,9 +207,9 @@ class NNUNetConfig:
             raise ValueError("Runtime overrides must be positive integers")
         if self.purpose == "baseline" and any(x is not None for x in overrides):
             raise ValueError("Runtime overrides require purpose=smoke, overfit, or pilot")
-        if self.purpose == "pilot" and any(x is not None for x in overrides[1:]):
+        if self.purpose in {"pilot", "finetune"} and any(x is not None for x in overrides[1:]):
             # A pilot changes only the epoch count; every epoch keeps 250 updates.
-            raise ValueError("A pilot may override num_epochs only")
+            raise ValueError(f"A {self.purpose} run may override num_epochs only")
         if (
             isinstance(self.tile_step_size, bool)
             or not isinstance(self.tile_step_size, (int, float))
@@ -196,13 +232,26 @@ class NNUNetConfig:
             object.__setattr__(self, "initial_lr", float(self.initial_lr))
         if self.initialization not in INITIALIZATIONS:
             raise ValueError(f"initialization must be one of {INITIALIZATIONS}")
-        if self.trainer in SEGMENTARY_TRAINERS and (
+        if self.trainer in FINETUNE_TRAINERS and (
             self.initialization == "scratch" or self.purpose not in {"pilot", "smoke"}
         ):
             # Its defaults (lr 1e-3, 150 epochs) are a fine-tuning recipe, never a baseline.
             raise ValueError(f"{self.trainer} needs a non-scratch pilot or smoke run")
-        if self.purpose == "baseline" and self.trainer != "nnUNetTrainer":
+        if self.trainer == PRETRAINED_TRAINER and (
+            self.initialization != "pretrained" or self.purpose not in {"finetune", "smoke"}
+        ):
+            raise ValueError(f"{self.trainer} needs a pretrained finetune or smoke run")
+        if self.purpose == "finetune" and self.trainer != PRETRAINED_TRAINER:
+            raise ValueError(f"purpose=finetune is the {PRETRAINED_TRAINER} recipe")
+        # STAR-C's own trainer is nnUNetTrainer plus its auxiliary losses, so a
+        # full-budget STAR-C baseline keeps every official recipe setting.
+        if self.purpose == "baseline" and not (
+            self.trainer == "nnUNetTrainer"
+            or (self.trainer == STARC_TRAINER and self.architecture == "starc")
+        ):
             raise ValueError("A baseline uses the official nnUNetTrainer recipe")
+        if self.purpose == "baseline" and self.initial_lr is not None:
+            raise ValueError("A baseline keeps the official initial learning rate")
         prefixes = self.init_allowed_missing_prefixes
         if prefixes is None:
             prefixes = []
@@ -234,13 +283,135 @@ class NNUNetConfig:
             raise ValueError("The initial checkpoint must live outside this workspace")
         object.__setattr__(self, "init_checkpoint", str(checkpoint))
 
+    def _validate_runtime_and_outputs(self) -> None:
+        """Bind the backend environment and the label mode; both fail closed."""
+        if self.backend_runtime not in BACKEND_RUNTIMES:
+            raise ValueError(f"backend_runtime must be one of {BACKEND_RUNTIMES}")
+        nnssl = self.backend_runtime == NNSSL_RUNTIME
+        if nnssl:
+            if not isinstance(self.runtime_freeze_sha256, str) or not re.fullmatch(
+                r"[0-9a-f]{64}", self.runtime_freeze_sha256
+            ):
+                raise ValueError("The nnssl runtime needs its pip-freeze runtime_freeze_sha256")
+            if not isinstance(self.nnunet_commit, str) or not re.fullmatch(
+                r"[0-9a-f]{40}", self.nnunet_commit
+            ):
+                raise ValueError("The nnssl runtime needs the full nnU-Net source nnunet_commit")
+            if not isinstance(self.pretrained_plan_name, str) or not re.fullmatch(
+                r"[A-Za-z0-9][A-Za-z0-9_]*", self.pretrained_plan_name
+            ):
+                raise ValueError("The nnssl runtime needs an identifier pretrained_plan_name")
+            if self.trainer != PRETRAINED_TRAINER or self.initialization != "pretrained":
+                raise ValueError(f"The nnssl runtime runs {PRETRAINED_TRAINER} from pretrained")
+            if self.reference_workspace is None or self.configuration != "3d_fullres":
+                # Wave 1 arrays are copied, never re-preprocessed by a different nnU-Net.
+                raise ValueError("The nnssl runtime needs a reference workspace and 3d_fullres")
+            if self.output_mode != "labels":
+                raise ValueError("Region mode is verified for the nnU-Net 2.8.1 runtime only")
+        elif (
+            self.runtime_freeze_sha256 is not None
+            or self.nnunet_commit is not None
+            or self.pretrained_plan_name is not None
+        ):
+            raise ValueError("Runtime freeze, commit and pretrained plan bind the nnssl runtime")
+        elif self.trainer == PRETRAINED_TRAINER:
+            raise ValueError(f"{PRETRAINED_TRAINER} exists only in the nnssl runtime")
+        if self.output_mode not in ("labels", "regions"):
+            raise ValueError("output_mode must be labels or regions")
+        if self.output_mode == "labels":
+            if self.label_regions is not None or self.regions_class_order is not None:
+                raise ValueError(
+                    "label_regions and regions_class_order require output_mode=regions"
+                )
+        else:
+            from .nnunet_regions import regions_ontology, validate_regions
+
+            # Without a recipe the Task07 regions apply; an explicit recipe (for
+            # example KiTS23's) is rechecked against the manifest at prepare.
+            ontology = (
+                TASK07_ONTOLOGY
+                if self.label_regions is None
+                else regions_ontology(self.label_regions)
+            )
+            regions, order = validate_regions(
+                ontology, self.label_regions, self.regions_class_order
+            )
+            object.__setattr__(self, "label_regions", regions)
+            object.__setattr__(self, "regions_class_order", order)
+        if self.hrc_options is not None:
+            expected = "regions" if self.output_mode == "regions" else "softmax"
+            if self.hrc_options["output_mode"] != expected:
+                raise ValueError(
+                    f"HRC output_mode must be {expected} for output_mode={self.output_mode}"
+                )
+
+    def _validate_starc(self) -> None:
+        """Bind STAR-C's options, targets and predictor; refuse them for other models."""
+        fields = (
+            self.starc_options,
+            self.starc_targets,
+            self.starc_targets_manifest_sha256,
+            self.starc_inference,
+        )
+        if self.architecture != "starc":
+            if any(value is not None for value in fields):
+                raise ValueError("starc_options, starc_targets and starc_inference need starc")
+            if self.trainer in STARC_TRAINERS:
+                raise ValueError(f"{self.trainer} trains architecture=starc only")
+            return
+        from .recipe_plan import validate_starc_inference, validate_starc_options
+
+        if self.trainer not in STARC_TRAINERS:
+            raise ValueError(f"architecture=starc trains with one of {sorted(STARC_TRAINERS)}")
+        if self.deterministic is True:
+            # grid_sample, gather and index_put backward passes have no deterministic CUDA kernels.
+            raise ValueError("architecture=starc cannot train with deterministic=true")
+        if self.output_mode == "regions" and "fusion_channels" not in (self.starc_options or {}):
+            # The softmax defaults [1, 2] name other heads in region mode; never assume them.
+            raise ValueError("Region-mode STAR-C must declare its fusion_channels")
+        options = validate_starc_options(self.starc_options)
+        object.__setattr__(self, "starc_options", options)
+        object.__setattr__(self, "starc_inference", validate_starc_inference(self.starc_inference))
+        if options["freeze_backbone"] and (
+            self.initialization == "scratch" or options["fusion"] == "aux_only"
+        ):
+            # A frozen random backbone, or frozen logits with no fusion, trains nothing useful.
+            raise ValueError("freeze_backbone needs a non-scratch backbone and gated fusion")
+        if not isinstance(self.starc_targets, str) or not Path(self.starc_targets).is_absolute():
+            raise ValueError("architecture=starc needs an absolute starc_targets folder")
+        targets = Path(self.starc_targets).resolve()
+        # The workspace's nnUNet_preprocessed is hashed whole, and the reference is frozen.
+        for owner in (self.workspace, self.reference_workspace):
+            if owner is not None and targets.is_relative_to(Path(owner).expanduser().resolve()):
+                raise ValueError(
+                    "STAR-C targets must live outside this and the reference workspace"
+                )
+        object.__setattr__(self, "starc_targets", str(targets))
+        if not isinstance(self.starc_targets_manifest_sha256, str) or not re.fullmatch(
+            r"[0-9a-f]{64}", self.starc_targets_manifest_sha256
+        ):
+            raise ValueError("architecture=starc needs starc_targets_manifest_sha256")
+
+    @property
+    def architecture_options(self) -> dict[str, Any] | None:
+        """The bound network options of an architecture transfer, if any."""
+        return self.starc_options if self.architecture == "starc" else self.hrc_options
+
     @property
     def dataset(self) -> str:
         return f"Dataset{self.dataset_id:03d}_{self.dataset_name}"
 
     @property
-    def plans(self) -> str:
+    def reference_plans(self) -> str:
+        """The ResEnc planner's identifier, shared with any reference workspace."""
         return f"nnUNetResEncUNet{self.resenc}Plans"
+
+    @property
+    def plans(self) -> str:
+        """The plans identifier this run trains with (nnssl: nnU-Net's plan_like_dynamic)."""
+        if self.backend_runtime == NNSSL_RUNTIME:
+            return f"ptPlans_dynamic__{self.pretrained_plan_name}"
+        return self.reference_plans
 
     @property
     def model(self) -> str:
@@ -290,12 +461,12 @@ def _json(path: Path) -> dict:
     return json.loads(path.read_text())
 
 
-def _atomic_json(path: Path, value: Any):
+def _atomic_json(path: Path, value: Any, *, sort_keys: bool = True):
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
     try:
         with tmp.open("x") as f:
-            json.dump(value, f, indent=2, sort_keys=True, allow_nan=False)
+            json.dump(value, f, indent=2, sort_keys=sort_keys, allow_nan=False)
             f.write("\n")
             f.flush()
             os.fsync(f.fileno())
@@ -307,6 +478,34 @@ def _atomic_json(path: Path, value: Any):
 def _check_hash(path: str | Path, expected: str):
     if not expected or _sha(path) != expected:
         raise ValueError(f"Content hash changed or missing: {path}")
+
+
+def _write_dataset_json(config: NNUNetConfig, path: Path, value: dict) -> None:
+    # Region heads follow the order of ``labels``; never sort a region dataset.json.
+    _atomic_json(path, value, sort_keys=config.output_mode != "regions")
+
+
+def _same_dataset_json(actual: dict, expected: dict) -> bool:
+    from .nnunet_regions import same_dataset_json
+
+    return same_dataset_json(actual, expected)
+
+
+def _dataset_json(config: NNUNetConfig, ontology: dict, cases: int) -> dict:
+    """The nnU-Net dataset.json this config trains with (region form when opted in)."""
+    base = {
+        "channel_names": {"0": "CT"},
+        "labels": ontology,
+        "numTraining": cases,
+        "file_ending": ".nii.gz",
+        "overwrite_image_reader_writer": "NibabelIO",
+    }
+    if config.output_mode != "regions":
+        return base
+    from .nnunet_regions import region_dataset_json
+
+    assert config.label_regions is not None and config.regions_class_order is not None
+    return region_dataset_json(ontology, config.label_regions, config.regions_class_order, base)
 
 
 def _code_identity() -> dict:
@@ -325,8 +524,10 @@ def _documents(manifest_path: str | Path, splits_path: str | Path) -> tuple[dict
     validate_splits(manifest, splits)
     if not manifest.get("audit", {}).get("passed"):
         raise ValueError("An audited manifest with audit.passed=true is required")
-    if manifest["ontology"] != {"background": 0, "pancreas": 1, "mass": 2}:
-        raise ValueError("This backend requires the explicit background/pancreas/mass ontology")
+    from segmentary.medical.dataset_profiles import profile_for_ontology
+
+    # Task07/PanTS pancreas/mass, MSD Task03 liver/tumor or KiTS23 kidney/tumor/cyst.
+    profile_for_ontology(manifest["ontology"])
     if not splits["train"] or not splits["val"]:
         raise ValueError("Nonempty train and validation groups are required")
     for case in manifest["cases"]:
@@ -369,6 +570,40 @@ def _fold_cases(config: NNUNetConfig, binding: dict, partition: str) -> list[str
     return list(cv["folds"][config.fold][partition])
 
 
+def _check_ontology_defaults(config: NNUNetConfig, ontology: dict[str, int]) -> None:
+    """Refuse Task07 defaults that validate structurally on another dataset's labels.
+
+    Region recipes must decode losslessly to the manifest's label map and, outside
+    Task07, name that dataset's own regions (the Task07 default would otherwise
+    train LiTS liver/tumor heads named pancreas/mass). Label-mode HRC host and
+    lesion channels must be foreground labels that together cover every one
+    (the defaults [1]/[2] would silently ignore KiTS23 cysts).
+    """
+    from .dataset_profiles import PANCREAS, profile_for_ontology
+
+    profile = profile_for_ontology(ontology)
+    if config.output_mode == "regions":
+        from .nnunet_regions import validate_regions
+
+        # The recipe must decode losslessly to this manifest's own label map.
+        regions, _ = validate_regions(ontology, config.label_regions, config.regions_class_order)
+        allowed = {name for name, _ in profile.nnunet_regions}
+        if profile is not PANCREAS and not {name for name, _ in regions} <= allowed:
+            raise ValueError(
+                f"Region names must be {profile.name} regions {sorted(allowed)}; "
+                "the Task07 default recipe does not apply"
+            )
+    if config.hrc_options is not None and config.output_mode == "labels":
+        foreground = {value for name, value in ontology.items() if name != "background"}
+        host = set(config.hrc_options["host_channels"])
+        lesion = set(config.hrc_options["lesion_channels"])
+        if host | lesion != foreground:
+            raise ValueError(
+                "HRC host_channels and lesion_channels must be foreground labels that "
+                f"together cover {sorted(foreground)} for this manifest"
+            )
+
+
 def prepare_dataset(
     manifest_path: str | Path,
     splits_path: str | Path,
@@ -386,18 +621,18 @@ def prepare_dataset(
     manifest, splits = _documents(manifest_path, splits_path)
     cv = _cross_validation(config, manifest, splits, splits_path)
     folds = _nnunet_folds(cv, splits)
+    _check_ontology_defaults(config, manifest["ontology"])
     if config.root.exists() and any(config.root.iterdir()):
         raise FileExistsError(f"Use an empty workspace: {config.root}")
     initial = _initial_checkpoint_record(
         config, manifest_sha256=_sha(manifest_path), splits_sha256=_sha(splits_path)
     )
+    starc_targets = _starc_targets_binding(config)
     lookup = {c["case_id"]: c for c in manifest["cases"]}
     development = [lookup[x] for x in splits["train"] + splits["val"]]
     for case in development:
         if case["annotation_status"] != "labeled" or not case.get("label"):
-            raise ValueError(
-                "Joint pancreas/mass training requires fully labeled development cases"
-            )
+            raise ValueError("Joint organ/lesion training requires fully labeled development cases")
         for key in ("image", "label"):
             if not str(case[key]).endswith(".nii.gz"):
                 raise ValueError("The nnU-Net adapter currently stages .nii.gz files only")
@@ -421,6 +656,8 @@ def prepare_dataset(
     }
     if initial is not None:
         binding["initial_checkpoint"] = initial
+    if starc_targets is not None:
+        binding["starc_targets"] = starc_targets
     if cv is not None:
         binding["cross_validation"] = {
             "path": config.cv_splits,
@@ -455,21 +692,160 @@ def prepare_dataset(
             Path(case["image"]).resolve()
         )
         (raw / "labelsTr" / f"{case['case_id']}.nii.gz").symlink_to(Path(case["label"]).resolve())
-    _atomic_json(
-        raw / "dataset.json",
-        {
-            "channel_names": {"0": "CT"},
-            "labels": manifest["ontology"],
-            "numTraining": len(development),
-            "file_ending": ".nii.gz",
-            "overwrite_image_reader_writer": "NibabelIO",
-        },
+    _write_dataset_json(
+        config, raw / "dataset.json", _dataset_json(config, manifest["ontology"], len(development))
     )
     _atomic_json(config.preprocessed / "splits_final.json", folds)
     _atomic_json(config.root / "binding.json", binding)
     _atomic_json(config.root / "resolved-config.json", dataclasses.asdict(config))
     _atomic_json(config.root / "preparation.json", result)
     return result
+
+
+def _starc_targets_binding(config: NNUNetConfig) -> dict[str, str] | None:
+    """The bound STAR-C target folder; its manifest must still hash to the bound value."""
+    if config.architecture != "starc":
+        return None
+    from .recipe_plan import STARC_TARGET_MANIFEST
+
+    assert config.starc_targets is not None and config.starc_targets_manifest_sha256 is not None
+    _check_hash(
+        Path(config.starc_targets) / STARC_TARGET_MANIFEST, config.starc_targets_manifest_sha256
+    )
+    return {
+        "path": config.starc_targets,
+        "manifest_sha256": config.starc_targets_manifest_sha256,
+    }
+
+
+def verify_starc_target_manifest(
+    folder: str | Path,
+    manifest_sha256: str,
+    *,
+    options: dict[str, Any],
+    configuration: str,
+    plan_configuration: dict[str, Any],
+    plans_sha256: str | None,
+    splits_sha256: str,
+    development: list[str],
+    held_out: list[str],
+    segmentations: dict[str, tuple[str, str]],
+) -> dict[str, Any]:
+    """Prove a STAR-C target folder was computed from these development labels (Torch-free).
+
+    The manifest must hash to the bound value and name the frozen ResEnc plan
+    (``plans_sha256``), its spacing and data folder, the bound rays and lesion
+    labels, and a held-out check against this split file (``--forbid-cases-from``
+    with key ``test``). It must list exactly the development cases. Each case's
+    source segmentation must be ``segmentations[case]`` (file name and sha256),
+    and each target file must hash to its manifest entry. The trainer
+    re-verifies the manifest, the ray set and every hash before training.
+    """
+    from .recipe_plan import (
+        STARC_TARGET_MANIFEST,
+        STARC_TARGET_SCHEMA,
+        starc_target_method_problems,
+    )
+
+    folder = Path(folder)
+    _check_hash(folder / STARC_TARGET_MANIFEST, manifest_sha256)
+    manifest = _json(folder / STARC_TARGET_MANIFEST)
+    spacing = manifest.get("spacing")
+    expected_spacing = plan_configuration["spacing"]
+    forbidden = manifest.get("forbidden_cases_checked") or {}
+    problems = [
+        name
+        for name, ok in (
+            ("schema", manifest.get("schema") == STARC_TARGET_SCHEMA),
+            ("rays", manifest.get("rays") == options["rays"]),
+            ("lesion_labels", manifest.get("lesion_labels") == options["lesion_labels"]),
+            ("configuration", manifest.get("configuration") == configuration),
+            (
+                "data_identifier",
+                manifest.get("data_identifier") == plan_configuration["data_identifier"],
+            ),
+            (
+                "spacing",
+                isinstance(spacing, list)
+                and len(spacing) == len(expected_spacing)
+                and all(
+                    abs(float(a) - float(b)) <= 1e-6
+                    for a, b in zip(spacing, expected_spacing, strict=True)
+                ),
+            ),
+            (
+                "plans_sha256",
+                plans_sha256 is not None and manifest.get("plans_sha256") == plans_sha256,
+            ),
+            (
+                "forbidden_cases_checked",
+                forbidden.get("sha256") == splits_sha256 and forbidden.get("key") == "test",
+            ),
+        )
+        if not ok
+    ]
+    problems += starc_target_method_problems(manifest)
+    if problems:
+        raise ValueError(f"STAR-C targets do not match this experiment: {problems}")
+    entries = manifest.get("cases")
+    if not isinstance(entries, dict) or set(entries) != set(development):
+        raise ValueError("STAR-C targets must cover exactly the development cases")
+    if set(entries) & set(held_out):
+        raise ValueError("STAR-C targets include held-out cases")
+    for case in development:
+        entry = entries[case]
+        if case not in segmentations or (
+            entry.get("segmentation"),
+            entry.get("segmentation_sha256"),
+        ) != tuple(segmentations[case]):
+            raise ValueError(f"STAR-C targets were computed from another segmentation: {case}")
+        _check_hash(folder / f"{case}.npz", entry.get("sha256", ""))
+    code = manifest.get("code", {})
+    return {
+        "path": str(folder),
+        "manifest_sha256": manifest_sha256,
+        "cases": len(development),
+        "components": sum(int(entries[case].get("components", 0)) for case in development),
+        "rays": manifest["rays"],
+        "lesion_labels": manifest["lesion_labels"],
+        "spacing": spacing,
+        "plans_sha256": manifest["plans_sha256"],
+        "forbidden_cases_checked": forbidden,
+        "code": code,
+        # The method fields are enforced above; the code hash is a record only
+        # (a refactor of star_completion.py does not change the targets).
+        "method": {key: manifest[key] for key in ("connectivity", "directions", "march")},
+        "computed_with_current_star_completion": code.get("star_completion.py")
+        == _sha(Path(__file__).with_name("star_completion.py")),
+    }
+
+
+def _check_starc_targets(config: NNUNetConfig, binding: dict, plan: dict) -> dict[str, Any]:
+    """The bound targets against this workspace's own copied segmentations."""
+    assert config.starc_options is not None and config.starc_targets is not None
+    selected = plan["configurations"][config.configuration]
+    folder = config.preprocessed / selected["data_identifier"]
+    segmentations = {}
+    for case in binding["development_cases"]:
+        found = [
+            name for name in (f"{case}_seg.b2nd", f"{case}_seg.npy") if (folder / name).is_file()
+        ]
+        if len(found) != 1:
+            raise ValueError(f"Cannot identify the preprocessed segmentation of {case}")
+        segmentations[case] = (found[0], _sha(folder / found[0]))
+    record = verify_starc_target_manifest(
+        config.starc_targets,
+        config.starc_targets_manifest_sha256 or "",
+        options=config.starc_options,
+        configuration=config.configuration,
+        plan_configuration=selected,
+        plans_sha256=_reference_index(config).get(f"{config.reference_plans}.json"),
+        splits_sha256=binding["splits_sha256"],
+        development=list(binding["development_cases"]),
+        held_out=list(binding["held_out_cases"]),
+        segmentations=segmentations,
+    )
+    return {**record, "segmentations_equal_workspace": True}
 
 
 def _segmentary_workspace(checkpoint: Path) -> Path | None:
@@ -577,14 +953,10 @@ def _binding(config: NNUNetConfig, *, verify_development: bool = True) -> dict:
                     raw / "imagesTr" / f"{case['case_id']}_0000.nii.gz", case["image_sha256"]
                 )
                 _check_hash(raw / "labelsTr" / f"{case['case_id']}.nii.gz", case["label_sha256"])
-        expected_json = {
-            "channel_names": {"0": "CT"},
-            "labels": binding["ontology"],
-            "numTraining": len(binding["development_cases"]),
-            "file_ending": ".nii.gz",
-            "overwrite_image_reader_writer": "NibabelIO",
-        }
-        if _json(raw / "dataset.json") != expected_json:
+        expected_json = _dataset_json(
+            config, binding["ontology"], len(binding["development_cases"])
+        )
+        if not _same_dataset_json(_json(raw / "dataset.json"), expected_json):
             raise ValueError("Raw dataset ontology or modality configuration changed")
     return binding
 
@@ -620,6 +992,21 @@ def _runtime(config: NNUNetConfig, *, environment: dict[str, str] | None = None)
         raise RuntimeError(
             f"Expected nnunetv2=={NNUNET_VERSION} in {config.backend_python}, found {installed}; use a separate nnU-Net environment"
         )
+    if config.backend_runtime == NNSSL_RUNTIME:
+        from .nnunet_pretrained import runtime_identity
+
+        # nnU-Net master also reports 2.8.1: bind the exact environment and source.
+        identity = runtime_identity(
+            str(config.backend_python),
+            _environment(config) if environment is None else environment,
+        )
+        if identity["pip_freeze_sha256"] != config.runtime_freeze_sha256:
+            raise RuntimeError("The nnssl environment's pip freeze differs from the bound hash")
+        if identity["nnunetv2_commit"] != config.nnunet_commit:
+            raise RuntimeError(
+                "The nnssl environment's nnU-Net source differs from the bound commit"
+            )
+        runtime["nnssl"] = identity
     return runtime
 
 
@@ -881,28 +1268,56 @@ def plan_and_preprocess(config: NNUNetConfig, *, dry_run: bool = False) -> dict:
         state = _run(config, "plan", {})
     else:
         from .nnunet_reference import import_reference
-        from .recipe_plan import check_hrc_dataset, transfer_plan
+        from .recipe_plan import check_hrc_dataset, check_starc_dataset, transfer_plan
 
         with _lock(config.root / ".stage.lock"):
             reference = import_reference(config)
-            plan_path = config.preprocessed / f"{config.plans}.json"
+            if config.output_mode == "regions":
+                # Same arrays; nnU-Net reads the label mode from the preprocessed dataset.json.
+                _write_dataset_json(
+                    config,
+                    config.preprocessed / "dataset.json",
+                    _dataset_json(config, binding["ontology"], len(binding["development_cases"])),
+                )
+            plan_path = config.preprocessed / f"{config.reference_plans}.json"
             transferred, changes = transfer_plan(
-                _json(plan_path), config.architecture, config.hrc_options
+                _json(plan_path), config.architecture, config.architecture_options
             )
             if config.hrc_options is not None:
                 # Fail closed unless the bound channels mean host and lesion here.
                 changes["hrc_outputs"] = check_hrc_dataset(
                     config.hrc_options, _json(config.preprocessed / "dataset.json")
                 )
+            if config.starc_options is not None:
+                # Lesion labels and fusion channels must mean lesion and host here,
+                # and the bound targets must come from these development labels.
+                changes["starc_outputs"] = check_starc_dataset(
+                    config.starc_options, _json(config.preprocessed / "dataset.json")
+                )
+                changes["starc_targets"] = _check_starc_targets(config, binding, transferred)
             _atomic_json(plan_path, transferred)
             _atomic_json(
                 config.root / "recipe-transfer.json",
-                {"reference": reference, "architecture": config.architecture, "changes": changes},
+                {
+                    "reference": reference,
+                    "architecture": config.architecture,
+                    "output_mode": config.output_mode,
+                    "changes": changes,
+                },
             )
         state = {"action": "import_reference", "status": "completed"}
+        if config.output_mode == "regions" or config.backend_runtime == NNSSL_RUNTIME:
+            state = _run(config, "plan", {"adapt_reference": True})
+            _check_reference_adaptation(config, transferred)
     plan = _json(config.preprocessed / f"{config.plans}.json")
     if config.configuration not in plan["configurations"]:
         raise ValueError("Requested configuration was not produced by the planner")
+    if config.output_mode == "regions" and not _same_dataset_json(
+        _json(config.preprocessed / "dataset.json"),
+        _dataset_json(config, binding["ontology"], len(binding["development_cases"])),
+    ):
+        # nnU-Net derives the region head order from this file's label order.
+        raise ValueError("The preprocessed region dataset.json differs from the bound regions")
     files = {
         str(p.relative_to(config.preprocessed)): _sha(p)
         for p in sorted(config.preprocessed.rglob("*"))
@@ -913,6 +1328,131 @@ def plan_and_preprocess(config: NNUNetConfig, *, dry_run: bool = False) -> dict:
         {"binding_digest": _digest(binding), "runtime": _runtime(config), "files": files},
     )
     return {**result, "stage": state, "plan_sha256": files[f"{config.plans}.json"]}
+
+
+def _reference_index(config: NNUNetConfig) -> dict[str, str]:
+    """The frozen reference cache's file hashes, from its bound plan-binding record."""
+    assert config.reference_workspace is not None
+    record_path = Path(config.reference_workspace) / "plan-binding.json"
+    _check_hash(record_path, config.reference_plan_binding_sha256 or "")
+    return dict(_json(record_path)["files"])
+
+
+def _check_reference_adaptation(config: NNUNetConfig, transferred: dict) -> dict:
+    """Prove the worker changed only what its mode allows; arrays stay the reference's bytes.
+
+    Region mode may rewrite only the per-case ``.pkl`` (``class_locations``)
+    and the preprocessed ``dataset.json``. The nnssl runtime may add only the
+    foreground sampling store inside the data folder and the plan_like_dynamic
+    plan, which must equal the frozen plan apart from its name and pretrain_info.
+    """
+    index = _reference_index(config)
+    data_id = transferred["configurations"][config.configuration]["data_identifier"]
+    rewritten = {f"{config.reference_plans}.json", "splits_final.json"}
+    if config.output_mode == "regions":
+        rewritten |= {"dataset.json"} | {name for name in index if name.endswith(".pkl")}
+    for relative, digest in index.items():
+        if relative not in rewritten:
+            _check_hash(config.preprocessed / relative, digest)
+    actual = {
+        str(p.relative_to(config.preprocessed))
+        for p in config.preprocessed.rglob("*")
+        if p.is_file()
+    }
+    added = actual - set(index)
+    allowed: set[str] = set()
+    record: dict[str, Any] = {"arrays_and_ground_truth_equal_reference": True}
+    if config.backend_runtime == NNSSL_RUNTIME:
+        store = f"{data_id}/fg_sampling/"
+        allowed = {f"{config.plans}.json"} | {name for name in added if name.startswith(store)}
+        if not any(name.endswith("meta.json") for name in allowed):
+            raise ValueError("nnU-Net master did not complete the foreground sampling store")
+        pretrained = _json(config.preprocessed / f"{config.plans}.json")
+        info = pretrained.pop("pretrain_info", None)
+        frozen = {k: v for k, v in transferred.items() if k != "plans_name"}
+        # plan_like_dynamic keeps only the 3d_fullres configuration, unchanged.
+        frozen["configurations"] = {
+            config.configuration: transferred["configurations"][config.configuration]
+        }
+        if (
+            not isinstance(info, dict)
+            or info.get("checkpoint_path") != config.init_checkpoint
+            or pretrained.pop("plans_name", None) != config.plans
+            or frozen != pretrained
+        ):
+            raise ValueError(
+                "plan_like_dynamic changed the frozen plan or names another checkpoint"
+            )
+        record["pretrain_info"] = {k: v for k, v in info.items() if k != "citations"}
+        record["sampling_store_files"] = len(allowed) - 1
+    if added - allowed or set(index) - actual:
+        raise ValueError(
+            f"Reference adaptation changed cache membership: added={sorted(added - allowed)[:5]} "
+            f"missing={sorted(set(index) - actual)[:5]}"
+        )
+    worker = _json(config.root / "reference-adaptation-worker.json")
+    binding = _json(config.root / "binding.json")
+    expected = _dataset_json(config, binding["ontology"], len(binding["development_cases"]))
+    if not _same_dataset_json(_json(config.preprocessed / "dataset.json"), expected):
+        raise ValueError("The preprocessed dataset.json differs from the bound label mode")
+    if config.output_mode == "regions":
+        cases = len(binding["development_cases"])
+        if worker.get("regions", {}).get("label_mode_reference_reproduced") != cases:
+            raise ValueError("Region class locations were not regenerated for every case")
+    record["worker"] = worker
+    _atomic_json(config.root / "reference-adaptation.json", record)
+    return record
+
+
+def _adapt_reference_worker(config: NNUNetConfig) -> None:
+    """Backend interpreter: region sampling keys and/or nnU-Net master metadata on the copy."""
+    binding = _binding(config, verify_development=False)
+    plan = _json(config.preprocessed / f"{config.reference_plans}.json")
+    folder = config.preprocessed / plan["configurations"][config.configuration]["data_identifier"]
+    report: dict[str, Any] = {}
+    if config.output_mode == "regions":
+        from .nnunet_regions import regenerate_class_locations
+
+        labels = _json(config.preprocessed / "dataset.json")
+        labels = {k: v for k, v in labels.items() if k != "regions_class_order"}
+        labels["labels"] = binding["ontology"]
+        report["regions"] = regenerate_class_locations(
+            folder,
+            binding["development_cases"],
+            label_dataset_json=labels,
+            region_dataset_json=_json(config.preprocessed / "dataset.json"),
+            plans=plan,
+            workers=config.workers,
+        )
+    if config.backend_runtime == NNSSL_RUNTIME:
+        from nnunetv2.experiment_planning.like_nnssl import plan_like_dynamic
+        from nnunetv2.preprocessing.sampling_locations.extract_sampling_locations import (
+            extract_sampling_locations_dataset,
+        )
+
+        assert config.init_checkpoint is not None and config.pretrained_plan_name is not None
+        _check_hash(config.init_checkpoint, config.init_checkpoint_sha256 or "")
+        extract_sampling_locations_dataset(
+            config.dataset_id,
+            config.reference_plans,
+            (config.configuration,),
+            num_processes=config.workers,
+            overwrite=True,
+            show_progress_bar=False,
+        )
+        plan_like_dynamic(
+            config.dataset_id,
+            config.pretrained_plan_name,
+            config.init_checkpoint,
+            plans_identifier=config.reference_plans,
+            num_processes=config.workers,
+        )
+        report["nnssl"] = {
+            "sampling_locations": "nnUNetv2_extract_sampling_locations on the copied arrays",
+            "plan": f"nnUNetv2_plan_like_dynamic -pl {config.reference_plans} "
+            f"-n {config.pretrained_plan_name}",
+        }
+    _atomic_json(config.root / "reference-adaptation-worker.json", report)
 
 
 def _checkpoint(config: NNUNetConfig, name: str) -> dict:
@@ -968,6 +1508,8 @@ def train(
     elif config.fold_folder.exists():
         raise FileExistsError("Training output exists; explicitly resume or use a new workspace")
     prepared = _json(config.root / "binding.json")
+    if prepared.get("starc_targets") != _starc_targets_binding(config):
+        raise ValueError("STAR-C target binding changed since preparation")
     initial = (
         None
         if resume
@@ -999,8 +1541,13 @@ def train(
     return {**result, "stage": state}
 
 
-def validate_prediction_geometry(image: str | Path, prediction: str | Path) -> dict:
-    """Check a native-space output using image geometry only, never annotations."""
+def validate_prediction_geometry(
+    image: str | Path, prediction: str | Path, labels: tuple[int, ...] = (0, 1, 2)
+) -> dict:
+    """Check a native-space output using image geometry only, never annotations.
+
+    ``labels`` are the manifest ontology's values (Task07 0/1/2 by default).
+    """
     import nibabel as nib
     import numpy as np
 
@@ -1013,26 +1560,34 @@ def validate_prediction_geometry(image: str | Path, prediction: str | Path) -> d
     ):
         raise ValueError(f"Prediction does not match native CT geometry: {prediction}")
     values = np.asanyarray(pred.dataobj)
-    if not np.isfinite(values).all() or not np.isin(values, (0, 1, 2)).all():
+    if not np.isfinite(values).all() or not np.isin(values, labels).all():
         raise ValueError(f"Prediction contains invalid class values: {prediction}")
     return {"shape": list(pred.shape), "affine": pred.affine.tolist(), "sha256": _sha(prediction)}
 
 
-def _finalize_native_prediction(image: str | Path, prediction: str | Path) -> dict:
+def _finalize_native_prediction(
+    image: str | Path,
+    prediction: str | Path,
+    *,
+    labels: tuple[int, ...] = (0, 1, 2),
+    unknown_units_as_mm: bool = False,
+) -> dict:
     """Restore verified spatial header metadata dropped by nnU-Net's NibabelIO.
 
     First verify the predicted voxel grid and affine. Never repair a geometric
     mismatch by replacing its affine. Only a validated output receives source
     units and coded spatial forms, and the change is recorded with both hashes.
+    Undeclared source units (KiTS23) are copied unchanged, and only when the
+    manifest's geometry policy reads them as mm.
     """
     import nibabel as nib
     import numpy as np
 
-    before = validate_prediction_geometry(image, prediction)
+    before = validate_prediction_geometry(image, prediction, labels)
     source: Any = nib.load(str(image))
     predicted: Any = nib.load(str(prediction))
     units = source.header.get_xyzt_units()
-    if units[0] != "mm":
+    if units[0] != "mm" and not (units[0] == "unknown" and unknown_units_as_mm):
         raise ValueError("Native CT must explicitly declare millimeter spatial units")
     labels = np.asanyarray(predicted.dataobj)
     header = predicted.header.copy()
@@ -1045,7 +1600,7 @@ def _finalize_native_prediction(image: str | Path, prediction: str | Path) -> di
     temporary = destination.with_name(f".{destination.stem}.{uuid.uuid4().hex}.nii.gz")
     try:
         nib.save(restored, temporary)
-        validated = validate_prediction_geometry(image, temporary)
+        validated = validate_prediction_geometry(image, temporary, labels)
         checked_volume: Any = nib.load(temporary)
         if not np.array_equal(np.asanyarray(checked_volume.dataobj), labels):
             raise ValueError("Spatial-header restoration unexpectedly changed predicted labels")
@@ -1081,12 +1636,16 @@ def predict(
     binding = _binding(config, verify_development=False)
     checkpoint_item = _checkpoint(config, checkpoint)
     manifest = _json(Path(binding["manifest_path"]))
+    labels = tuple(sorted(binding["ontology"].values()))
+    geometry = manifest.get("geometry_policy") or {}
     lookup = {c["case_id"]: c for c in manifest["cases"]}
-    identifiers = (
-        _fold_cases(config, binding, partition)
-        if partition != "unlabeled"
-        else [c["case_id"] for c in manifest["cases"] if c["annotation_status"] == "unlabeled"]
-    )
+    excluded_duplicates: list[str] = []
+    if partition == "unlabeled":
+        from segmentary.medical.data import predictable_unlabeled_cases
+
+        identifiers, excluded_duplicates = predictable_unlabeled_cases(manifest)
+    else:
+        identifiers = _fold_cases(config, binding, partition)
     cases = [
         {"case_id": x, "image": lookup[x]["image"], "image_sha256": lookup[x]["image_sha256"]}
         for x in identifiers
@@ -1112,7 +1671,10 @@ def predict(
             and type(trained_metadata.pop("continue_training")) is not bool
         ):
             raise ValueError("Invalid nnU-Net continue_training metadata")
-        if trained_metadata != _json(original):
+        if trained_metadata != _json(original) or (
+            model_name == "dataset.json"
+            and not _same_dataset_json(trained_metadata, _json(original))
+        ):
             raise ValueError(f"Trained model metadata changed: {model_name}")
     output = config.root / "predictions" / f"{partition}-{time.time_ns()}"
     result = {
@@ -1126,6 +1688,8 @@ def predict(
         "checkpoint": checkpoint,
         "checkpoint_sha256": checkpoint_item["sha256"],
     }
+    if partition == "unlabeled":
+        result["excluded_duplicates_of_labeled_cases"] = excluded_duplicates
     if dry_run:
         return result
     payload = {
@@ -1133,13 +1697,17 @@ def predict(
         "output": str(output),
         "checkpoint": checkpoint,
         "partition": partition,
+        "labels": list(labels),
+        "unknown_units_as_mm": bool(geometry.get("unknown_spatial_units_as_mm", False)),
     }
     state = _run(config, "predict", payload, gpu=True)
     expected = {f"{c['case_id']}.nii.gz" for c in cases}
     if {p.name for p in output.glob("*.nii.gz")} != expected:
         raise ValueError("Prediction coverage is incomplete or includes unexpected cases")
     checks = {
-        c["case_id"]: validate_prediction_geometry(c["image"], output / f"{c['case_id']}.nii.gz")
+        c["case_id"]: validate_prediction_geometry(
+            c["image"], output / f"{c['case_id']}.nii.gz", labels
+        )
         for c in cases
     }
     _atomic_json(output / "geometry-validation.json", checks)
@@ -1187,6 +1755,14 @@ def _trainer_class(name: str) -> Any:
         from nnunetv2.utilities.find_objects import recursive_find_trainer_class_by_name
 
         return recursive_find_trainer_class_by_name(name)
+    if name == PRETRAINED_TRAINER:
+        from . import nnunet_pretrained
+
+        return getattr(nnunet_pretrained, name)
+    if name in STARC_TRAINERS:
+        from . import nnunet_star_trainer
+
+        return getattr(nnunet_star_trainer, name)
     if name in SEGMENTARY_TRAINERS:
         from . import nnunet_trainers
 
@@ -1308,6 +1884,18 @@ def _check_resume_origin(config: NNUNetConfig, identity: str) -> dict:
     return origin
 
 
+def _restore_scheduler(scheduler: Any, rng: dict) -> None:
+    """Restore the saved schedule state unless the trainer rebuilt a different scheduler.
+
+    Pretrained trainers switch from a linear warm-up scheduler to a poly one.
+    Loading one scheduler's attributes into the other would corrupt the
+    schedule; both compute the learning rate from the explicit epoch anyway.
+    """
+    saved = rng.get("scheduler_class")
+    if saved is None or saved == type(scheduler).__name__:
+        scheduler.load_state_dict(rng["scheduler"])
+
+
 def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
     import random
 
@@ -1333,6 +1921,17 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
     if config.initial_lr is not None:
         # initialize() builds the optimizer and schedule from this value.
         trainer.initial_lr = config.initial_lr
+    if config.architecture == "starc":
+        from .recipe_plan import training_options
+
+        # Losses, teacher forcing and the bound target folder; the trainer
+        # re-verifies the manifest, ray set and every case hash before loading.
+        assert config.starc_options is not None
+        trainer.configure_star(
+            training_options(config.starc_options),
+            targets_dir=config.starc_targets,
+            manifest_sha256=config.starc_targets_manifest_sha256,
+        )
     split_binding = _binding(config, verify_development=False)
     expected_split = (
         _fold_cases(config, split_binding, "train"),
@@ -1344,11 +1943,14 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
     trainer.initialize()
     origin_path = _origin_path(config)
     if payload["resume_checkpoint"] is None:
-        initial = (
-            {"initialization": "scratch", "external_weight_loads": 0}
-            if config.initialization == "scratch"
-            else _load_initial_weights(trainer.network, config)
-        )
+        if config.initialization == "scratch":
+            initial = {"initialization": "scratch", "external_weight_loads": 0}
+        elif config.trainer == PRETRAINED_TRAINER:
+            from .nnunet_pretrained import load_pretrained_encoder
+
+            initial = load_pretrained_encoder(trainer, config)
+        else:
+            initial = _load_initial_weights(trainer.network, config)
         _atomic_json(
             origin_path,
             {
@@ -1383,6 +1985,7 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
                     "torch_cpu": torch.get_rng_state(),
                     "torch_cuda": torch.cuda.get_rng_state_all(),
                     "scheduler": trainer.lr_scheduler.state_dict(),
+                    "scheduler_class": type(trainer.lr_scheduler).__name__,
                 },
                 rng_tmp,
             )
@@ -1414,7 +2017,7 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
         np.random.set_state(rng["numpy"])
         torch.set_rng_state(rng["torch_cpu"])
         torch.cuda.set_rng_state_all(rng["torch_cuda"])
-        trainer.lr_scheduler.load_state_dict(rng["scheduler"])
+        _restore_scheduler(trainer.lr_scheduler, rng)
     original_step = trainer.train_step
 
     def train_step(batch):
@@ -1438,6 +2041,19 @@ def _train_worker(config: NNUNetConfig, payload: dict, identity: str):
             "initial_lr": trainer.initial_lr,
             "weight_decay": trainer.weight_decay,
             "oversample_foreground_percent": trainer.oversample_foreground_percent,
+            "deep_supervision": trainer.enable_deep_supervision,
+            "warmup_epochs": getattr(trainer, "warmup_duration_whole_net", None),
+            "batch_size": trainer.batch_size,
+            "backend_runtime": config.backend_runtime,
+            "output_mode": config.output_mode,
+            "starc": None
+            if config.architecture != "starc"
+            else {
+                "training_options": dict(trainer.star_options),
+                "targets": str(trainer.star_targets_folder()),
+                "targets_manifest_sha256": trainer.star_targets_manifest_sha256,
+                "inference": config.starc_inference,
+            },
             "checkpoint_selection": "official_ema_foreground_dice",
             "fold": config.fold,
             "fold_cases": {"train": len(expected_split[0]), "val": len(expected_split[1])},
@@ -1594,16 +2210,42 @@ def initialize_predictor(
     )
 
 
+def build_predictor(
+    architecture: str, starc_inference: dict[str, Any] | None = None, **kwargs: Any
+) -> Any:
+    """nnU-Net's predictor, or STAR-C's two-pass ``StarCPredictor`` for ``starc``.
+
+    ``kwargs`` are ``nnUNetPredictor``'s own arguments, passed unchanged.
+    """
+    if architecture != "starc":
+        if starc_inference is not None:
+            raise ValueError("starc_inference applies to architecture=starc only")
+        from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
+
+        return nnUNetPredictor(**kwargs)
+    from .nnunet_star_trainer import StarCPredictor
+    from .recipe_plan import validate_starc_inference
+
+    settings = validate_starc_inference(starc_inference)
+    return StarCPredictor(
+        **kwargs,
+        star_two_pass=settings["two_pass"],
+        nms_radius_mm=settings["nms_radius_mm"],
+        max_case_instances=settings["max_case_instances"],
+    )
+
+
 def _predict_worker(config: NNUNetConfig, payload: dict):
     import torch
-    from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
 
     # This also runs after training inside the same worker process.
     os.environ["nnUNet_n_proc_DA"] = str(config.workers)  # noqa: SIM112 - upstream variable name
     _seed_runtime(config)
     output = Path(payload["output"])
     output.mkdir(parents=True, exist_ok=False)
-    predictor = nnUNetPredictor(
+    predictor = build_predictor(
+        config.architecture,
+        config.starc_inference,
         tile_step_size=config.tile_step_size,
         use_gaussian=True,
         use_mirroring=config.use_mirroring,
@@ -1627,7 +2269,10 @@ def _predict_worker(config: NNUNetConfig, payload: dict):
         raise ValueError("Prediction coverage is incomplete or contains unexpected cases")
     native_checks = {
         case["case_id"]: _finalize_native_prediction(
-            case["image"], output / f"{case['case_id']}.nii.gz"
+            case["image"],
+            output / f"{case['case_id']}.nii.gz",
+            labels=tuple(payload.get("labels", (0, 1, 2))),
+            unknown_units_as_mm=payload.get("unknown_units_as_mm", False),
         )
         for case in payload["cases"]
     }
@@ -1646,7 +2291,9 @@ def _worker(request_path: str):
     ):
         raise ValueError("Worker code/configuration/environment changed after launch")
     action, payload = request["action"], request["payload"]
-    if action == "plan":
+    if action == "plan" and payload.get("adapt_reference"):
+        _adapt_reference_worker(config)
+    elif action == "plan":
         from nnunetv2.experiment_planning.plan_and_preprocess_entrypoints import (
             plan_and_preprocess_entry,
         )

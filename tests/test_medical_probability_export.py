@@ -174,6 +174,80 @@ def test_export_copies_verified_models_and_never_locks_the_workspace(trained, tm
         exporter.copy_model(member, tmp_path / "second")
 
 
+def test_runs_are_checked_only_against_the_sources_they_import(trained, monkeypatch):
+    assert exporter.network_sources("x", "nnUNetTrainer", "resenc") == exporter._NETWORK_SOURCES
+    assert "nnunet_pretrained.py" in exporter.network_sources("x", b.PRETRAINED_TRAINER, "resenc")
+    starc = exporter.network_sources(exporter.STARC_CLASS, "nnUNetTrainerStarC", "starc")
+    assert set(exporter._STARC_SOURCES) <= set(starc)
+    # An HRC run trained before STAR-C existed still exports.
+    _set_network(trained[0], "segmentary.medical.nnunet_architectures.HRCResEncUNet")
+    current = b._code_identity()
+    monkeypatch.setattr(
+        exporter.b, "_code_identity", lambda: {**current, "star_completion.py": "edited"}
+    )
+    member = _member(trained)
+    assert member["network_sources_checked"] == list(exporter._NETWORK_SOURCES)
+    assert member["labels"] == [0, 1, 2] and member["label_regions"] is None
+
+
+def test_export_refuses_members_whose_regions_differ(trained, tmp_path):
+    member = _member(trained)
+    first = member | {
+        "run_id": "a",
+        "output_mode": "regions",
+        "regions_class_order": [1, 2],
+        "label_regions": [["pancreas", [1, 2]], ["mass", [2]]],
+    }
+    second = first | {"run_id": "b", "label_regions": [["nonmass", [1]], ["mass", [2]]]}
+    with pytest.raises(ValueError, match="region set"):
+        exporter.export(
+            [first, second],
+            partition="val",
+            output=tmp_path / "out",
+            device="cpu",
+            gpu=None,
+            mirroring=False,
+            tile_step_size=0.5,
+            workers=1,
+            backend_python="/unused/python",
+        )
+    assert not (tmp_path / "out").exists()
+
+
+def test_export_finalizes_with_the_manifest_labels_and_unit_policy(trained, tmp_path, monkeypatch):
+    member = _member(trained) | {"labels": [0, 1, 2, 3]}
+    calls = []
+
+    def fake_worker(command, **kwargs):
+        request = b._json(Path(command[-1]))
+        for case in request["cases"]:
+            folder = Path(request["output"]) / "members" / member["run_id"]
+            folder.mkdir(parents=True, exist_ok=True)
+            for suffix in (".nii.gz", ".npz", ".pkl"):
+                (folder / f"{case['case_id']}{suffix}").write_bytes(b"x")
+        return type("Completed", (), {"returncode": 0})()
+
+    monkeypatch.setattr(exporter.subprocess, "run", fake_worker)
+    monkeypatch.setattr(
+        exporter.b,
+        "_finalize_native_prediction",
+        lambda image, path, **kwargs: calls.append(kwargs),
+    )
+    provenance = exporter.export(
+        [member],
+        partition="val",
+        output=tmp_path / "out",
+        device="cpu",
+        gpu=None,
+        mirroring=False,
+        tile_step_size=0.5,
+        workers=1,
+        backend_python="/unused/python",
+    )
+    assert calls == [{"labels": (0, 1, 2, 3), "unknown_units_as_mm": False}]
+    assert provenance["probability_channels"] == "softmax over label values [0, 1, 2, 3]"
+
+
 # Real nnU-Net 2.8.1 round trip (backend environment only) ---------------------
 
 STD = 71.16236877441406
@@ -381,3 +455,98 @@ def test_member_record_round_trips_through_json(trained):
     member = _member(trained)
     assert json.loads(json.dumps(member)) == member
     assert dataclasses.asdict(trained[0])["trainer"] == "nnUNetTrainer"
+
+
+def test_starc_member_exports_through_the_two_pass_predictor(tmp_path, monkeypatch):
+    """A warm-started STAR-C checkpoint (zero fusion) exports exactly ResEnc's probabilities
+    through ``StarCPredictor`` and its manual loader, with mirroring and two passes."""
+    pytest.importorskip("nnunetv2")
+    nib = pytest.importorskip("nibabel")
+    import torch
+    from nnunetv2.utilities.get_network_from_plans import get_network_from_plans
+
+    from segmentary.medical.recipe_plan import transfer_plan, validate_starc_inference
+
+    plan = _tiny_plan()
+    networks = {}
+    for name, current in (("resenc", plan), ("starc", transfer_plan(plan, "starc")[0])):
+        architecture = current["configurations"]["3d_fullres"]["architecture"]
+        torch.manual_seed(0)
+        networks[name] = get_network_from_plans(
+            architecture["network_class_name"],
+            architecture["arch_kwargs"],
+            architecture["_kw_requires_import"],
+            1,
+            3,
+            deep_supervision=False,
+        )
+    with torch.no_grad():
+        for parameter in networks["resenc"].decoder.seg_layers.parameters():
+            parameter.mul_(20)
+    weights = networks["resenc"].state_dict()
+    missing = networks["starc"].load_state_dict(weights, strict=False).missing_keys
+    assert missing and all(key.startswith("starc.") for key in missing)
+    folders = {
+        "resenc": _model_folder(tmp_path / "models", "nnUNetTrainer", plan, weights),
+        "starc": _model_folder(
+            tmp_path / "models",
+            b.STARC_FINETUNE_TRAINER,
+            transfer_plan(plan, "starc")[0],
+            networks["starc"].state_dict(),
+        ),
+    }
+    image = tmp_path / "images" / "case_a.nii.gz"
+    image.parent.mkdir()
+    volume = np.random.default_rng(0).normal(80, 60, size=(72, 56, 20)).astype(np.float32)
+    nifti = nib.Nifti1Image(volume, np.diag([0.8125, 0.8125, 2.5, 1.0]))
+    nifti.header.set_xyzt_units("mm")
+    nib.save(nifti, image)
+    output = tmp_path / "export"
+    output.mkdir()
+    built = []
+    original = b.build_predictor
+
+    def recording(architecture, starc_inference=None, **kwargs):
+        predictor = original(architecture, starc_inference, **kwargs)
+        built.append((architecture, type(predictor).__name__))
+        return predictor
+
+    monkeypatch.setattr(b, "build_predictor", recording)
+    request = {
+        "members": [
+            {
+                "run_id": "resenc",
+                "model_folder": str(folders["resenc"]),
+                "fold": 0,
+                "checkpoint": "checkpoint_final.pth",
+                "trainer": "nnUNetTrainer",
+                "architecture": "resenc",
+                "starc_inference": None,
+            },
+            {
+                "run_id": "starc",
+                "model_folder": str(folders["starc"]),
+                "fold": 0,
+                "checkpoint": "checkpoint_final.pth",
+                "trainer": b.STARC_FINETUNE_TRAINER,
+                "architecture": "starc",
+                "starc_inference": validate_starc_inference(None),
+            },
+        ],
+        "cases": [{"case_id": "case_a", "image": str(image)}],
+        "output": str(output),
+        "device": "cpu",
+        "gpu": None,
+        "mirroring": True,
+        "tile_step_size": 0.5,
+        "workers": 1,
+    }
+    (output / "request.json").write_text(json.dumps(request))
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
+    monkeypatch.setenv("nnUNet_compile", "false")
+    exporter._worker(str(output / "request.json"))
+    assert built == [("resenc", "nnUNetPredictor"), ("starc", "StarCPredictor")]
+    resenc = np.load(output / "members/resenc/case_a.npz")["probabilities"]
+    starc = np.load(output / "members/starc/case_a.npz")["probabilities"]
+    assert resenc.shape == (3, 20, 56, 72)
+    np.testing.assert_array_equal(starc, resenc)

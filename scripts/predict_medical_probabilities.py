@@ -22,6 +22,8 @@ have the same validation cases, and no case may be in any member's training
 fold (a fold ensemble therefore needs ``unlabeled`` or external images).
 Reserved test cases are refused. Label payloads are never opened. ``--mirroring``
 enables nnU-Net's mirroring test-time augmentation over the checkpoint's axes.
+STAR-C members predict with ``StarCPredictor`` and their run's bound
+``starc_inference`` settings (two-pass case-level rendering by default).
 """
 
 from __future__ import annotations
@@ -42,8 +44,25 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from segmentary.medical import backend as b
+from segmentary.medical.data import predictable_unlabeled_cases
+from segmentary.medical.recipe_plan import STARC_CLASS
 
+# Segmentary sources inference imports, by what the run uses. A run is checked
+# only against the files it loads, so a run trained before a file existed (for
+# example an HRC or fine-tune run from before STAR-C) still exports.
 _NETWORK_SOURCES = ("nnunet_architectures.py", "host_reference.py", "nnunet_trainers.py")
+_PRETRAINED_SOURCES = ("nnunet_pretrained.py",)
+_STARC_SOURCES = ("star_completion.py", "nnunet_star_trainer.py", "recipe_plan.py")
+
+
+def network_sources(network_class: str, trainer: str, architecture: str) -> tuple[str, ...]:
+    """The Segmentary source files a run's inference imports."""
+    sources = _NETWORK_SOURCES
+    if trainer == b.PRETRAINED_TRAINER:
+        sources += _PRETRAINED_SOURCES
+    if architecture == "starc" or network_class == STARC_CLASS or trainer in b.STARC_TRAINERS:
+        sources += _STARC_SOURCES
+    return sources
 
 
 def _member_config(record: dict[str, Any]) -> b.NNUNetConfig:
@@ -91,7 +110,7 @@ def verify_member(
     identity = b._digest({"binding": binding, "runtime": runtime})
     item = b._json(workspace / "checkpoint-index.json").get(checkpoint, {})
     trainer = resolved.get("trainer", "nnUNetTrainer")
-    plans_name = f"nnUNetResEncUNet{config.resenc}Plans"
+    plans_name = config.plans
     model_folder = (
         workspace
         / "nnUNet_results"
@@ -116,7 +135,8 @@ def verify_member(
         trained = b._json(model_folder / model_name)
         if model_name == "plans.json" and type(trained.pop("continue_training", False)) is not bool:
             raise ValueError("Invalid nnU-Net continue_training metadata")
-        if trained != b._json(preprocessed / original_name):
+        expected = b._json(preprocessed / original_name)
+        if trained != expected or not b._same_dataset_json(trained, expected):
             raise ValueError(f"{run_id}: trained model metadata changed: {model_name}")
     plan = b._json(preprocessed / f"{plans_name}.json")
     network_class = plan["configurations"][config.configuration]["architecture"][
@@ -126,8 +146,10 @@ def verify_member(
     # Inference imports Segmentary network and trainer code from this source.
     # It must be byte-identical to the code the run was trained with.
     needs_source = network_class.startswith("segmentary.") or trainer in b.SEGMENTARY_TRAINERS
-    if needs_source and any(
-        binding["code"].get(name) != current.get(name) for name in _NETWORK_SOURCES
+    sources = network_sources(network_class, trainer, config.architecture) if needs_source else ()
+    if any(
+        binding["code"].get(name) is None or binding["code"].get(name) != current.get(name)
+        for name in sources
     ):
         raise ValueError(f"{run_id}: network source differs from the trained run's source")
     # The files prediction loads, by path relative to the model folder.
@@ -147,12 +169,22 @@ def verify_member(
         "network_class": network_class,
         "trainer": trainer,
         "initialization": binding.get("initialization", "scratch"),
+        "backend_runtime": config.backend_runtime,
+        "output_mode": config.output_mode,
+        "regions_class_order": config.regions_class_order,
+        # Region heads are only comparable when they define the same regions.
+        "label_regions": config.label_regions,
+        # Native label values, from the run's bound ontology.
+        "labels": sorted(int(value) for value in binding["ontology"].values()),
+        # STAR-C predicts with its bound two-pass settings, as in the run's own validation.
+        "starc_inference": config.starc_inference,
         "model_folder": str(model_folder),
         "checkpoint": checkpoint,
         "checkpoint_sha256": item["sha256"],
         "checkpoint_epoch": item.get("epoch"),
         "identity": identity,
         "network_source_bound": needs_source,
+        "network_sources_checked": list(sources),
         "manifest_path": binding["manifest_path"],
         "splits_path": binding["splits_path"],
         "manifest_sha256": binding["manifest_sha256"],
@@ -189,11 +221,8 @@ def select_cases(members: list[dict[str, Any]], partition: str) -> list[dict[str
         if any(fold["val"] != identifiers for fold in folds):
             raise ValueError("Members validate different cases; OOF export needs one fold")
     else:
-        identifiers = [
-            case["case_id"]
-            for case in manifest["cases"]
-            if case["annotation_status"] == "unlabeled"
-        ]
+        # Unlabeled scans that copy a labelled case (LiTS liver_137) are excluded.
+        identifiers, _ = predictable_unlabeled_cases(manifest)
     held_out = set(splits.get("test", []))
     training = set().union(*(fold["train"] for fold in folds))
     if not identifiers or set(identifiers) & (held_out | training):
@@ -232,7 +261,6 @@ def _worker(request_path: str) -> None:
     import numpy as np
     import torch
     from nnunetv2.ensembling.ensemble import merge_files
-    from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
     from nnunetv2.utilities.plans_handling.plans_handler import PlansManager
 
     request = b._json(Path(request_path))
@@ -251,7 +279,9 @@ def _worker(request_path: str) -> None:
     for member in request["members"]:
         folder = output / "members" / member["run_id"]
         folder.mkdir(parents=True)
-        predictor = nnUNetPredictor(
+        predictor = b.build_predictor(
+            member.get("architecture", "resenc"),
+            member.get("starc_inference"),
             tile_step_size=request["tile_step_size"],
             use_gaussian=True,
             use_mirroring=request["mirroring"],
@@ -319,6 +349,21 @@ def export(
             raise ValueError("Output must be outside every trained workspace")
     if len({member["run_id"] for member in members}) != len(members):
         raise ValueError("Each member may appear once")
+    modes = {
+        json.dumps(
+            [
+                m.get("output_mode", "labels"),
+                m.get("regions_class_order"),
+                m.get("label_regions"),
+                m.get("labels"),
+            ]
+        )
+        for m in members
+    }
+    if len(modes) != 1:
+        # Softmax class and sigmoid region probabilities must never be averaged together,
+        # nor sigmoid channels that define different regions.
+        raise ValueError("Members must share one output mode, region set, region order and labels")
     if device not in {"cuda", "cpu"} or (device == "cuda") != (gpu is not None):
         raise ValueError("Use --device cpu, or --device cuda with one --gpu")
     if gpu is not None:
@@ -329,6 +374,13 @@ def export(
     if type(workers) is not int or workers < 1 or not 0 < tile_step_size <= 1:
         raise ValueError("workers must be positive and tile_step_size in (0, 1]")
     cases = select_cases(members, partition)
+    # Native-space checks use the manifest's own label set and geometry policy (KiTS23
+    # declares no spatial units and has label 3), exactly as backend.predict does.
+    manifest = b._json(Path(members[0]["manifest_path"]))
+    native_labels = tuple(members[0].get("labels") or (0, 1, 2))
+    unknown_units_as_mm = bool(
+        (manifest.get("geometry_policy") or {}).get("unknown_spatial_units_as_mm", False)
+    )
     started = time.time()
     with contextlib.ExitStack() as stack:
         if gpu is not None:
@@ -402,7 +454,12 @@ def export(
             for suffix in (".nii.gz", ".npz", ".pkl"):
                 path = folder / f"{case['case_id']}{suffix}"
                 if suffix == ".nii.gz":
-                    b._finalize_native_prediction(case["image"], path)
+                    b._finalize_native_prediction(
+                        case["image"],
+                        path,
+                        labels=native_labels,
+                        unknown_units_as_mm=unknown_units_as_mm,
+                    )
                 files[str(path.relative_to(output))] = b._sha(path)
     provenance = {
         "action": "export_probabilities",
@@ -417,6 +474,10 @@ def export(
         else None,
         "probabilities": "nnU-Net export: logits resampled to native shape, then softmax/sigmoid; "
         "npz arrays are channel-first in the image reader's axis order",
+        "probability_channels": f"softmax over label values {list(native_labels)}"
+        if members[0].get("output_mode", "labels") == "labels"
+        else "sigmoid per region in dataset.json region order; labels are "
+        f"decoded with regions_class_order {members[0].get('regions_class_order')} at 0.5",
         "cases": [case["case_id"] for case in cases],
         "settings": {
             "device": device,

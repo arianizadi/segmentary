@@ -2,6 +2,9 @@
 
 Readers are optional imports. Arrays use their NIfTI voxel-axis order, not an
 assumed anatomical XYZ order. All accepted NIfTI spatial coordinates are mm.
+Two documented source quirks are accepted only through an explicit, recorded
+geometry policy: undeclared ("unknown") spatial units read as mm, and float32
+qform/sform rounding up to 1e-3 mm.
 """
 
 from __future__ import annotations
@@ -17,6 +20,44 @@ import numpy as np
 
 class MedicalDataError(ValueError):
     """Data cannot be used without resolving an integrity or geometry problem."""
+
+
+STRICT_QFORM_SFORM_ATOL_MM = 1e-4
+MAX_QFORM_SFORM_ATOL_MM = 1e-3
+GEOMETRY_POLICY_KEYS = frozenset({"qform_sform_atol_mm", "unknown_spatial_units_as_mm"})
+
+
+def geometry_policy(
+    *, qform_sform_atol_mm: float = STRICT_QFORM_SFORM_ATOL_MM, unknown_units_as_mm: bool = False
+) -> dict[str, Any] | None:
+    """A validated opt-in relaxation record, or ``None`` for the strict default."""
+    policy = {
+        "qform_sform_atol_mm": qform_sform_atol_mm,
+        "unknown_spatial_units_as_mm": unknown_units_as_mm,
+    }
+    check_geometry_policy(policy)
+    strict = qform_sform_atol_mm == STRICT_QFORM_SFORM_ATOL_MM and not unknown_units_as_mm
+    return None if strict else policy
+
+
+def check_geometry_policy(policy: Any) -> dict[str, Any]:
+    """Accept only the two bounded relaxations; return the effective keyword arguments."""
+    if policy is None:
+        return {}
+    if not isinstance(policy, dict) or set(policy) != GEOMETRY_POLICY_KEYS:
+        raise MedicalDataError(f"geometry policy must have exactly {sorted(GEOMETRY_POLICY_KEYS)}")
+    tolerance, units = policy["qform_sform_atol_mm"], policy["unknown_spatial_units_as_mm"]
+    if (
+        isinstance(tolerance, bool)
+        or not isinstance(tolerance, (int, float))
+        or not STRICT_QFORM_SFORM_ATOL_MM <= tolerance <= MAX_QFORM_SFORM_ATOL_MM
+        or type(units) is not bool
+    ):
+        raise MedicalDataError(
+            f"qform/sform tolerance must lie in [{STRICT_QFORM_SFORM_ATOL_MM}, "
+            f"{MAX_QFORM_SFORM_ATOL_MM}] mm and unknown-unit handling must be a boolean"
+        )
+    return {"qform_sform_atol_mm": float(tolerance), "unknown_units_as_mm": units}
 
 
 def _nibabel() -> Any:
@@ -61,13 +102,24 @@ def validate_nifti(
     *,
     is_label: bool = False,
     allowed_labels: tuple[int, ...] | list[int] | None = None,
+    qform_sform_atol_mm: float = STRICT_QFORM_SFORM_ATOL_MM,
+    unknown_units_as_mm: bool = False,
 ) -> dict[str, Any]:
     """Fully decode one 3D NIfTI and validate its physical-coordinate contract.
 
     Unknown spatial units and uncoded fallback affines are rejected; callers
     must resolve those ambiguities from acquisition/source evidence first.
     Stored integer CT values are decoded through the NIfTI scaling proxy.
+    The opt-in relaxations (see ``geometry_policy``) are listed under
+    ``geometry_relaxations`` whenever one was needed for this file.
     """
+    check_geometry_policy(
+        {
+            "qform_sform_atol_mm": qform_sform_atol_mm,
+            "unknown_spatial_units_as_mm": unknown_units_as_mm,
+        }
+    )
+    relaxations: list[dict[str, Any]] = []
     source = Path(path).expanduser().resolve()
     if not source.is_file() or not source.name.lower().endswith((".nii", ".nii.gz")):
         raise MedicalDataError(f"not a NIfTI file: {source}")
@@ -77,7 +129,10 @@ def validate_nifti(
         volume = nib.load(str(source))
         if len(volume.shape) != 3 or any(int(size) <= 0 for size in volume.shape):
             raise MedicalDataError(f"{source.name}: expected one nonempty 3D volume")
-        if volume.header.get_xyzt_units()[0] != "mm":
+        units = volume.header.get_xyzt_units()[0]
+        if units == "unknown" and unknown_units_as_mm:
+            relaxations.append({"relaxation": "unknown_spatial_units_as_mm"})
+        elif units != "mm":
             raise MedicalDataError(
                 f"{source.name}: spatial units must explicitly be mm; resolve/convert source units"
             )
@@ -89,8 +144,17 @@ def validate_nifti(
             _affine(qform, where=f"{source.name} qform")
         if scode:
             _affine(sform, where=f"{source.name} sform")
-        if qcode and scode and not np.allclose(qform, sform, atol=1e-4, rtol=0):
-            raise MedicalDataError(f"{source.name}: conflicting qform/sform affines")
+        if (
+            qcode
+            and scode
+            and not np.allclose(qform, sform, atol=STRICT_QFORM_SFORM_ATOL_MM, rtol=0)
+        ):
+            difference = float(np.max(np.abs(np.asarray(qform) - np.asarray(sform))))
+            if not np.allclose(qform, sform, atol=qform_sform_atol_mm, rtol=0):
+                raise MedicalDataError(f"{source.name}: conflicting qform/sform affines")
+            relaxations.append(
+                {"relaxation": "qform_sform_tolerance", "max_abs_difference_mm": difference}
+            )
         affine = _affine(volume.affine, where=source.name)
         spacing = np.linalg.norm(affine[:3, :3], axis=0)
         if not np.allclose(volume.header.get_zooms()[:3], spacing, atol=1e-4, rtol=1e-4):
@@ -125,6 +189,8 @@ def validate_nifti(
         for plane in values:
             digest.update(np.asarray(plane, dtype="<f8", order="C").tobytes())
         result["voxel_sha256"] = digest.hexdigest()
+        if relaxations:
+            result["geometry_relaxations"] = relaxations
         if sha256_file(source) != source_hash:
             raise MedicalDataError(f"{source.name}: input changed during full-volume validation")
         return result

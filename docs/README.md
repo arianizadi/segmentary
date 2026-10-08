@@ -159,3 +159,9 @@ Use the [medical campaign guide](guides/medical-campaigns.md) for an explicit
 all-model GPU queue, native validation, restart handling and generated comparisons.
 Use the [HRC guide](guides/medical-hrc.md) for the host-referenced calibration
 network, warm-start pilots and read-only out-of-fold probability export.
+Use the [round-2 arms guide](guides/medical-round2-arms.md) for region-based
+labels and nnFoundation encoder fine-tuning in a bound nnU-Net master environment.
+Use the [transfer dataset guide](guides/medical-transfer-datasets.md) to audit, split and
+score MSD Task03 (LiTS) and KiTS23 with the same pipeline.
+Use the [STAR-C guide](guides/medical-star-completion.md) for the star-convex
+lesion completion decoder, its full-volume ray targets and two-pass inference.

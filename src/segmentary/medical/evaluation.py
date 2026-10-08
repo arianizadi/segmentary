@@ -1,8 +1,10 @@
 """Evaluate saved native-space medical masks, without loading a model.
 
-Dice summaries average examinations within each patient, then patients. Mass
+Dice summaries average examinations within each patient, then patients. Region
 summaries use annotated, reference-positive cases: empty references are reported
-separately, never rewarded with perfect tumor Dice. A failed prediction on a
+separately, never rewarded with perfect tumor Dice. Regions come from the
+manifest ontology (``dataset_profiles``): Task07 pancreas/mass, LiTS liver/tumor,
+KiTS23 kidney_and_masses/masses/tumor. A failed prediction on a
 valid positive reference receives zero Dice; reference failures remain unknown
 and reduce reference coverage. Surface distances use DeepMind's area-weighted
 surfel implementation, with image-axis spacing in millimetres.
@@ -158,6 +160,7 @@ def lesion_detection_metrics(
     iou_threshold: float,
     connectivity: int = 26,
     minimum_prediction_volume_mm3: float = 0,
+    interpretation: str = "connected-component agreement with annotated masses; not PDAC diagnosis",
 ) -> dict[str, Any]:
     """Match binary-mask connected components, not clinical diagnoses.
 
@@ -238,7 +241,7 @@ def lesion_detection_metrics(
         "iou_threshold": iou_threshold,
         "connectivity": connectivity,
         "minimum_prediction_volume_mm3": minimum_prediction_volume_mm3,
-        "interpretation": "connected-component agreement with annotated masses; not PDAC diagnosis",
+        "interpretation": interpretation,
     }
 
 
@@ -256,7 +259,7 @@ def _read_volume(path: Path, role: str) -> Any:
         ) from exc
 
 
-def _affine(volume: Any) -> np.ndarray:
+def _affine(volume: Any, geometry: Mapping[str, Any] | None = None) -> np.ndarray:
     affine = np.asarray(volume.affine, dtype=float)
     if affine.shape != (4, 4) or not np.isfinite(affine).all():
         raise ValueError("Invalid native affine")
@@ -270,21 +273,27 @@ def _affine(volume: Any) -> np.ndarray:
         raise ValueError("Sheared affine is unsupported for spacing-based surface metrics")
     if not np.allclose(volume.header.get_zooms()[:3], spacing, atol=1e-4, rtol=1e-4):
         raise ValueError("Header spacing and affine disagree")
-    # NIfTI unit codes must not silently turn metres into millimetres.
-    if volume.header.get_xyzt_units()[0] != "mm":
+    # NIfTI unit codes must not silently turn metres into millimetres. Only the
+    # manifest's recorded geometry policy may read undeclared units as mm.
+    from .geometry import check_geometry_policy
+
+    policy = check_geometry_policy(None if geometry is None else dict(geometry))
+    units = volume.header.get_xyzt_units()[0]
+    if units != "mm" and not (units == "unknown" and policy.get("unknown_units_as_mm")):
         raise ValueError("NIfTI spatial units must explicitly be mm")
     qform, qcode = volume.get_qform(coded=True)
     sform, scode = volume.get_sform(coded=True)
     if not qcode and not scode:
         raise ValueError("NIfTI has no coded native-coordinate affine")
-    if qcode and scode and not np.allclose(qform, sform, atol=1e-4, rtol=0):
+    tolerance = policy.get("qform_sform_atol_mm", 1e-4)
+    if qcode and scode and not np.allclose(qform, sform, atol=tolerance, rtol=0):
         raise ValueError("NIfTI has conflicting qform/sform affines")
     return affine
 
 
-def _same_geometry(first: Any, other: Any) -> None:
+def _same_geometry(first: Any, other: Any, geometry: Mapping[str, Any] | None = None) -> None:
     if first.shape != other.shape or not np.allclose(
-        _affine(first), _affine(other), atol=1e-4, rtol=0
+        _affine(first, geometry), _affine(other, geometry), atol=1e-4, rtol=0
     ):
         raise ValueError("Native image/reference/prediction geometry mismatch")
 
@@ -313,32 +322,66 @@ def _verify_hash(path: Path, expected: str | None) -> None:
         raise ValueError("Source checksum differs from audited manifest")
 
 
+def evaluation_regions(
+    ontology: Mapping[str, int], host_includes_lesion: bool = True
+) -> list[tuple[str, tuple[int, ...]]]:
+    """Ordered scored regions; the first (host organ) is the only one organ-only cases score.
+
+    ``host_includes_lesion=False`` is Task07's exclusive pancreas (label 1 only).
+    """
+    from .dataset_profiles import PANCREAS, profile_for_ontology
+
+    profile = profile_for_ontology(dict(ontology))
+    regions = list(profile.regions)
+    if not host_includes_lesion:
+        if profile is not PANCREAS:
+            raise ValueError("Only Task07 pancreas scoring has an exclusive (label 1) variant")
+        regions[0] = (profile.host, (profile.host_label,))
+    return regions
+
+
 def _region_metrics(
     reference: np.ndarray,
     prediction: np.ndarray,
     status: str,
-    ontology: Mapping[str, int],
-    include_mass: bool,
+    regions: Sequence[tuple[str, tuple[int, ...]]],
     spacing: Sequence[float],
-    tolerance: float | None,
+    tolerance: float | Mapping[str, float] | None,
 ) -> dict[str, Any]:
-    pancreas_labels = [ontology["pancreas"]]
-    if include_mass:
-        pancreas_labels.append(ontology["mass"])
-    metrics = {
-        "pancreas": binary_segmentation_metrics(
-            np.isin(reference, pancreas_labels),
-            np.isin(prediction, pancreas_labels),
-            spacing,
-            tolerance,
-        ),
-        "mass": None,
-    }
-    if status == "labeled":
-        metrics["mass"] = binary_segmentation_metrics(
-            reference == ontology["mass"], prediction == ontology["mass"], spacing, tolerance
+    metrics: dict[str, Any] = {}
+    for index, (name, labels) in enumerate(regions):
+        # Organ-only references score the host organ only; lesions stay unknown.
+        region_tolerance = tolerance[name] if isinstance(tolerance, Mapping) else tolerance
+        metrics[name] = (
+            binary_segmentation_metrics(
+                np.isin(reference, labels), np.isin(prediction, labels), spacing, region_tolerance
+            )
+            if index == 0 or status == "labeled"
+            else None
         )
     return metrics
+
+
+def _nnunet_convention_dice(cases: Sequence[dict[str, Any]], region: str) -> dict[str, Any]:
+    """nnU-Net's case mean: reference-empty cases with a nonempty prediction score 0.
+
+    The headline Dice above averages reference-positive patients only, so false
+    positives on lesion-free scans (13 LiTS cases) never lower it. nnU-Net's
+    ``summary.json`` (and published LiTS/KiTS numbers built on it) scores those
+    cases 0 and drops only both-empty cases; this is that mean, case-weighted,
+    for comparison with published numbers.
+    """
+    values = [
+        case["metrics"][region]["dice"]
+        for case in cases
+        if case["metrics"][region]["dice"] is not None
+    ]
+    return {
+        "mean": sum(values) / len(values) if values else None,
+        "cases": len(values),
+        "definition": "case mean over annotated cases except both-empty; "
+        "reference-empty with nonempty prediction scores 0 (nnU-Net summary.json)",
+    }
 
 
 def _summarize_region(
@@ -363,6 +406,7 @@ def _summarize_region(
             for case in annotated
         ),
         "population": "reference-positive annotated cases; failed predictions receive zero Dice",
+        "dice_nnunet_convention": _nnunet_convention_dice(annotated, region),
     }
     for metric in ("dice", "surface_dice", "hd95_mm"):
         values: dict[str, list[float]] = defaultdict(list)
@@ -392,8 +436,8 @@ def write_review_overlay(
 ) -> str:
     """Write a RAS-reoriented CT/reference/prediction montage without identifiers.
 
-    Select the axial plane containing most reference mass, then predicted mass,
-    then reference pancreas. This is a review aid, not comprehensive QC or a
+    Select the axial plane containing most reference lesion, then predicted
+    lesion, then reference host organ. This is a review aid, not comprehensive QC or a
     clinical display. Source labels and filenames never appear on the image.
     """
     import nibabel as nib
@@ -411,11 +455,14 @@ def write_review_overlay(
     pred = np.asarray(
         nib.as_closest_canonical(nib.Nifti1Image(prediction.astype(np.int16), image.affine)).dataobj
     )
-    target = ref == ontology["mass"]
+    from .dataset_profiles import profile_for_ontology
+
+    profile = profile_for_ontology(dict(ontology))
+    target = np.isin(ref, profile.lesion_labels)
     if not target.any():
-        target = pred == ontology["mass"]
+        target = np.isin(pred, profile.lesion_labels)
     if not target.any():
-        target = ref == ontology["pancreas"]
+        target = np.isin(ref, profile.host_labels)
     z = int(np.argmax(target.sum(axis=(0, 1)))) if target.any() else ct.shape[2] // 2
     gray = np.clip((ct[:, :, z] - (window_center - window_width / 2)) / window_width, 0, 1)
     gray = (np.rot90(gray) * 255).astype(np.uint8)
@@ -430,10 +477,7 @@ def write_review_overlay(
         rgb = base.copy()
         if mask is not None:
             plane = np.rot90(mask[:, :, z])
-            for label, color in (
-                (ontology["pancreas"], [0, 220, 90]),
-                (ontology["mass"], [255, 60, 70]),
-            ):
+            for label, color in profile.overlay_colors:
                 selected = plane == label
                 rgb[selected] = np.rint(rgb[selected] * 0.55 + np.asarray(color) * 0.45).astype(
                     np.uint8
@@ -441,9 +485,7 @@ def write_review_overlay(
         panel = Image.fromarray(rgb).resize((panel_width, panel_height), Image.Resampling.BILINEAR)
         montage.paste(panel, (index * panel_width, 48))
         ImageDraw.Draw(montage).text((index * panel_width + 8, 8), title, fill="white")
-    ImageDraw.Draw(montage).text(
-        (8, 27), "Green: pancreas   Red: annotated/predicted mass   Axial RAS review", fill="white"
-    )
+    ImageDraw.Draw(montage).text((8, 27), profile.overlay_legend, fill="white")
     destination = Path(output_path)
     destination.parent.mkdir(parents=True, exist_ok=True)
     montage.save(destination, format="PNG")
@@ -456,7 +498,7 @@ def evaluate_predictions(
     output_dir: str | Path,
     case_ids: Sequence[str] | None = None,
     pancreas_include_mass: bool = True,
-    surface_tolerance_mm: float | None = None,
+    surface_tolerance_mm: float | str | None = None,
     bootstrap_samples: int = 1000,
     seed: int = 0,
     review_overlays: bool = False,
@@ -477,20 +519,39 @@ def evaluate_predictions(
 
     _surface_library()
     patient_bootstrap({}, bootstrap_samples, seed)
-    if surface_tolerance_mm is not None and (
-        not math.isfinite(surface_tolerance_mm) or surface_tolerance_mm < 0
+    if (
+        surface_tolerance_mm is not None
+        and surface_tolerance_mm != "official"
+        and (
+            isinstance(surface_tolerance_mm, (str, bool))
+            or not math.isfinite(surface_tolerance_mm)
+            or surface_tolerance_mm < 0
+        )
     ):
-        raise ValueError("surface_tolerance_mm must be finite and nonnegative")
+        raise ValueError("surface_tolerance_mm must be finite and nonnegative, or 'official'")
     if lesion_iou_threshold is not None and (
         not math.isfinite(lesion_iou_threshold) or not 0 < lesion_iou_threshold <= 1
     ):
         raise ValueError("lesion_iou_threshold must lie in (0, 1]")
     from .data import load_manifest
+    from .dataset_profiles import PANCREAS, profile_for_ontology
 
     manifest = load_manifest(manifest_path, verify_files=False)
     ontology = manifest.get("ontology", {})
-    if set(ontology) != {"background", "pancreas", "mass"} or len(set(ontology.values())) != 3:
-        raise ValueError("Manifest must specify distinct background, pancreas and mass labels")
+    profile = profile_for_ontology(ontology)
+    regions = evaluation_regions(ontology, pancreas_include_mass)
+    region_names = [name for name, _ in regions]
+    tolerances: float | dict[str, float] | None
+    if surface_tolerance_mm == "official":
+        # Per-region benchmark tolerances (KiTS23 HEC_SD_TOLERANCES_MM).
+        tolerances = dict(profile.official_surface_tolerances_mm)
+        if set(tolerances) != set(region_names):
+            raise ValueError(f"{profile.name} defines no official per-region surface tolerances")
+    else:
+        assert not isinstance(surface_tolerance_mm, str)
+        tolerances = surface_tolerance_mm
+    lesion_labels = list(profile.lesion_labels)
+    geometry = manifest.get("geometry_policy")
     all_cases = manifest["cases"]
     manifest_ids = [case["case_id"] for case in all_cases]
     if len(set(manifest_ids)) != len(manifest_ids):
@@ -545,8 +606,8 @@ def evaluate_predictions(
             _verify_hash(label_path, case.get("label_sha256"))
             image = _read_volume(image_path, "image")
             label = _read_volume(label_path, "reference")
-            _same_geometry(image, label)
-            affine = _affine(image)
+            _same_geometry(image, label, geometry)
+            affine = _affine(image, geometry)
             spacing = _spacing(np.linalg.norm(affine[:3, :3], axis=0))
             if case.get("shape") is not None and tuple(case["shape"]) != image.shape:
                 raise ValueError("Image shape differs from audited manifest")
@@ -557,7 +618,7 @@ def evaluate_predictions(
             allowed = (
                 set(ontology.values())
                 if annotation == "labeled"
-                else {ontology["background"], ontology["pancreas"]}
+                else {ontology["background"], profile.host_label}
             )
             reference = _decode_labels(label, allowed)
         except (ValueError, OSError, KeyError) as exc:
@@ -566,7 +627,7 @@ def evaluate_predictions(
         try:
             prediction_path = Path(prediction_dir) / f"{case['case_id']}.nii.gz"
             pred_volume = _read_volume(prediction_path, "prediction")
-            _same_geometry(image, pred_volume)
+            _same_geometry(image, pred_volume, geometry)
             prediction = _decode_labels(pred_volume, set(ontology.values()))
             from .geometry import sha256_file
 
@@ -576,13 +637,7 @@ def evaluate_predictions(
             row.update(status="failed_prediction", reason=str(exc))
             prediction = np.full(reference.shape, ontology["background"], dtype=reference.dtype)
         row["metrics"] = _region_metrics(
-            reference,
-            prediction,
-            annotation,
-            ontology,
-            pancreas_include_mass,
-            spacing,
-            surface_tolerance_mm,
+            reference, prediction, annotation, regions, spacing, tolerances
         )
         if row["status"] == "failed_prediction":
             for scores in row["metrics"].values():
@@ -595,10 +650,11 @@ def evaluate_predictions(
                     scores["hd95_status"] = "undefined_prediction_failed"
             if lesion_iou_threshold is not None and annotation == "labeled":
                 row["lesions"] = lesion_detection_metrics(
-                    reference == ontology["mass"],
-                    prediction == ontology["mass"],
+                    np.isin(reference, lesion_labels),
+                    np.isin(prediction, lesion_labels),
                     spacing,
                     lesion_iou_threshold,
+                    interpretation=profile.lesion_interpretation,
                 )
                 # A failed run misses each known reference component, but its
                 # number of false alerts is unknown rather than zero.
@@ -611,10 +667,11 @@ def evaluate_predictions(
             continue
         if lesion_iou_threshold is not None and annotation == "labeled":
             row["lesions"] = lesion_detection_metrics(
-                reference == ontology["mass"],
-                prediction == ontology["mass"],
+                np.isin(reference, lesion_labels),
+                np.isin(prediction, lesion_labels),
                 spacing,
                 lesion_iou_threshold,
+                interpretation=profile.lesion_interpretation,
             )
         if review_overlays:
             token = hashlib.sha256(
@@ -634,13 +691,21 @@ def evaluate_predictions(
     status_counts = dict(Counter(row["status"] for row in rows))
     labeled_count = sum(row["annotation_status"] != "unlabeled" for row in rows)
     reference_valid = status_counts.get("ok", 0) + status_counts.get("failed_prediction", 0)
+    protocol: dict[str, Any] = {}
+    if profile is PANCREAS:
+        protocol["pancreas_include_mass"] = pancreas_include_mass
+    else:
+        protocol["regions"] = {name: list(labels) for name, labels in regions}
+        protocol["lesion_region"] = profile.lesion
+        protocol["geometry_policy"] = geometry
     report: dict[str, Any] = {
         "schema_version": 1,
         "dataset": manifest.get("dataset"),
         "manifest_fingerprint": manifest.get("fingerprint"),
         "protocol": {
-            "pancreas_include_mass": pancreas_include_mass,
+            **protocol,
             "surface_tolerance_mm": surface_tolerance_mm,
+            **({"surface_tolerances_mm": tolerances} if surface_tolerance_mm == "official" else {}),
             "surface_method": "DeepMind surfel-area-weighted surface-distance",
             "hd95_definition": "maximum of directional area-weighted 95th-percentile distances in mm",
             "prediction_failure_policy": "zero Dice and surface Dice for known positive references; undefined distances; no imputed negatives",
@@ -668,13 +733,14 @@ def evaluate_predictions(
         },
         "regions": {
             region: _summarize_region(rows, region, bootstrap_samples, seed)
-            for region in ("pancreas", "mass")
+            for region in region_names
         },
         "limitations": [
-            "Mass-mask agreement does not establish PDAC diagnosis, screening performance or clinical utility.",
-            "Organ-only annotations cannot establish absence of a mass; their mass metrics are unknown.",
+            *profile.limitations,
             "Patient bootstrap assumes independent patient groups; unresolved cross-source identity or site clustering limits interpretation.",
-            "Only explicit millimetre spatial units and consistent coded native affines are accepted.",
+            "Only explicit millimetre spatial units and consistent coded native affines are accepted."
+            if geometry is None
+            else "Spatial units and coded affines are accepted under the manifest's recorded geometry policy.",
         ],
         "cases": rows,
     }
@@ -721,7 +787,7 @@ def evaluate_predictions(
     fields = ["case_id", "patient_id", "annotation_status", "status", "reason"]
     fields += [
         f"{region}_{metric}"
-        for region in ("pancreas", "mass")
+        for region in region_names
         for metric in (
             "dice",
             "surface_dice",
@@ -737,7 +803,7 @@ def evaluate_predictions(
         writer.writeheader()
         for row in rows:
             flat = {key: row.get(key) for key in fields[:5]}
-            for region in ("pancreas", "mass"):
+            for region in region_names:
                 for key, value in (row["metrics"].get(region) or {}).items():
                     if f"{region}_{key}" in fields:
                         flat[f"{region}_{key}"] = value
@@ -760,7 +826,11 @@ def paired_comparison(
     Both-missing metrics are reported as excluded, with no complete-case claim
     for undefined boundary distances. Failed-prediction Dice is already zero.
     """
-    if region not in {"pancreas", "mass"} or metric not in {"dice", "surface_dice", "hd95_mm"}:
+    if region not in (report_a.get("regions") or ("pancreas", "mass")) or metric not in {
+        "dice",
+        "surface_dice",
+        "hd95_mm",
+    }:
         raise ValueError("Unsupported paired region or metric")
     if not report_a.get("manifest_fingerprint") or report_a.get(
         "manifest_fingerprint"
@@ -768,6 +838,8 @@ def paired_comparison(
         raise ValueError("Paired comparisons require the same nonempty manifest fingerprint")
     for key in (
         "pancreas_include_mass",
+        "regions",
+        "geometry_policy",
         "surface_tolerance_mm",
         "surface_method",
         "hd95_definition",

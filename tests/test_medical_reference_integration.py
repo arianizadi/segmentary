@@ -102,19 +102,19 @@ def test_hrc_transfer_checks_its_output_channels_against_the_dataset(
     assert receipt["changes"]["network_construction"] == "architecture_default_initialization"
     assert "initialization" not in receipt["changes"]
     regions = {"output_mode": "regions", "host_channels": [0], "lesion_channels": [1]}
-    config, *_ = _transfer(
-        prepared_backend,
-        plan,
-        monkeypatch,
-        tmp_path,
-        name="regions",
-        architecture="hrc",
-        deterministic=False,
-        hrc_options=regions,
-    )
-    with pytest.raises(ValueError, match="regions_class_order"):
-        b.plan_and_preprocess(config)
-    assert not (config.root / "plan-binding.json").exists()
+    # Region heads on a label-mode run now fail when the recipe is constructed.
+    with pytest.raises(ValueError, match="HRC output_mode must be softmax"):
+        _transfer(
+            prepared_backend,
+            plan,
+            monkeypatch,
+            tmp_path,
+            name="regions",
+            architecture="hrc",
+            deterministic=False,
+            hrc_options=regions,
+        )
+    assert not (tmp_path / "regions").exists()
 
 
 def test_transfer_dry_run_does_not_import_or_mutate(transfer):

@@ -763,3 +763,16 @@ def test_scratch_and_warm_start_runs_are_never_ranked_together(campaign):
     assert not group["ranked"]
     assert any("never ranked together" in reason for reason in group["reasons"])
     assert all(row["screening_rank"] is None for row in snapshot["runs"])
+
+
+def test_reports_refuse_campaigns_on_other_ontologies(tmp_path):
+    from segmentary.medical.dataset_profiles import LIVER
+
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps({"ontology": dict(LIVER.ontology)}))
+    campaign = tmp_path / "campaign.json"
+    campaign.write_text(
+        json.dumps({"schema_version": 1, "runs": [{"id": "a"}], "manifest": str(manifest)})
+    )
+    with pytest.raises(ValueError, match="pancreas/mass ontology only"):
+        reporter.collect(campaign, tmp_path / "state")

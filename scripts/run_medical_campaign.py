@@ -288,6 +288,10 @@ def load_spec(path: Path) -> dict[str, Any]:
         validate_seed_folds(spec, recipes)
     if protocol.get("preset") == WARM_START_PRESET:
         validate_warm_start(spec, recipes)
+    if protocol.get("preset") == REGIONS_PRESET:
+        validate_regions_folds(spec, recipes)
+    if protocol.get("preset") == PRETRAINED_PRESET:
+        validate_pretrained_folds(spec, recipes)
     return spec
 
 
@@ -306,6 +310,17 @@ SEED_FOLDS_FIXED = {
     "num_val_iterations_per_epoch": None,
     "deterministic": False,
 }
+# Backend fields added for region labels and the nnssl runtime; absent means label mode
+# in the official nnU-Net 2.8.1 runtime.
+LABEL_RUNTIME_DEFAULTS = {
+    "backend_runtime": "nnunet-2.8.1",
+    "runtime_freeze_sha256": None,
+    "nnunet_commit": None,
+    "pretrained_plan_name": None,
+    "output_mode": "labels",
+    "label_regions": None,
+    "regions_class_order": None,
+}
 # Fields added after Wave 1 was planned; an absent key means its scratch default.
 SEED_FOLDS_DEFAULTS = {
     "trainer": "nnUNetTrainer",
@@ -314,6 +329,11 @@ SEED_FOLDS_DEFAULTS = {
     "init_checkpoint": None,
     "init_checkpoint_sha256": None,
     "hrc_options": None,
+    **LABEL_RUNTIME_DEFAULTS,
+    "starc_options": None,
+    "starc_targets": None,
+    "starc_targets_manifest_sha256": None,
+    "starc_inference": None,
 }
 
 
@@ -364,12 +384,44 @@ WARM_START_FIXED = {
     "use_mirroring": False,
     "tile_step_size": 0.5,
     "purpose": "pilot",
-    "trainer": "nnUNetTrainerFinetune",
     "initialization": "warm_start",
     "num_iterations_per_epoch": None,
     "num_val_iterations_per_epoch": None,
     "deterministic": False,
 }
+
+
+def _starc_recipe_differs(
+    recipe: dict[str, Any], arm: dict[str, Any], targets: dict[str, Any] | None
+) -> bool:
+    """A recipe's STAR-C fields differ from its planned arm and the planned targets."""
+    if arm.get("architecture") != "starc":
+        return any(
+            recipe.get(key) is not None
+            for key in (
+                "starc_options",
+                "starc_targets",
+                "starc_targets_manifest_sha256",
+                "starc_inference",
+            )
+        )
+    return (
+        not isinstance(targets, dict)
+        or recipe.get("starc_options") != arm.get("starc_options")
+        or recipe.get("starc_inference") != arm.get("starc_inference")
+        or recipe.get("starc_targets") != targets.get("path")
+        or recipe.get("starc_targets_manifest_sha256") != targets.get("manifest_sha256")
+    )
+
+
+def check_starc_targets(protocol: dict[str, Any]) -> None:
+    """Re-hash a plan's bound STAR-C target manifest (the backend re-verifies every case)."""
+    targets = protocol.get("starc_targets")
+    if targets is None:
+        return
+    path = Path(str(targets.get("path"))) / "manifest.json"
+    if not path.is_file() or sha256(path) != targets.get("manifest_sha256"):
+        raise ValueError(f"STAR-C target manifest changed or is missing: {path}")
 
 
 def validate_warm_start(spec: dict[str, Any], recipes: dict[str, dict[str, Any]]) -> None:
@@ -407,6 +459,8 @@ def validate_warm_start(spec: dict[str, Any], recipes: dict[str, dict[str, Any]]
             or recipe.get("gpu") != run["gpu"]
             or recipe.get("architecture") != arms[arm]["architecture"]
             or recipe.get("hrc_options") != arms[arm].get("hrc_options")
+            or recipe.get("trainer") != arms[arm].get("trainer", "nnUNetTrainerFinetune")
+            or _starc_recipe_differs(recipe, arms[arm], protocol.get("starc_targets"))
             or recipe.get("init_allowed_missing_prefixes")
             != arms[arm]["init_allowed_missing_prefixes"]
             or recipe.get("num_epochs") != pilot.get("num_epochs")
@@ -420,6 +474,7 @@ def validate_warm_start(spec: dict[str, Any], recipes: dict[str, dict[str, Any]]
             or run.get("comparison_group")
             != f"warm_start_fold{fold}_seed{seed}_{pilot.get('optimizer_steps')}_steps"
             or any(recipe.get(key) != value for key, value in WARM_START_FIXED.items())
+            or any(recipe.get(key, value) != value for key, value in LABEL_RUNTIME_DEFAULTS.items())
         ):
             raise ValueError(f"{run['id']}: recipe differs from the warm-start plan")
         seen.add((arm, fold, seed))
@@ -427,6 +482,150 @@ def validate_warm_start(spec: dict[str, Any], recipes: dict[str, dict[str, Any]]
         path = Path(bound["path"])
         if not path.is_file() or sha256(path) != bound["sha256"]:
             raise ValueError(f"Warm-start initial checkpoint changed or is missing: {key}")
+    check_starc_targets(protocol)
+
+
+ROUND2_GPUS = frozenset(str(gpu) for gpu in range(2, 10))
+ROUND2_FIXED = {
+    "backend": "nnunet",
+    "resenc": "L",
+    "configuration": "3d_fullres",
+    "dataset_id": 707,
+    "dataset_name": "Pancreas",
+    "use_mirroring": False,
+    "tile_step_size": 0.5,
+    "num_iterations_per_epoch": None,
+    "num_val_iterations_per_epoch": None,
+    "deterministic": False,
+}
+
+
+def _round2_inputs(spec: dict[str, Any], label: str) -> dict[str, Any]:
+    """Re-check a round-2 plan's frozen manifest, split and CV manifest; return the CV."""
+    protocol = spec["protocol"]
+    for key in ("manifest", "splits"):
+        if protocol.get(f"{key}_sha256") != sha256(Path(spec[key])):
+            raise ValueError(f"{label} manifest or splits changed after planning")
+    cv_path = protocol.get("cv_splits")
+    if not isinstance(cv_path, str) or protocol.get("cv_splits_sha256") != sha256(Path(cv_path)):
+        raise ValueError(f"{label} cross-validation manifest changed after planning")
+    cv = read_json(Path(cv_path))
+    if cv.get("fingerprint") != protocol.get("cv_fingerprint") or cv.get(
+        "base_splits_sha256"
+    ) != protocol.get("splits_sha256"):
+        raise ValueError(f"{label} cross-validation manifest is not the planned one")
+    if not protocol.get("reference", {}).get("plan_binding_sha256"):
+        raise ValueError(f"{label} protocol has no frozen reference plan binding")
+    if not isinstance(protocol.get("arms"), dict) or not protocol["arms"]:
+        raise ValueError(f"{label} protocol must declare its arms")
+    return cv
+
+
+def _round2_run(
+    spec: dict[str, Any], run: dict[str, Any], recipe: dict[str, Any], cv: dict[str, Any]
+) -> tuple[str, int, int]:
+    """The arm, fold and seed of one round-2 run, with the checks every arm shares."""
+    protocol = spec["protocol"]
+    arms = protocol["arms"]
+    fold, seed = recipe.get("fold"), recipe.get("seed")
+    arm = next(
+        (
+            name
+            for name in arms
+            if run["id"] == f"{arms[name]['model']}-{name}-fold{fold}-seed{seed}"
+        ),
+        None,
+    )
+    if (
+        arm is None
+        or not isinstance(fold, int)
+        or not 0 <= fold < len(cv.get("folds", []))
+        or run.get("gpu") not in ROUND2_GPUS
+        or recipe.get("gpu") != run["gpu"]
+        or recipe.get("cv_splits") != protocol["cv_splits"]
+        or recipe.get("cv_splits_sha256") != protocol["cv_splits_sha256"]
+        or recipe.get("reference_workspace") != protocol["reference_workspace"]
+        or recipe.get("reference_plan_binding_sha256")
+        != protocol["reference"]["plan_binding_sha256"]
+        or recipe.get("architecture") != arms[arm]["architecture"]
+        or recipe.get("hrc_options") != arms[arm]["hrc_options"]
+        or _starc_recipe_differs(recipe, arms[arm], protocol.get("starc_targets"))
+        or any(recipe.get(key) != value for key, value in ROUND2_FIXED.items())
+    ):
+        raise ValueError(f"{run['id']}: recipe differs from the planned arm")
+    return arm, fold, seed
+
+
+REGIONS_PRESET = "task07_nnunet_regions_folds_v1"
+
+
+def validate_regions_folds(spec: dict[str, Any], recipes: dict[str, dict[str, Any]]) -> None:
+    """Re-check a region-label (Z2) plan: scratch, official recipe, bound region decode."""
+    protocol = spec["protocol"]
+    cv = _round2_inputs(spec, "Region")
+    regions = protocol.get("regions", {})
+    seen = set()
+    for run in spec["runs"]:
+        recipe = recipes[run["id"]]
+        arm, fold, seed = _round2_run(spec, run, recipe, cv)
+        if (
+            (arm, fold, seed) in seen
+            or recipe.get("output_mode") != "regions"
+            or recipe.get("label_regions") != regions.get("label_regions")
+            or recipe.get("regions_class_order") != regions.get("regions_class_order")
+            or recipe.get("purpose") != "baseline"
+            or recipe.get("trainer") != protocol["arms"][arm].get("trainer", "nnUNetTrainer")
+            or recipe.get("initialization") != "scratch"
+            or recipe.get("num_epochs") is not None
+            or recipe.get("backend_runtime") != "nnunet-2.8.1"
+            or run.get("comparison_group") != f"regions_fold{fold}_seed{seed}_scratch_250000_steps"
+        ):
+            raise ValueError(f"{run['id']}: recipe differs from the region-label plan")
+        seen.add((arm, fold, seed))
+    check_starc_targets(protocol)
+
+
+PRETRAINED_PRESET = "task07_nnunet_pretrained_nnfoundation_v1"
+
+
+def validate_pretrained_folds(spec: dict[str, Any], recipes: dict[str, dict[str, Any]]) -> None:
+    """Re-check an nnFoundation fine-tune (Z4, Z4+HRC) plan and its bound checkpoint/runtime."""
+    protocol = spec["protocol"]
+    cv = _round2_inputs(spec, "Pretrained")
+    bound = protocol.get("pretrained", {})
+    finetune = protocol.get("finetune", {})
+    group = protocol.get("comparison_group_prefix")
+    if group != "pretrained-nnfoundation":
+        raise ValueError("Pretrained runs must sit in the pretrained-nnfoundation groups")
+    seen = set()
+    for run in spec["runs"]:
+        recipe = recipes[run["id"]]
+        arm, fold, seed = _round2_run(spec, run, recipe, cv)
+        if (
+            (arm, fold, seed) in seen
+            or recipe.get("backend_python") != bound.get("backend_python")
+            or recipe.get("backend_runtime") != "nnunet-master-nnssl"
+            or recipe.get("runtime_freeze_sha256") != bound.get("runtime_freeze_sha256")
+            or recipe.get("nnunet_commit") != bound.get("nnunet_commit")
+            or recipe.get("pretrained_plan_name") != bound.get("plan_name")
+            or recipe.get("init_checkpoint") != bound.get("checkpoint")
+            or recipe.get("init_checkpoint_sha256") != bound.get("sha256")
+            or recipe.get("init_allowed_missing_prefixes")
+            != protocol["arms"][arm]["init_allowed_missing_prefixes"]
+            or recipe.get("initialization") != "pretrained"
+            or recipe.get("trainer") != finetune.get("trainer")
+            or recipe.get("purpose") != "finetune"
+            or recipe.get("num_epochs") != finetune.get("num_epochs")
+            or recipe.get("initial_lr") != finetune.get("initial_lr")
+            or recipe.get("output_mode", "labels") != "labels"
+            or run.get("comparison_group")
+            != f"{group}_fold{fold}_seed{seed}_{finetune.get('optimizer_steps')}_steps"
+        ):
+            raise ValueError(f"{run['id']}: recipe differs from the pretrained plan")
+        seen.add((arm, fold, seed))
+    path = Path(str(bound.get("checkpoint")))
+    if not path.is_file() or sha256(path) != bound.get("sha256"):
+        raise ValueError(f"Pretrained checkpoint changed or is missing: {path}")
 
 
 def check_source(spec: dict[str, Any]) -> None:

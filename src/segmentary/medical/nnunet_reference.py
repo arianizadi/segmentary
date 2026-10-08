@@ -75,7 +75,7 @@ def _official_plan(config: NNUNetConfig, source_binding: dict, plan: dict) -> di
     ):
         raise ValueError("Reference must use the official baseline training budget")
     if (
-        plan.get("plans_name") != config.plans
+        plan.get("plans_name") != config.reference_plans
         or plan.get("dataset_name") != config.dataset
         or plan.get("experiment_planner_used") != f"nnUNetPlannerResEnc{config.resenc}"
         or plan.get("image_reader_writer") != "NibabelIO"
@@ -173,7 +173,7 @@ def import_reference(config: NNUNetConfig) -> dict[str, Any]:
             raise ValueError("Unsafe reference cache index path")
     if _inventory(cache) != set(index):
         raise ValueError("Reference preprocessing cache membership changed")
-    plan_name = f"{config.plans}.json"
+    plan_name = f"{config.reference_plans}.json"
     for required in (plan_name, "splits_final.json", "dataset.json", "dataset_fingerprint.json"):
         if required not in index:
             raise ValueError(f"Reference cache is missing {required}")
@@ -206,13 +206,16 @@ def import_reference(config: NNUNetConfig) -> dict[str, Any]:
         "file_ending": ".nii.gz",
         "overwrite_image_reader_writer": "NibabelIO",
     }
+    # The reference is always label mode; a region destination differs only in its labels.
     if any(
         b._json(path) != dataset
         for path in (
             cache / "dataset.json",
             reference / "nnUNet_raw" / config.dataset / "dataset.json",
-            target / "nnUNet_raw" / config.dataset / "dataset.json",
         )
+    ) or not b._same_dataset_json(
+        b._json(target / "nnUNet_raw" / config.dataset / "dataset.json"),
+        b._dataset_json(config, destination["ontology"], len(development)),
     ):
         raise ValueError("Reference dataset ontology, modality, or membership changed")
 

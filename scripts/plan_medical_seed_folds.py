@@ -6,7 +6,7 @@ ResEnc L 3d_fullres recipe of the verified preprocessing reference (scratch, no
 mirroring, tile step 0.5) and a development CV manifest whose fold 0 is the
 frozen train/validation split.
 
-Warm-start mode (``--arm NAME=ARCHITECTURE[:REFERENCE_MODE]`` plus
+Warm-start mode (``--arm NAME=ARCHITECTURE[:MODE]`` plus
 ``--run GPU:FOLD:SEED:ARM``): each arm x fold run fine-tunes from the matching
 fold's own ResEnc L ``checkpoint_final.pth`` (``--init-checkpoint-pattern``
 with ``{fold}`` and ``{seed}``), so no fold's validation cases were seen by its
@@ -14,6 +14,15 @@ initial weights. At planning time every checkpoint must exist; its sha256 is
 bound, and its source workspace must prove the same fold, seed, CV manifest,
 plan and a completed scratch ResEnc L run. Runs share one comparison group per
 fold and seed, tagged ``warm_start``.
+
+Arms are ``resenc``, ``hrc[:REFERENCE_MODE]`` or ``starc[:aux_only|frozen]``.
+STAR-C arms train ``nnUNetTrainerStarCFinetune`` (only ``starc.*`` may keep its
+initialisation; ``frozen`` trains only ``starc.*``, the Stage-1 pilot) on the
+ray targets of ``--starc-targets``, bound by ``--starc-targets-sha256``. The
+targets must be ``scripts/precompute_star_targets.py`` output for the reference
+workspace's own preprocessed segmentations, run with ``--forbid-cases-from``
+the frozen split file; the planner checks this from the manifest and the
+reference's plan-binding hashes.
 
 Each run is pinned to one GPU. Like the strong-recipe planner, this reads
 metadata only: it does not allocate GPUs, copy caches, open CT payloads or
@@ -51,7 +60,8 @@ from segmentary.medical.geometry import sha256_file
 MODEL = "nnunet_resenc_l"
 ARM = re.compile(r"^(0|[1-9][0-9]*):(0|[1-9][0-9]?):([0-9]+)$")
 WARM_RUN = re.compile(r"^(0|[1-9][0-9]*):(0|[1-9][0-9]?):([0-9]+):([A-Za-z][A-Za-z0-9]*)$")
-ARM_SPEC = re.compile(r"^([A-Za-z][A-Za-z0-9]*)=(resenc|hrc)(?::([a-z_]+))?$")
+ARM_SPEC = re.compile(r"^([A-Za-z][A-Za-z0-9]*)=(resenc|hrc|starc)(?::([a-z_]+))?$")
+STARC_MODES = {"aux_only": {"fusion": "aux_only"}, "frozen": {"freeze_backbone": True}}
 WAVE1_CHECKPOINTS = (
     "/data/izadia1/projects/segmentary-runs/pancreas/task07-wave1-20261007/runs/"
     "nnunet_resenc_l-fold{fold}-seed{seed}/nnUNet_results/Dataset707_Pancreas/"
@@ -78,27 +88,100 @@ def parse_warm_run(text: str) -> tuple[str, int, int, str]:
 
 
 def parse_arm_spec(text: str) -> tuple[str, dict[str, Any]]:
-    """``NAME=resenc``, ``NAME=hrc`` or ``NAME=hrc:REFERENCE_MODE``."""
-    from segmentary.medical.recipe_plan import recipe_model_name, validate_hrc_options
+    """``NAME=resenc``, ``NAME=hrc[:REFERENCE_MODE]`` or ``NAME=starc[:aux_only|frozen]``."""
+    from segmentary.medical.recipe_plan import (
+        recipe_model_name,
+        validate_hrc_options,
+        validate_starc_inference,
+        validate_starc_options,
+    )
 
     match = ARM_SPEC.fullmatch(text)
     if not match:
-        raise ValueError(f"Arms are NAME=resenc or NAME=hrc[:REFERENCE_MODE], got {text!r}")
+        raise ValueError(
+            "Arms are NAME=resenc, NAME=hrc[:REFERENCE_MODE] or NAME=starc[:aux_only|frozen], "
+            f"got {text!r}"
+        )
     name, architecture, mode = match.groups()
     if architecture == "resenc" and mode is not None:
-        raise ValueError("Only hrc arms take a reference mode")
+        raise ValueError("Only hrc and starc arms take a mode")
+    if architecture == "starc" and mode is not None and mode not in STARC_MODES:
+        raise ValueError(f"STAR-C arm modes are {sorted(STARC_MODES)}, got {mode!r}")
     options = (
         validate_hrc_options({"reference_mode": mode} if mode else {})
         if architecture == "hrc"
         else None
     )
+    starc = architecture == "starc"
     return name, {
         "architecture": architecture,
         "model": recipe_model_name({"architecture": architecture, "resenc": "L"}),
         "hrc_options": options,
-        # Only the HRC modules are new; every ResEnc L key must load.
-        "init_allowed_missing_prefixes": ["hrc."] if architecture == "hrc" else [],
+        "trainer": "nnUNetTrainerStarCFinetune" if starc else "nnUNetTrainerFinetune",
+        "starc_options": validate_starc_options(STARC_MODES.get(mode or "", {})) if starc else None,
+        "starc_inference": validate_starc_inference(None) if starc else None,
+        # Only the HRC or STAR-C modules are new; every ResEnc L key must load.
+        "init_allowed_missing_prefixes": [f"{architecture}."]
+        if architecture in {"hrc", "starc"}
+        else [],
     }
+
+
+def starc_targets_record(
+    frozen: dict[str, Any], targets: Path | None, sha256: str | None, arms: list[dict[str, Any]]
+) -> dict[str, Any] | None:
+    """Verify STAR-C targets against the reference workspace (metadata and target hashes).
+
+    Every case's source segmentation must be the reference's own preprocessed
+    ``_seg`` file, by the hash in its frozen plan-binding record; no CT payload
+    or label is opened here. The backend repeats the check on each run's copy.
+    """
+    from segmentary.medical.backend import verify_starc_target_manifest
+
+    starc = [arm for arm in arms if arm["architecture"] == "starc"]
+    if not starc:
+        if targets is not None or sha256 is not None:
+            raise ValueError("--starc-targets applies only to starc arms")
+        return None
+    if targets is None or not isinstance(sha256, str) or not re.fullmatch(r"[0-9a-f]{64}", sha256):
+        raise ValueError("starc arms need --starc-targets and its --starc-targets-sha256")
+    folder = targets.expanduser().resolve()
+    for owner in (frozen["campaign_dir"], frozen["reference_workspace"]):
+        if folder.is_relative_to(owner):
+            raise ValueError("STAR-C targets must live outside the campaign and the reference")
+    reference = frozen["reference_workspace"]
+    index = _read(reference / "plan-binding.json")["files"]
+    configuration = frozen["reference"]["configuration"]
+    data_id = configuration["data_identifier"]
+    split = frozen["split_record"]
+    development = list(split["train"]) + list(split["val"])
+    segmentations = {}
+    for case in development:
+        found = [
+            (name, index[f"{data_id}/{name}"])
+            for name in (f"{case}_seg.b2nd", f"{case}_seg.npy")
+            if f"{data_id}/{name}" in index
+        ]
+        if len(found) != 1:
+            raise ValueError(f"Reference has no unique preprocessed segmentation for {case}")
+        segmentations[case] = found[0]
+    records = [
+        verify_starc_target_manifest(
+            folder,
+            sha256,
+            options=arm["starc_options"],
+            configuration="3d_fullres",
+            plan_configuration=configuration,
+            plans_sha256=frozen["reference"]["metadata_sha256"]["nnUNetResEncUNetLPlans.json"],
+            splits_sha256=frozen["input_hashes"]["splits"],
+            development=development,
+            held_out=list(split["test"]),
+            segmentations=segmentations,
+        )
+        for arm in starc
+    ]
+    frozen["watched"][folder / "manifest.json"] = sha256
+    return records[0]
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -442,6 +525,8 @@ def plan_warm_start(
     init_checkpoint_pattern: str = WAVE1_CHECKPOINTS,
     num_epochs: int = 150,
     initial_lr: float = 1e-3,
+    starc_targets: Path | None = None,
+    starc_targets_sha256: str | None = None,
 ) -> dict:
     """Freeze warm-start arm x fold runs, each from its own fold's checkpoint."""
     declared = dict(parse_arm_spec(text) for text in arms)
@@ -470,6 +555,9 @@ def plan_warm_start(
         folds=[fold for _, fold, _, _ in parsed],
     )
     campaign_dir = frozen["campaign_dir"]
+    targets = starc_targets_record(
+        frozen, starc_targets, starc_targets_sha256, list(declared.values())
+    )
     checkpoints = {}
     for fold, seed in sorted({(fold, seed) for _, fold, seed, _ in parsed}):
         path = Path(init_checkpoint_pattern.format(fold=fold, seed=seed))
@@ -479,6 +567,7 @@ def plan_warm_start(
             path, fold=fold, seed=seed, frozen=frozen
         )
     steps = num_epochs * UPDATES_PER_EPOCH
+    trainers = sorted({arm["trainer"] for arm in declared.values()})
     recipes, run_records = {}, []
     for gpu, fold, seed, arm in parsed:
         spec_arm = declared[arm]
@@ -501,12 +590,18 @@ def plan_warm_start(
             gpu=gpu,
             purpose="pilot",
             num_epochs=num_epochs,
-            trainer="nnUNetTrainerFinetune",
+            trainer=spec_arm["trainer"],
             initial_lr=initial_lr,
             initialization="warm_start",
             init_checkpoint=bound["path"],
             init_checkpoint_sha256=bound["sha256"],
             init_allowed_missing_prefixes=spec_arm["init_allowed_missing_prefixes"],
+            starc_options=spec_arm["starc_options"],
+            starc_targets=None if spec_arm["starc_options"] is None else targets["path"],
+            starc_targets_manifest_sha256=None
+            if spec_arm["starc_options"] is None
+            else targets["manifest_sha256"],
+            starc_inference=spec_arm["starc_inference"],
             use_mirroring=False,
             tile_step_size=0.5,
             cv_splits=str(frozen["cv_splits"]),
@@ -541,8 +636,10 @@ def plan_warm_start(
             **_protocol(frozen, WARM_START_PRESET),
             "arms": declared,
             "initial_checkpoints": checkpoints,
+            "starc_targets": targets,
             "pilot": {
-                "trainer": "nnUNetTrainerFinetune",
+                # One trainer name, or the sorted set when STAR-C arms are declared.
+                "trainer": trainers[0] if len(trainers) == 1 else trainers,
                 "num_epochs": num_epochs,
                 "updates_per_epoch": UPDATES_PER_EPOCH,
                 "optimizer_steps": steps,
@@ -602,14 +699,26 @@ def main() -> int:
         "--arm",
         dest="arms",
         action="append",
-        help="Warm-start arm NAME=resenc|hrc[:REFERENCE_MODE], repeatable; selects warm-start mode",
+        help="Warm-start arm NAME=resenc|hrc[:REFERENCE_MODE]|starc[:aux_only|frozen], "
+        "repeatable; selects warm-start mode",
     )
     parser.add_argument("--init-checkpoint-pattern", default=WAVE1_CHECKPOINTS)
     parser.add_argument("--num-epochs", type=int, default=150)
     parser.add_argument("--initial-lr", type=float, default=1e-3)
+    parser.add_argument("--starc-targets", type=Path, help="STAR-C ray-target folder")
+    parser.add_argument("--starc-targets-sha256", help="sha256 of its manifest.json")
     args = parser.parse_args()
     values = vars(args)
-    warm = {key: values.pop(key) for key in ("init_checkpoint_pattern", "num_epochs", "initial_lr")}
+    warm = {
+        key: values.pop(key)
+        for key in (
+            "init_checkpoint_pattern",
+            "num_epochs",
+            "initial_lr",
+            "starc_targets",
+            "starc_targets_sha256",
+        )
+    }
     arms = values.pop("arms")
     spec = plan_warm_start(**values, arms=arms, **warm) if arms else plan_campaign(**values)
     print(

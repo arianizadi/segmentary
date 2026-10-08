@@ -22,6 +22,7 @@ from typing import Any
 
 import yaml
 
+from segmentary.medical.dataset_profiles import PANCREAS
 from segmentary.medical.followup import validate_declared_followup
 from segmentary.medical.geometry import sha256_file
 from segmentary.medical.recipe_ablation import recipe_fingerprint, validate_declared_recipes
@@ -827,6 +828,13 @@ def collect(campaign: Path, state_dir: Path, *, now: float | None = None) -> dic
     ids = [run["id"] for run in spec["runs"]]
     if len(set(ids)) != len(ids) or any(not re.fullmatch(r"[a-zA-Z0-9_-]+", name) for name in ids):
         raise ValueError("Run IDs must be unique safe filenames")
+    ontology = _read(Path(spec["manifest"])).get("ontology") if spec.get("manifest") else None
+    if ontology is not None and ontology != dict(PANCREAS.ontology):
+        # Every table, ranking and CSV column below names the pancreas and mass regions.
+        raise ValueError(
+            "Campaign reports support the Task07 pancreas/mass ontology only; "
+            "LiTS and KiTS23 campaign reports are not implemented"
+        )
     splits = _read(Path(spec["splits"]))
     expected_ids = splits["val"]
     if len(set(expected_ids)) != len(expected_ids):

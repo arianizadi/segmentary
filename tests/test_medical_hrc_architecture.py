@@ -300,3 +300,31 @@ def test_real_nnunet_dotted_loader_builds_hrc_from_the_transferred_plan():
         assert model.hrc_sigma0 == pytest.approx(SIGMA0)
         # nnU-Net's He initialisation must not touch the zero FiLM layer.
         assert all(block.film.weight.abs().sum() == 0 for block in model.hrc.values())
+
+
+def test_same_seed_gives_hrc_exactly_the_resenc_l_initialisation():
+    """Paired arms (for example nnFoundation vs nnFoundation+HRC) differ only by ``hrc.*``."""
+    pytest.importorskip("nnunetv2")
+    from nnunetv2.utilities.get_network_from_plans import get_network_from_plans
+
+    base = _plan()
+    base["configurations"]["3d_fullres"]["architecture"]["arch_kwargs"].update(NARROW)
+    hrc_plan, _ = transfer_plan(base, "hrc")
+    states = []
+    for plan in (base, hrc_plan):
+        architecture = plan["configurations"]["3d_fullres"]["architecture"]
+        torch.manual_seed(11)
+        model = get_network_from_plans(
+            architecture["network_class_name"],
+            architecture["arch_kwargs"],
+            architecture["_kw_requires_import"],
+            1,
+            3,
+            allow_init=True,
+            deep_supervision=True,
+        )
+        states.append(model.state_dict())
+    resenc, hrc = states
+    assert set(resenc) < set(hrc)
+    assert {key.split(".")[0] for key in set(hrc) - set(resenc)} == {"hrc"}
+    assert all(torch.equal(resenc[key], hrc[key]) for key in resenc)

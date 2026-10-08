@@ -3,8 +3,9 @@
 Fold 0 is exactly the frozen train/validation partition, in its original order.
 The frozen training cases are divided into folds 1..k-1 by connected
 patient/duplicate group. When every training case records label voxel counts
-and spacing, groups are stratified by annotated mass volume; otherwise a seeded
-shuffle is used. Held-out test cases never enter any fold. The artifact is
+and spacing, groups are stratified by annotated lesion volume (the manifest
+ontology's lesion: Task07 mass, LiTS/KiTS23 tumor, all label 2); otherwise a
+seeded shuffle is used. Held-out test cases never enter any fold. The artifact is
 written once and never replaces an existing file, including the frozen split.
 """
 
@@ -20,9 +21,12 @@ from .data import (
     _group_assignments,
     atomic_write_json,
     fingerprint,
+    lesion_stratification,
+    lesion_volume_ml,
     load_manifest,
     validate_splits,
 )
+from .dataset_profiles import PANCREAS, DatasetProfile, profile_for_ontology
 from .geometry import MedicalDataError, sha256_file
 
 SCHEMA = "segmentary.medical.development_cv"
@@ -31,6 +35,11 @@ MAX_FOLDS = 20
 
 
 def _mass_ml(case: dict[str, Any]) -> float | None:
+    """Task07 mass volume exactly as before transfer datasets: no label 2 count is ``None``.
+
+    Kept byte-for-byte so a pancreas/mass manifest with mass-free training cases
+    (PanTS-style) still falls back to the seeded shuffle and reproduces its CV.
+    """
     counts, spacing = case.get("label_counts"), case.get("spacing_mm")
     if not isinstance(counts, dict) or not isinstance(spacing, list) or len(spacing) != 3:
         return None
@@ -40,6 +49,21 @@ def _mass_ml(case: dict[str, Any]) -> float | None:
     if any(isinstance(v, bool) or not isinstance(v, (int, float)) for v in spacing):
         return None
     return voxels * math.prod(float(value) for value in spacing) / 1000.0
+
+
+def _lesion_ml(case: dict[str, Any], profile: DatasetProfile) -> float | None:
+    """Annotated lesion volume, or ``None`` when the case lacks usable metadata.
+
+    For LiTS and KiTS23, audited label counts list every present label, so a
+    lesion label absent from them (a lesion-free case) has zero volume.
+    Pancreas/mass manifests keep the original Task07 rule (``_mass_ml``).
+    """
+    if profile is PANCREAS:
+        return _mass_ml(case)
+    try:
+        return lesion_volume_ml(case, profile.lesion_labels)
+    except MedicalDataError:
+        return None
 
 
 def make_cv_splits(
@@ -72,7 +96,8 @@ def make_cv_splits(
     if len(groups) < folds - 1:
         raise MedicalDataError("not enough training groups for the requested folds")
     # Only training-case metadata is consulted; held-out records are never scored.
-    volumes = {case_id: _mass_ml(cases[case_id]) for case_id in splits["train"]}
+    profile = profile_for_ontology(manifest["ontology"])
+    volumes = {case_id: _lesion_ml(cases[case_id], profile) for case_id in splits["train"]}
     stratified = all(value is not None for value in volumes.values())
     rng = random.Random(seed)
     keys = sorted(groups)
@@ -110,10 +135,9 @@ def make_cv_splits(
         "fold_0": "exact frozen train/validation partition",
         "assignment": {
             "unit": "connected patient/duplicate group of frozen training cases",
-            "method": "mass_volume_stratified_blocks" if stratified else "seeded_shuffle_blocks",
-            "stratification_variable": "summed annotated mass volume in mL (label 2 voxels x voxel volume)"
-            if stratified
-            else None,
+            "method": "seeded_shuffle_blocks",
+            "stratification_variable": None,
+            **(lesion_stratification(profile) if stratified else {}),
             "held_out_test": "excluded from every fold; only its count is recorded",
         },
         "development_cases": len(development),

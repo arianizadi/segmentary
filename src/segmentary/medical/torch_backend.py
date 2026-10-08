@@ -37,6 +37,9 @@ from .backend import (
 )
 from .torch_config import TorchConfig
 
+# The audited loader always records an ontology; only pancreas/mass reaches training.
+PANCREAS_ONTOLOGY = {"background": 0, "pancreas": 1, "mass": 2}
+
 
 def _config_record(config: TorchConfig) -> dict:
     return json.loads(json.dumps(dataclasses.asdict(config)))
@@ -133,6 +136,9 @@ def prepare_dataset(
             raise ValueError(f"Unsupported {name}: {value}")
     manifest_path, splits_path = Path(manifest_path).resolve(), Path(splits_path).resolve()
     manifest, splits = _documents(manifest_path, splits_path)
+    if manifest.get("ontology", PANCREAS_ONTOLOGY) != PANCREAS_ONTOLOGY:
+        # Its losses, metrics and checkpoint selection are the pancreas/mass task.
+        raise ValueError("The scratch Torch backend supports the pancreas/mass ontology only")
     development = set(splits["train"] + splits["val"])
     for case in manifest["cases"]:
         if case["case_id"] in development:

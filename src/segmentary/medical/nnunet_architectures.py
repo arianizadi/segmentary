@@ -4,9 +4,10 @@ The trainer and predictor import these classes through the architecture dotted
 path in a frozen plans file. All preprocessing, augmentation, losses and
 optimization remain in nnU-Net. This bridge changes the network topology only.
 
-``HRCResEncUNet`` (host-referenced calibration) subclasses nnU-Net's
-``ResidualEncoderUNet``. It is defined on first attribute access, so this
-module still imports in environments without dynamic-network-architectures.
+``HRCResEncUNet`` (host-referenced calibration) and ``StarCResEncUNet``
+(star-convex lesion completion) subclass nnU-Net's ``ResidualEncoderUNet``.
+They are defined on first attribute access, so this module still imports in
+environments without dynamic-network-architectures.
 """
 
 from __future__ import annotations
@@ -354,8 +355,11 @@ def _define_hrc_resenc_unet() -> type:
             self.hrc_robust_loss = hrc_robust_loss
             self.hrc_robust_k = float(hrc_robust_k)
             self.hrc_irls_iterations = hrc_irls_iterations
-            self.hrc = nn.ModuleDict(
-                {
+            # Built without drawing from the global RNG: with one seed, nnU-Net's
+            # initialize() pass then gives the ResEnc modules exactly the weights a
+            # plain ResEnc L gets, so paired arms differ only by the HRC modules.
+            with torch.random.fork_rng(devices=[]):
+                hrc_blocks = {
                     str(level): HostReferenceBlock(
                         self.encoder.output_channels[level],
                         reference_mode=hrc_reference_mode,
@@ -371,7 +375,7 @@ def _define_hrc_resenc_unet() -> type:
                     )
                     for level in levels
                 }
-            )
+            self.hrc = nn.ModuleDict(hrc_blocks)
             # Inference-only hooks for the reference-swap and zeroing tests.
             self.reference_override: Callable[[str, HostReference], HostReference] | None = None
             self.capture_reference = False
@@ -492,11 +496,210 @@ def _define_hrc_resenc_unet() -> type:
     return HRCResEncUNet
 
 
+def _define_starc_resenc_unet() -> type:
+    """Build ``StarCResEncUNet`` on first use; dynamic-network-architectures is optional here."""
+    from dynamic_network_architectures.architectures.unet import ResidualEncoderUNet
+
+    from .star_completion import (
+        STARC_NETWORK_DEFAULTS,
+        StarCompletion,
+        StarInstances,
+        validate_starc_options,
+    )
+
+    class StarCResEncUNet(ResidualEncoderUNet):
+        """ResEnc U-Net with a star-convex lesion completion decoder (STAR-C).
+
+        Module names match ``ResidualEncoderUNet``; the new modules live under
+        ``starc.*``, so a ResEnc state dict loads with only ``starc.*`` keys
+        missing. The centre and ray heads read decoder level ``starc_level``;
+        the gate reads the full-resolution decoder features. Only the
+        full-resolution logits are fused, so the deep-supervision list, its
+        order and the inference output keep the ResEnc contract. The fusion
+        weights start at zero, so at initialisation the logits equal ResEnc's.
+
+        ``star_aux`` holds the last forward's heatmap logits, ray map and the
+        rendered instances. ``set_star_instances`` replaces the proposals of the
+        next forward only (teacher forcing in training, case-level instances in
+        the two-pass predictor).
+        """
+
+        def __init__(
+            self,
+            input_channels: int,
+            n_stages: int,
+            features_per_stage: Any,
+            conv_op: type[nn.Module],
+            kernel_sizes: Any,
+            strides: Any,
+            n_blocks_per_stage: Any,
+            num_classes: int,
+            n_conv_per_stage_decoder: Any,
+            conv_bias: bool = False,
+            norm_op: type[nn.Module] | None = None,
+            norm_op_kwargs: dict | None = None,
+            dropout_op: type[nn.Module] | None = None,
+            dropout_op_kwargs: dict | None = None,
+            nonlin: type[nn.Module] | None = None,
+            nonlin_kwargs: dict | None = None,
+            deep_supervision: bool = False,
+            *,
+            starc_spacing: Sequence[float] | None = None,
+            **kwargs: Any,
+        ) -> None:
+            options = {
+                key[len("starc_") :]: kwargs.pop(key)
+                for key in list(kwargs)
+                if key.startswith("starc_")
+            }
+            unknown = set(options) - set(STARC_NETWORK_DEFAULTS)
+            if unknown:
+                raise ValueError(f"Unknown STAR-C network options: {sorted(unknown)}")
+            super().__init__(
+                input_channels,
+                n_stages,
+                features_per_stage,
+                conv_op,
+                kernel_sizes,
+                strides,
+                n_blocks_per_stage,
+                num_classes,
+                n_conv_per_stage_decoder,
+                conv_bias,
+                norm_op,
+                norm_op_kwargs,
+                dropout_op,
+                dropout_op_kwargs,
+                nonlin,
+                nonlin_kwargs,
+                deep_supervision,
+                **kwargs,
+            )
+            if conv_op is not nn.Conv3d:
+                raise ValueError("StarCResEncUNet is volumetric; conv_op must be Conv3d")
+            if (
+                not isinstance(starc_spacing, (list, tuple))
+                or len(starc_spacing) != 3
+                or not all(
+                    isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0
+                    for v in starc_spacing
+                )
+            ):
+                raise ValueError("starc_spacing must be the plan's three positive spacings (mm)")
+            resolved = validate_starc_options(options)
+            level = resolved["level"]
+            if not 0 <= level <= n_stages - 2:
+                raise ValueError("starc_level must be a decoder level")
+            cumulative = [1, 1, 1]
+            for stride in self.encoder.strides[: level + 1]:
+                if len(stride) != 3:
+                    raise ValueError("StarCResEncUNet requires 3D strides")
+                cumulative = [a * int(b) for a, b in zip(cumulative, stride, strict=True)]
+            self.starc_level = level
+            self.starc_stride = tuple(cumulative)
+            self.starc_spacing = [float(v) for v in starc_spacing]
+            self.starc_options = {key: resolved[key] for key in STARC_NETWORK_DEFAULTS}
+            # Built without drawing from the global RNG, as for HRC: with one seed,
+            # nnU-Net's initialize() pass gives the ResEnc modules exactly the
+            # weights a plain ResEnc L gets, so paired arms differ only by starc.*.
+            with torch.random.fork_rng(devices=[]):
+                starc = StarCompletion(
+                    self.encoder.output_channels[level],
+                    self.encoder.output_channels[0],
+                    num_classes,
+                    spacing=self.starc_spacing,
+                    stride=self.starc_stride,
+                    rays=resolved["rays"],
+                    fusion_channels=resolved["fusion_channels"],
+                    fusion=resolved["fusion"],
+                    max_instances=resolved["max_instances"],
+                    centre_threshold=resolved["centre_threshold"],
+                    box_margin_mm=resolved["box_margin_mm"],
+                    min_ray_mm=resolved["min_ray_mm"],
+                    max_ray_mm=resolved["max_ray_mm"],
+                    tau_init_mm=resolved["tau_init_mm"],
+                    tau_min_mm=resolved["tau_min_mm"],
+                    tau_max_mm=resolved["tau_max_mm"],
+                    gate_bias=resolved["gate_bias"],
+                    prior_scale=resolved["prior_scale"],
+                    centre_hidden=resolved["centre_hidden"],
+                    ray_hidden=resolved["ray_hidden"],
+                    gate_hidden=resolved["gate_hidden"],
+                    ray_init_mm=resolved["ray_init_mm"],
+                    centre_prior=resolved["centre_prior"],
+                    lut_shape=resolved["lut_shape"],
+                    norm_op=norm_op or nn.InstanceNorm3d,
+                    norm_kwargs=norm_op_kwargs,
+                    nonlin=nonlin or nn.LeakyReLU,
+                    nonlin_kwargs=nonlin_kwargs,
+                )
+            self.starc = starc
+            self._star_instances: StarInstances | None = None
+            self.star_aux: dict[str, Any] | None = None
+            self.architecture_metadata = {
+                "name": "starc_resenc_unet",
+                "base": "dynamic_network_architectures ResidualEncoderUNet",
+                "initialization": "scratch",
+                "pretrained": False,
+                "level": level,
+                "level_stride": list(self.starc_stride),
+                "spacing_mm": self.starc_spacing,
+                "options": self.starc_options,
+                "fusion": "zero-initialised per-channel weights times a sigmoid gate; "
+                "identity at initialisation",
+                "supervision": "ResEnc deep-supervision list, finest first; only the "
+                "full-resolution output is fused",
+            }
+
+        @staticmethod
+        def initialize(module: nn.Module) -> None:
+            ResidualEncoderUNet.initialize(module)
+            # nn.Module.apply visits children first, so this undoes He init of the heads.
+            if isinstance(module, StarCompletion):
+                module.reset_star_parameters()
+
+        def set_star_instances(self, instances: StarInstances | None) -> None:
+            self._star_instances = instances
+
+        def forward(self, x: torch.Tensor) -> torch.Tensor | list[torch.Tensor]:
+            skips = self.encoder(x)
+            decoder = self.decoder
+            outputs = []
+            level_features = None
+            lres_input = skips[-1]
+            last = len(decoder.stages) - 1
+            for s in range(len(decoder.stages)):
+                features = decoder.transpconvs[s](lres_input)
+                features = torch.cat((features, skips[-(s + 2)]), 1)
+                features = decoder.stages[s](features)
+                if last - s == self.starc_level:
+                    level_features = features
+                if decoder.deep_supervision or s == last:
+                    outputs.append(decoder.seg_layers[s](features))
+                lres_input = features
+            assert level_features is not None
+            instances, self._star_instances = self._star_instances, None
+            fused, self.star_aux = self.starc(level_features, lres_input, outputs[-1], instances)
+            outputs[-1] = fused
+            outputs = outputs[::-1]
+            return outputs if decoder.deep_supervision else outputs[0]
+
+    StarCResEncUNet.__module__ = __name__
+    StarCResEncUNet.__qualname__ = "StarCResEncUNet"
+    return StarCResEncUNet
+
+
+_LAZY_CLASSES: dict[str, Callable[[], type]] = {
+    "HRCResEncUNet": _define_hrc_resenc_unet,
+    "StarCResEncUNet": _define_starc_resenc_unet,
+}
+
+
 def __getattr__(name: str) -> Any:
     # nnU-Net resolves the plan's dotted class path with pydoc.locate, which uses
-    # getattr; define the subclass lazily so this module imports without nnU-Net.
-    if name == "HRCResEncUNet":
-        cls = _define_hrc_resenc_unet()
+    # getattr; define the subclasses lazily so this module imports without nnU-Net.
+    if name in _LAZY_CLASSES:
+        cls = _LAZY_CLASSES[name]()
         globals()[name] = cls
         return cls
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
