@@ -21,10 +21,10 @@ Everything below is the campaign's own record, with pixels pooled over all valid
 
 | Model | Initialization path | Seed | Status | Steps | Best step | Best-checkpoint mud IoU, pixels pooled (%) | Best-checkpoint mud precision, pixels pooled (%) | Best-checkpoint mud recall, pixels pooled (%) | Final mud IoU (trainer val, pixels pooled, %) | Best-checkpoint mIoU, pixels pooled (%) | Best-checkpoint fixed GT-class mIoU, pixels pooled (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hf_auto_mobilevit_xxs_deeplabv3 | rtis_only | 0 | queued | — | — | — | — | — | — | — | — |
-| hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| hf_auto_mobilevit_xxs_deeplabv3 | railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
-| hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_railsem19_to_rtis | 0 | queued | — | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | rtis_only | 0 | training | 3699 | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_rtis | 0 | training | 3399 | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | railsem19_to_rtis | 0 | training | 3249 | — | — | — | — | — | — | — |
+| hf_auto_mobilevit_xxs_deeplabv3 | cityscapes_to_railsem19_to_rtis | 0 | training | 1749 | — | — | — | — | — | — | — |
 
 Training: 217 images. Validation: 37 images. Test: 60 held out. Seeds: [0]. Seed variation measures optimization variability, not independent-recording uncertainty. Historical source checkpoints stay fixed across adaptation seeds.
 
@@ -32,7 +32,7 @@ Training code: `fce0ea0ac50b334d4252812c396e0e593def375d`. Split SHA-256: `12d7b
 
 ## rtis_only — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-10-11T01:38:41.078064+00:00. Finished: —.
 
 Recipe pretrained initializer: `apple/deeplabv3-mobilevit-xx-small`.
 
@@ -102,6 +102,20 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 258 | 11.28 | 0.01 |
+| 518 | 17.70 | 0.00 |
+| 777 | 20.19 | 0.34 |
+| 1036 | 21.81 | 2.77 |
+| 1295 | 21.82 | 1.58 |
+| 1555 | 22.15 | 3.58 |
+| 1814 | 23.34 | 5.34 |
+| 2073 | 22.53 | 5.43 |
+| 2332 | 23.27 | 8.81 |
+| 2592 | 23.50 | 3.27 |
+| 2851 | 24.99 | 6.33 |
+| 3110 | 23.48 | 4.80 |
+| 3369 | 24.82 | 4.39 |
+| 3629 | 24.74 | 11.08 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -264,7 +278,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-10-11T01:47:40.066620+00:00. Finished: —.
 
 Recipe pretrained initializer: `apple/deeplabv3-mobilevit-xx-small`.
 
@@ -334,6 +348,19 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 258 | 17.29 | 1.67 |
+| 518 | 22.82 | 4.76 |
+| 777 | 20.95 | 8.22 |
+| 1036 | 23.97 | 5.35 |
+| 1295 | 21.65 | 15.07 |
+| 1555 | 22.47 | 14.43 |
+| 1814 | 26.09 | 16.67 |
+| 2073 | 24.88 | 18.69 |
+| 2332 | 27.21 | 3.39 |
+| 2592 | 27.05 | 15.96 |
+| 2851 | 27.97 | 16.64 |
+| 3110 | 26.88 | 14.96 |
+| 3369 | 27.08 | 14.39 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -496,7 +523,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-10-11T01:52:30.439351+00:00. Finished: —.
 
 Recipe pretrained initializer: `apple/deeplabv3-mobilevit-xx-small`.
 
@@ -566,6 +593,18 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 258 | 22.70 | 0.99 |
+| 518 | 26.93 | 0.10 |
+| 777 | 25.54 | 4.92 |
+| 1036 | 26.06 | 0.92 |
+| 1295 | 25.68 | 11.76 |
+| 1555 | 26.25 | 7.18 |
+| 1814 | 27.85 | 5.61 |
+| 2073 | 28.00 | 10.65 |
+| 2332 | 28.78 | 6.78 |
+| 2592 | 28.39 | 7.67 |
+| 2851 | 27.64 | 7.72 |
+| 3110 | 29.60 | 10.28 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 
@@ -728,7 +767,7 @@ The optimizer block is the base configuration. Stage LR scales are applied at ru
 
 ## cityscapes_to_railsem19_to_rtis — seed 0
 
-Status: **queued**. Started: —. Finished: —.
+Status: **training**. Started: 2026-10-11T02:32:02.137265+00:00. Finished: —.
 
 Recipe pretrained initializer: `apple/deeplabv3-mobilevit-xx-small`.
 
@@ -798,6 +837,12 @@ Dedicated model-only profiling waits for an idle worker-locked L40S: BF16, batch
 
 | Logged step | Overall mIoU (%) | Mud IoU (%) |
 | --- | --- | --- |
+| 258 | 24.09 | 1.72 |
+| 518 | 23.36 | 10.38 |
+| 777 | 22.91 | 14.59 |
+| 1036 | 25.77 | 9.30 |
+| 1295 | 25.56 | 7.64 |
+| 1555 | 26.79 | 12.01 |
 
 All retained scalar curves, including training loss and per-class IoU, are in record.json. Observed best mud on a curve is not necessarily a retained checkpoint: the pilot saved its selection-metric-best and final checkpoints. Step logging and checkpoint global_step may differ by one.
 

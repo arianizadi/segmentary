@@ -5,16 +5,16 @@
 - **Data:** Paul Stanik's `rad_9_24_2026` set: 314 rail images labelled with 21 classes, including mud-pumping (the track defect we look for).
 - **Question:** how well do models find mud-pumping in scenes (videos) they did *not* see in training? We score mud-pumping IoU (overlap of predicted and true mud-pumping pixels, in percent; 100 = perfect) on each validation image that contains mud-pumping and average it over those images: all of them, and the train-camera ones (a forward view from a camera on the train, the real use case).
 - **Three ways to split the images into training and validation:** (a) Paul's split, random by image, so frames of one video can be on both sides; (b) a scene-grouped split that keeps whole scenes on one side; (c) 5-fold cross-validation over scenes, where every scene is scored once by a model that never trained on it (the most reliable).
-- **Models:** 13 segmentation models, each from up to 4 starting points (pretraining before training on these images); 3 of them only from recipe pretrained weights. Test images are never used.
+- **Models:** 17 segmentation models, each from up to 4 starting points (pretraining before training on these images); 5 of them only from recipe pretrained weights. Test images are never used.
 
 ## Key result
 
-Paul's split looks good (median 59.7 on all images with mud-pumping, 44.6 on train-camera ones) because every validation scene of that split also has images in training; 5 of its 13 validation images with mud-pumping come from one scene, `trackside-maintenance`. On scenes the models never trained on, mud-pumping IoU on train-camera images is median 16.9 (best 41.7) with the scene-grouped split and median 24.1 (best 33.0) in cross-validation.
+Paul's split looks good (median 59.7 on all images with mud-pumping, 44.6 on train-camera ones) because every validation scene of that split also has images in training; 5 of its 13 validation images with mud-pumping come from one scene, `trackside-maintenance`. On scenes the models never trained on, mud-pumping IoU on train-camera images is median 9.4 (best 41.7) with the scene-grouped split and median 24.1 (best 33.0) in cross-validation.
 
 | Split | Model runs | Mud-pumping IoU, all images with mud | Mud-pumping IoU, train-camera images with mud | mIoU (each class over images that contain it) |
 | --- | --- | --- | --- | --- |
 | Paul's split | 40 | median 59.7 (best 69.3) | median 44.6 (best 60.0) | median 53.1 (best 64.4) |
-| Scene-grouped split | 7 of 149 done | median 16.1 (best 39.5) | median 16.9 (best 41.7) | median 48.9 (best 55.6) |
+| Scene-grouped split | 20 of 149 done | median 8.9 (best 39.5) | median 9.4 (best 41.7) | median 33.1 (best 55.7) |
 | Cross-validation over scenes | 20 of 20 with all folds done | median 15.3 (best 19.2) | median 24.1 (best 33.0) | median 51.8 (best 59.3) |
 
 Median and best over every finished model and starting point of each split. mIoU scores each class on the images that contain it, then averages over the classes.
@@ -44,16 +44,21 @@ Images assigned to training and validation at random, balanced by class; 17 of i
 
 ### Scene-grouped split
 
-Whole scenes kept on one side; 0 of its 3 validation scenes have images in training (217 training, 37 validation images). 41 models, each at its final checkpoint after the full training budget, so nothing is picked on the validation images. 7 of 149 runs done; `*` = not all starting points of that model done yet. [Every model and starting point](fixed-grouped/README.md); [IoU of every class](fixed-grouped/README.md#per-class-iou).
+Whole scenes kept on one side; 0 of its 3 validation scenes have images in training (217 training, 37 validation images). 41 models, each at its final checkpoint after the full training budget, so nothing is picked on the validation images. 20 of 149 runs done; `*` = not all starting points of that model done yet. [Every model and starting point](fixed-grouped/README.md); [IoU of every class](fixed-grouped/README.md#per-class-iou).
 
 | Model | Best starting point | Mud-pumping IoU, train-camera images with mud | Mud-pumping IoU, all images with mud | mIoU (each class over images that contain it) | Speed (FPS) | GPU memory, total (GB) | Parameters (M) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [eomt_dinov3_large](fixed-grouped/models/eomt_dinov3_large/README.md) | Cityscapes | 41.7 | 39.5 | 51.3 | 41.2 | 3.90 | 314.9 |
+| [eomt_large](fixed-grouped/models/eomt_large/README.md) | Cityscapes → RailSem19 | 32.9 | 31.4 | 55.7 | 45.4 | 3.89 | 316.6 |
+| [hf_auto_mobilenetv2_deeplabv3](fixed-grouped/models/hf_auto_mobilenetv2_deeplabv3/README.md) | Cityscapes → RailSem19 | 12.3 | 11.7 | 30.1 | 173.5 | 1.01 | 2.5 |
 | [denseaspp121](fixed-grouped/models/denseaspp121/README.md) | recipe pretrained weights (only starting point) | 10.1 | 9.8 | 37.5 | 99.9 | 0.94 | 8.3 |
 | [bisenetv1_r18](fixed-grouped/models/bisenetv1_r18/README.md) | recipe pretrained weights (only starting point) | 7.8 | 7.7 | 28.9 | 346.8 | 0.87 | 13.4 |
+| [espnet](fixed-grouped/models/espnet/README.md) | recipe pretrained weights (only starting point) | 4.1 | 3.9 | 18.8 | 189.3 | 0.90 | 0.4 |
 | [bisenetv2](fixed-grouped/models/bisenetv2/README.md) | recipe pretrained weights (only starting point) | 4.0 | 3.9 | 19.3 | 258.2 | 0.87 | 5.2 |
+| [hf_auto_beit_base_ade](fixed-grouped/models/hf_auto_beit_base_ade/README.md)* | RailSem19 | 3.8 | 3.8 | 30.0 | 2.5 | 4.59 | 161.5 |
+| [denseaspp161](fixed-grouped/models/denseaspp161/README.md) | recipe pretrained weights (only starting point) | 3.1 | 3.0 | 36.1 | 34.6 | 1.86 | 35.4 |
 
-37 more models have no finished run yet.
+32 more models have no finished run yet.
 
 The first scene-grouped run (10 models, best-on-validation checkpoint) is in [the details](details.md#first-scene-grouped-run-10-models-best-on-validation-checkpoint).
 
@@ -98,4 +103,4 @@ Paul's own recipes, retrained by us with his code on each split and scored with 
 - [Full details](details.md): label defects in the delivered masks, all comparison tables, every retraining run of Paul's recipes, provenance
 - [Comparison CSV](rad-comparison.csv)
 - [Dataset preparation and split decisions](../../guides/rad-9-24-2026.md)
-- Generated by `scripts/publish_rad_results.py` (code `f35265fa8dfd`) from the HDRFS records, which it only reads; records last changed 2026-10-10 05:09 PM PDT.
+- Generated by `scripts/publish_rad_results.py` (code `f35265fa8dfd`) from the HDRFS records, which it only reads; records last changed 2026-10-10 08:19 PM PDT.
