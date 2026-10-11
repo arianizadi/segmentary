@@ -5,16 +5,16 @@
 - **Data:** Paul Stanik's `rad_9_24_2026` set: 314 rail images labelled with 21 classes, including mud-pumping (the track defect we look for).
 - **Question:** how well do models find mud-pumping in scenes (videos) they did *not* see in training? We score mud-pumping IoU (overlap of predicted and true mud-pumping pixels, in percent; 100 = perfect) on each validation image that contains mud-pumping and average it over those images: all of them, and the train-camera ones (a forward view from a camera on the train, the real use case).
 - **Three ways to split the images into training and validation:** (a) Paul's split, random by image, so frames of one video can be on both sides; (b) a scene-grouped split that keeps whole scenes on one side; (c) 5-fold cross-validation over scenes, where every scene is scored once by a model that never trained on it (the most reliable).
-- **Models:** 21 segmentation models, each from up to 4 starting points (pretraining before training on these images); 5 of them only from recipe pretrained weights. Test images are never used.
+- **Models:** 27 segmentation models, each from up to 4 starting points (pretraining before training on these images); 5 of them only from recipe pretrained weights. Test images are never used.
 
 ## Key result
 
-Paul's split looks good (median 59.7 on all images with mud-pumping, 44.6 on train-camera ones) because every validation scene of that split also has images in training; 5 of its 13 validation images with mud-pumping come from one scene, `trackside-maintenance`. On scenes the models never trained on, mud-pumping IoU on train-camera images is median 9.1 (best 41.7) with the scene-grouped split and median 24.1 (best 33.0) in cross-validation.
+Paul's split looks good (median 59.7 on all images with mud-pumping, 44.6 on train-camera ones) because every validation scene of that split also has images in training; 5 of its 13 validation images with mud-pumping come from one scene, `trackside-maintenance`. On scenes the models never trained on, mud-pumping IoU on train-camera images is median 4.1 (best 41.7) with the scene-grouped split and median 24.1 (best 33.0) in cross-validation.
 
 | Split | Model runs | Mud-pumping IoU, all images with mud | Mud-pumping IoU, train-camera images with mud | mIoU (each class over images that contain it) |
 | --- | --- | --- | --- | --- |
 | Paul's split | 40 | median 59.7 (best 69.3) | median 44.6 (best 60.0) | median 53.1 (best 64.4) |
-| Scene-grouped split | 39 of 149 done | median 8.8 (best 39.5) | median 9.1 (best 41.7) | median 34.9 (best 55.7) |
+| Scene-grouped split | 66 of 149 done | median 4.0 (best 39.5) | median 4.1 (best 41.7) | median 35.5 (best 55.7) |
 | Cross-validation over scenes | 20 of 20 with all folds done | median 15.3 (best 19.2) | median 24.1 (best 33.0) | median 51.8 (best 59.3) |
 
 Median and best over every finished model and starting point of each split. mIoU scores each class on the images that contain it, then averages over the classes.
@@ -44,7 +44,7 @@ Images assigned to training and validation at random, balanced by class; 17 of i
 
 ### Scene-grouped split
 
-Whole scenes kept on one side; 0 of its 3 validation scenes have images in training (217 training, 37 validation images). 41 models, each at its final checkpoint after the full training budget, so nothing is picked on the validation images. 39 of 149 runs done; `*` = not all starting points of that model done yet. [Every model and starting point](fixed-grouped/README.md); [IoU of every class](fixed-grouped/README.md#per-class-iou).
+Whole scenes kept on one side; 0 of its 3 validation scenes have images in training (217 training, 37 validation images). 41 models, each at its final checkpoint after the full training budget, so nothing is picked on the validation images. 66 of 149 runs done; `*` = not all starting points of that model done yet. [Every model and starting point](fixed-grouped/README.md); [IoU of every class](fixed-grouped/README.md#per-class-iou).
 
 | Model | Best starting point | Mud-pumping IoU, train-camera images with mud | Mud-pumping IoU, all images with mud | mIoU (each class over images that contain it) | Speed (FPS) | GPU memory, total (GB) | Parameters (M) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -53,17 +53,24 @@ Whole scenes kept on one side; 0 of its 3 validation scenes have images in train
 | [hf_auto_mobilevitv2_deeplabv3](fixed-grouped/models/hf_auto_mobilevitv2_deeplabv3/README.md) | RailSem19 | 29.6 | 28.0 | 37.9 | 83.0 | 0.95 | 13.3 |
 | [hf_auto_segformer_b0](fixed-grouped/models/hf_auto_segformer_b0/README.md) | recipe pretrained weights | 18.1 | 17.3 | 34.0 | 133.2 | 1.50 | 3.7 |
 | [hf_auto_mobilevit_xxs_deeplabv3](fixed-grouped/models/hf_auto_mobilevit_xxs_deeplabv3/README.md) | Cityscapes | 17.3 | 16.4 | 31.2 | 34.7 | 4.09 | 1.9 |
+| [native_convnext_tiny_channelmapper_dpt](fixed-grouped/models/native_convnext_tiny_channelmapper_dpt/README.md) | recipe pretrained weights | 13.4 | 12.7 | 39.7 | 28.9 | 2.63 | 38.2 |
 | [hf_auto_mobilenetv2_deeplabv3](fixed-grouped/models/hf_auto_mobilenetv2_deeplabv3/README.md) | Cityscapes → RailSem19 | 12.3 | 11.7 | 30.1 | 173.5 | 1.01 | 2.5 |
 | [hf_auto_upernet_swin_tiny](fixed-grouped/models/hf_auto_upernet_swin_tiny/README.md) | recipe pretrained weights | 12.0 | 11.5 | 37.8 | 42.0 | 3.12 | 59.0 |
 | [denseaspp121](fixed-grouped/models/denseaspp121/README.md) | recipe pretrained weights (only starting point) | 10.1 | 9.8 | 37.5 | 99.9 | 0.94 | 8.3 |
+| [native_convnext_tiny_uper](fixed-grouped/models/native_convnext_tiny_uper/README.md) | Cityscapes → RailSem19 | 9.5 | 9.5 | 44.1 | 74.3 | 1.87 | 36.8 |
+| [native_mobilenetv3_large_lraspp](fixed-grouped/models/native_mobilenetv3_large_lraspp/README.md) | RailSem19 | 9.5 | 9.0 | 34.4 | 236.7 | 0.85 | 3.2 |
 | [bisenetv1_r18](fixed-grouped/models/bisenetv1_r18/README.md) | recipe pretrained weights (only starting point) | 7.8 | 7.7 | 28.9 | 346.8 | 0.87 | 13.4 |
+| [hrnet_w48_ocr](fixed-grouped/models/hrnet_w48_ocr/README.md) | Cityscapes → RailSem19 | 4.9 | 4.9 | 40.9 | 30.9 | 1.89 | 73.2 |
 | [espnet](fixed-grouped/models/espnet/README.md) | recipe pretrained weights (only starting point) | 4.1 | 3.9 | 18.8 | 189.3 | 0.90 | 0.4 |
+| [native_efficientnet_b0_deeplabv3plus](fixed-grouped/models/native_efficientnet_b0_deeplabv3plus/README.md) | Cityscapes → RailSem19 | 4.0 | 3.8 | 35.7 | 142.8 | 0.99 | 5.7 |
 | [bisenetv2](fixed-grouped/models/bisenetv2/README.md) | recipe pretrained weights (only starting point) | 4.0 | 3.9 | 19.3 | 258.2 | 0.87 | 5.2 |
-| [hrnet_w48_ocr](fixed-grouped/models/hrnet_w48_ocr/README.md)* | Cityscapes | 3.8 | 5.3 | 35.5 | 30.4 | 1.89 | 73.2 |
 | [hf_auto_beit_base_ade](fixed-grouped/models/hf_auto_beit_base_ade/README.md) | RailSem19 | 3.8 | 3.8 | 30.0 | 2.5 | 4.59 | 161.5 |
 | [denseaspp161](fixed-grouped/models/denseaspp161/README.md) | recipe pretrained weights (only starting point) | 3.1 | 3.0 | 36.1 | 34.6 | 1.86 | 35.4 |
+| [native_mobilenetv3_large_deeplabv3plus](fixed-grouped/models/native_mobilenetv3_large_deeplabv3plus/README.md) | RailSem19 | 1.8 | 1.8 | 39.6 | 152.8 | 1.00 | 8.1 |
+| [native_resnet101_uper](fixed-grouped/models/native_resnet101_uper/README.md)* | recipe pretrained weights | 0.3 | 2.0 | 36.0 | 61.7 | 1.93 | 61.3 |
+| [native_resnet18_fpn_fcn](fixed-grouped/models/native_resnet18_fpn_fcn/README.md)* | Cityscapes | 0.2 | 0.3 | 30.6 | 221.2 | 1.21 | 12.6 |
 
-27 more models have no finished run yet.
+20 more models have no finished run yet.
 
 The first scene-grouped run (10 models, best-on-validation checkpoint) is in [the details](details.md#first-scene-grouped-run-10-models-best-on-validation-checkpoint).
 
@@ -108,4 +115,4 @@ Paul's own recipes, retrained by us with his code on each split and scored with 
 - [Full details](details.md): label defects in the delivered masks, all comparison tables, every retraining run of Paul's recipes, provenance
 - [Comparison CSV](rad-comparison.csv)
 - [Dataset preparation and split decisions](../../guides/rad-9-24-2026.md)
-- Generated by `scripts/publish_rad_results.py` (code `f35265fa8dfd`) from the HDRFS records, which it only reads; records last changed 2026-10-10 11:20 PM PDT.
+- Generated by `scripts/publish_rad_results.py` (code `f35265fa8dfd`) from the HDRFS records, which it only reads; records last changed 2026-10-11 02:21 AM PDT.
