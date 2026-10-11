@@ -527,7 +527,11 @@
       "config_sha256": "fa5b2c0867a71d53c814a8f27dc8dec41140cb24664bbf7855c5dac26324a7d2",
       "source_checkpoint": null,
       "reset_head": false,
-      "status": "queued",
+      "status": "training",
+      "gpu": 5,
+      "gpu_uuid": "GPU-1c9b612f-e0b5-fbbc-150f-8c2ef13453c9",
+      "started_at": "2026-10-11T12:16:20.728750+00:00",
+      "code_sha": "fce0ea0ac50b334d4252812c396e0e593def375d",
       "resolved_config": {
         "name": "segformer_b5--rtis_only--seed-0",
         "model": {
@@ -659,6 +663,27 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.3582215309143066
+          },
+          {
+            "step": 99,
+            "value": 0.7629204392433167
+          },
+          {
+            "step": 149,
+            "value": 0.5278789401054382
+          },
+          {
+            "step": 199,
+            "value": 0.7397497296333313
+          }
+        ]
+      },
+      "observed_step": 199,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -680,7 +705,11 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 7,
+      "gpu_uuid": "GPU-a5ad49e5-0536-5229-ba8a-f8a902808f53",
+      "started_at": "2026-10-11T12:19:39.540308+00:00",
+      "code_sha": "fce0ea0ac50b334d4252812c396e0e593def375d",
       "resolved_config": {
         "name": "segformer_b5--cityscapes_to_rtis--seed-0",
         "model": {
@@ -812,6 +841,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.290220022201538
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
@@ -833,7 +871,11 @@
         "exists": true
       },
       "reset_head": true,
-      "status": "queued",
+      "status": "training",
+      "gpu": 9,
+      "gpu_uuid": "GPU-c76642eb-64c1-b0ac-b051-d2efd47b32c4",
+      "started_at": "2026-10-11T12:19:48.961589+00:00",
+      "code_sha": "fce0ea0ac50b334d4252812c396e0e593def375d",
       "resolved_config": {
         "name": "segformer_b5--railsem19_to_rtis--seed-0",
         "model": {
@@ -965,6 +1007,15 @@
           }
         ]
       },
+      "learning_curve": {
+        "train/loss": [
+          {
+            "step": 49,
+            "value": 2.2431252002716064
+          }
+        ]
+      },
+      "observed_step": 49,
       "performance": {
         "status": "waiting_for_idle_gpu",
         "contract": "L40S; batch 1; 1024x1024; BF16; 20 warmup; 100 timed forwards"
