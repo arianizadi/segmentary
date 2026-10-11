@@ -11,7 +11,7 @@ The `rad_9_24_2026` delivery (314 rail images with polygon labels) trained two w
 | arm | labels | split; train/val/test | completed | other jobs | code |
 | --- | --- | --- | --- | --- | --- |
 | [`paul`](paul/README.md) | Paul's delivered `masks_machine` copies | stratified random (seed 0); 227/37/50 | 40/40 | — | `d864b72bd907` |
-| [`fixed-grouped`](fixed-grouped/README.md): 41 models, final checkpoint after the full training budget, shown | re-rendered from the polygon JSONs | scene-grouped (from v1/v2); 217/37/60 | 92/149 | collecting 1, queued 49, training 7 | `fce0ea0ac50b` |
+| [`fixed-grouped`](fixed-grouped/README.md): 41 models, final checkpoint after the full training budget, shown | re-rendered from the polygon JSONs | scene-grouped (from v1/v2); 217/37/60 | 113/149 | queued 28, training 8 | `fce0ea0ac50b` |
 | `fixed-grouped`: 10 models, best-on-validation checkpoint, superseded | re-rendered from the polygon JSONs | scene-grouped (from v1/v2); 217/37/60 | 40/40 | — | `d864b72bd907` |
 
 Each arm page has the per-model reports, `results.csv`, `status.json` and the downloadable evidence exactly as for [RTIS v2](../paul-test-rtis/v2/README.md). Fork progress is in the [paper-recipe section](#paper-recipe-fork-runs).
@@ -153,25 +153,30 @@ Percent; columns per arm: P = `paul`, FG = `fixed-grouped`. Checkpoint: P `best-
 | native_resnet50_psp | cityscapes_to_rtis |  | 30.4 |  | 0.1 |  | 0.1 |  | 46.1 |  | 0.1 |
 | native_resnet50_psp | railsem19_to_rtis |  | 34.5 |  | 0.2 |  | 0.2 |  | 99.1 |  | 0.3 |
 | native_resnet50_psp | rtis_only |  | 30.3 |  | 2.6 |  | 2.3 |  | 86.7 |  | 1.8 |
+| segformer_b0 | cityscapes_to_railsem19_to_rtis |  | 35.8 |  | 8.4 |  | 8.5 |  | 91.6 |  | 7.7 |
 | segformer_b0 | cityscapes_to_rtis |  | 31.1 |  | 4.1 |  | 4.3 |  | 92.2 |  | 3.6 |
 | segformer_b0 | railsem19_to_rtis |  | 41.4 |  | 8.5 |  | 8.9 |  | 97.6 |  | 8.5 |
 | segformer_b0 | rtis_only |  | 34.3 |  | 6.6 |  | 6.8 |  | 96.5 |  | 8.9 |
-| segformer_b2 | cityscapes_to_railsem19_to_rtis | 52.4 |  | 63.1 |  | 49.9 |  | 90.2 |  | 60.0 |  |
-| segformer_b2 | cityscapes_to_rtis | 42.9 |  | 51.5 |  | 30.2 |  | 84.8 |  | 36.2 |  |
-| segformer_b2 | railsem19_to_rtis | 56.2 |  | 64.7 |  | 51.6 |  | 81.4 |  | 66.4 |  |
-| segformer_b2 | rtis_only | 52.0 |  | 68.8 |  | 59.2 |  | 82.1 |  | 78.4 |  |
-| segformer_b5 | cityscapes_to_railsem19_to_rtis | 54.7 |  | 68.4 |  | 60.0 |  | 89.5 |  | 72.8 |  |
-| segformer_b5 | cityscapes_to_rtis | 50.8 |  | 64.6 |  | 51.9 |  | 83.0 |  | 65.5 |  |
-| segformer_b5 | railsem19_to_rtis | 58.8 |  | 63.3 |  | 50.6 |  | 78.1 |  | 67.3 |  |
-| segformer_b5 | rtis_only | 53.1 |  | 69.3 |  | 60.0 |  | 88.8 |  | 72.9 |  |
-| smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 50.7 |  | 65.3 |  | 47.2 |  | 83.5 |  | 59.4 |  |
-| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 48.0 |  | 56.6 |  | 38.2 |  | 80.2 |  | 57.8 |  |
-| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 54.6 |  | 54.9 |  | 36.3 |  | 81.9 |  | 56.3 |  |
-| smp_deeplabv3plus_resnet101 | rtis_only | 35.0 |  | 43.9 |  | 16.6 |  | 77.6 |  | 16.1 |  |
-| smp_fpn_resnet50 | cityscapes_to_railsem19_to_rtis | 49.4 |  | 50.1 |  | 34.3 |  | 87.0 |  | 43.2 |  |
-| smp_fpn_resnet50 | cityscapes_to_rtis | 46.3 |  | 42.1 |  | 14.0 |  | 92.6 |  | 19.7 |  |
-| smp_fpn_resnet50 | railsem19_to_rtis | 53.1 |  | 59.2 |  | 43.3 |  | 81.8 |  | 59.8 |  |
-| smp_fpn_resnet50 | rtis_only | 43.7 |  | 53.9 |  | 31.3 |  | 70.7 |  | 49.0 |  |
+| segformer_b2 | cityscapes_to_railsem19_to_rtis | 52.4 | 41.8 | 63.1 | 16.4 | 49.9 | 16.5 | 90.2 | 98.0 | 60.0 | 16.9 |
+| segformer_b2 | cityscapes_to_rtis | 42.9 | 38.2 | 51.5 | 16.6 | 30.2 | 17.0 | 84.8 | 88.6 | 36.2 | 17.6 |
+| segformer_b2 | railsem19_to_rtis | 56.2 | 46.4 | 64.7 | 14.4 | 51.6 | 15.1 | 81.4 | 94.7 | 66.4 | 16.9 |
+| segformer_b2 | rtis_only | 52.0 | 39.5 | 68.8 | 20.5 | 59.2 | 21.5 | 82.1 | 98.0 | 78.4 | 22.9 |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | 54.7 | 44.8 | 68.4 | 22.6 | 60.0 | 23.8 | 89.5 | 96.6 | 72.8 | 28.8 |
+| segformer_b5 | cityscapes_to_rtis | 50.8 | 40.4 | 64.6 | 21.7 | 51.9 | 22.9 | 83.0 | 94.9 | 65.5 | 29.2 |
+| segformer_b5 | railsem19_to_rtis | 58.8 | 47.1 | 63.3 | 12.8 | 50.6 | 13.5 | 78.1 | 98.5 | 67.3 | 14.0 |
+| segformer_b5 | rtis_only | 53.1 | 38.8 | 69.3 | 4.6 | 60.0 | 4.7 | 88.8 | 99.2 | 72.9 | 5.1 |
+| smp_deeplabv3_resnet50 | cityscapes_to_railsem19_to_rtis |  | 39.9 |  | 1.6 |  | 1.4 |  | 99.4 |  | 2.3 |
+| smp_deeplabv3_resnet50 | cityscapes_to_rtis |  | 34.6 |  | 1.2 |  | 1.1 |  | 98.5 |  | 1.6 |
+| smp_deeplabv3_resnet50 | railsem19_to_rtis |  | 40.9 |  | 3.3 |  | 3.4 |  | 88.1 |  | 2.8 |
+| smp_deeplabv3_resnet50 | rtis_only |  | 34.6 |  | 1.6 |  | 1.1 |  | 100.0 |  | 1.6 |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | 50.7 | 41.9 | 65.3 | 2.5 | 47.2 | 2.0 | 83.5 | 99.6 | 59.4 | 2.7 |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | 48.0 | 35.4 | 56.6 | 1.8 | 38.2 | 1.6 | 80.2 | 100.0 | 57.8 | 2.2 |
+| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | 54.6 | 44.9 | 54.9 | 2.2 | 36.3 | 2.0 | 81.9 | 99.1 | 56.3 | 2.4 |
+| smp_deeplabv3plus_resnet101 | rtis_only | 35.0 | 35.8 | 43.9 | 5.9 | 16.6 | 5.6 | 77.6 | 90.3 | 16.1 | 6.9 |
+| smp_fpn_resnet50 | cityscapes_to_railsem19_to_rtis | 49.4 | 38.5 | 50.1 | 7.3 | 34.3 | 7.0 | 87.0 | 97.1 | 43.2 | 9.6 |
+| smp_fpn_resnet50 | cityscapes_to_rtis | 46.3 | 34.7 | 42.1 | 6.0 | 14.0 | 5.5 | 92.6 | 95.2 | 19.7 | 5.5 |
+| smp_fpn_resnet50 | railsem19_to_rtis | 53.1 | 44.5 | 59.2 | 10.7 | 43.3 | 10.8 | 81.8 | 92.9 | 59.8 | 11.6 |
+| smp_fpn_resnet50 | rtis_only | 43.7 | 33.4 | 53.9 | 5.1 | 31.3 | 5.3 | 70.7 | 95.5 | 49.0 | 6.2 |
 | smp_upernet_resnet101 | cityscapes_to_railsem19_to_rtis | 49.8 |  | 54.6 |  | 33.0 |  | 79.2 |  | 48.4 |  |
 | smp_upernet_resnet101 | cityscapes_to_rtis | 41.7 |  | 48.9 |  | 25.0 |  | 65.1 |  | 43.1 |  |
 | smp_upernet_resnet101 | railsem19_to_rtis | 52.5 |  | 56.0 |  | 38.4 |  | 73.2 |  | 62.8 |  |
@@ -203,6 +208,22 @@ Differences in IoU points for model x protocol pairs completed in both arms, sin
 | native_convnext_tiny_uper | cityscapes_to_rtis | split | -13.0 | -57.5 | -41.6 | +17.6 | -56.9 |
 | native_convnext_tiny_uper | railsem19_to_rtis | split | -13.5 | -56.3 | -41.1 | +22.9 | -57.1 |
 | native_convnext_tiny_uper | rtis_only | split | -10.3 | -56.2 | -44.6 | +16.6 | -62.0 |
+| segformer_b2 | cityscapes_to_railsem19_to_rtis | split | -10.5 | -46.7 | -33.4 | +7.8 | -43.1 |
+| segformer_b2 | cityscapes_to_rtis | split | -4.6 | -34.9 | -13.1 | +3.8 | -18.6 |
+| segformer_b2 | railsem19_to_rtis | split | -9.9 | -50.3 | -36.5 | +13.2 | -49.5 |
+| segformer_b2 | rtis_only | split | -12.6 | -48.3 | -37.7 | +15.9 | -55.5 |
+| segformer_b5 | cityscapes_to_railsem19_to_rtis | split | -9.9 | -45.8 | -36.2 | +7.1 | -44.0 |
+| segformer_b5 | cityscapes_to_rtis | split | -10.4 | -42.9 | -29.0 | +11.9 | -36.3 |
+| segformer_b5 | railsem19_to_rtis | split | -11.7 | -50.5 | -37.1 | +20.4 | -53.3 |
+| segformer_b5 | rtis_only | split | -14.2 | -64.7 | -55.3 | +10.4 | -67.8 |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_railsem19_to_rtis | split | -8.8 | -62.9 | -45.2 | +16.1 | -56.6 |
+| smp_deeplabv3plus_resnet101 | cityscapes_to_rtis | split | -12.6 | -54.9 | -36.5 | +19.8 | -55.6 |
+| smp_deeplabv3plus_resnet101 | railsem19_to_rtis | split | -9.7 | -52.7 | -34.3 | +17.1 | -53.9 |
+| smp_deeplabv3plus_resnet101 | rtis_only | split | +0.8 | -38.0 | -11.0 | +12.7 | -9.2 |
+| smp_fpn_resnet50 | cityscapes_to_railsem19_to_rtis | split | -10.9 | -42.8 | -27.3 | +10.1 | -33.6 |
+| smp_fpn_resnet50 | cityscapes_to_rtis | split | -11.7 | -36.1 | -8.5 | +2.6 | -14.2 |
+| smp_fpn_resnet50 | railsem19_to_rtis | split | -8.5 | -48.5 | -32.5 | +11.0 | -48.2 |
+| smp_fpn_resnet50 | rtis_only | split | -10.3 | -48.8 | -26.0 | +24.8 | -42.7 |
 
 ### Validation composition (labels only)
 
@@ -274,4 +295,4 @@ Paul Stanik's two paper recipes (HRNet-OCR-Mscale `pauls3/semantic-segmentation@
 Generated by `scripts/publish_rad_results.py` from the HDRFS campaign records, the prepared datasets and the fork run directories, which it only reads. Absolute paths are provenance on HDRFS, not links. Prediction masks are not published.
 
 - Publisher code: `f35265fa8dfd`
-- Campaign records last changed: 2026-10-11 05:21 AM PDT
+- Campaign records last changed: 2026-10-11 08:03 AM PDT
