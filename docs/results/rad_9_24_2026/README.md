@@ -9,12 +9,12 @@
 
 ## Key result
 
-Paul's split looks good (median 59.7 on all images with mud-pumping, 44.6 on train-camera ones) because every validation scene of that split also has images in training; 5 of its 13 validation images with mud-pumping come from one scene, `trackside-maintenance`. On scenes the models never trained on, mud-pumping IoU on train-camera images is median 4.1 (best 41.7) with the scene-grouped split and median 24.1 (best 33.0) in cross-validation.
+Paul's split looks good (median 59.7 on all images with mud-pumping, 44.6 on train-camera ones) because every validation scene of that split also has images in training; 5 of its 13 validation images with mud-pumping come from one scene, `trackside-maintenance`. On scenes the models never trained on, mud-pumping IoU on train-camera images is median 4.3 (best 41.7) with the scene-grouped split and median 24.1 (best 33.0) in cross-validation.
 
 | Split | Model runs | Mud-pumping IoU, all images with mud | Mud-pumping IoU, train-camera images with mud | mIoU (each class over images that contain it) |
 | --- | --- | --- | --- | --- |
 | Paul's split | 40 | median 59.7 (best 69.3) | median 44.6 (best 60.0) | median 53.1 (best 64.4) |
-| Scene-grouped split | 141 of 149 done | median 4.1 (best 39.5) | median 4.1 (best 41.7) | median 35.3 (best 55.7) |
+| Scene-grouped split | 149 | median 4.4 (best 39.5) | median 4.3 (best 41.7) | median 35.4 (best 55.7) |
 | Cross-validation over scenes | 20 of 20 with all folds done | median 15.3 (best 19.2) | median 24.1 (best 33.0) | median 51.8 (best 59.3) |
 
 Median and best over every finished model and starting point of each split. mIoU scores each class on the images that contain it, then averages over the classes.
@@ -44,7 +44,7 @@ Images assigned to training and validation at random, balanced by class; 17 of i
 
 ### Scene-grouped split
 
-Whole scenes kept on one side; 0 of its 3 validation scenes have images in training (217 training, 37 validation images). 41 models, each at its final checkpoint after the full training budget, so nothing is picked on the validation images. 141 of 149 runs done; `*` = not all starting points of that model done yet. [Every model and starting point](fixed-grouped/README.md); [IoU of every class](fixed-grouped/README.md#per-class-iou).
+Whole scenes kept on one side; 0 of its 3 validation scenes have images in training (217 training, 37 validation images). 41 models, each at its final checkpoint after the full training budget, so nothing is picked on the validation images. [Every model and starting point](fixed-grouped/README.md); [IoU of every class](fixed-grouped/README.md#per-class-iou).
 
 | Model | Best starting point | Mud-pumping IoU, train-camera images with mud | Mud-pumping IoU, all images with mud | mIoU (each class over images that contain it) | Speed (FPS) | GPU memory, total (GB) | Parameters (M) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -68,8 +68,10 @@ Whole scenes kept on one side; 0 of its 3 validation scenes have images in train
 | [denseaspp121](fixed-grouped/models/denseaspp121/README.md) | recipe pretrained weights (only starting point) | 10.1 | 9.8 | 37.5 | 99.9 | 0.94 | 8.3 |
 | [native_convnext_tiny_uper](fixed-grouped/models/native_convnext_tiny_uper/README.md) | Cityscapes → RailSem19 | 9.5 | 9.5 | 44.1 | 74.3 | 1.87 | 36.8 |
 | [native_mobilenetv3_large_lraspp](fixed-grouped/models/native_mobilenetv3_large_lraspp/README.md) | RailSem19 | 9.5 | 9.0 | 34.4 | 236.7 | 0.85 | 3.2 |
+| [smp_upernet_resnet101](fixed-grouped/models/smp_upernet_resnet101/README.md) | RailSem19 | 9.4 | 9.2 | 45.5 | 72.5 | 2.18 | 56.3 |
 | [segformer_b0](fixed-grouped/models/segformer_b0/README.md) | RailSem19 | 8.9 | 8.5 | 41.4 | 136.3 | 1.50 | 3.7 |
 | [smp_pspnet_mobilenet_v2](fixed-grouped/models/smp_pspnet_mobilenet_v2/README.md) | recipe pretrained weights | 8.3 | 7.9 | 16.8 | 337.5 | 0.91 | 2.4 |
+| [upernet_convnext](fixed-grouped/models/upernet_convnext/README.md) | RailSem19 | 7.9 | 7.6 | 43.5 | 41.7 | 3.20 | 80.9 |
 | [bisenetv1_r18](fixed-grouped/models/bisenetv1_r18/README.md) | recipe pretrained weights (only starting point) | 7.8 | 7.7 | 28.9 | 346.8 | 0.87 | 13.4 |
 | [smp_deeplabv3plus_resnet101](fixed-grouped/models/smp_deeplabv3plus_resnet101/README.md) | recipe pretrained weights | 5.6 | 5.9 | 35.8 | 107.2 | 1.23 | 45.7 |
 | [hrnet_w48_ocr](fixed-grouped/models/hrnet_w48_ocr/README.md) | Cityscapes → RailSem19 | 4.9 | 4.9 | 40.9 | 30.9 | 1.89 | 73.2 |
@@ -87,8 +89,6 @@ Whole scenes kept on one side; 0 of its 3 validation scenes have images in train
 | [native_mobilenetv3_large_deeplabv3plus](fixed-grouped/models/native_mobilenetv3_large_deeplabv3plus/README.md) | RailSem19 | 1.8 | 1.8 | 39.6 | 152.8 | 1.00 | 8.1 |
 | [native_resnet50_deeplabv3plus](fixed-grouped/models/native_resnet50_deeplabv3plus/README.md) | recipe pretrained weights | 0.7 | 0.9 | 33.5 | 136.4 | 1.41 | 40.4 |
 | [native_resnet101_uper](fixed-grouped/models/native_resnet101_uper/README.md) | recipe pretrained weights | 0.3 | 2.0 | 36.0 | 61.7 | 1.93 | 61.3 |
-
-No finished run yet: `smp_upernet_resnet101`, `upernet_convnext`.
 
 The first scene-grouped run (10 models, best-on-validation checkpoint) is in [the details](details.md#first-scene-grouped-run-10-models-best-on-validation-checkpoint).
 
@@ -133,4 +133,4 @@ Paul's own recipes, retrained by us with his code on each split and scored with 
 - [Full details](details.md): label defects in the delivered masks, all comparison tables, every retraining run of Paul's recipes, provenance
 - [Comparison CSV](rad-comparison.csv)
 - [Dataset preparation and split decisions](../../guides/rad-9-24-2026.md)
-- Generated by `scripts/publish_rad_results.py` (code `f35265fa8dfd`) from the HDRFS records, which it only reads; records last changed 2026-10-11 11:16 AM PDT.
+- Generated by `scripts/publish_rad_results.py` (code `f35265fa8dfd`) from the HDRFS records, which it only reads; records last changed 2026-10-11 12:53 PM PDT.
