@@ -99,7 +99,7 @@ support in all three splits.
 | Reviewed proposal | `dc5762fa2b00d0a01afb939f71f0162320fd34029ac5bcc5d3330501e773b351` |
 | Materialized splits | `6913657d4f98b24c58c643c9bc9d51e8c8fffbe42154b5bcdde55125c28ce3da` |
 | Materialized sample audit | `0ec86e5aa8cf1346f1d7ae4f919e3c77d02d2ad8bcf12cccd81eed434b6d478a` |
-| Source checkpoint manifest | `3026892bf95ccf43bc025759100221b2bb68c31d7d150d42380909c272002229` |
+| Source checkpoint manifest | `85ed2f16e8d2c32b8435821851a768cad1025b2e5e1b395cd4c5ad382f589075` |
 
 ## Fresh training campaign
 
@@ -127,7 +127,21 @@ optimizer state and the approved recipe or source-stage weights.
 checks the pinned source manifest, actual source configuration spaces/stages,
 approved pretrained model identifiers, and each new job’s initializer. Source
 configuration hashes are frozen. The runtime separately verifies the actual
-source checkpoint bytes before use.
+source checkpoint bytes before use. An independent CPU content audit passed for
+all 108 endpoint files, totaling 82,196,185,679 bytes.
+
+Four historical transfer references have explicit qualified City predecessors.
+Three accepted configs retain dependency placeholders. Their retained City40 →
+Rail20 inventory, transfer config, evaluation receipt, and City training receipt
+bind the actual input and endpoint checkpoint hashes. The original transfer-run
+directories are unavailable. The retained checkpoints and receipts support the
+qualified lineage.
+
+MobileNetV2’s transfer used the original raw City checkpoint. Its standalone City
+baseline was later BN-recalibrated. The qualified manifest records that original
+raw input separately from the baseline endpoint. All 108 endpoint selections are
+reused exactly as recorded. The four qualified predecessor files and their
+receipts are hash-checked before training.
 
 The [priority file](../../configs/campaigns/rad_2026_11_allclasses.priority.json)
 uses the old PDF ranking to schedule models and initialization paths in descending
@@ -187,9 +201,9 @@ provenance before the separate smoke-validated launcher starts workers.
 
 ```bash
 export PYTHONPATH="$PWD/src"
-RAD_PY=/data/izadia1/envs/railyard/bin/python
+RAD_PY=python
 RAD_DATA=/data/izadia1/datasets/rad_2026_11_allclasses
-RAD_SOURCES=/data/izadia1/projects/segmentary-runs/rad_2026_11_allclasses-inputs/source-checkpoints.json
+RAD_SOURCES=/data/izadia1/projects/segmentary-runs/rad_2026_11_allclasses-inputs/source-checkpoints-qualified.json
 RAD_RUN=/data/izadia1/projects/segmentary-runs/rad_2026_11_allclasses-full-20261113
 "$RAD_PY" scripts/plan_rtis_campaign.py \
   --manifest configs/campaigns/rad_2026_11_allclasses.yaml \
