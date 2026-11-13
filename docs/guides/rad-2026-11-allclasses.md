@@ -1,9 +1,10 @@
 # RAD November 2026 all-class scene split and fresh adaptation
 
 Claude fable high approved the protocol on 2026-11-13. The dataset was
-materialized and verified on HDRFS. The six-job GPU preflight is running. Full
-campaign launch and new model results are pending. Historical scores determine
-scheduling priority.
+materialized and verified on HDRFS. All six GPU preflight jobs passed. The
+149-job campaign started at 11:11 am Pacific on November 13, using frozen code
+`295ad5302e2c927d43ce08c956cbc990d11ce122`. Historical scores determine scheduling
+priority. Final model results and the revised comparison PDF follow collection.
 
 ## Dataset and chosen split
 
@@ -53,6 +54,12 @@ set has four blocks; its largest contains 20 of 59 images.
 Counts are images with at least one nonignored ground-truth mask pixel of the
 class. Images can contain several classes, so columns do not sum to split size.
 Pixel support is also verified and recorded during preparation.
+
+The [complete split CSV](../datasets/rad_2026_11_allclasses/class-split.csv)
+contains class IDs, image counts, image coverage percentages, exact pixel counts,
+and megapixels for every split. It includes void as ignore ID 255. The sum of all
+class pixels, including void, exactly matches the native mask dimensions in each
+split.
 
 | ID | Class | Train | Validation | Test |
 | ---: | --- | ---: | ---: | ---: |
@@ -167,6 +174,13 @@ support and IoU, marks best values in green, and places full-image original /
 ground-truth / prediction overlays directly after each model’s results. FPS,
 model size, inference memory, and their measurement conditions are included.
 
+After all 149 final validation records are collected, freeze one initialization
+per model using unrounded positive-image validation mIoU across all 21 classes.
+Record a deterministic tie rule and checkpoint/config/dataset hashes in the
+selection manifest before evaluating the 41 selected test checkpoints. The report
+will contain all 149 validation results and the 41 selected test results, with
+rankings and green highlights calculated within the same split and metric.
+
 The approved GPU indices are **0, 1, 2, 3, 7, 8, 9**. Workers must use only idle
 allowed cards, hold shared GPU locks, pin visibility to one physical GPU, and
 verify the assigned UUID. GPUs 4, 5, and 6 are reserved for unrelated workloads.
@@ -225,3 +239,8 @@ manifest into a separate directory. After verified smoke completion, run
 then `launch_rtis_full_campaign.py --campaign "$RAD_RUN"`. Its default dashboard
 provides campaign progress through tmux. Omit the publisher checkout argument
 for this benchmark preparation.
+
+The running campaign uses `tmux a -t rtis-fullstats-controller`. Its UI dependencies
+are isolated in `/data/izadia1/envs/segmentary-rad-dashboard-20261113`, with
+Textual 8.2.8, Rich 15.0.0, and TensorBoard 2.21.0. The dashboard reads campaign
+files and runs with GPU visibility empty.
