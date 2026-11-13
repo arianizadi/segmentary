@@ -1,8 +1,9 @@
 # RAD November 2026 all-class scene split and fresh adaptation
 
 Claude fable high approved the protocol on 2026-11-13. The dataset was
-materialized and verified on HDRFS. GPU preflight, campaign launch, and new model
-results are pending. Historical scores determine scheduling priority.
+materialized and verified on HDRFS. The six-job GPU preflight is running. Full
+campaign launch and new model results are pending. Historical scores determine
+scheduling priority.
 
 ## Dataset and chosen split
 
@@ -131,9 +132,10 @@ source checkpoint bytes before use. An independent CPU content audit passed for
 all 108 endpoint files, totaling 82,196,185,679 bytes.
 
 Four historical transfer references have explicit qualified City predecessors.
-Three accepted configs retain dependency placeholders. Their retained City40 →
-Rail20 inventory, transfer config, evaluation receipt, and City training receipt
-bind the actual input and endpoint checkpoint hashes. The original transfer-run
+Three accepted configs retain dependency placeholders. The guard checks their
+retained City40 → Rail20 inventory, transfer config, and evaluation receipt to
+bind actual input and endpoint checkpoint hashes. City training receipts were
+reviewed separately and recorded in the lineage evidence. The original transfer-run
 directories are unavailable. The retained checkpoints and receipts support the
 qualified lineage.
 
@@ -141,7 +143,7 @@ MobileNetV2’s transfer used the original raw City checkpoint. Its standalone C
 baseline was later BN-recalibrated. The qualified manifest records that original
 raw input separately from the baseline endpoint. All 108 endpoint selections are
 reused exactly as recorded. The four qualified predecessor files and their
-receipts are hash-checked before training.
+required guard receipts are hash-checked before training.
 
 The [priority file](../../configs/campaigns/rad_2026_11_allclasses.priority.json)
 uses the old PDF ranking to schedule models and initialization paths in descending
@@ -182,14 +184,17 @@ reassigned here. This is a **new benchmark version**, requiring fresh adaptation
 from non-RAD initialization. The prior inspection of these scenes limits claims
 of a blind holdout. Single-seed results remain exploratory.
 
-The [final Fable review](rad-2026-11-allclasses-fable-review.md) approved the
-protocol. The requested invocation used `claude -p --model fable --effort high`
+The [protocol Fable review](rad-2026-11-allclasses-fable-review.md) and
+[targeted lineage review](rad-2026-11-allclasses-lineage-review.md) approved the
+protocol and historical predecessor qualifications. The requested invocation used `claude -p --model fable --effort high`
 and returned `claude-fable-5-2`. The review read code and manifests. The subsequent
 CPU materialization independently verified the proposed counts and masks.
 
-Launch checks must confirm identical main/smoke split and sample-audit hashes,
-108 verified source endpoints, 108 transfer jobs, 41 recipe jobs, and the frozen
-source-manifest hash. After the first full job finishes, check its exact
+Runtime initialization confirmed identical main/smoke split and sample-audit
+hashes, 108 verified source endpoints, 108 transfer jobs, 41 recipe jobs, four
+qualified historical chains, and the frozen source-manifest hash. The clean
+checkout CPU suite passed 3,270 tests, with six skipped and 41 GPU/slow cases
+deselected. Ruff, formatting, mypy, and dependency checks passed. After the first full job finishes, check its exact
 standalone/diagnostic confusion match before leaving the campaign unattended.
 
 ## Reproduce planning on HDRFS

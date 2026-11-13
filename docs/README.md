@@ -80,6 +80,9 @@ and saved predictions with `./scripts/inspect.sh /path/to/bundle`.
 - [rad_9_24_2026: two comparable training arms](guides/rad-9-24-2026.md)
   builds the Paul-label (stratified split) and fixed-grouped datasets from one
   delivery with a label audit and render-parity check.
+- [RAD all-class restart](guides/rad-2026-11-allclasses.md) documents the
+  314-image scene-grouped split, all-21-class coverage in every partition,
+  reviewed checkpoint lineage, and fresh RAD adaptation campaign.
 - [Cross-validation (stratified group k-fold)](guides/cross-validation.md): make
   group folds of any grouped folder dataset, plan one campaign over all folds with
   final-checkpoint scoring, and read pooled out-of-fold metrics.
