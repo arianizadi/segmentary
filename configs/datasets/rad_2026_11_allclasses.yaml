@@ -1,0 +1,32 @@
+# Reviewed with Claude -p --model fable --effort high on 2026-11-13.
+# Candidate 0 is frozen in rad_2026_11_allclasses.split.json.
+#
+# New dataset version; never overwrite rad_9_24_2026-fixed-grouped.
+# Eligible source pool: all 314 non-CVAT-origin frames. The 15 CVAT-origin
+# no_anomalies_0251..0265 frames (including Supervisely-imported copies) stay out.
+# Split counts are 187 train / 68 validation / 59 test across 20 conservative blocks.
+# Require all 21 rendered classes in EVERY split, with at least 5 class-positive
+# images per class per split; the chosen frozen audit must prove the final counts.
+# Keep suspected related-recording groups together, including the existing
+# sunny-mountain-stations/0252 (original no_anomalies_0749) camera-signature issue.
+# Group disjointness is required; original recording independence is provisional.
+name: rad_2026_11_allclasses
+space: paul-test-rtis
+taxonomy_root: taxonomy
+output_root: runs/rad_2026_11_allclasses
+stages:
+- name: rtis
+  data:
+  - name: rad_2026_11_allclasses
+    root: /data/izadia1/datasets/rad_2026_11_allclasses
+    loader: folder
+    mapping: paul-test-rtis
+    train_split: train
+    val_split: val
+    split_file: splits.json
+    loader_options:
+      require_groups: true
+  # Recipe pretrained initializer only. The campaign planner replaces this with
+  # verified NON-RAD Cityscapes/RailSem19 endpoints for the transfer protocols.
+  # No checkpoint trained on any prior RTIS/RAD split may initialize this run.
+  init_from: pretrained

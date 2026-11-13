@@ -22,7 +22,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from segmentary import gpu_policy
+from segmentary import gpu_policy, launch_requirements
 
 REPORT = Path("docs/results/paul-test-rtis/live")
 TERMINAL = {"completed", "failed"}
@@ -87,6 +87,15 @@ def verify_frozen(root, repo):
     # ``smoke`` relaxes the launch preflight, so it must come from the hashed plan.
     if bool(campaign.get("smoke")) != bool(plan.get("smoke")):
         raise RuntimeError("Campaign smoke flag disagrees with the frozen plan")
+    requirements = launch_requirements.validate_plan(plan)
+    if campaign.get("launch_requirements") != plan.get("launch_requirements"):
+        raise RuntimeError("Campaign launch requirements disagree with frozen plan")
+    if requirements and requirements.get("require_non_rad_sources"):
+        if campaign.get("source_manifest") != plan.get("source_manifest"):
+            raise RuntimeError("Campaign initializer source manifest disagrees with frozen plan")
+        current = verify_initializer_sources(plan, repo)
+        if current != campaign.get("initializer_verification"):
+            raise RuntimeError("Verified non-RAD source configurations changed")
     verify_policy(campaign, plan)
     return campaign
 
@@ -157,6 +166,13 @@ def verify_fold_datasets(cv):
     return folds
 
 
+def verify_initializer_sources(plan, repo):
+    sys.path.insert(0, str(repo))
+    from scripts.verify_rad_initializers import verify_initializers
+
+    return verify_initializers(plan)
+
+
 def initialize(root, repo):
     if (root / "campaign.json").exists():
         raise RuntimeError("Campaign already initialized; use worker to resume")
@@ -165,6 +181,10 @@ def initialize(root, repo):
     plan = read(root / "plan.json")
     if not plan.get("gpu_allowlist"):
         raise gpu_policy.GpuPolicyError("plan.json has no gpu_allowlist; re-plan with --gpus")
+    requirements = launch_requirements.validate_plan(plan)
+    initializer_verification = None
+    if requirements and requirements.get("require_non_rad_sources"):
+        initializer_verification = verify_initializer_sources(plan, repo)
     policy = gpu_policy.freeze(plan["gpu_allowlist"], gpu_policy.inventory(), gpu_policy.hostname())
     from segmentary.config import load_experiment
 
@@ -234,6 +254,11 @@ def initialize(root, repo):
             )
     if cv:
         campaign["cross_validation"] = {**cv, "fold_datasets": folds}
+    if requirements is not None:
+        campaign["launch_requirements"] = requirements
+        if requirements.get("require_non_rad_sources"):
+            campaign["source_manifest"] = plan["source_manifest"]
+            campaign["initializer_verification"] = initializer_verification
     write(root / "campaign.json", campaign)
     for job in plan["jobs"]:
         write(root / "state" / f"{job['name']}.json", {"name": job["name"], "status": "queued"})
@@ -311,6 +336,14 @@ def learning_curve(run):
         for tag in ("train/loss", "val/miou")
         if tag in events.Tags()["scalars"]
     }
+
+
+def primary_checkpoint(campaign):
+    """The checkpoint used consistently for standalone quality and deployment cost."""
+    anchor = campaign.get("primary_checkpoint", "best")
+    if anchor not in {"best", "final"}:
+        raise RuntimeError(f"Invalid primary checkpoint: {anchor!r}")
+    return anchor
 
 
 def run_job(root, repo, job, gpu, campaign):
@@ -401,7 +434,9 @@ def run_job(root, repo, job, gpu, campaign):
         best = checkpoint_info(best_paths[0])
         state.update(status="evaluating", final_step=last["global_step"])
         write(state_path, state)
-        result_path = run / "best-val.json"
+        anchor = primary_checkpoint(campaign)
+        evaluated = last if anchor == "final" else best
+        result_path = run / f"{anchor}-val.json"
         subprocess.run(
             [
                 sys.executable,
@@ -410,7 +445,7 @@ def run_job(root, repo, job, gpu, campaign):
                 job["config"],
                 *(["--deterministic"] if campaign.get("collection_contract") else []),
                 "--ckpt",
-                str(best_paths[0]),
+                evaluated["path"],
                 "--auto-weights",
                 "--split",
                 "val",
@@ -433,6 +468,7 @@ def run_job(root, repo, job, gpu, campaign):
         finished_at=now(),
         checkpoints={"best": best, "final": last},
         evaluation=evaluation,
+        evaluation_checkpoint=anchor,
         training=training,
         stopping=stop,
         learning_curve=learning_curve(run),
@@ -455,38 +491,62 @@ def worker(root, repo, gpu, run=None):
     policy = gpu_policy.load(campaign)
     gpu_policy.require_allowed(policy, gpu)
     gpu_policy.assert_env(policy, gpu, os.environ)
-    with lock(root / "locks" / f"gpu-{gpu}.lock") as acquired:
-        if not acquired:
-            raise RuntimeError("This campaign already has a worker on that GPU")
-        for job in read(root / "plan.json")["jobs"]:
-            if (root / "STOP").exists():
-                return
-            with lock(root / "locks" / f"{job['name']}.lock") as claimed:
-                if not claimed:
-                    continue
-                state_path = root / "state" / f"{job['name']}.json"
-                if read(state_path)["status"] in TERMINAL:
-                    continue
-                try:
-                    verify_frozen(root, repo)
-                except gpu_policy.GpuInspectionError:
-                    # nvidia-smi was unavailable even after retries: this says
-                    # nothing about the job, so leave its state untouched and
-                    # let the worker die; the launcher restarts it.
-                    print(f"GPU inventory unavailable before {job['name']}; exiting", flush=True)
-                    raise
-                try:
-                    (run or run_job)(root, repo, job, gpu, campaign)
-                except Exception as error:
-                    state = read(state_path)
-                    detail = (
-                        f"Process exited {error.returncode}; see logs/{job['name']}.log"
-                        if isinstance(error, subprocess.CalledProcessError)
-                        else str(error)
-                    )
-                    state.update(status="failed", finished_at=now(), error=detail)
-                    write(state_path, state)
-                    print(f"FAILED {job['name']}: {error}", flush=True)
+    requirements = launch_requirements.requirements_from_spec(campaign)
+    shared = bool(requirements and requirements.get("shared_gpu_lock_and_idle"))
+    entry = gpu_policy.require_allowed(policy, gpu)
+    gpu_gate = (
+        launch_requirements.exclusive_locks(
+            launch_requirements.shared_lock_paths(gpu, entry["uuid"])
+        )
+        if shared
+        else contextlib.nullcontext(True)
+    )
+    with gpu_gate as host_free:
+        if not host_free:
+            print(
+                f"Shared GPU {gpu} lock held elsewhere; exiting without changing jobs", flush=True
+            )
+            return
+        with lock(root / "locks" / f"gpu-{gpu}.lock") as acquired:
+            if not acquired:
+                raise RuntimeError("This campaign already has a worker on that GPU")
+            for job in read(root / "plan.json")["jobs"]:
+                if (root / "STOP").exists():
+                    return
+                with lock(root / "locks" / f"{job['name']}.lock") as claimed:
+                    if not claimed:
+                        continue
+                    state_path = root / "state" / f"{job['name']}.json"
+                    if read(state_path)["status"] in TERMINAL:
+                        continue
+                    try:
+                        verify_frozen(root, repo)
+                    except gpu_policy.GpuInspectionError:
+                        # nvidia-smi was unavailable even after retries: this says
+                        # nothing about the job, so leave its state untouched and
+                        # let the worker die; the launcher restarts it.
+                        print(
+                            f"GPU inventory unavailable before {job['name']}; exiting", flush=True
+                        )
+                        raise
+                    if shared and not launch_requirements.gpu_is_idle(policy, gpu):
+                        print(
+                            f"GPU {gpu} is busy before {job['name']}; leaving job unchanged and exiting",
+                            flush=True,
+                        )
+                        return
+                    try:
+                        (run or run_job)(root, repo, job, gpu, campaign)
+                    except Exception as error:
+                        state = read(state_path)
+                        detail = (
+                            f"Process exited {error.returncode}; see logs/{job['name']}.log"
+                            if isinstance(error, subprocess.CalledProcessError)
+                            else str(error)
+                        )
+                        state.update(status="failed", finished_at=now(), error=detail)
+                        write(state_path, state)
+                        print(f"FAILED {job['name']}: {error}", flush=True)
 
 
 def snapshot(root):

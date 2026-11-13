@@ -9,7 +9,7 @@ from pathlib import Path
 
 import yaml
 
-from segmentary import gpu_policy
+from segmentary import gpu_policy, launch_requirements
 from segmentary.config import load_experiment, to_dict
 from segmentary.curriculum import validate_training_contract
 
@@ -234,6 +234,8 @@ def main() -> None:
     )
     args = ap.parse_args()
     spec = yaml.safe_load(args.manifest.read_text())
+    requirements = launch_requirements.requirements_from_spec(spec)
+    launch_requirements.check_expected_allowlist(requirements, args.gpus)
     catalog = yaml.safe_load(Path(spec["model_catalog"]).read_text())
     sources = json.loads(args.checkpoints.read_text())
     lookup = {(r["model"], r["protocol"]): r for r in sources}
@@ -276,6 +278,13 @@ def main() -> None:
         "jobs": jobs,
         "caveats": list(spec.get("caveats", DEFAULT_CAVEATS)),
     }
+    if requirements is not None:
+        result["launch_requirements"] = requirements
+        if requirements.get("require_non_rad_sources"):
+            result["source_manifest"] = {
+                "path": str(args.checkpoints.resolve()),
+                "sha256": hashlib.sha256(args.checkpoints.read_bytes()).hexdigest(),
+            }
     if "primary_checkpoint" in spec or cv is not None:
         # Only recorded when the manifest asks, so existing plans stay byte-identical.
         result["primary_checkpoint"] = primary

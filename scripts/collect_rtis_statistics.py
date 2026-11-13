@@ -76,6 +76,27 @@ def score_curve(positive, negative):
     ]
 
 
+def sample_group(sample):
+    """Use the audited conservative group; image-key prefixes are legacy layout only."""
+    group = sample.get("group", sample["key"].split("/")[0])
+    if not isinstance(group, str) or not group or group.strip() != group or "\n" in group:
+        raise RuntimeError(f"Invalid audited scene group: {sample['key']}")
+    return group
+
+
+def validate_audit_groups(samples, splits):
+    """Reject disagreement between the hashed sample audit and split group metadata."""
+    groups = splits.get("groups")
+    if groups is not None and (
+        not isinstance(groups, dict) or set(groups) != {s["key"] for s in samples}
+    ):
+        raise RuntimeError("Split group metadata does not cover exactly the audited images")
+    for sample in samples:
+        actual = sample_group(sample)
+        if groups is not None and groups[sample["key"]] != actual:
+            raise RuntimeError(f"Audited group differs from split group metadata: {sample['key']}")
+
+
 def collect(model, cfg, samples, split, directory, names):
     assert split in ("train", "val")
     directory.mkdir(parents=True, exist_ok=True)
@@ -103,7 +124,7 @@ def collect(model, cfg, samples, split, directory, names):
     negative = positive.copy()
     for sample in [s for s in samples if s["split"] == split]:
         key = sample["key"]
-        group = key.split("/")[0]
+        group = sample_group(sample)
         image_path = dataset / "images" / split / (key + sample["image_extension"])
         mask_path = dataset / "masks" / split / (key + ".png")
         rgb = np.array(Image.open(image_path).convert("RGB"))
@@ -267,6 +288,7 @@ def validate_dataset(root, job, cfg, campaign):
             )
     splits = runtime.read(data_root / "splits.json")
     samples = runtime.read(data_root / "audit/samples.json")
+    validate_audit_groups(samples, splits)
     seen = set()
     for split in ("train", "val", "test"):
         expected_keys = splits[split]
@@ -339,7 +361,9 @@ def main():
     cfg = load_experiment([Path(job["config"])])
     space = load_space(cfg.taxonomy_root, cfg.space)
     names = list(space.names)
-    dataset_splits, samples = validate_dataset(root, job, cfg, runtime.read(root / "campaign.json"))
+    campaign = runtime.read(root / "campaign.json")
+    primary = runtime.primary_checkpoint(campaign)
+    dataset_splits, samples = validate_dataset(root, job, cfg, campaign)
     if args.limit_per_split is not None:
         if args.limit_per_split < 1:
             raise ValueError("Limit must be positive")
@@ -378,7 +402,7 @@ def main():
         del model
         gc.collect()
         torch.cuda.empty_cache()
-    selected = results["best-auto-val"]["metrics"]
+    selected = results[f"{primary}-auto-val"]["metrics"]
     reference = state["evaluation"]["metrics"]
     if args.limit_per_split is None and not np.allclose(
         selected["confusion"], reference["confusion"], rtol=0, atol=0
@@ -391,6 +415,8 @@ def main():
         {
             "contract": "rtis-full-statistics-v1",
             "test_evaluated": False,
+            "primary_checkpoint": primary,
+            "standalone_variant": f"{primary}-auto-val",
             "deterministic": True,
             "results": results,
             "standalone_confusion_exact_match": args.limit_per_split is None,

@@ -1,0 +1,1243 @@
+{
+  "source_git_sha": "81d79d420afd9f67dd40a0204f264d6dd3596b82",
+  "source_csv_sha256": "870a39744ec65e538915cef76a0543205db6e4fd787b6e3e5e792ba084a53893",
+  "ranking_metric": "old PDF final-checkpoint positive-image validation mIoU over18supportedclasses",
+  "rule": "models descending by best historical mIoU; initialization runs descending within each model",
+  "models": [
+    "eomt_large",
+    "eomt_dinov3_large",
+    "segformer_b5",
+    "native_convnext_tiny_channelmapper_dpt",
+    "segformer_b2",
+    "smp_upernet_resnet101",
+    "smp_deeplabv3plus_resnet101",
+    "smp_fpn_resnet50",
+    "native_convnext_tiny_uper",
+    "hrnet_w48_ocr",
+    "upernet_convnext",
+    "native_resnet101_uper",
+    "hf_auto_upernet_swin_tiny",
+    "native_resnet50_fpn_ocr",
+    "segformer_b0",
+    "smp_deeplabv3_resnet50",
+    "hf_auto_segformer_b0",
+    "smp_pan_resnext50",
+    "native_mobilenetv3_large_deeplabv3plus",
+    "smp_upernet_mit_b0",
+    "smp_unet_resnet34",
+    "native_resnet18_fpn_fcn",
+    "native_resnet50_deeplabv3plus",
+    "hf_auto_mobilevitv2_deeplabv3",
+    "denseaspp121",
+    "native_resnet18_fpn_segformer_aux",
+    "native_efficientnet_b0_deeplabv3plus",
+    "denseaspp161",
+    "smp_unetplusplus_efficientnet_b0",
+    "native_resnet50_psp",
+    "native_mobilenetv3_large_lraspp",
+    "smp_manet_efficientnet_b0",
+    "native_resnet50_aspp",
+    "hf_auto_mobilevit_xxs_deeplabv3",
+    "hf_auto_beit_base_ade",
+    "hf_auto_mobilenetv2_deeplabv3",
+    "bisenetv1_r18",
+    "smp_linknet_mobilenet_v2",
+    "smp_pspnet_mobilenet_v2",
+    "bisenetv2",
+    "espnet"
+  ],
+  "jobs": [
+    {
+      "priority": 1,
+      "model_priority": 1,
+      "model": "eomt_large",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.557463,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 2,
+      "model_priority": 1,
+      "model": "eomt_large",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.528075,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 3,
+      "model_priority": 1,
+      "model": "eomt_large",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.527994,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 4,
+      "model_priority": 1,
+      "model": "eomt_large",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.507206,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 5,
+      "model_priority": 2,
+      "model": "eomt_dinov3_large",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.55604,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 6,
+      "model_priority": 2,
+      "model": "eomt_dinov3_large",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.522626,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 7,
+      "model_priority": 2,
+      "model": "eomt_dinov3_large",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.512592,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 8,
+      "model_priority": 2,
+      "model": "eomt_dinov3_large",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.488667,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 9,
+      "model_priority": 3,
+      "model": "segformer_b5",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.471217,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 10,
+      "model_priority": 3,
+      "model": "segformer_b5",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.448292,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 11,
+      "model_priority": 3,
+      "model": "segformer_b5",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.403789,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 12,
+      "model_priority": 3,
+      "model": "segformer_b5",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.388433,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 13,
+      "model_priority": 4,
+      "model": "native_convnext_tiny_channelmapper_dpt",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.467517,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 14,
+      "model_priority": 4,
+      "model": "native_convnext_tiny_channelmapper_dpt",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.435875,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 15,
+      "model_priority": 4,
+      "model": "native_convnext_tiny_channelmapper_dpt",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.396835,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 16,
+      "model_priority": 4,
+      "model": "native_convnext_tiny_channelmapper_dpt",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.387371,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 17,
+      "model_priority": 5,
+      "model": "segformer_b2",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.463517,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 18,
+      "model_priority": 5,
+      "model": "segformer_b2",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.418489,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 19,
+      "model_priority": 5,
+      "model": "segformer_b2",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.394629,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 20,
+      "model_priority": 5,
+      "model": "segformer_b2",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.382295,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 21,
+      "model_priority": 6,
+      "model": "smp_upernet_resnet101",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.455118,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 22,
+      "model_priority": 6,
+      "model": "smp_upernet_resnet101",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.405345,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 23,
+      "model_priority": 6,
+      "model": "smp_upernet_resnet101",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.349796,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 24,
+      "model_priority": 6,
+      "model": "smp_upernet_resnet101",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.349547,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 25,
+      "model_priority": 7,
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.449161,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 26,
+      "model_priority": 7,
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.419271,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 27,
+      "model_priority": 7,
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.357813,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 28,
+      "model_priority": 7,
+      "model": "smp_deeplabv3plus_resnet101",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.353674,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 29,
+      "model_priority": 8,
+      "model": "smp_fpn_resnet50",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.445364,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 30,
+      "model_priority": 8,
+      "model": "smp_fpn_resnet50",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.385016,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 31,
+      "model_priority": 8,
+      "model": "smp_fpn_resnet50",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.346628,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 32,
+      "model_priority": 8,
+      "model": "smp_fpn_resnet50",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.333764,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 33,
+      "model_priority": 9,
+      "model": "native_convnext_tiny_uper",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.441449,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 34,
+      "model_priority": 9,
+      "model": "native_convnext_tiny_uper",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.432632,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 35,
+      "model_priority": 9,
+      "model": "native_convnext_tiny_uper",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.407627,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 36,
+      "model_priority": 9,
+      "model": "native_convnext_tiny_uper",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.38952,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 37,
+      "model_priority": 10,
+      "model": "hrnet_w48_ocr",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.440636,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 38,
+      "model_priority": 10,
+      "model": "hrnet_w48_ocr",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.409109,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 39,
+      "model_priority": 10,
+      "model": "hrnet_w48_ocr",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.383635,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 40,
+      "model_priority": 10,
+      "model": "hrnet_w48_ocr",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.354791,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 41,
+      "model_priority": 11,
+      "model": "upernet_convnext",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.434631,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 42,
+      "model_priority": 11,
+      "model": "upernet_convnext",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.403712,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 43,
+      "model_priority": 11,
+      "model": "upernet_convnext",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.387653,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 44,
+      "model_priority": 11,
+      "model": "upernet_convnext",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.363507,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 45,
+      "model_priority": 12,
+      "model": "native_resnet101_uper",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.434479,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 46,
+      "model_priority": 12,
+      "model": "native_resnet101_uper",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.410127,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 47,
+      "model_priority": 12,
+      "model": "native_resnet101_uper",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.359522,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 48,
+      "model_priority": 12,
+      "model": "native_resnet101_uper",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.35211,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 49,
+      "model_priority": 13,
+      "model": "hf_auto_upernet_swin_tiny",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.432807,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 50,
+      "model_priority": 13,
+      "model": "hf_auto_upernet_swin_tiny",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.398074,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 51,
+      "model_priority": 13,
+      "model": "hf_auto_upernet_swin_tiny",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.377818,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 52,
+      "model_priority": 13,
+      "model": "hf_auto_upernet_swin_tiny",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.348935,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 53,
+      "model_priority": 14,
+      "model": "native_resnet50_fpn_ocr",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.42478,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 54,
+      "model_priority": 14,
+      "model": "native_resnet50_fpn_ocr",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.415731,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 55,
+      "model_priority": 14,
+      "model": "native_resnet50_fpn_ocr",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.367706,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 56,
+      "model_priority": 14,
+      "model": "native_resnet50_fpn_ocr",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.340874,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 57,
+      "model_priority": 15,
+      "model": "segformer_b0",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.413831,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 58,
+      "model_priority": 15,
+      "model": "segformer_b0",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.357647,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 59,
+      "model_priority": 15,
+      "model": "segformer_b0",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.343203,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 60,
+      "model_priority": 15,
+      "model": "segformer_b0",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.310855,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 61,
+      "model_priority": 16,
+      "model": "smp_deeplabv3_resnet50",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.40898,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 62,
+      "model_priority": 16,
+      "model": "smp_deeplabv3_resnet50",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.398543,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 63,
+      "model_priority": 16,
+      "model": "smp_deeplabv3_resnet50",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.346271,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 64,
+      "model_priority": 16,
+      "model": "smp_deeplabv3_resnet50",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.345692,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 65,
+      "model_priority": 17,
+      "model": "hf_auto_segformer_b0",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.404579,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 66,
+      "model_priority": 17,
+      "model": "hf_auto_segformer_b0",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.365248,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 67,
+      "model_priority": 17,
+      "model": "hf_auto_segformer_b0",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.340384,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 68,
+      "model_priority": 17,
+      "model": "hf_auto_segformer_b0",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.314478,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 69,
+      "model_priority": 18,
+      "model": "smp_pan_resnext50",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.399061,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 70,
+      "model_priority": 18,
+      "model": "smp_pan_resnext50",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.364718,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 71,
+      "model_priority": 18,
+      "model": "smp_pan_resnext50",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.3331,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 72,
+      "model_priority": 18,
+      "model": "smp_pan_resnext50",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.308097,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 73,
+      "model_priority": 19,
+      "model": "native_mobilenetv3_large_deeplabv3plus",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.395983,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 74,
+      "model_priority": 19,
+      "model": "native_mobilenetv3_large_deeplabv3plus",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.355838,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 75,
+      "model_priority": 19,
+      "model": "native_mobilenetv3_large_deeplabv3plus",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.33282,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 76,
+      "model_priority": 19,
+      "model": "native_mobilenetv3_large_deeplabv3plus",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.312558,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 77,
+      "model_priority": 20,
+      "model": "smp_upernet_mit_b0",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.395845,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 78,
+      "model_priority": 20,
+      "model": "smp_upernet_mit_b0",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.38777,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 79,
+      "model_priority": 20,
+      "model": "smp_upernet_mit_b0",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.359512,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 80,
+      "model_priority": 20,
+      "model": "smp_upernet_mit_b0",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.353591,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 81,
+      "model_priority": 21,
+      "model": "smp_unet_resnet34",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.395677,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 82,
+      "model_priority": 21,
+      "model": "smp_unet_resnet34",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.35988,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 83,
+      "model_priority": 21,
+      "model": "smp_unet_resnet34",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.309962,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 84,
+      "model_priority": 21,
+      "model": "smp_unet_resnet34",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.308559,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 85,
+      "model_priority": 22,
+      "model": "native_resnet18_fpn_fcn",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.386916,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 86,
+      "model_priority": 22,
+      "model": "native_resnet18_fpn_fcn",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.366316,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 87,
+      "model_priority": 22,
+      "model": "native_resnet18_fpn_fcn",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.320713,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 88,
+      "model_priority": 22,
+      "model": "native_resnet18_fpn_fcn",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.305535,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 89,
+      "model_priority": 23,
+      "model": "native_resnet50_deeplabv3plus",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.386247,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 90,
+      "model_priority": 23,
+      "model": "native_resnet50_deeplabv3plus",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.378301,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 91,
+      "model_priority": 23,
+      "model": "native_resnet50_deeplabv3plus",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.344701,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 92,
+      "model_priority": 23,
+      "model": "native_resnet50_deeplabv3plus",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.335016,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 93,
+      "model_priority": 24,
+      "model": "hf_auto_mobilevitv2_deeplabv3",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.37852,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 94,
+      "model_priority": 24,
+      "model": "hf_auto_mobilevitv2_deeplabv3",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.353246,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 95,
+      "model_priority": 24,
+      "model": "hf_auto_mobilevitv2_deeplabv3",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.330767,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 96,
+      "model_priority": 24,
+      "model": "hf_auto_mobilevitv2_deeplabv3",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.314568,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 97,
+      "model_priority": 25,
+      "model": "denseaspp121",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.375304,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 98,
+      "model_priority": 26,
+      "model": "native_resnet18_fpn_segformer_aux",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.370736,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 99,
+      "model_priority": 26,
+      "model": "native_resnet18_fpn_segformer_aux",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.347738,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 100,
+      "model_priority": 26,
+      "model": "native_resnet18_fpn_segformer_aux",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.319561,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 101,
+      "model_priority": 26,
+      "model": "native_resnet18_fpn_segformer_aux",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.30191,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 102,
+      "model_priority": 27,
+      "model": "native_efficientnet_b0_deeplabv3plus",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.367338,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 103,
+      "model_priority": 27,
+      "model": "native_efficientnet_b0_deeplabv3plus",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.356765,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 104,
+      "model_priority": 27,
+      "model": "native_efficientnet_b0_deeplabv3plus",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.327975,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 105,
+      "model_priority": 27,
+      "model": "native_efficientnet_b0_deeplabv3plus",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.310109,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 106,
+      "model_priority": 28,
+      "model": "denseaspp161",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.360946,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 107,
+      "model_priority": 29,
+      "model": "smp_unetplusplus_efficientnet_b0",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.360468,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 108,
+      "model_priority": 29,
+      "model": "smp_unetplusplus_efficientnet_b0",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.317916,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 109,
+      "model_priority": 29,
+      "model": "smp_unetplusplus_efficientnet_b0",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.284468,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 110,
+      "model_priority": 29,
+      "model": "smp_unetplusplus_efficientnet_b0",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.278213,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 111,
+      "model_priority": 30,
+      "model": "native_resnet50_psp",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.345177,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 112,
+      "model_priority": 30,
+      "model": "native_resnet50_psp",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.336831,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 113,
+      "model_priority": 30,
+      "model": "native_resnet50_psp",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.30446,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 114,
+      "model_priority": 30,
+      "model": "native_resnet50_psp",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.302615,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 115,
+      "model_priority": 31,
+      "model": "native_mobilenetv3_large_lraspp",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.3444,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 116,
+      "model_priority": 31,
+      "model": "native_mobilenetv3_large_lraspp",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.321024,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 117,
+      "model_priority": 31,
+      "model": "native_mobilenetv3_large_lraspp",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.295225,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 118,
+      "model_priority": 31,
+      "model": "native_mobilenetv3_large_lraspp",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.294139,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 119,
+      "model_priority": 32,
+      "model": "smp_manet_efficientnet_b0",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.343233,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 120,
+      "model_priority": 32,
+      "model": "smp_manet_efficientnet_b0",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.325715,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 121,
+      "model_priority": 32,
+      "model": "smp_manet_efficientnet_b0",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.284752,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 122,
+      "model_priority": 32,
+      "model": "smp_manet_efficientnet_b0",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.245874,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 123,
+      "model_priority": 33,
+      "model": "native_resnet50_aspp",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.343105,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 124,
+      "model_priority": 33,
+      "model": "native_resnet50_aspp",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.323859,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 125,
+      "model_priority": 33,
+      "model": "native_resnet50_aspp",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.310005,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 126,
+      "model_priority": 33,
+      "model": "native_resnet50_aspp",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.305189,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 127,
+      "model_priority": 34,
+      "model": "hf_auto_mobilevit_xxs_deeplabv3",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.333517,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 128,
+      "model_priority": 34,
+      "model": "hf_auto_mobilevit_xxs_deeplabv3",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.323068,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 129,
+      "model_priority": 34,
+      "model": "hf_auto_mobilevit_xxs_deeplabv3",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.311918,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 130,
+      "model_priority": 34,
+      "model": "hf_auto_mobilevit_xxs_deeplabv3",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.276105,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 131,
+      "model_priority": 35,
+      "model": "hf_auto_beit_base_ade",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.30706,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 132,
+      "model_priority": 35,
+      "model": "hf_auto_beit_base_ade",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.299794,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 133,
+      "model_priority": 35,
+      "model": "hf_auto_beit_base_ade",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.290421,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 134,
+      "model_priority": 35,
+      "model": "hf_auto_beit_base_ade",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.257167,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 135,
+      "model_priority": 36,
+      "model": "hf_auto_mobilenetv2_deeplabv3",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.301229,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 136,
+      "model_priority": 36,
+      "model": "hf_auto_mobilenetv2_deeplabv3",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.297143,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 137,
+      "model_priority": 36,
+      "model": "hf_auto_mobilenetv2_deeplabv3",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.253344,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 138,
+      "model_priority": 36,
+      "model": "hf_auto_mobilenetv2_deeplabv3",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.250705,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 139,
+      "model_priority": 37,
+      "model": "bisenetv1_r18",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.288884,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 140,
+      "model_priority": 38,
+      "model": "smp_linknet_mobilenet_v2",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.269393,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 141,
+      "model_priority": 38,
+      "model": "smp_linknet_mobilenet_v2",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.261783,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 142,
+      "model_priority": 38,
+      "model": "smp_linknet_mobilenet_v2",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.248524,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 143,
+      "model_priority": 38,
+      "model": "smp_linknet_mobilenet_v2",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.188939,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 144,
+      "model_priority": 39,
+      "model": "smp_pspnet_mobilenet_v2",
+      "protocol": "railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.227741,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 145,
+      "model_priority": 39,
+      "model": "smp_pspnet_mobilenet_v2",
+      "protocol": "cityscapes_to_rtis",
+      "old_pdf_validation_miou": 0.192521,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 146,
+      "model_priority": 39,
+      "model": "smp_pspnet_mobilenet_v2",
+      "protocol": "cityscapes_to_railsem19_to_rtis",
+      "old_pdf_validation_miou": 0.186367,
+      "source_checkpoint_type": "original non-RAD source-stage checkpoint"
+    },
+    {
+      "priority": 147,
+      "model_priority": 39,
+      "model": "smp_pspnet_mobilenet_v2",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.168107,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 148,
+      "model_priority": 40,
+      "model": "bisenetv2",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.192626,
+      "source_checkpoint_type": "recipe pretrained weights"
+    },
+    {
+      "priority": 149,
+      "model_priority": 41,
+      "model": "espnet",
+      "protocol": "rtis_only",
+      "old_pdf_validation_miou": 0.187685,
+      "source_checkpoint_type": "recipe pretrained weights"
+    }
+  ]
+}

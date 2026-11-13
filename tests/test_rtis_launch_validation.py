@@ -36,6 +36,16 @@ def _pair(tmp_path, monkeypatch, *, smoke_allowed=(2, 3), compute_apps=(), owner
         (smoke / "state" / f"{name}.json").write_text(json.dumps(_smoke_state(name, uuid_of(gpu))))
     patch_live(monkeypatch, compute_apps)
     monkeypatch.setattr(validator, "process_owner", lambda pid: owner)
+    monkeypatch.setattr(
+        validator,
+        "process_context",
+        lambda pid: {
+            "ppid": 1,
+            "command": f"python worker.py --campaign {main}",
+            "cwd": str(main),
+            "policy": None,
+        },
+    )
     monkeypatch.setattr(validator.getpass, "getuser", lambda: "me")
     return main, smoke
 
@@ -286,3 +296,81 @@ def test_fixed_grouped_all_trains_every_catalog_model_and_reports_the_final_chec
     assert smoke["dataset_config"] == spec["dataset_config"]
     assert set(NEW_CLASSIC) <= set(smoke["models"]) <= set(ids)
     assert smoke["model_protocols"] == spec["model_protocols"]
+
+
+def test_unrelated_same_user_workload_on_forbidden_gpu_does_not_block_launch(tmp_path, monkeypatch):
+    main, smoke = _pair(tmp_path, monkeypatch, compute_apps=[(500, uuid_of(1))])
+    monkeypatch.setattr(
+        validator,
+        "process_context",
+        lambda pid: {
+            "ppid": 1,
+            "command": "/data/projects/vfs-physics/.venv/bin/python /data/projects/vfs-physics/train.py",
+            "cwd": "/data/projects/vfs-physics",
+            "policy": None,
+        },
+    )
+    _run(main, smoke)
+    assert json.loads((main / "launch-validation.json").read_text())["passed"] is True
+
+
+def test_campaign_descendant_on_forbidden_gpu_blocks_launch(tmp_path, monkeypatch):
+    main, smoke = _pair(tmp_path, monkeypatch, compute_apps=[(500, uuid_of(1))])
+    contexts = {
+        500: {"ppid": 400, "command": "python generic-child.py", "cwd": "/tmp", "policy": None},
+        400: {
+            "ppid": 1,
+            "command": f"python worker.py --campaign {main}",
+            "cwd": "/tmp",
+            "policy": None,
+        },
+    }
+    monkeypatch.setattr(validator, "process_context", lambda pid: contexts[pid])
+    with pytest.raises(RuntimeError, match="Campaign has compute processes"):
+        _run(main, smoke)
+
+
+@pytest.mark.parametrize("damage", ["generic", "unreadable", "owner_unknown"])
+def test_ambiguous_forbidden_context_fails_closed(tmp_path, monkeypatch, damage):
+    main, smoke = _pair(tmp_path, monkeypatch, compute_apps=[(500, uuid_of(1))])
+    if damage == "owner_unknown":
+        monkeypatch.setattr(validator, "process_owner", lambda pid: None)
+    elif damage == "unreadable":
+
+        def unavailable(pid):
+            raise gpu_policy.GpuInspectionError("Cannot attribute forbidden-GPU process")
+
+        monkeypatch.setattr(validator, "process_context", unavailable)
+    else:
+        monkeypatch.setattr(
+            validator,
+            "process_context",
+            lambda pid: {"ppid": 1, "command": "python", "cwd": "/tmp", "policy": None},
+        )
+    with pytest.raises(gpu_policy.GpuInspectionError):
+        _run(main, smoke)
+
+
+def test_scope_matching_uses_path_boundaries(tmp_path):
+    scope = tmp_path / "campaign-a"
+    assert validator.contains_scope_path(f"python --campaign {scope}/configs/run.yaml", [scope])
+    assert not validator.contains_scope_path(
+        f"python --campaign {scope}b/configs/run.yaml", [scope]
+    )
+    assert not validator.contains_scope_path(f"python --campaign {scope}.backup", [scope])
+
+
+def test_explicit_campaign_policy_on_generic_process_is_not_missed(tmp_path, monkeypatch):
+    main, smoke = _pair(tmp_path, monkeypatch, compute_apps=[(500, uuid_of(1))])
+    monkeypatch.setattr(
+        validator,
+        "process_context",
+        lambda pid: {
+            "ppid": 1,
+            "command": "python",
+            "cwd": "/tmp",
+            "policy": str(smoke / "campaign.json"),
+        },
+    )
+    with pytest.raises(RuntimeError, match="Campaign has compute processes"):
+        _run(main, smoke)

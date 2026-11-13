@@ -17,7 +17,10 @@ from segmentary import gpu_policy
 from segmentary.utils.resource_tracking import run_recorded
 
 
-def validate_collection(state, diagnostics, performance, attempts, smoke=False):
+def validate_collection(
+    state, diagnostics, performance, attempts, smoke=False, primary_checkpoint="best"
+):
+    anchor = runtime.primary_checkpoint({"primary_checkpoint": primary_checkpoint})
     if diagnostics.get("test_evaluated") is not False:
         raise RuntimeError("Test-set boundary was not preserved")
     if not smoke and (
@@ -29,8 +32,12 @@ def validate_collection(state, diagnostics, performance, attempts, smoke=False):
         raise RuntimeError("Missing train/val/raw-EMA/final evidence")
     if performance.get("status") != "complete":
         raise RuntimeError("Missing standardized performance evidence")
-    if performance["source"]["checkpoint_sha256"] != state["checkpoints"]["best"]["sha256"]:
-        raise RuntimeError("Performance checkpoint differs from selected checkpoint")
+    if performance["source"]["checkpoint_sha256"] != state["checkpoints"][anchor]["sha256"]:
+        raise RuntimeError("Performance checkpoint differs from primary checkpoint")
+    if diagnostics.get("primary_checkpoint", anchor) != anchor:
+        raise RuntimeError("Diagnostics checkpoint differs from primary checkpoint")
+    if state.get("evaluation_checkpoint", anchor) != anchor:
+        raise RuntimeError("Standalone evaluation differs from primary checkpoint")
     for value in [
         performance["model"]["parameter_count"],
         performance["measurements"]["latency"]["fps"],
@@ -122,7 +129,14 @@ def collect_job(root, repo, job, gpu, campaign):
     diagnostics = runtime.read(run / "diagnostics/summary.json")
     performance = runtime.read(root / "performance" / (job["name"] + ".json"))
     attempts = [runtime.read(p) for p in sorted((root / "attempts" / job["name"]).glob("*.json"))]
-    validate_collection(state, diagnostics, performance, attempts, smoke)
+    validate_collection(
+        state,
+        diagnostics,
+        performance,
+        attempts,
+        smoke,
+        primary_checkpoint=runtime.primary_checkpoint(campaign),
+    )
     phases = {}
     for attempt in attempts:
         phases[attempt["phase"]] = phases.get(attempt["phase"], 0) + attempt["wall_clock_s"]

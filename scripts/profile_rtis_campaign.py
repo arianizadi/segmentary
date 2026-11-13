@@ -27,10 +27,11 @@ def measure(root, name):
     campaign = runtime.read(root / "campaign.json")
     job = next(j for j in runtime.read(root / "plan.json")["jobs"] if j["name"] == name)
     state = runtime.read(root / "state" / f"{name}.json")
-    best = state["checkpoints"]["best"]
-    if runtime.digest(best["path"]) != best["sha256"]:
-        raise RuntimeError("Best checkpoint hash changed")
-    result = Path(best["path"]).parent / "best-val.json"
+    anchor = runtime.primary_checkpoint(campaign)
+    checkpoint = state["checkpoints"][anchor]
+    if runtime.digest(checkpoint["path"]) != checkpoint["sha256"]:
+        raise RuntimeError(f"{anchor.capitalize()} checkpoint hash changed")
+    result = Path(checkpoint["path"]).parent / f"{anchor}-val.json"
     temporary = root / "performance" / f".{name}.pending.json"
     args = build_parser().parse_args(
         [
@@ -42,7 +43,7 @@ def measure(root, name):
             "--applies-to",
             name,
             "--ckpt",
-            best["path"],
+            checkpoint["path"],
             "--result",
             str(result),
             "--out",
@@ -56,12 +57,17 @@ def measure(root, name):
             "--expected-seed",
             str(job["seed"]),
             "--checkpoint-global-step",
-            str(best["global_step"]),
+            str(checkpoint["global_step"]),
             "--auto-weights",
         ]
     )
     payload = run_benchmark(args)
-    payload["benchmark_scope"] = "rtis_selected_checkpoint_model_only"
+    payload["benchmark_scope"] = (
+        "rtis_final_checkpoint_model_only"
+        if anchor == "final"
+        else "rtis_selected_checkpoint_model_only"
+    )
+    payload["primary_checkpoint"] = anchor
     payload["status"] = "complete"
     runtime.write(root / "performance" / f"{name}.json", payload)
     temporary.unlink()

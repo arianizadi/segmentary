@@ -1,0 +1,114 @@
+# Reviewed protocol. Fresh RAD adaptations on a new all-class dataset version.
+# Approved by Claude -p --model fable --effort high on 2026-11-13.
+#
+# Same model recipes, 41-model/149-job scope and 4000-step budget as the historical
+# all-model study. All RAD optimization states are new: approved initialization
+# is either recipe pretrained weights or an ORIGINAL non-RAD Cityscapes/RailSem19
+# checkpoint. A prior RTIS/RAD-trained checkpoint must never be in the source list.
+# The planner takes an independently reviewed checkpoint provenance manifest;
+# verify its source config/data/stage/hash, not just a filename or protocol label.
+#
+# Supported engine monitor is val/miou (pixel-pooled). It is secondary only:
+# fixed-budget FINAL weights are primary, and later validation selection for the
+# report must use positive-image, all-21-class mIoU from full-statistics evidence.
+#
+# GPU policy is intentionally NOT an executable YAML setting. At the approved
+# planning step use --gpus 0,1,2,3,7,8,9 to freeze physical UUID placement, then
+# use idle-worker locking. Do not start any old watcher, runner or publisher.
+name: rad_2026_11_allclasses
+dataset: rad_2026_11_allclasses
+dataset_config: configs/datasets/rad_2026_11_allclasses.yaml
+model_catalog: configs/campaigns/all_models_cityscapes_railsem19.yaml
+status: reviewed-awaiting-gpu-preflight
+publisher: false
+primary_checkpoint: final
+launch_requirements:
+  expected_gpu_allowlist: [0, 1, 2, 3, 7, 8, 9]
+  require_queue_priority: true
+  shared_gpu_lock_and_idle: true
+  require_non_rad_sources: true
+models:
+- eomt_large
+- eomt_dinov3_large
+- segformer_b5
+- native_convnext_tiny_channelmapper_dpt
+- segformer_b2
+- smp_upernet_resnet101
+- smp_deeplabv3plus_resnet101
+- smp_fpn_resnet50
+- native_convnext_tiny_uper
+- hrnet_w48_ocr
+- upernet_convnext
+- native_resnet101_uper
+- hf_auto_upernet_swin_tiny
+- native_resnet50_fpn_ocr
+- segformer_b0
+- smp_deeplabv3_resnet50
+- hf_auto_segformer_b0
+- smp_pan_resnext50
+- native_mobilenetv3_large_deeplabv3plus
+- smp_upernet_mit_b0
+- smp_unet_resnet34
+- native_resnet18_fpn_fcn
+- native_resnet50_deeplabv3plus
+- hf_auto_mobilevitv2_deeplabv3
+- denseaspp121
+- native_resnet18_fpn_segformer_aux
+- native_efficientnet_b0_deeplabv3plus
+- denseaspp161
+- smp_unetplusplus_efficientnet_b0
+- native_resnet50_psp
+- native_mobilenetv3_large_lraspp
+- smp_manet_efficientnet_b0
+- native_resnet50_aspp
+- hf_auto_mobilevit_xxs_deeplabv3
+- hf_auto_beit_base_ade
+- hf_auto_mobilenetv2_deeplabv3
+- bisenetv1_r18
+- smp_linknet_mobilenet_v2
+- smp_pspnet_mobilenet_v2
+- bisenetv2
+- espnet
+model_protocols:
+  bisenetv1_r18: [rtis_only]
+  bisenetv2: [rtis_only]
+  espnet: [rtis_only]
+  denseaspp121: [rtis_only]
+  denseaspp161: [rtis_only]
+seeds:
+- 0
+target_steps: 4000
+batch_size: 2
+accumulation: 8
+validation_interval: 250
+checkpoint_interval: 500
+num_workers: 2
+protocols:
+  rtis_only:
+    label: Recipe pretrained initialization -> new RAD all-class split
+    source_protocol: null
+  cityscapes_to_rtis:
+    label: Cityscapes -> new RAD all-class split
+    source_protocol: cityscapes
+  railsem19_to_rtis:
+    label: RailSem19 -> new RAD all-class split
+    source_protocol: railsem19
+  cityscapes_to_railsem19_to_rtis:
+    label: Cityscapes -> RailSem19 -> new RAD all-class split
+    source_protocol: cityscapes_to_railsem19
+collection_contract: rtis-full-statistics-v1
+selection_metric: val/miou
+caveats:
+- Claude fable high approved the protocol on 2026-11-13. Runtime source verification and GPU smoke remain launch prerequisites.
+- Retrain every RAD adaptation from the approved original non-RAD source; never resume or initialize from any previous RTIS/RAD checkpoint.
+- Candidate 0 assigns all 314 eligible images as 187 train / 68 validation / 59 test. Verify the materialized masks and frozen hashes, with at least 5 positive images per class in every split.
+- Known related-camera groups must remain on the same side; group checks do not establish independent recordings without original recording IDs.
+- Final checkpoint after 4000 steps is primary; no early stopping. The val/miou checkpoint monitor is secondary pixel-pooled evidence only.
+- Choose one initialization per model using FINAL-checkpoint positive-image validation mIoU over all 21 classes; freeze choices before scoring test.
+- Each class IoU is averaged only over images containing that class; mIoU averages all 21 class scores. False alarms on entirely class-negative images require a separate statistic.
+- The five recipe-only models have no approved Cityscapes/RailSem19 source endpoints and remain recipe-only; total scope is 149 jobs across 41 models.
+- Full-statistics quality evaluation is deterministic. Deployment FPS must be reprofiled on the final checkpoint with deterministic algorithms disabled, BF16, batch 1, 1024x1024, 20 warmups and 100 timed forwards.
+- Test stays unscored until the new training campaign and all validation-selected choices are frozen; do not tune hyperparameters or choose checkpoints using test.
+- Freeze queue order from configs/campaigns/rad_2026_11_allclasses.priority.json using scripts/prioritize_rad_plan.py before campaign initialization; models and their initializations run in descending old-PDF validation mIoU order, never a new test-score order.
+- Freeze GPU allowlist 0,1,2,3,7,8,9 through the planner CLI and physical UUID policy; launch only when the assigned GPU is idle, with one worker per GPU.
+- Training follows source verification and same-code, same-dataset GPU preflight. Test follows frozen validation selection.

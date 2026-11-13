@@ -1,0 +1,47 @@
+# Focused execution preflight for the reviewed all-class protocol.
+# Same approved 314-image dataset/version and frozen code as the full 149-job run.
+# Claude fable high approved the protocol on 2026-11-13.
+# Six jobs exercise the query/DINOv3/OCR families and recipe/City classifier reset.
+# This six-job smoke intentionally omits require_queue_priority: the frozen
+# historical 149-job order applies to the FULL campaign, whose guard stays on.
+name: rad_2026_11_allclasses-smoke
+smoke: true
+dataset: rad_2026_11_allclasses
+dataset_config: configs/datasets/rad_2026_11_allclasses.yaml
+model_catalog: configs/campaigns/all_models_cityscapes_railsem19.yaml
+status: reviewed-execution-preflight
+publisher: false
+primary_checkpoint: final
+launch_requirements:
+  expected_gpu_allowlist: [0, 1, 2, 3, 7, 8, 9]
+  shared_gpu_lock_and_idle: true
+  require_non_rad_sources: true
+models:
+- eomt_large
+- eomt_dinov3_large
+- hrnet_w48_ocr
+seeds:
+- 0
+target_steps: 40
+batch_size: 2
+accumulation: 8
+validation_interval: 20
+checkpoint_interval: 20
+num_workers: 2
+protocols:
+  rtis_only:
+    label: Recipe pretrained initialization -> new RAD split (execution smoke only)
+    source_protocol: null
+  cityscapes_to_rtis:
+    label: Approved non-RAD Cityscapes -> new RAD split (execution smoke only)
+    source_protocol: cityscapes
+collection_contract: rtis-full-statistics-v1
+selection_metric: val/miou
+caveats:
+- Execution preflight only. Forty optimizer steps and limited collection examples are not accuracy/learnability results.
+- Full campaign remains all 41 models / 149 jobs with required frozen historical queue priority; this smoke has only six jobs and is never used for ranking or selection.
+- Use the same reviewed dataset split and code revision as the full campaign, with all 21 rendered classes supported by at least five images per split.
+- Start every job from recipe weights or the approved original non-RAD Cityscapes endpoint. Never initialize any run from a previous RAD checkpoint or from smoke weights.
+- Final checkpoint is primary. No early stopping; test stays untouched. Training and full-statistics collection must finish successfully before launch validation is issued.
+- GPU allowlist 0,1,2,3,7,8,9 must be frozen by the planner; shared host locks and a fresh idle check gate every job. Other GPU users are never stopped.
+- Omit --checkout when launching so no publisher is started. Keep main and smoke artifacts in separate new campaign directories.
