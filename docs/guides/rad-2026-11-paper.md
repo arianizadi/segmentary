@@ -156,6 +156,8 @@ The controller completes training, evaluates all sixteen source stages, freezes 
 
 Each model's PDF section includes source-stage class metrics, RAD class metrics under both IoU definitions, seed-level results, resource accounting and the common full-scene qualitative examples. The accompanying JSON retains confusions, per-block sensitivity, raw latency samples and complete artifact provenance. Interrupted timing records explicitly identify lower-bound compute and an unknown missing tail.
 
+Per-model RAD pages identify the primary pooled-mIoU rank. Green boxes mark the best displayed values among comparable model or seed measurements, including displayed ties. Quality comparisons use matching datasets, class definitions and metrics. Lower defined false-alarm rates and lower comparable resource costs receive the corresponding highlights.
+
 ### Report-only revisions
 
 Keep the frozen execution checkout available through the controller's completed state. A separate clean checkout of a later report revision can render the existing artifacts on CPU. Choose a separate output directory so the original controller retains its own outputs.

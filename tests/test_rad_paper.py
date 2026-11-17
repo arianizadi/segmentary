@@ -26,6 +26,30 @@ from scripts.run_rad_test import digest, write
 from segmentary import gpu_policy
 
 
+@pytest.mark.parametrize(
+    ("values", "scale", "maximize", "expected"),
+    [
+        ([0.87654, 0.876539, 0.8764], 100, True, {0, 1}),
+        ([0.010001, 0.01, 0.02], 100, False, {0, 1}),
+        ([None, float("nan"), float("inf"), -float("inf"), 0], 1, True, {4}),
+        ([None, float("nan")], 1, False, set()),
+        ([], 1, True, set()),
+        ([2**30, 2**30 + 100, 2**31], 1 / 2**30, False, {0, 1}),
+        ([-0.004, 0.004, 0.02], 1, False, {0, 1}),
+    ],
+)
+def test_displayed_winner_indices_preserves_finite_displayed_ties(
+    values, scale, maximize, expected
+):
+    assert report.displayed_winner_indices(values, scale=scale, maximize=maximize) == expected
+
+
+def test_displayed_winner_indices_can_require_a_complete_finite_cohort():
+    assert report.displayed_winner_indices([1.0, 2.0], require_complete=True) == {1}
+    for missing in (None, float("nan"), float("inf")):
+        assert report.displayed_winner_indices([1.0, missing], require_complete=True) == set()
+
+
 @pytest.fixture
 def paper_campaign(tmp_path, monkeypatch, request):
     smp = getattr(request, "param", None) == "smp"
@@ -624,9 +648,163 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
     assert "Train pooled mIoU (%)" in text
     assert "Train-test mIoU gap (pp)" in text
     assert "combines fitting and train/test distribution differences" in " ".join(text.split())
+    for rank in range(1, 9):
+        assert " ".join(text.split()).count(f"RAD pooled-mIoU rank {rank} of 8") >= 6
     assert json.loads((out / "rad-paper.json").read_text())["request_sha256"] == digest(
         paper_campaign.request
     )
+
+
+@pytest.mark.parametrize(
+    ("complete_training", "incomplete_resources"), [(False, False), (True, False), (True, True)]
+)
+def test_pdf_green_boxes_follow_comparable_metric_objectives(
+    paper_campaign, tmp_path, monkeypatch, complete_training, incomplete_resources
+):
+    pytest.importorskip("reportlab")
+    from reportlab.lib import colors
+    from reportlab.platypus import Table
+
+    value = report.load_report(paper_campaign.request)
+    name = value["class_names"][0]
+    for index, entry in enumerate(value["aggregates"]):
+        best = index < 2
+        quality = 0.8888 + index * 0.0000001 if best else 0.5
+        for field in ("iou", "positive_image_iou", "precision", "recall", "dice"):
+            entry["per_class"][name][field]["mean"] = quality
+        for field in ("negative_image_false_alarm_rate", "negative_image_false_alarm_rate_area"):
+            entry["per_class"][name][field] = {
+                **report.nullable_summary(dict.fromkeys(range(3), 0.01 if best else 0.1)),
+            }
+        for field in ("model_only_fps", "native_pipeline_fps"):
+            entry[field]["mean"] = 200 if best else 100
+            entry[field]["seeds"] = {"0": 100, "1": 199.999999, "2": 200}
+        for field in ("allocator_peak_bytes", "process_total_bytes", "native_allocator_peak_bytes"):
+            entry[field]["mean"] = (1 if best else 3) * 2**30
+        entry["parameter_count"]["mean"] = (1 if best else 3) * 1e6
+        entry["resident_parameter_bytes"]["mean"] = (1 if best else 3) * 2**20
+        entry["training_hours"]["mean"] = 1 if best else 3
+        entry["training_peak_bytes"]["mean"] = (1 if best else 3) * 2**30
+        entry["training_allocator_peak_accounting_complete"] = complete_training
+    if incomplete_resources:
+        for field in ("model_only_fps", "process_total_bytes"):
+            value["aggregates"][-1][field]["complete_three_seeds"] = False
+            value["aggregates"][-1][field]["n"] = 2
+        value["aggregates"][-1]["parameter_count"]["mean"] = None
+    for run in value["runs"]:
+        run["training_timing"]["training_process_accounting_complete"] = complete_training
+        run["training_timing"]["recorded_training_process_seconds_is_lower_bound"] = False
+        if run["model"] == value["headline_order"][0] and run["seed"] == 0:
+            for field in ("per_block", "leave_one_block_out"):
+                run["metrics"][field]["block-0"]["pixel_pooled"]["per_class"][name]["iou"] = None
+    for index, source in enumerate(value["source_stage_reports"]["models"]):
+        for stage in source["stages"]:
+            stage["metrics"] = copy.deepcopy(stage["metrics"])
+            metrics = stage["metrics"]["metrics"]
+            if stage["stage"] == "cityscapes_to_railsem19":
+                metrics["support"][name] = 0
+            for field in (
+                "per_class_iou",
+                "per_class_precision",
+                "per_class_recall",
+                "per_class_dice",
+            ):
+                metrics[field][name] = 0.8 + index * 0.0000001 if index < 2 else 0.5
+
+    tables = []
+    original = Table.setStyle
+
+    def record_style(item, style):
+        commands = style.getCommands()
+        boxes = {
+            command[1]
+            for command in commands
+            if command[0] == "BOX" and command[-1] == colors.HexColor("#27904B")
+        }
+        fills = {
+            command[1]
+            for command in commands
+            if command[0] == "BACKGROUND" and command[-1] == colors.HexColor("#D6F2DF")
+        }
+        assert boxes == fills
+        if all(hasattr(cell, "getPlainText") for row in item._cellvalues for cell in row):
+            rows = [[cell.getPlainText() for cell in row] for row in item._cellvalues]
+            tables.append((rows, boxes))
+        return original(item, style)
+
+    monkeypatch.setattr(Table, "setStyle", record_style)
+    report.build_pdf(tmp_path / "green-boxes.pdf", value)
+
+    class_tables = [
+        (rows, boxes)
+        for rows, boxes in tables
+        if rows[0] == ["Class", "Images", "GT pixels", "IoU mean (%)", "SD"]
+    ]
+    assert len(class_tables) == 16
+    assert sum((3, 1) in boxes for _, boxes in class_tables) == 4
+    for rows, boxes in class_tables:
+        assert ((3, 1) in boxes) == (rows[1][3] == "88.88")
+        assert all(column == 3 for column, _ in boxes)
+
+    source_tables = [
+        (rows, boxes) for rows, boxes in tables if rows[0][:3] == ["Class", "GT pixels", "IoU (%)"]
+    ]
+    assert len(source_tables) == 16
+    for rows, boxes in source_tables:
+        for column in range(2, 6):
+            assert ((column, 1) in boxes) == (rows[1][column] == "80.00")
+        assert all(column >= 2 for column, _ in boxes)
+    source_summaries = [
+        (rows, boxes) for rows, boxes in tables if rows[0][0] == "Native validation mIoU (%)"
+    ]
+    assert len(source_summaries) == 16
+    assert all(column in {0, 3, 4} for _, boxes in source_summaries for column, _ in boxes)
+
+    precision_tables = [
+        (rows, boxes) for rows, boxes in tables if rows[0][1] == "Precision mean (%)"
+    ]
+    alarm_tables = [(rows, boxes) for rows, boxes in tables if rows[0][1] == "Any-pixel mean (%)"]
+    assert len(precision_tables) == len(alarm_tables) == 8
+    for rows, boxes in precision_tables:
+        assert (
+            ((1, 1) in boxes) == ((3, 1) in boxes) == ((5, 1) in boxes) == (rows[1][1] == "88.88")
+        )
+        assert all(column in {1, 3, 5} for column, _ in boxes)
+    for rows, boxes in alarm_tables:
+        assert ((1, 1) in boxes) == ((3, 1) in boxes) == (rows[1][1] == "1.00")
+        assert all(column in {1, 3} and row == 1 for column, row in boxes)
+
+    resources = [
+        (rows, boxes)
+        for rows, boxes in tables
+        if rows[0] == ["Measurement", "Mean", "SD", "Seeds", "Minimum", "Maximum"]
+    ]
+    assert len(resources) == 8
+    objective_rows = {3, 4, 8, 9, 10, 11, 12}
+    if complete_training:
+        objective_rows.update({5, 7})
+    if incomplete_resources:
+        objective_rows.difference_update({3, 8, 11})
+    for rows, boxes in resources:
+        expected = {(1, row) for row in objective_rows} if rows[3][1] == "200.00" else set()
+        assert boxes == expected
+    replicates = [
+        (rows, boxes) for rows, boxes in tables if rows[0][:2] == ["Measurement", "Seed 0"]
+    ]
+    assert len(replicates) == 8
+    for _, boxes in replicates:
+        assert (1, 2) in boxes
+        assert {(2, 7), (3, 7), (2, 8), (3, 8)} <= boxes
+        assert all(1 <= column <= 3 and row not in {1, 3, 9} for column, row in boxes)
+
+    blocks = [(rows, boxes) for rows, boxes in tables if rows[0][0] == "Block"]
+    assert len(blocks) == 16
+    assert all((4, 1) not in boxes and (4, 2) in boxes for _, boxes in blocks)
+    support = [boxes for rows, boxes in tables if rows[0][0] == "Split"]
+    assert support == [set()]
+    cover = [boxes for rows, boxes in tables if rows[0][0] == "Rank"]
+    assert len(cover) == 1
+    assert any(column == 4 for column, _ in cover[0]) is not incomplete_resources
 
 
 def test_semantic_panel_verifies_saved_prediction_hash(paper_campaign):

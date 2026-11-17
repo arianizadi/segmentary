@@ -67,6 +67,25 @@ def nullable_summary(values: dict[int, float | None]) -> dict:
     }
 
 
+def displayed_winner_indices(
+    values: list[float | None],
+    *,
+    scale: float = 1,
+    maximize: bool = True,
+    require_complete: bool = False,
+) -> set[int]:
+    """Identify finite optima at the same two-decimal precision shown in the PDF."""
+    displayed = {
+        index: float(f"{value * scale:.2f}")
+        for index, value in enumerate(values)
+        if value is not None and math.isfinite(value) and math.isfinite(value * scale)
+    }
+    if not displayed or (require_complete and len(displayed) != len(values)):
+        return set()
+    best = (max if maximize else min)(displayed.values())
+    return {index for index, value in displayed.items() if value == best}
+
+
 def training_memory(state: dict) -> dict:
     """Keep measured allocator peaks and sampled whole-process memory distinct."""
     records = [state.get("training", {})]
@@ -859,15 +878,27 @@ def build_pdf(path: Path, report: dict) -> None:
             ("TOPPADDING", (0, 0), (-1, -1), 3),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
         ]
-        commands.extend(
-            ("BACKGROUND", (column, row), (column, row), colors.HexColor("#D6F2DF"))
-            for column, row in winners
-        )
+        for column, row in winners:
+            commands.extend(
+                [
+                    ("BACKGROUND", (column, row), (column, row), colors.HexColor("#D6F2DF")),
+                    ("BOX", (column, row), (column, row), 0.6, colors.HexColor("#27904B")),
+                ]
+            )
         item.setStyle(TableStyle(commands))
         story.extend([item, Spacer(1, 8)])
 
     def title(value):
         story.append(paragraph(value, "PaperTitle"))
+
+    def rad_title(model, section):
+        title(model.replace("_", " ") + "\n" + section)
+        story.append(
+            paragraph(
+                f"RAD pooled-mIoU rank {headline_indices[model] + 1} of {len(headline)} | three-seed held-out test mean",
+                "PaperSmall",
+            )
+        )
 
     def footer(canvas, _doc):
         canvas.saveState()
@@ -1007,6 +1038,20 @@ def build_pdf(path: Path, report: dict) -> None:
             )
         return drawing
 
+    def class_mean_winners(entry, fields):
+        winners = []
+        current = headline_indices[entry["model"]]
+        for row, name in enumerate(report["class_names"], 1):
+            for column, field, maximize in fields:
+                summaries = [candidate["per_class"][name][field] for candidate in headline]
+                values = [
+                    summary["mean"] if summary["complete_three_seeds"] else None
+                    for summary in summaries
+                ]
+                if current in displayed_winner_indices(values, scale=100, maximize=maximize):
+                    winners.append((column, row))
+        return winners
+
     def class_table(entries, field):
         if len(entries) != 1:
             raise ValueError("The confirmed paper tables require the single common recipe")
@@ -1023,7 +1068,72 @@ def build_pdf(path: Path, report: dict) -> None:
                     metric(values[field]["sample_sd"]),
                 ]
             )
-        table(rows, [0.36, 0.1, 0.18, 0.21, 0.15])
+        winners = class_mean_winners(entry, [(3, field, True)])
+        table(rows, [0.36, 0.1, 0.18, 0.21, 0.15], winners)
+
+    def resource_mean_winners(entry, fields):
+        maximize_fields = {"model_only_fps", "native_pipeline_fps"}
+        minimize_fields = {
+            "training_peak_bytes",
+            "training_hours",
+            "parameter_count",
+            "resident_parameter_bytes",
+            "allocator_peak_bytes",
+            "process_total_bytes",
+            "native_allocator_peak_bytes",
+        }
+        winners = []
+        current = headline_indices[entry["model"]]
+        for row, (_, field, scale) in enumerate(fields, 1):
+            if field not in maximize_fields | minimize_fields:
+                continue
+            if field == "training_hours" and not training_hours_complete:
+                continue
+            if field == "training_peak_bytes" and not all(
+                candidate["training_allocator_peak_accounting_complete"] for candidate in headline
+            ):
+                continue
+            values = [
+                candidate[field]["mean"] if candidate[field]["complete_three_seeds"] else None
+                for candidate in headline
+            ]
+            if current in displayed_winner_indices(
+                values,
+                scale=scale,
+                maximize=field in maximize_fields,
+                require_complete=True,
+            ):
+                winners.append((1, row))
+        return winners
+
+    def block_mean_winners(model, field, blocks):
+        winners = []
+        current = headline_indices[model]
+        for row, block in enumerate(blocks, 1):
+            scored_class_sets = set()
+            values = []
+            for entry in headline:
+                measurements = {
+                    run["seed"]: run["metrics"][field][block]["pixel_pooled"]
+                    for run in headline_runs[entry["model"]]
+                }
+                for measurement in measurements.values():
+                    scored_class_sets.add(
+                        tuple(
+                            name
+                            for name in report["class_names"]
+                            if measurement["per_class"][name]["iou"] is not None
+                        )
+                    )
+                statistics = nullable_summary(
+                    {seed: measurement["miou"] for seed, measurement in measurements.items()}
+                )
+                values.append(statistics["mean"] if statistics["complete_three_seeds"] else None)
+            if len(scored_class_sets) == 1 and current in displayed_winner_indices(
+                values, scale=100
+            ):
+                winners.append((4, row))
+        return winners
 
     def legend(classes):
         cells = []
@@ -1058,6 +1168,22 @@ def build_pdf(path: Path, report: dict) -> None:
         )
         story.append(item)
 
+    def native_source_cohort(stage):
+        cohort = []
+        for source in report["source_stage_reports"]["models"]:
+            for candidate in source["stages"]:
+                same_native_stage = all(
+                    candidate[field] == stage[field]
+                    for field in ("stage", "dataset", "split", "taxonomy", "class_names")
+                )
+                same_support = (
+                    candidate["metrics"]["metrics"]["support"]
+                    == stage["metrics"]["metrics"]["support"]
+                )
+                if same_native_stage and same_support:
+                    cohort.append((source["model"], candidate))
+        return cohort
+
     def source_stage_pages(model):
         source_model = next(
             value for value in report["source_stage_reports"]["models"] if value["model"] == model
@@ -1081,6 +1207,32 @@ def build_pdf(path: Path, report: dict) -> None:
                 .get("evaluation", {})
                 .get("weights", performance.get("source", {}).get("weights", "unrecorded"))
             )
+            cohort = native_source_cohort(stage)
+            current = next(index for index, (name, _) in enumerate(cohort) if name == model)
+            summary_winners = []
+            source_summary_values = [
+                (0, [value["metrics"]["metrics"].get("miou") for _, value in cohort], 100, True),
+                (
+                    3,
+                    [value["performance"]["model"]["parameter_count"] for _, value in cohort],
+                    1 / 1e6,
+                    False,
+                ),
+                (
+                    4,
+                    [
+                        value["performance"]["model"]["resident_parameter_bytes"]
+                        for _, value in cohort
+                    ],
+                    1 / 2**20,
+                    False,
+                ),
+            ]
+            for column, values, scale, maximize in source_summary_values:
+                if current in displayed_winner_indices(
+                    values, scale=scale, maximize=maximize, require_complete=True
+                ):
+                    summary_winners.append((column, 1))
             story.append(
                 paragraph(
                     "Evaluation weight bank "
@@ -1105,10 +1257,18 @@ def build_pdf(path: Path, report: dict) -> None:
                         metric(performance["model"]["parameter_count"], 1 / 1e6),
                         metric(performance["model"]["resident_parameter_bytes"], 1 / 2**20),
                     ],
-                ]
+                ],
+                winners=summary_winners,
             )
             rows = [["Class", "GT pixels", "IoU (%)", "Precision (%)", "Recall (%)", "Dice (%)"]]
-            for name in stage["class_names"]:
+            class_winners = []
+            class_fields = (
+                "per_class_iou",
+                "per_class_precision",
+                "per_class_recall",
+                "per_class_dice",
+            )
+            for row, name in enumerate(stage["class_names"], 1):
                 rows.append(
                     [
                         name,
@@ -1117,16 +1277,20 @@ def build_pdf(path: Path, report: dict) -> None:
                             metric(metrics.get(field, {}).get(name))
                             if metrics["support"][name] > 0
                             else "N/A"
-                            for field in (
-                                "per_class_iou",
-                                "per_class_precision",
-                                "per_class_recall",
-                                "per_class_dice",
-                            )
+                            for field in class_fields
                         ],
                     ]
                 )
-            table(rows, [0.31, 0.17, 0.13, 0.13, 0.13, 0.13])
+                for column, field in enumerate(class_fields, 2):
+                    values = [
+                        value["metrics"]["metrics"].get(field, {}).get(name)
+                        if value["metrics"]["metrics"]["support"][name] > 0
+                        else None
+                        for _, value in cohort
+                    ]
+                    if current in displayed_winner_indices(values, scale=100):
+                        class_winners.append((column, row))
+            table(rows, [0.31, 0.17, 0.13, 0.13, 0.13, 0.13], class_winners)
             story.append(
                 paragraph(
                     "Source evaluations use the native dataset and label space of this stage. Cityscapes validation, RailSem19 validation and RAD test each describe their own samples and taxonomy. Source wall time comes from its latest recorded RunRecord invocation and includes validation. Earlier source invocation history is unknown. Source training runs are reused across all three RAD adaptation seeds.",
@@ -1180,6 +1344,21 @@ def build_pdf(path: Path, report: dict) -> None:
         )
         for model in report["headline_order"]
     ]
+    headline_indices = {entry["model"]: index for index, entry in enumerate(headline)}
+    headline_runs = {
+        entry["model"]: [
+            run
+            for run in report["runs"]
+            if run["model"] == entry["model"] and run["protocol"] == entry["protocol"]
+        ]
+        for entry in headline
+    }
+    training_hours_complete = all(
+        run["training_timing"]["training_process_accounting_complete"] is True
+        and not run["training_timing"]["recorded_training_process_seconds_is_lower_bound"]
+        for run in report["runs"]
+        if run["protocol"] == protocol["headline_protocol"]
+    )
     request = json.loads(Path(report["request"]).read_text())
     root = Path(request["dataset_root"])
     classes = sorted(
@@ -1230,23 +1409,23 @@ def build_pdf(path: Path, report: dict) -> None:
             ]
         )
     winners = []
-    for column, getter, scale in (
-        (2, lambda row: row["pixel_pooled_miou"]["mean"], 100),
-        (4, lambda row: row["model_only_fps"]["mean"], 1),
-        (6, lambda row: row["native_pipeline_fps"]["mean"], 1),
-        (8, lambda row: row["per_class"]["mud-pumping"]["iou"]["mean"], 100),
+    for column, summaries, scale in (
+        (2, [entry["pixel_pooled_miou"] for entry in headline], 100),
+        (4, [entry["model_only_fps"] for entry in headline], 1),
+        (6, [entry["native_pipeline_fps"] for entry in headline], 1),
+        (8, [entry["per_class"]["mud-pumping"]["iou"] for entry in headline], 100),
     ):
-        finite = [getter(row) for row in headline if getter(row) is not None]
-        best = max(round(value * scale, 2) for value in finite)
+        values = [
+            summary["mean"] if summary["complete_three_seeds"] else None for summary in summaries
+        ]
         winners.extend(
-            (column, index)
-            for index, row in enumerate(headline, 1)
-            if getter(row) is not None and round(getter(row) * scale, 2) == best
+            (column, index + 1)
+            for index in displayed_winner_indices(values, scale=scale, require_complete=True)
         )
     table(rows, [0.05, 0.23, 0.12, 0.06, 0.12, 0.06, 0.12, 0.06, 0.12, 0.06], winners)
     story.append(
         paragraph(
-            "Green cells mark the highest displayed means within comparable columns or class rows, including displayed ties. Qualitative figures use the same fixed images and seed 0 for every model.",
+            "Green boxes mark the best comparable displayed values, including ties. Higher quality and FPS win. Lower defined false alarms, memory, parameter counts and weight sizes win. RAD comparisons use the common recipe, source quality and size comparisons use matching native stages, and block comparisons use identical scored-class sets. Resource comparisons require complete cohort evidence. Seed boxes compare that model's test quality and speed. Qualitative figures use fixed images and seed 0 for every model.",
             "PaperSmall",
         )
     )
@@ -1334,7 +1513,7 @@ def build_pdf(path: Path, report: dict) -> None:
         entries = [entry for entry in aggregates if entry["model"] == model]
         source_stage_pages(model)
         story.append(PageBreak())
-        title(model.replace("_", " ") + "\nRAD test pooled IoU")
+        rad_title(model, "RAD test pooled IoU")
         story.append(
             paragraph(
                 "Each class pools every test-image confusion matrix before computing TP / (TP + FP + FN). All 21 classes have ground-truth support.",
@@ -1346,7 +1525,7 @@ def build_pdf(path: Path, report: dict) -> None:
         for entry in entries:
             banks = sorted({run["weights"] for run in report["runs"] if run["model"] == model})
             story.append(paragraph("Final-checkpoint weight bank " + "/".join(banks), "PaperSmall"))
-            rows = [["Measurement", "Mean", "SD", "n / 3", "Minimum", "Maximum"]]
+            rows = [["Measurement", "Mean", "SD", "Seeds", "Minimum", "Maximum"]]
             fields = [
                 ("Train pooled mIoU (%)", "train_pixel_pooled_miou", 100),
                 ("Train-test mIoU gap (pp)", "train_test_miou_gap", 100),
@@ -1377,7 +1556,8 @@ def build_pdf(path: Path, report: dict) -> None:
                         metric(values.get("maximum"), scale, lower),
                     ]
                 )
-            table(rows, [0.34, 0.14, 0.14, 0.1, 0.14, 0.14])
+            winners = resource_mean_winners(entry, fields)
+            table(rows, [0.34, 0.14, 0.14, 0.1, 0.14, 0.14], winners)
         story.append(
             paragraph(
                 "Recorded training hours include failed attempts. Missing tails and missing allocator observations produce lower bounds with unknown full-run SD. Allocator peaks take the maximum across retained invocation receipts. Driver memory is sampled separately and includes context. Available measurement counts accompany incomplete resource summaries.",
@@ -1391,7 +1571,7 @@ def build_pdf(path: Path, report: dict) -> None:
             )
         )
         story.append(PageBreak())
-        title(model.replace("_", " ") + "\nClass-positive-image IoU")
+        rad_title(model, "Class-positive-image IoU")
         story.append(
             paragraph(
                 "For each class, image IoU is averaged over test images containing that class. False alarms on entirely class-negative images have separate statistics in the full JSON.",
@@ -1451,7 +1631,7 @@ def build_pdf(path: Path, report: dict) -> None:
                 )
             )
         story.append(PageBreak())
-        title(model.replace("_", " ") + "\nPooled class metrics")
+        rad_title(model, "Pooled class metrics")
         common = next(
             entry for entry in entries if entry["protocol"] == protocol["headline_protocol"]
         )
@@ -1470,9 +1650,12 @@ def build_pdf(path: Path, report: dict) -> None:
                     ],
                 ]
             )
-        table(rows, [0.28, 0.14, 0.1, 0.14, 0.1, 0.14, 0.1])
+        winners = class_mean_winners(
+            common, [(1, "precision", True), (3, "recall", True), (5, "dice", True)]
+        )
+        table(rows, [0.28, 0.14, 0.1, 0.14, 0.1, 0.14, 0.1], winners)
         story.append(PageBreak())
-        title(model.replace("_", " ") + "\nNegative-image false alarms")
+        rad_title(model, "Negative-image false alarms")
         rows = [["Class", "Any-pixel mean (%)", "SD", "0.1% area mean (%)", "SD"]]
         for name in report["class_names"]:
             values = common["per_class"][name]
@@ -1489,7 +1672,14 @@ def build_pdf(path: Path, report: dict) -> None:
                     ],
                 ]
             )
-        table(rows, [0.36, 0.2, 0.12, 0.2, 0.12])
+        winners = class_mean_winners(
+            common,
+            [
+                (1, "negative_image_false_alarm_rate", False),
+                (3, "negative_image_false_alarm_rate_area", False),
+            ],
+        )
+        table(rows, [0.36, 0.2, 0.12, 0.2, 0.12], winners)
         story.append(
             paragraph(
                 "False-alarm denominators contain images with zero ground-truth pixels of the named class. The fixed rules count any predicted pixel, or predicted area at least 0.1 percent of valid pixels. N/A identifies an unavailable denominator. Exact support counts remain in the JSON.",
@@ -1513,7 +1703,16 @@ def build_pdf(path: Path, report: dict) -> None:
             ("Native-pipeline FPS", common["native_pipeline_fps"], 1),
             ("Recorded training hours", common["training_hours"], 1),
         ]
-        for label, values, scale in replicate_fields:
+        seed_winners = []
+        seed_objectives = {
+            "Test pooled mIoU (%)",
+            "Positive-image mIoU (%)",
+            "Mud pooled IoU (%)",
+            "Mud positive-image IoU (%)",
+            "Model-only FPS",
+            "Native-pipeline FPS",
+        }
+        for row, (label, values, scale) in enumerate(replicate_fields, 1):
             lower = values.get("mean_and_range_are_lower_bounds", False)
             rows.append(
                 [
@@ -1535,7 +1734,12 @@ def build_pdf(path: Path, report: dict) -> None:
                     else metric(values["sample_sd"], scale),
                 ]
             )
-        table(rows, [0.3] + [0.1] * 7)
+            if label in seed_objectives:
+                candidates = [values["seeds"].get(str(seed)) for seed in range(3)]
+                seed_winners.extend(
+                    (seed + 1, row) for seed in displayed_winner_indices(candidates, scale=scale)
+                )
+        table(rows, [0.3] + [0.1] * 7, seed_winners)
         story.append(
             paragraph(
                 "FPS variation across adaptation seeds includes timing noise. Resource summaries with fewer available measurements remain descriptive and retain their observed count in the resource table. Unknown recovery tails do not trigger a scientific rerun.",
@@ -1546,7 +1750,7 @@ def build_pdf(path: Path, report: dict) -> None:
             run for run in model_runs if run["protocol"] == protocol["headline_protocol"]
         ]
         story.append(PageBreak())
-        title(model.replace("_", " ") + "\nScene-block sensitivity")
+        rad_title(model, "Scene-block sensitivity")
         for field, heading in (
             ("per_block", "Per-block test scores"),
             ("leave_one_block_out", "Leave-one-block-out sensitivity"),
@@ -1562,7 +1766,8 @@ def build_pdf(path: Path, report: dict) -> None:
                     "SD",
                 ]
             ]
-            for block in common_runs[0]["metrics"][field]:
+            blocks = common_runs[0]["metrics"][field]
+            for block in blocks:
                 statistics = seed_summary(
                     {
                         run["seed"]: run["metrics"][field][block]["pixel_pooled"]["miou"]
@@ -1585,7 +1790,8 @@ def build_pdf(path: Path, report: dict) -> None:
                         metric(statistics["sample_sd"]),
                     ]
                 )
-            table(rows, [0.3, 0.12, 0.11, 0.17, 0.18, 0.12])
+            winners = block_mean_winners(model, field, blocks)
+            table(rows, [0.3, 0.12, 0.11, 0.17, 0.18, 0.12], winners)
         story.append(
             paragraph(
                 "Each block has a different ground-truth class subset. The scored-class denominator also includes classes with predicted union. Class-by-class block IoU, support and negative-image false alarms are retained for every seed in the JSON. Leave-one-block-out rows exclude the named block. Four inferred scene blocks provide descriptive sensitivity, with recording independence unconfirmed.",
@@ -1602,7 +1808,7 @@ def build_pdf(path: Path, report: dict) -> None:
         keys = protocol["qualitative_keys"]
         for start in range(0, len(keys), 4):
             story.append(PageBreak())
-            title(model.replace("_", " ") + "\nFull semantic overlays")
+            rad_title(model, "Full semantic overlays")
             story.append(
                 paragraph(
                     "Prespecified common recipe | fixed seed 0 | complete model predictions | GT void transparent and ignored in scores",
