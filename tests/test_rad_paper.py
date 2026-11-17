@@ -20,7 +20,7 @@ from scripts import build_rad_paper_report as report
 from scripts import evaluate_rad_source_stages as source_evaluator
 from scripts import run_rad_paper as controller
 from scripts.profile_rad_test import deployment_contract
-from scripts.rad_paper_metrics import paper_metrics
+from scripts.rad_paper_metrics import paper_metrics, pooled_metrics
 from scripts.run_rad_test import digest, write
 
 from segmentary import gpu_policy
@@ -190,11 +190,32 @@ def paper_campaign(tmp_path, monkeypatch, request):
         config = root / "configs" / (name + ".yaml")
         config.parent.mkdir(exist_ok=True)
         cfg = {
-            "stages": [{"data": [{"root": str(data)}], "lr_scale": 0.1}],
+            "name": name,
+            "stages": [
+                {
+                    "data": [
+                        {
+                            "name": "rad_2026_11_paper_finalfit",
+                            "root": str(data),
+                            "loader": "folder",
+                            "mapping": "paul-test-rtis",
+                            "limit": None,
+                        }
+                    ],
+                    "lr_scale": 0.1,
+                }
+            ],
             "model": {"arch": "smp", "encoder_name": "resnet50", "encoder_weights": "imagenet"}
             if smp
             else {"arch": "tiny"},
             "optim": {"backbone_lr": 1e-5},
+            "train": {"seed": seed, "devices": 1, "validation_enabled": False, "iters": 4000},
+            "eval": {
+                "batch_size": 1,
+                "sliding_window": True,
+                "window": [1024, 1024],
+                "stride": [768, 768],
+            },
         }
         config.write_text(yaml.safe_dump(cfg))
         checkpoint = root / name / "last.ckpt"
@@ -210,6 +231,43 @@ def paper_campaign(tmp_path, monkeypatch, request):
             "source_checkpoint": None,
         }
         jobs.append(job)
+        train_matrix = np.diag(np.full(21, 510, dtype=np.int64))
+        train_matrix[0, 0] -= seed * 5
+        train_matrix[0, 20] += seed * 5
+        train_scores = pooled_metrics(train_matrix, names)
+        train_cfg = copy.deepcopy(cfg)
+        train_cfg["evaluation"] = {
+            "data": cfg["stages"][0]["data"][0],
+            "split": "train",
+            "num_workers": 2,
+            "deterministic": True,
+            "weights": "raw",
+            "tta": {"enabled": False, "scales": [1.0], "flip": False},
+            "prediction": {"task": "multiclass", "activation": "softmax", "threshold": None},
+            "padding": {
+                "multiple": 32,
+                "position": "bottom_right",
+                "target_fill": 255,
+                "padded_pixels_scored": False,
+            },
+        }
+        train_record = {
+            "name": name,
+            "seed": seed,
+            "stage": "eval:rad_2026_11_paper_finalfit:train",
+            "git_sha": code,
+            "git_dirty": False,
+            "dataset_sizes": {"eval": 255},
+            "config": train_cfg,
+            "config_hash": report.config_hash(train_cfg),
+            "metrics": {
+                "miou": train_scores["miou"],
+                "confusion": train_matrix.tolist(),
+                "support": {name: 510 for name in names},
+            },
+        }
+        train_path = checkpoint.parent / "final-train.json"
+        write(train_path, train_record)
         write(
             root / "state" / (name + ".json"),
             {
@@ -218,6 +276,18 @@ def paper_campaign(tmp_path, monkeypatch, request):
                 "code_sha": code,
                 "config_sha256": job["config_sha256"],
                 "final_step": 4000,
+                "evaluation_checkpoint": "final",
+                "evaluation_split": "train",
+                "evaluation": train_record,
+                "evaluation_result": {"path": str(train_path), "sha256": digest(train_path)},
+                "performance": {
+                    "source": {
+                        "checkpoint_sha256": digest(checkpoint),
+                        "config_sha256": job["config_sha256"],
+                        "result_sha256": digest(train_path),
+                        "weights": "raw",
+                    }
+                },
                 "checkpoints": {
                     "final": {
                         "path": str(checkpoint),
@@ -228,6 +298,16 @@ def paper_campaign(tmp_path, monkeypatch, request):
                 "collection": {
                     "verified": True,
                     "contract": "rtis-final-train-statistics-v2",
+                    "diagnostics": {
+                        "standalone_confusion_exact_match": True,
+                        "results": {
+                            "final-auto-train": {
+                                "checkpoint_sha256": digest(checkpoint),
+                                "weights": "raw",
+                                "images": 255,
+                            }
+                        },
+                    },
                     "resources": {
                         "phase_wall_seconds_including_failed_attempts": {"training": 90 + seed}
                     },
@@ -237,9 +317,10 @@ def paper_campaign(tmp_path, monkeypatch, request):
                     "peak_vram_bytes": {"cuda:0": 2**30},
                     "wall_clock_s": 90 + seed,
                     "env": {
+                        "final_weights_policy": "raw",
                         "model_origins": []
                         if smp
-                        else [{"hf_name_or_path": "synthetic", "hf_commit": "pinned"}]
+                        else [{"hf_name_or_path": "synthetic", "hf_commit": "pinned"}],
                     },
                 },
             },
@@ -334,6 +415,16 @@ def paper_campaign(tmp_path, monkeypatch, request):
             "checkpoint_sha256": job["final_checkpoint_sha256"],
             "images": 59,
             "weights": "raw",
+            "deterministic": True,
+            "precision": "bf16_autocast",
+            "padding": {"multiple": 32, "prediction_cropped_to_original": True},
+            "inference": {
+                "sliding_window": True,
+                "window": [1024, 1024],
+                "stride": [768, 768],
+                "scales": [1.0],
+                "flip": False,
+            },
             "present_image": {
                 "images": 59,
                 "miou_present_images_classes": 21,
@@ -439,6 +530,18 @@ def test_report_recomputes_full_metrics_and_three_seed_sample_sd(paper_campaign)
     }
     assert result["class_split_support"]["mud-pumping"]["train"]["positive_images"] == 255
     assert result["class_split_support"]["mud-pumping"]["test"]["positive_images"] == 59
+    selected = [run for run in result["runs"] if run["model"] == aggregate["model"]]
+    gaps = [
+        run["train_pixel_pooled_miou"] - run["metrics"]["pixel_pooled"]["miou"] for run in selected
+    ]
+    assert aggregate["train_test_miou_gap"]["mean"] == pytest.approx(np.mean(gaps))
+    assert aggregate["train_test_miou_gap"]["sample_sd"] == pytest.approx(np.std(gaps, ddof=1))
+    assert aggregate["train_test_miou_gap"]["sample_sd"] != pytest.approx(
+        np.hypot(
+            aggregate["train_pixel_pooled_miou"]["sample_sd"],
+            aggregate["pixel_pooled_miou"]["sample_sd"],
+        )
+    )
 
 
 @pytest.mark.parametrize("split", ["train", "test"])
@@ -510,12 +613,17 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
     assert "iou:mud-pumping:maximum" in rows[0]
     assert "training_hours:seed_2" in rows[0]
     assert "per_block:block-0:pixel_pooled_miou:seed_2" in rows[0]
+    assert "train_pixel_pooled_miou:seed_2" in rows[0]
+    assert "train_test_miou_gap:sample_sd" in rows[0]
     assert "Speed and segmentation accuracy" in text
     assert "Individual RAD replicates and observed range" in text
     assert "Evaluation weight bank raw" in text
     assert "report code sha" in text
     assert "report code dirty" in text
     assert "RAD_duration_seconds" not in text
+    assert "Train pooled mIoU (%)" in text
+    assert "Train-test mIoU gap (pp)" in text
+    assert "combines fitting and train/test distribution differences" in " ".join(text.split())
     assert json.loads((out / "rad-paper.json").read_text())["request_sha256"] == digest(
         paper_campaign.request
     )
@@ -887,3 +995,91 @@ def test_lower_bound_resource_json_csv_and_pdf_keep_unknown_full_run_sd(paper_ca
     assert "Latest-invocation training observations" in text
     assert "Earlier source invocation history is unknown" in text
     assert "hash-verified training invocation receipts" in text
+
+
+def full_train_inputs(case):
+    request = json.loads(case.request.read_text())
+    job = request["jobs"][0]
+    state = json.loads(Path(job["state_path"]).read_text())
+    test_result = json.loads(
+        (Path(request["output_root"]) / job["name"] / "result.json").read_text()
+    )
+    support = report.class_split_support(
+        json.loads((case.data / "audit/samples.json").read_text()), request["class_names"]
+    )
+    return job, state, request, request["class_names"], support, test_result
+
+
+def test_full_train_record_supplies_all_255_images_even_with_limited_diagnostics(paper_campaign):
+    arguments = full_train_inputs(paper_campaign)
+    arguments[1]["collection"]["diagnostics"]["results"]["final-auto-train"]["images"] = 2
+    value = report.full_train_evaluation(*arguments)
+    assert value["images"] == 255
+    assert value["pixel_pooled"]["valid_pixels"] == 10710
+    assert value["record"]["dataset_sizes"] == {"eval": 255}
+    assert Path(value["source"]["path"]).name == "final-train.json"
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "sha",
+        "inline",
+        "endpoint",
+        "config",
+        "bank",
+        "final_policy",
+        "count",
+        "determinism",
+        "padding",
+        "tta",
+        "support",
+        "score",
+        "test_bank",
+        "test_inference",
+        "profile_result",
+    ],
+)
+def test_full_train_evaluation_rejects_inconsistent_evidence(paper_campaign, defect):
+    arguments = full_train_inputs(paper_campaign)
+    _job, state, _request, _names, _support, test_result = arguments
+    record = copy.deepcopy(state["evaluation"])
+    if defect == "sha":
+        state["evaluation_result"]["sha256"] = "0" * 64
+    elif defect == "inline":
+        state["evaluation"]["metrics"]["miou"] = 0.0
+    else:
+        if defect == "endpoint":
+            state["checkpoints"]["final"]["sha256"] = "0" * 64
+        elif defect == "config":
+            record["config"]["optim"]["backbone_lr"] = 0.5
+        elif defect == "bank":
+            record["config"]["evaluation"]["weights"] = "ema"
+        elif defect == "final_policy":
+            state["training"]["env"]["final_weights_policy"] = "ema"
+        elif defect == "count":
+            record["dataset_sizes"]["eval"] = 2
+        elif defect == "determinism":
+            record["config"]["evaluation"]["deterministic"] = False
+        elif defect == "padding":
+            record["config"]["evaluation"]["padding"]["multiple"] = 16
+        elif defect == "tta":
+            record["config"]["evaluation"]["tta"]["flip"] = True
+        elif defect == "support":
+            record["metrics"]["confusion"][0][0] -= 1
+        elif defect == "score":
+            record["metrics"]["miou"] = 0.5
+        elif defect == "test_bank":
+            test_result["weights"] = "ema"
+        elif defect == "test_inference":
+            test_result["inference"]["window"] = [512, 512]
+        record["config_hash"] = report.config_hash(record["config"])
+        path = Path(state["evaluation_result"]["path"])
+        write(path, record)
+        state["evaluation"] = record
+        state["evaluation_result"]["sha256"] = digest(path)
+        state["performance"]["source"]["result_sha256"] = digest(path)
+        if defect == "profile_result":
+            state["performance"]["source"]["result_sha256"] = "0" * 64
+    with pytest.raises(ValueError):
+        report.full_train_evaluation(*arguments)

@@ -15,15 +15,17 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 import numpy as np
+import yaml
 from PIL import Image, ImageOps
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "src"))
-from scripts.rad_paper_metrics import paper_metrics, seed_summary
+from scripts.rad_paper_metrics import paper_metrics, pooled_metrics, seed_summary
 from scripts.run_rad_test import digest, result_complete, validate_request, write
 from scripts.run_rad_test_profiles import result_complete as profile_complete
 
+from segmentary.config import config_hash
 from segmentary.utils.provenance import git_sha
 
 LIMITATIONS = [
@@ -221,6 +223,142 @@ def class_split_support(samples: list[dict], names: list[str]) -> dict:
     return {"totals": totals, "classes": classes}
 
 
+def full_train_evaluation(
+    job: dict, state: dict, request: dict, names: list[str], split_support: dict, test_result: dict
+) -> dict:
+    """Read the complete selected-bank final-train record and verify its endpoint."""
+    artifact = state.get("evaluation_result", {})
+    expected_path = Path(job["final_checkpoint"]).parent / "final-train.json"
+    if not artifact.get("path") or Path(artifact["path"]).resolve() != expected_path.resolve():
+        raise ValueError("Train evaluation must identify its genuine final-train.json")
+    record = verified_json(expected_path, artifact.get("sha256", ""))
+
+    def canonical(value):
+        return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+    if canonical(record) != canonical(state.get("evaluation")):
+        raise ValueError("Train evaluation file differs from its inline completed-state record")
+    final = state.get("checkpoints", {}).get("final", {})
+    if (
+        state.get("evaluation_checkpoint") != "final"
+        or state.get("evaluation_split") != "train"
+        or final.get("sha256") != job["final_checkpoint_sha256"]
+        or Path(final.get("path", "")).resolve() != Path(job["final_checkpoint"]).resolve()
+        or record.get("name") != job["name"]
+        or type(record.get("seed")) is not int
+        or record["seed"] != job["seed"]
+        or record.get("git_sha") != request["training_code_sha"]
+        or record.get("git_dirty") is not False
+        or record.get("dataset_sizes") != {"eval": 255}
+        or split_support["totals"]["train"]["images"] != 255
+    ):
+        raise ValueError(
+            "Train evaluation lacks the complete matching final endpoint and 255-image scope"
+        )
+    if digest(Path(job["config"])) != job["config_sha256"]:
+        raise ValueError("Train evaluation job configuration SHA-256 changed")
+    original = yaml.safe_load(Path(job["config"]).read_text())
+    cfg = record.get("config", {})
+    base = {key: value for key, value in cfg.items() if key != "evaluation"}
+    if (
+        canonical(base) != canonical(original)
+        or canonical(base) != canonical(state.get("training", {}).get("config"))
+        or record.get("config_hash") != config_hash(cfg)
+    ):
+        raise ValueError(
+            "Train evaluation configuration differs from its frozen training configuration"
+        )
+    data = original["stages"][0]["data"][0]
+    evaluation = cfg.get("evaluation", {})
+    bank = state.get("training", {}).get("env", {}).get("final_weights_policy")
+    profile_source = state.get("performance", {}).get("source", {})
+    diagnostic = (
+        state.get("collection", {})
+        .get("diagnostics", {})
+        .get("results", {})
+        .get("final-auto-train", {})
+    )
+    if (
+        bank not in ("raw", "ema")
+        or evaluation.get("weights") != bank
+        or test_result.get("weights") != bank
+        or profile_source.get("weights") != bank
+        or diagnostic.get("weights") != bank
+        or profile_source.get("checkpoint_sha256") != job["final_checkpoint_sha256"]
+        or profile_source.get("config_sha256") != job["config_sha256"]
+        or profile_source.get("result_sha256") != artifact["sha256"]
+        or diagnostic.get("checkpoint_sha256") != job["final_checkpoint_sha256"]
+    ):
+        raise ValueError(
+            "Train evaluation checkpoint/configuration or selected weight bank differs"
+        )
+    native = cfg.get("eval", {})
+    if (
+        record.get("stage") != f"eval:{data['name']}:train"
+        or evaluation.get("split") != "train"
+        or canonical(evaluation.get("data")) != canonical(data)
+        or data.get("limit") is not None
+        or Path(data["root"]).resolve() != Path(request["dataset_root"]).resolve()
+        or evaluation.get("deterministic") is not True
+        or evaluation.get("padding")
+        != {
+            "multiple": 32,
+            "position": "bottom_right",
+            "target_fill": 255,
+            "padded_pixels_scored": False,
+        }
+        or evaluation.get("tta") != {"enabled": False, "scales": [1.0], "flip": False}
+        or evaluation.get("prediction")
+        != {"task": "multiclass", "activation": "softmax", "threshold": None}
+        or native.get("batch_size") != 1
+        or native.get("sliding_window") is not True
+        or native.get("window") != [1024, 1024]
+        or native.get("stride") != [768, 768]
+        or test_result.get("deterministic") is not True
+        or test_result.get("precision") != "bf16_autocast"
+        or test_result.get("padding") != {"multiple": 32, "prediction_cropped_to_original": True}
+        or test_result.get("inference")
+        != {
+            "sliding_window": True,
+            "window": [1024, 1024],
+            "stride": [768, 768],
+            "scales": [1.0],
+            "flip": False,
+        }
+    ):
+        raise ValueError(
+            "Train/test quality evaluation native deterministic padding/inference policies differ"
+        )
+    metrics = record.get("metrics", {})
+    matrix = np.asarray(metrics.get("confusion", []))
+    if (
+        matrix.shape != (len(names), len(names))
+        or not np.issubdtype(matrix.dtype, np.integer)
+        or (matrix < 0).any()
+    ):
+        raise ValueError("Train evaluation requires a complete integer confusion matrix")
+    support = {name: split_support["classes"][name]["train"]["pixels"] for name in names}
+    if metrics.get("support") != support or not np.array_equal(
+        matrix.sum(axis=1), list(support.values())
+    ):
+        raise ValueError("Train confusion support differs from all 255 audited training masks")
+    recomputed = pooled_metrics(matrix, names)
+    score = metrics.get("miou")
+    if (
+        type(score) not in (int, float)
+        or not math.isfinite(score)
+        or not math.isclose(score, recomputed["miou"], rel_tol=1e-12, abs_tol=1e-12)
+    ):
+        raise ValueError("Train pooled mIoU differs from its complete confusion matrix")
+    return {
+        "source": artifact,
+        "record": record,
+        "images": 255,
+        "weights": bank,
+        "pixel_pooled": recomputed,
+    }
+
+
 def aggregate(runs: list[dict], names: list[str]) -> list[dict]:
     groups = {}
     for run in runs:
@@ -290,6 +428,8 @@ def aggregate(runs: list[dict], names: list[str]) -> list[dict]:
                 "class_positive_image_miou": summary(
                     lambda run: run["metrics"]["class_positive_images"]["miou"]
                 ),
+                "train_pixel_pooled_miou": summary(lambda run: run["train_pixel_pooled_miou"]),
+                "train_test_miou_gap": summary(lambda run: run["train_test_miou_gap"]),
                 "model_only_fps": summary(
                     lambda run: run["performance"]["measurements"]["latency"]["fps"]
                 ),
@@ -439,6 +579,8 @@ def load_report(request_path: Path) -> dict:
         if metrics != expected:
             raise ValueError("Paper metrics differ from the per-image confusion evidence")
         state = json.loads(Path(job["state_path"]).read_text())
+        train_evaluation = full_train_evaluation(job, state, request, names, split_support, source)
+        train_miou = train_evaluation["pixel_pooled"]["miou"]
         runs.append(
             {
                 **{
@@ -461,6 +603,9 @@ def load_report(request_path: Path) -> dict:
                 .get("collection", {})
                 .get("resources", {}),
                 "metrics": metrics,
+                "train_evaluation": train_evaluation,
+                "train_pixel_pooled_miou": train_miou,
+                "train_test_miou_gap": train_miou - metrics["pixel_pooled"]["miou"],
                 "performance": performance,
                 "provenance": {
                     "test_result": str(directory / "result.json"),
@@ -561,6 +706,8 @@ def write_csv(path: Path, report: dict) -> None:
         for metric in (
             "pixel_pooled_miou",
             "class_positive_image_miou",
+            "train_pixel_pooled_miou",
+            "train_test_miou_gap",
             "model_only_fps",
             "native_pipeline_fps",
             "allocator_peak_bytes",
@@ -1201,6 +1348,8 @@ def build_pdf(path: Path, report: dict) -> None:
             story.append(paragraph("Final-checkpoint weight bank " + "/".join(banks), "PaperSmall"))
             rows = [["Measurement", "Mean", "SD", "n / 3", "Minimum", "Maximum"]]
             fields = [
+                ("Train pooled mIoU (%)", "train_pixel_pooled_miou", 100),
+                ("Train-test mIoU gap (pp)", "train_test_miou_gap", 100),
                 ("Model-only FPS", "model_only_fps", 1),
                 ("Native-pipeline FPS", "native_pipeline_fps", 1),
                 ("Observed train allocator peak GiB", "training_peak_bytes", 1 / 2**30),
@@ -1232,6 +1381,12 @@ def build_pdf(path: Path, report: dict) -> None:
         story.append(
             paragraph(
                 "Recorded training hours include failed attempts. Missing tails and missing allocator observations produce lower bounds with unknown full-run SD. Allocator peaks take the maximum across retained invocation receipts. Driver memory is sampled separately and includes context. Available measurement counts accompany incomplete resource summaries.",
+                "PaperSmall",
+            )
+        )
+        story.append(
+            paragraph(
+                "Train scores use all 255 training images at the same final checkpoint and selected weight bank as test. The descriptive train-test mIoU gap combines fitting and train/test distribution differences. Its SD is computed from the three individual seed gaps.",
                 "PaperSmall",
             )
         )
@@ -1344,7 +1499,9 @@ def build_pdf(path: Path, report: dict) -> None:
         story.append(paragraph("Individual RAD replicates and observed range", "Heading2"))
         rows = [["Measurement", "Seed 0", "Seed 1", "Seed 2", "Minimum", "Maximum", "Mean", "SD"]]
         replicate_fields = [
-            ("Pooled mIoU (%)", common["pixel_pooled_miou"], 100),
+            ("Train pooled mIoU (%)", common["train_pixel_pooled_miou"], 100),
+            ("Test pooled mIoU (%)", common["pixel_pooled_miou"], 100),
+            ("Train-test mIoU gap (pp)", common["train_test_miou_gap"], 100),
             ("Positive-image mIoU (%)", common["class_positive_image_miou"], 100),
             ("Mud pooled IoU (%)", common["per_class"]["mud-pumping"]["iou"], 100),
             (
