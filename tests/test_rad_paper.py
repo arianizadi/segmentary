@@ -695,6 +695,12 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
     assert json.loads((out / "rad-paper.json").read_text())["request_sha256"] == digest(
         paper_campaign.request
     )
+    pages = [page.extract_text() for page in reader.PdfReader(out / "rad-paper.pdf").pages]
+    appendix_start = next(index for index, page in enumerate(pages) if "Exact provenance" in page)
+    appendix = ["".join(page.split()) for page in pages[appendix_start:]]
+    for run in json.loads((out / "rad-paper.json").read_text())["runs"]:
+        entry = (run["name"], run["config_sha256"], run["final_checkpoint_sha256"])
+        assert any(all(value in page for value in entry) for page in appendix)
 
 
 def test_pdf_provenance_condenses_module_origins_and_source_artifact_paths(paper_campaign):

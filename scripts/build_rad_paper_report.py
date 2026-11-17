@@ -883,6 +883,7 @@ def build_pdf(path: Path, report: dict) -> None:
     from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
     from reportlab.platypus import Image as PdfImage
     from reportlab.platypus import (
+        KeepTogether,
         PageBreak,
         Paragraph,
         SimpleDocTemplate,
@@ -1909,13 +1910,17 @@ def build_pdf(path: Path, report: dict) -> None:
     )
     for run in report["runs"]:
         story.append(
-            paragraph(
-                run["name"]
-                + "\nconfig "
-                + run["config_sha256"]
-                + "\nfinal "
-                + run["final_checkpoint_sha256"],
-                "PaperSmall",
+            KeepTogether(
+                [
+                    paragraph(
+                        run["name"]
+                        + "\nconfig "
+                        + run["config_sha256"]
+                        + "\nfinal "
+                        + run["final_checkpoint_sha256"],
+                        "PaperSmall",
+                    )
+                ]
             )
         )
     SimpleDocTemplate(
