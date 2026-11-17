@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 
 import numpy as np
 import pytest
@@ -32,6 +33,9 @@ def inputs(tmp_path):
     sample["class_pixels"]["0"] = 2
     paper.write(source / "audit/samples.json", samples)
     validation = paper.read(source / "audit/validation.json")
+    splits["_grouping_status"] = "synthetic-grouped"
+    paper.write(source / "splits.json", splits)
+    validation["split_sha256"] = paper.digest(source / "splits.json")
     validation["samples_sha256"] = paper.digest(source / "audit/samples.json")
     paper.write(source / "audit/validation.json", validation)
     scores = {
@@ -55,7 +59,21 @@ def inputs(tmp_path):
     score_path = tmp_path / "scores.json"
     paper.write(score_path, scores)
     sources = tmp_path / "qualified-sources.json"
-    sources.write_bytes(b"[]\n")
+    endpoints = []
+    for model in paper.ACCURACY + paper.FAST:
+        checkpoint = tmp_path / (model + ".ckpt")
+        checkpoint.write_bytes(model.encode())
+        endpoints.append(
+            {
+                "name": model + "--cityscapes_to_railsem19--seed-0",
+                "model": model,
+                "protocol": "cityscapes_to_railsem19",
+                "checkpoint": str(checkpoint),
+                "config": str(tmp_path / "archived.yaml"),
+                "recorded_sha256": paper.digest(checkpoint),
+            }
+        )
+    paper.write(sources, endpoints)
     return source, splits, samples, score_path, sources
 
 
@@ -114,7 +132,9 @@ def test_explicit_matrix_prepares_seed_major_priority_and_frozen_protocol(
         assert all(arms == paper.ARM_ORDER for arms in manifest["model_protocols"].values())
 
 
-def test_finalfit_materializer_prepares_the_final_only_collection_contract(inputs, tmp_path):
+def test_finalfit_materializer_prepares_the_final_only_collection_contract(
+    inputs, tmp_path, monkeypatch
+):
     source, _, _, scores, sources = inputs
     final = tmp_path / "final"
     prepare_rad_finalfit.prepare(source, final, paper.digest(source / "splits.json"))
@@ -155,6 +175,35 @@ def test_finalfit_materializer_prepares_the_final_only_collection_contract(input
         "spec_sha256": hashlib.sha256(source_spec_bytes).hexdigest(),
     }
     assert source_stage_spec.read_bytes() == source_spec_bytes
+    assert manifest["research_protocol"]["seeds"] == [0, 1, 2]
+    assert manifest["research_protocol"]["primary_metric"] == "pixel_pooled_miou"
+    # Exercise the actual eight model configurations and the normal planner entry point.
+    from scripts import plan_rtis_campaign, prioritize_rad_plan, run_rad_paper
+
+    campaign = tmp_path / "planned"
+    monkeypatch.chdir(paper.REPO)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "planner",
+            "--manifest",
+            str(out / "manifest.yaml"),
+            "--checkpoints",
+            str(sources),
+            "--dataset-root",
+            str(final),
+            "--out",
+            str(campaign),
+            "--gpus",
+            ",".join(str(index) for index in range(10)),
+        ],
+    )
+    plan_rtis_campaign.main()
+    prioritize_rad_plan.prioritize(campaign / "plan.json", out / "training-priority.json")
+    plan = paper.read(campaign / "plan.json")
+    assert len(plan["jobs"]) == 24
+    assert run_rad_paper.protocol_before_training(plan) == manifest["research_protocol"]
 
 
 def test_qualitative_selection_is_stable_and_covers_classes_groups_and_negative():
@@ -169,6 +218,21 @@ def test_qualitative_selection_is_stable_and_covers_classes_groups_and_negative(
     assert paper.qualitative_keys(list(reversed(samples)), splits, names, 2) == ["a", "b"]
     with pytest.raises(ValueError, match="does not fit"):
         paper.qualitative_keys(samples, splits, names, 1)
+
+
+def test_staged24_requires_a_source_stage_spec_before_writing(inputs, tmp_path):
+    source, _, _, scores, sources = inputs
+    out = tmp_path / "prepared"
+    with pytest.raises(ValueError, match="requires an explicit source-stage spec"):
+        paper.prepare(
+            matrix="staged24",
+            split_policy="finalfit",
+            dataset_root=source,
+            source_checkpoints=sources,
+            development_scores=scores,
+            out=out,
+        )
+    assert not out.exists()
 
 
 @pytest.mark.parametrize("change", ["unknown-matrix", "wrong-split", "missing-score"])

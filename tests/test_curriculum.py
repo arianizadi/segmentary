@@ -1119,6 +1119,21 @@ def test_no_validation_stage_and_recovery_preserve_final_training_state(
     assert record["env"]["training_stop"]["monitor"] is None
     assert trainers[-1].num_sanity_val_steps == 0
     assert trainers[-1].limit_val_batches == 0
+    # Recovery after the endpoint was saved can require only durable reporting.
+    # Such a resume performs no further optimizer updates or image draws.
+    curriculum.run_stage(
+        cfg,
+        cfg.stages[0],
+        space,
+        None,
+        tmp_path,
+        1,
+        tmp_path,
+        resume_checkpoint=result.checkpoint,
+    )
+    zero_step = json.loads(result.results_path.read_text())["env"]["training_observations"]
+    assert zero_step["optimizer_steps_this_invocation"] == 0
+    assert zero_step["examples_seen_this_invocation"] == 0
 
 
 # -------------------------------------------------------------- integration

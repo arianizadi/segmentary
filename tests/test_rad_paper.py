@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import copy
 import csv
 import gzip
 import hashlib
 import io
 import json
+from itertools import product
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -29,6 +31,7 @@ def paper_campaign(tmp_path, monkeypatch):
     root = tmp_path / "campaign"
     root.mkdir()
     data = tmp_path / "dataset"
+    models = ["tiny_model"] + [f"tiny_model_{index}" for index in range(1, 8)]
     taxonomy = yaml.safe_load(
         (Path(__file__).resolve().parents[1] / "taxonomy/paul-test-rtis/canonical.yaml").read_text()
     )
@@ -36,20 +39,20 @@ def paper_campaign(tmp_path, monkeypatch):
     names = [value["name"] for value in taxonomy["classes"]]
     target = np.arange(21, dtype=np.uint8).reshape(3, 7)
     samples = []
-    for index in range(2):
-        key = f"block-{index}/sample"
-        rgb = np.full((3, 7, 3), 80 + 20 * index, dtype=np.uint8)
+    for index in range(59):
+        key = f"block-{index % 4}/sample-{index}"
+        rgb = np.full((3, 7, 3), 80 + index, dtype=np.uint8)
         image_path = data / "images/test" / (key + ".png")
         mask_path = data / "masks/test" / (key + ".png")
-        image_path.parent.mkdir(parents=True)
-        mask_path.parent.mkdir(parents=True)
+        image_path.parent.mkdir(parents=True, exist_ok=True)
+        mask_path.parent.mkdir(parents=True, exist_ok=True)
         Image.fromarray(rgb).save(image_path)
         Image.fromarray(target).save(mask_path)
         samples.append(
             {
                 "key": key,
                 "split": "test",
-                "group": f"block-{index}",
+                "group": f"block-{index % 4}",
                 "image_extension": ".png",
                 "image_sha256": digest(image_path),
                 "mask_sha256": hashlib.sha256(target.tobytes()).hexdigest(),
@@ -58,29 +61,38 @@ def paper_campaign(tmp_path, monkeypatch):
                 "class_pixels": {str(index): 1 for index in range(21)},
             }
         )
+    train_labels = np.tile(target, (2, 1))
+    train_samples = []
+    for index in range(255):
+        key = f"train-group/sample-{index}"
+        train_image = data / "images/train" / (key + ".png")
+        train_mask = data / "masks/train" / (key + ".png")
+        train_image.parent.mkdir(parents=True, exist_ok=True)
+        train_mask.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGB", (7, 6), color=(index, 100, 120)).save(train_image)
+        Image.fromarray(train_labels).save(train_mask)
+        train_samples.append(
+            {
+                "key": key,
+                "split": "train",
+                "group": "train-group",
+                "image_extension": ".png",
+                "image_sha256": digest(train_image),
+                "mask_sha256": hashlib.sha256(train_labels.tobytes()).hexdigest(),
+                "width": 7,
+                "height": 6,
+                "class_pixels": {str(label): 2 for label in range(21)},
+            }
+        )
     write(
         data / "splits.json",
-        {"train": ["train-group/sample"], "val": [], "test": [sample["key"] for sample in samples]},
+        {
+            "train": [sample["key"] for sample in train_samples],
+            "val": [],
+            "test": [sample["key"] for sample in samples],
+        },
     )
-    train_labels = np.tile(target, (2, 1))
-    train_image = data / "images/train/train-group/sample.png"
-    train_mask = data / "masks/train/train-group/sample.png"
-    train_image.parent.mkdir(parents=True)
-    train_mask.parent.mkdir(parents=True)
-    Image.new("RGB", (7, 6), color="gray").save(train_image)
-    Image.fromarray(train_labels).save(train_mask)
-    train_sample = {
-        "key": "train-group/sample",
-        "split": "train",
-        "group": "train-group",
-        "image_extension": ".png",
-        "image_sha256": digest(train_image),
-        "mask_sha256": hashlib.sha256(train_labels.tobytes()).hexdigest(),
-        "width": 7,
-        "height": 6,
-        "class_pixels": {str(index): 2 for index in range(21)},
-    }
-    write(data / "audit/samples.json", [*samples, train_sample])
+    write(data / "audit/samples.json", [*samples, *train_samples])
     source_spec = tmp_path / "source-request.json"
     write(source_spec, {"output_root": str(tmp_path / "source-stage")})
     source_metrics = {
@@ -108,7 +120,10 @@ def paper_campaign(tmp_path, monkeypatch):
                         "taxonomy": taxonomy,
                         "class_names": names,
                         "source_seed": 0,
-                        "metrics": {"metrics": source_metrics},
+                        "metrics": {
+                            "metrics": source_metrics,
+                            "config": {"evaluation": {"weights": "raw"}},
+                        },
                         "performance": {
                             "measurements": {"latency": {"fps": 100}},
                             "model": {"parameter_count": 100, "resident_parameter_bytes": 400},
@@ -140,25 +155,28 @@ def paper_campaign(tmp_path, monkeypatch):
             }
         ]
     }
+    base_source = source_report["models"][0]
+    source_report["models"] = [{**copy.deepcopy(base_source), "model": model} for model in models]
     write(tmp_path / "source-stage/source-stage-reports.json", source_report)
     monkeypatch.setattr(
         source_evaluator, "load_verified_report", lambda *args: source_report, raising=False
     )
     protocol = {
-        "models": ["tiny_model"],
+        "models": models,
+        "matrix": "staged24",
         "seeds": [0, 1, 2],
         "primary_metric": "pixel_pooled_miou",
         "headline_protocol": "cityscapes_to_railsem19_to_rtis",
         "qualitative_seed": 0,
         "qualitative_keys": [samples[0]["key"]],
         "failure_rule": "max-three infrastructure attempts; nonfinite loss is terminal",
-        "split_policy": "255/0/59 frozen test membership",
+        "split_policy": "finalfit",
         "source_stage_reports": {"spec": str(source_spec), "spec_sha256": digest(source_spec)},
     }
     jobs = []
     code = "a" * 40
-    for seed in range(3):
-        name = f"tiny_model--cityscapes_to_railsem19_to_rtis--seed-{seed}"
+    for model, seed in product(models, range(3)):
+        name = f"{model}--cityscapes_to_railsem19_to_rtis--seed-{seed}"
         config = root / "configs" / (name + ".yaml")
         config.parent.mkdir(exist_ok=True)
         cfg = {
@@ -172,7 +190,7 @@ def paper_campaign(tmp_path, monkeypatch):
         checkpoint.write_bytes(f"checkpoint-{seed}".encode())
         job = {
             "name": name,
-            "model": "tiny_model",
+            "model": model,
             "protocol": protocol["headline_protocol"],
             "seed": seed,
             "config": str(config),
@@ -187,12 +205,12 @@ def paper_campaign(tmp_path, monkeypatch):
                 "status": "completed",
                 "code_sha": code,
                 "config_sha256": job["config_sha256"],
-                "final_step": 4,
+                "final_step": 4000,
                 "checkpoints": {
                     "final": {
                         "path": str(checkpoint),
                         "sha256": digest(checkpoint),
-                        "global_step": 4,
+                        "global_step": 4000,
                     }
                 },
                 "collection": {
@@ -215,7 +233,9 @@ def paper_campaign(tmp_path, monkeypatch):
     plan = {
         "jobs": jobs,
         "collection_contract": "rtis-final-train-statistics-v2",
-        "target_steps_per_job": 4,
+        "target_steps_per_job": 4000,
+        "validation_enabled": False,
+        "primary_checkpoint": "final",
         "research_protocol": protocol,
         "research_protocol_sha256": hashlib.sha256(
             json.dumps(protocol, sort_keys=True, separators=(",", ":")).encode()
@@ -232,6 +252,8 @@ def paper_campaign(tmp_path, monkeypatch):
         "research_protocol": protocol,
         "research_protocol_sha256": plan["research_protocol_sha256"],
         "split_sha256": plan["split_sha256"],
+        "dataset_audit_sha256": digest(data / "audit/samples.json"),
+        "dataset_classes_sha256": digest(data / "classes.json"),
         "gpu_policy": policy,
         "gpu_policy_sha256": gpu_policy.policy_sha256(policy),
         "launch_requirements": {"expected_gpu_allowlist": [0]},
@@ -258,7 +280,7 @@ def paper_campaign(tmp_path, monkeypatch):
             ).reshape(21, 21)
             matrices[sample["key"]] = matrix
             destination = directory / "predictions" / (sample["key"] + ".png")
-            destination.parent.mkdir(parents=True)
+            destination.parent.mkdir(parents=True, exist_ok=True)
             Image.fromarray(predicted).save(destination)
             rows.append({"key": sample["key"], "prediction_sha256": digest(destination)})
         with (directory / "per-image.csv").open("w", newline="") as stream:
@@ -277,7 +299,7 @@ def paper_campaign(tmp_path, monkeypatch):
         write(directory / "metrics.json", metrics)
         write(
             directory / "coverage.json",
-            {name: {"positive_images": 2, "pixels": 2} for name in names},
+            {name: {"positive_images": 59, "pixels": 59} for name in names},
         )
         filenames = (
             "per-image.csv",
@@ -296,10 +318,10 @@ def paper_campaign(tmp_path, monkeypatch):
             "test_evaluated": True,
             "request_sha256": request_sha,
             "checkpoint_sha256": job["final_checkpoint_sha256"],
-            "images": 2,
+            "images": 59,
             "weights": "raw",
             "present_image": {
-                "images": 2,
+                "images": 59,
                 "miou_present_images_classes": 21,
                 "per_class": {name: {} for name in names},
             },
@@ -388,18 +410,21 @@ def test_request_cannot_cover_partial_training(paper_campaign):
 def test_report_recomputes_full_metrics_and_three_seed_sample_sd(paper_campaign):
     result = report.load_report(paper_campaign.request)
     aggregate = result["aggregates"][0]
-    values = [run["metrics"]["pixel_pooled"]["miou"] for run in result["runs"]]
+    values = [
+        run["metrics"]["pixel_pooled"]["miou"]
+        for run in result["runs"]
+        if run["model"] == aggregate["model"]
+    ]
     assert aggregate["pixel_pooled_miou"]["mean"] == pytest.approx(np.mean(values))
     assert aggregate["pixel_pooled_miou"]["sample_sd"] == pytest.approx(np.std(values, ddof=1))
     assert len(aggregate["per_class"]) == 21
     assert result["qualitative"]["seed"] == 0
-    assert "+/-" not in report.format_summary(aggregate["pixel_pooled_miou"])
     assert result["split_totals"] == {
-        "train": {"images": 1, "valid_pixels": 42},
-        "test": {"images": 2, "valid_pixels": 42},
+        "train": {"images": 255, "valid_pixels": 10710},
+        "test": {"images": 59, "valid_pixels": 1239},
     }
-    assert result["class_split_support"]["mud-pumping"]["train"]["positive_images"] == 1
-    assert result["class_split_support"]["mud-pumping"]["test"]["positive_images"] == 2
+    assert result["class_split_support"]["mud-pumping"]["train"]["positive_images"] == 255
+    assert result["class_split_support"]["mud-pumping"]["test"]["positive_images"] == 59
 
 
 @pytest.mark.parametrize("split", ["train", "test"])
@@ -419,7 +444,7 @@ def test_class_split_pixel_fractions_exclude_ignored_pixels(paper_campaign):
     for sample in samples:
         sample["class_pixels"]["255"] = 100
     support = report.class_split_support(samples, names)
-    assert support["totals"]["train"]["valid_pixels"] == 42
+    assert support["totals"]["train"]["valid_pixels"] == 10710
     assert support["classes"]["mud-pumping"]["train"]["valid_pixel_fraction"] == pytest.approx(
         2 / 42
     )
@@ -464,9 +489,16 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
         assert name in text
     with (out / "rad-paper.csv").open() as stream:
         rows = list(csv.DictReader(stream))
-    assert len(rows) == 1
+    assert len(rows) == 8
     assert "pixel_pooled_miou:seed_2" in rows[0]
     assert "pixels:mud-pumping" in rows[0]
+    assert "iou:mud-pumping:seed_0" in rows[0]
+    assert "iou:mud-pumping:maximum" in rows[0]
+    assert "training_hours:seed_2" in rows[0]
+    assert "per_block:block-0:pixel_pooled_miou:seed_2" in rows[0]
+    assert "Speed and segmentation accuracy" in text
+    assert "Individual RAD replicates and observed range" in text
+    assert "Evaluation weight bank raw" in text
     assert json.loads((out / "rad-paper.json").read_text())["request_sha256"] == digest(
         paper_campaign.request
     )
@@ -508,6 +540,22 @@ def test_controller_runs_source_test_fixed_gpu_profile_report_and_propagates_cac
     paper_campaign, monkeypatch
 ):
     calls = []
+    verified = []
+    monkeypatch.setattr(
+        controller.source_stages,
+        "validate_request",
+        lambda *args: (
+            {
+                "models": paper_campaign.plan["research_protocol"]["models"],
+                "jobs": [{"name": str(index)} for index in range(16)],
+            },
+            {},
+            "spec",
+        ),
+    )
+    monkeypatch.setattr(
+        controller.source_stages, "verify_source", lambda job: verified.append(job["name"])
+    )
 
     def command(words, **kwargs):
         name = Path(words[1]).name
@@ -538,6 +586,7 @@ def test_controller_runs_source_test_fixed_gpu_profile_report_and_propagates_cac
     ]
     assert calls[2][1][-2:] == ["--gpu", "0"]
     assert all(call[2]["HF_HOME"] == str(args.hf_home) for call in calls)
+    assert len(verified) == 16
 
 
 def test_controller_blocks_before_test_if_training_recovery_cannot_finish(
@@ -553,3 +602,89 @@ def test_controller_blocks_before_test_if_training_recovery_cannot_finish(
             paper_campaign.root, paper_campaign.plan, lambda: calls.append("training")
         )
     assert calls == ["training"]
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [("target_steps_per_job", 3999), ("validation_enabled", True), ("primary_checkpoint", "best")],
+)
+def test_confirmed_scope_rejects_changed_training_protocol(paper_campaign, field, value):
+    plan = copy.deepcopy(paper_campaign.plan)
+    plan[field] = value
+    with pytest.raises(ValueError, match="confirmed paper scope"):
+        controller.confirmed_scope(plan)
+
+
+def test_preflight_validates_all_sources_before_training(paper_campaign, monkeypatch):
+    verified = []
+    monkeypatch.setattr(
+        controller.source_stages,
+        "validate_request",
+        lambda *args: (
+            {
+                "models": paper_campaign.plan["research_protocol"]["models"],
+                "jobs": [{"name": str(index)} for index in range(16)],
+            },
+            {},
+            "spec",
+        ),
+    )
+
+    def verify(job):
+        verified.append(job["name"])
+        if job["name"] == "15":
+            raise ValueError("source checkpoint changed")
+
+    monkeypatch.setattr(controller.source_stages, "verify_source", verify)
+    monkeypatch.setattr(
+        controller,
+        "train_until_complete",
+        lambda *args: pytest.fail("Training started before source verification"),
+    )
+    with pytest.raises(ValueError, match="source checkpoint changed"):
+        controller.run(
+            SimpleNamespace(
+                campaign=paper_campaign.root,
+                plan=None,
+                repo=paper_campaign.root,
+                python="python",
+                benchmark_gpu=0,
+                hf_home=None,
+            )
+        )
+    assert len(verified) == 16
+
+
+def test_dataset_binding_rejects_a_changed_frozen_audit(paper_campaign):
+    path = paper_campaign.data / "audit/samples.json"
+    path.write_text(path.read_text() + "\n")
+    campaign = json.loads((paper_campaign.root / "campaign.json").read_text())
+    with pytest.raises(ValueError, match="sample audit"):
+        controller.dataset_binding(paper_campaign.plan, campaign)
+
+
+def test_resource_summary_preserves_partial_measurement_counts():
+    value = report.nullable_summary({0: 12.0, 1: None, 2: 14.0})
+    assert value["mean"] == 13.0
+    assert value["sample_sd"] == pytest.approx(np.sqrt(2))
+    assert value["n"] == 2 and value["complete_three_seeds"] is False
+    assert report.nullable_summary({0: None, 1: None, 2: None})["mean"] is None
+    assert report.nullable_summary({0: 12.0, 1: None, 2: None})["sample_sd"] is None
+
+
+def test_training_allocator_peak_uses_verified_invocation_history(tmp_path):
+    prior = tmp_path / "prior.json"
+    write(prior, {"peak_vram_bytes": {"cuda:0": 4 * 2**30}})
+    state = {
+        "training": {"peak_vram_bytes": {"cuda:0": 0}},
+        "training_invocation_receipts": [{"path": str(prior), "sha256": digest(prior)}],
+        "training_allocator_peak_accounting_complete": False,
+        "missing_training_allocator_peak_attempts": ["interrupted"],
+        "collection": {
+            "resources": {"attempts": [{"phase": "training", "sampled_peak_device_used_mib": 9000}]}
+        },
+    }
+    memory = report.training_memory(state)
+    assert memory["allocator_peak_bytes"] == 4 * 2**30
+    assert memory["sampled_driver_peak_bytes"] == 9000 * 2**20
+    assert memory["allocator_accounting_complete"] is False

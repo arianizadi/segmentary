@@ -26,11 +26,12 @@ from scripts.run_rad_test_profiles import result_complete as profile_complete
 LIMITATIONS = [
     "Seeds measure RAD adaptation variation conditional on the frozen source training runs and these test images. Sample SD uses ddof=1. Seed labels do not establish paired data orders.",
     "The held-out test set was historically exposed. Scene blocks are visually inferred, with original recording provenance unconfirmed. Seed SD does not estimate test sampling uncertainty.",
-    "Every prespecified initialization recipe and seed is retained. The headline uses the common recipe frozen before test evaluation. Rankings describe the observed means.",
-    "Auto weights use EMA where running-stat BatchNorm permits it and raw weights otherwise. EMA retains a long history within the 4000-step budget. The initialization recipes also retain their prescribed learning-rate differences.",
+    "All eight models follow the frozen Cityscapes-to-RailSem19-to-RAD recipe, with three fresh RAD adaptation seeds. Rankings describe the observed means.",
+    "Auto weights use EMA where running-stat BatchNorm permits it and raw weights otherwise. At the recorded decay and ramp, EMA retains about 0.67 weight on its step-2000 history over the remaining 2000 updates. Running-stat BatchNorm models use raw step-4000 weights.",
     "Recipe initialization includes architecture-specific public supervision. EoMT's COCO-panoptic checkpoint and ImageNet-initialized encoders carry different upstream supervision and compute. The comparison describes complete initialization recipes.",
     "Model-only FPS measures batch-one BF16 1024-square dense-logit forwards. Native-pipeline timing includes the independently recorded full-image inference contract. Allocator peak, process memory and resident parameter bytes have separate denominators.",
     "Per-block and leave-one-block-out results are descriptive. Each block has its own class support. Four scene blocks provide limited evidence about new recordings.",
+    "The 4000-step final-fit budget spans about 250 passes through the 255-image loader. The 187-image development loader had about 333 passes at the same update budget. Tail accumulation changes nominal examples per update. Reported example totals use recorded invocation telemetry.",
 ]
 
 
@@ -41,16 +42,50 @@ def verified_json(path: Path, expected: str) -> dict:
 
 
 def nullable_summary(values: dict[int, float | None]) -> dict:
-    if all(value is None for value in values.values()):
-        return {
-            "seeds": {str(seed): None for seed in values},
-            "mean": None,
-            "sample_sd": None,
-            "n": 0,
-        }
-    if any(value is None for value in values.values()):
-        raise ValueError("A metric has inconsistent support across the three seeds")
-    return seed_summary(values)
+    available = {
+        seed: float(value)
+        for seed, value in values.items()
+        if value is not None and math.isfinite(value)
+    }
+    if len(available) == 3:
+        return {**seed_summary(available), "complete_three_seeds": True}
+    samples = list(available.values())
+    return {
+        "seeds": {str(seed): available.get(seed) for seed in values},
+        "mean": float(np.mean(samples)) if samples else None,
+        "sample_sd": float(np.std(samples, ddof=1)) if len(samples) > 1 else None,
+        "minimum": min(samples) if samples else None,
+        "maximum": max(samples) if samples else None,
+        "n": len(samples),
+        "complete_three_seeds": False,
+        "uncertainty_scope": "available descriptive measurements; full three-seed evidence incomplete",
+    }
+
+
+def training_memory(state: dict) -> dict:
+    """Keep measured allocator peaks and sampled whole-process memory distinct."""
+    records = [state.get("training", {})]
+    for receipt in state.get("training_invocation_receipts", []):
+        records.append(verified_json(Path(receipt["path"]), receipt["sha256"]))
+    peaks = [
+        value
+        for record in records
+        for value in record.get("peak_vram_bytes", {}).values()
+        if value is not None and math.isfinite(value) and value > 0
+    ]
+    driver = [
+        attempt["sampled_peak_device_used_mib"] * 2**20
+        for attempt in state.get("collection", {}).get("resources", {}).get("attempts", [])
+        if attempt.get("phase") == "training"
+        and attempt.get("sampled_peak_device_used_mib") is not None
+    ]
+    return {
+        "allocator_peak_bytes": max(peaks, default=None),
+        "allocator_accounting_complete": state.get("training_allocator_peak_accounting_complete"),
+        "missing_allocator_attempts": state.get("missing_training_allocator_peak_attempts"),
+        "sampled_driver_peak_bytes": max(driver, default=None),
+        "receipts": state.get("training_invocation_receipts", []),
+    }
 
 
 def class_split_support(samples: list[dict], names: list[str]) -> dict:
@@ -183,9 +218,14 @@ def aggregate(runs: list[dict], names: list[str]) -> list[dict]:
                     lambda run: run["performance"]["model"]["resident_parameter_bytes"]
                 ),
                 "training_peak_bytes": summary(
-                    lambda run: max(
-                        run["training"].get("peak_vram_bytes", {}).values(), default=None
-                    )
+                    lambda run: run["training_memory"]["allocator_peak_bytes"]
+                ),
+                "sampled_training_driver_peak_bytes": summary(
+                    lambda run: run["training_memory"]["sampled_driver_peak_bytes"]
+                ),
+                "training_allocator_peak_accounting_complete": all(
+                    run["training_memory"]["allocator_accounting_complete"] is True
+                    for run in seeds.values()
                 ),
                 "training_hours": summary(
                     lambda run: (
@@ -263,6 +303,8 @@ def load_report(request_path: Path) -> dict:
             raise ValueError("Sample audit membership differs from the frozen split")
     split_support = class_split_support(samples, names)
     test_samples = {sample["key"]: sample for sample in samples if sample["split"] == "test"}
+    if len(test_samples) != 59:
+        raise ValueError("The confirmed paper report requires exactly 59 held-out test images")
     if not set(protocol["qualitative_keys"]) <= set(test_samples):
         raise ValueError("Qualitative keys differ from frozen test membership")
     output = Path(request["output_root"])
@@ -312,6 +354,7 @@ def load_report(request_path: Path) -> dict:
         )
         if metrics != expected:
             raise ValueError("Paper metrics differ from the per-image confusion evidence")
+        state = json.loads(Path(job["state_path"]).read_text())
         runs.append(
             {
                 **{
@@ -329,6 +372,7 @@ def load_report(request_path: Path) -> dict:
                 "weights": source["weights"],
                 "source_checkpoint": job.get("source_checkpoint"),
                 "training": json.loads(Path(job["state_path"]).read_text()).get("training", {}),
+                "training_memory": training_memory(state),
                 "training_resources": json.loads(Path(job["state_path"]).read_text())
                 .get("collection", {})
                 .get("resources", {}),
@@ -345,6 +389,8 @@ def load_report(request_path: Path) -> dict:
             }
         )
     aggregates = aggregate(runs, names)
+    if any(entry["pixel_pooled_miou"]["n"] != 3 for entry in aggregates):
+        raise ValueError("Ranking requires three finite primary quality scores per model")
     headline = sorted(
         [row for row in aggregates if row["protocol"] == protocol["headline_protocol"]],
         key=lambda row: (-row["pixel_pooled_miou"]["mean"], row["model"]),
@@ -413,13 +459,13 @@ def load_report(request_path: Path) -> dict:
     }
 
 
-def format_summary(value: dict, scale: float = 100) -> str:
-    if value["mean"] is None:
-        return "N/A"
-    return f"{scale * value['mean']:.2f}\nSD {scale * value['sample_sd']:.2f}"
-
-
 def write_csv(path: Path, report: dict) -> None:
+    def add_summary(row, prefix, statistics):
+        for statistic in ("mean", "sample_sd", "minimum", "maximum", "n", "complete_three_seeds"):
+            row[f"{prefix}:{statistic}"] = statistics.get(statistic)
+        for seed, value in statistics["seeds"].items():
+            row[f"{prefix}:seed_{seed}"] = value
+
     rows = []
     for entry in report["aggregates"]:
         row = {"model": entry["model"], "protocol": entry["protocol"], "seeds": "0,1,2"}
@@ -431,17 +477,44 @@ def write_csv(path: Path, report: dict) -> None:
             "allocator_peak_bytes",
             "process_total_bytes",
             "resident_parameter_bytes",
+            "parameter_count",
+            "training_hours",
+            "training_peak_bytes",
+            "sampled_training_driver_peak_bytes",
         ):
-            for statistic in ("mean", "sample_sd", "minimum", "maximum"):
-                row[f"{metric}:{statistic}"] = entry[metric].get(statistic)
-            for seed, value in entry[metric]["seeds"].items():
-                row[f"{metric}:seed_{seed}"] = value
+            add_summary(row, metric, entry[metric])
         for name, metrics in entry["per_class"].items():
             row[f"positive_images:{name}"] = metrics["positive_images"]
             row[f"pixels:{name}"] = metrics["pixels"]
-            for metric in ("iou", "precision", "recall", "dice", "negative_image_false_alarm_rate"):
-                for statistic in ("mean", "sample_sd"):
-                    row[f"{metric}:{name}:{statistic}"] = metrics[metric][statistic]
+            for metric in (
+                "iou",
+                "positive_image_iou",
+                "precision",
+                "recall",
+                "dice",
+                "negative_image_false_alarm_rate",
+                "negative_image_false_alarm_rate_area",
+            ):
+                add_summary(row, f"{metric}:{name}", metrics[metric])
+        runs = [
+            run
+            for run in report["runs"]
+            if (run["model"], run["protocol"]) == (entry["model"], entry["protocol"])
+        ]
+        row["weight_bank"] = "/".join(sorted({run["weights"] for run in runs}))
+        row["training_hours_is_lower_bound"] = entry["training_hours_is_lower_bound"]
+        row["training_allocator_peak_accounting_complete"] = entry[
+            "training_allocator_peak_accounting_complete"
+        ]
+        for scope in ("per_block", "leave_one_block_out"):
+            for block in runs[0]["metrics"][scope]:
+                statistics = nullable_summary(
+                    {
+                        run["seed"]: run["metrics"][scope][block]["pixel_pooled"]["miou"]
+                        for run in runs
+                    }
+                )
+                add_summary(row, f"{scope}:{block}:pixel_pooled_miou", statistics)
         rows.append(row)
     with path.open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator="\n")
@@ -492,7 +565,7 @@ def semantic_panel(
 
 
 def build_pdf(path: Path, report: dict) -> None:
-    from reportlab.graphics.shapes import Drawing, Rect
+    from reportlab.graphics.shapes import Circle, Drawing, Line, Rect, String
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
@@ -566,41 +639,146 @@ def build_pdf(path: Path, report: dict) -> None:
     def metric(value, scale=100):
         return "N/A" if value is None else f"{scale * value:.2f}"
 
-    def class_table(entries, field):
-        if len(entries) == 1:
-            entry = entries[0]
-            rows = [["Class", "Images", "GT pixels", "IoU mean (%)", "SD"]]
-            for name in report["class_names"]:
-                values = entry["per_class"][name]
-                rows.append(
-                    [
-                        name,
-                        values["positive_images"],
-                        f"{values['pixels']:,}",
-                        metric(values[field]["mean"]),
-                        metric(values[field]["sample_sd"]),
-                    ]
+    def speed_plot(field, label):
+        drawing = Drawing(width, 220)
+        left, bottom, plot_width, plot_height = 43, 31, width - 56, 165
+        points = [
+            (rank, entry[field], entry["pixel_pooled_miou"])
+            for rank, entry in enumerate(headline, 1)
+            if entry[field]["mean"] is not None
+        ]
+        if not points:
+            drawing.add(String(left, 100, "Timing measurements unavailable", fontSize=8))
+            return drawing
+        x_max = max(values["mean"] + (values["sample_sd"] or 0) for _, values, _ in points) * 1.12
+        y_min = max(
+            0,
+            math.floor(
+                min(100 * (values["mean"] - (values["sample_sd"] or 0)) for _, _, values in points)
+                / 5
+            )
+            * 5
+            - 2,
+        )
+        y_max = min(
+            100,
+            math.ceil(
+                max(100 * (values["mean"] + (values["sample_sd"] or 0)) for _, _, values in points)
+                / 5
+            )
+            * 5
+            + 2,
+        )
+        y_max = max(y_max, y_min + 1)
+        x_scale = plot_width / x_max
+        y_scale = plot_height / (y_max - y_min)
+        for tick in range(5):
+            x = left + tick * plot_width / 4
+            y = bottom + tick * plot_height / 4
+            drawing.add(
+                Line(
+                    x,
+                    bottom,
+                    x,
+                    bottom + plot_height,
+                    strokeColor=colors.HexColor("#E4EAF0"),
+                    strokeWidth=0.4,
                 )
-            table(rows, [0.36, 0.1, 0.18, 0.21, 0.15])
-            return
-        rows = [["Class", "Images"] + [entry["protocol"] + "\nMean / SD" for entry in entries]]
-        winners = []
-        for row_index, name in enumerate(report["class_names"], 1):
-            values = [entry["per_class"][name][field] for entry in entries]
+            )
+            drawing.add(
+                Line(
+                    left,
+                    y,
+                    left + plot_width,
+                    y,
+                    strokeColor=colors.HexColor("#E4EAF0"),
+                    strokeWidth=0.4,
+                )
+            )
+            drawing.add(
+                String(
+                    x,
+                    bottom - 12,
+                    f"{tick * x_max / 4:.1f}" if x_max < 10 else f"{tick * x_max / 4:.0f}",
+                    textAnchor="middle",
+                    fontSize=6.5,
+                )
+            )
+            drawing.add(
+                String(
+                    left - 7,
+                    y - 2,
+                    f"{y_min + tick * (y_max - y_min) / 4:.0f}",
+                    textAnchor="end",
+                    fontSize=6.5,
+                )
+            )
+        drawing.add(
+            Line(left, bottom, left + plot_width, bottom, strokeColor=colors.HexColor("#586979"))
+        )
+        drawing.add(
+            Line(left, bottom, left, bottom + plot_height, strokeColor=colors.HexColor("#586979"))
+        )
+        drawing.add(String(left, bottom + plot_height + 11, "Mean pooled mIoU (%)", fontSize=8))
+        drawing.add(String(left + plot_width / 2, 4, label, textAnchor="middle", fontSize=8))
+        used = []
+        for rank, speed, quality in points:
+            x = left + speed["mean"] * x_scale
+            y = bottom + (quality["mean"] * 100 - y_min) * y_scale
+            x_error = (speed["sample_sd"] or 0) * x_scale
+            y_error = (quality["sample_sd"] or 0) * 100 * y_scale
+            color = colors.HexColor("#007F83")
+            drawing.add(Line(x - x_error, y, x + x_error, y, strokeColor=color, strokeWidth=0.7))
+            drawing.add(
+                Line(
+                    x,
+                    max(bottom, y - y_error),
+                    x,
+                    min(bottom + plot_height, y + y_error),
+                    strokeColor=color,
+                    strokeWidth=0.7,
+                )
+            )
+            drawing.add(Circle(x, y, 3, fillColor=color, strokeColor=None))
+            for attempt in range(20):
+                text_x = min(left + plot_width - 8, max(left + 5, x + 8 + (attempt % 4) * 10))
+                text_y = min(bottom + plot_height - 8, max(bottom + 6, y + 5 + (attempt // 4) * 11))
+                if all(
+                    abs(text_x - prior_x) > 9 or abs(text_y - prior_y) > 9
+                    for prior_x, prior_y in used
+                ):
+                    break
+            used.append((text_x, text_y))
+            drawing.add(Line(x, y, text_x - 2, text_y, strokeColor=color, strokeWidth=0.35))
+            drawing.add(
+                String(
+                    text_x,
+                    text_y,
+                    str(rank),
+                    fontName="Helvetica-Bold",
+                    fontSize=7,
+                    fillColor=color,
+                )
+            )
+        return drawing
+
+    def class_table(entries, field):
+        if len(entries) != 1:
+            raise ValueError("The confirmed paper tables require the single common recipe")
+        entry = entries[0]
+        rows = [["Class", "Images", "GT pixels", "IoU mean (%)", "SD"]]
+        for name in report["class_names"]:
+            values = entry["per_class"][name]
             rows.append(
                 [
                     name,
-                    report["class_coverage"][name]["positive_images"],
-                    *[format_summary(value) for value in values],
+                    values["positive_images"],
+                    f"{values['pixels']:,}",
+                    metric(values[field]["mean"]),
+                    metric(values[field]["sample_sd"]),
                 ]
             )
-            best = max(round(value["mean"] * 100, 2) for value in values)
-            winners.extend(
-                (column + 2, row_index)
-                for column, value in enumerate(values)
-                if round(value["mean"] * 100, 2) == best
-            )
-        table(rows, [0.29, 0.07] + [0.64 / len(entries)] * len(entries), winners)
+        table(rows, [0.36, 0.1, 0.18, 0.21, 0.15])
 
     def legend(classes):
         cells = []
@@ -653,6 +831,19 @@ def build_pdf(path: Path, report: dict) -> None:
                     "PaperSmall",
                 )
             )
+            bank = (
+                record.get("config", {})
+                .get("evaluation", {})
+                .get("weights", performance.get("source", {}).get("weights", "unrecorded"))
+            )
+            story.append(
+                paragraph(
+                    "Evaluation weight bank "
+                    + bank
+                    + ". Source-stage model-only FPS is contextual and non-authoritative, measured on the recorded source-evaluation GPU while other jobs may run concurrently.",
+                    "PaperSmall",
+                )
+            )
             table(
                 [
                     [
@@ -679,6 +870,8 @@ def build_pdf(path: Path, report: dict) -> None:
                         f"{metrics['support'][name]:,}",
                         *[
                             metric(metrics.get(field, {}).get(name))
+                            if metrics["support"][name] > 0
+                            else "N/A"
                             for field in (
                                 "per_class_iou",
                                 "per_class_precision",
@@ -767,9 +960,12 @@ def build_pdf(path: Path, report: dict) -> None:
             "Model",
             "mIoU mean (%)",
             "SD",
-            "Model FPS\nMean / SD",
-            "Native FPS\nMean / SD",
-            "Mud IoU (%)\nMean / SD",
+            "Model FPS mean",
+            "SD",
+            "Native FPS mean",
+            "SD",
+            "Mud IoU mean (%)",
+            "SD",
         ]
     ]
     for index, entry in enumerate(headline, 1):
@@ -779,25 +975,29 @@ def build_pdf(path: Path, report: dict) -> None:
                 entry["model"],
                 metric(entry["pixel_pooled_miou"]["mean"]),
                 metric(entry["pixel_pooled_miou"]["sample_sd"]),
-                format_summary(entry["model_only_fps"], 1),
-                format_summary(entry["native_pipeline_fps"], 1),
-                format_summary(entry["per_class"]["mud-pumping"]["iou"]),
+                metric(entry["model_only_fps"]["mean"], 1),
+                metric(entry["model_only_fps"]["sample_sd"], 1),
+                metric(entry["native_pipeline_fps"]["mean"], 1),
+                metric(entry["native_pipeline_fps"]["sample_sd"], 1),
+                metric(entry["per_class"]["mud-pumping"]["iou"]["mean"]),
+                metric(entry["per_class"]["mud-pumping"]["iou"]["sample_sd"]),
             ]
         )
     winners = []
     for column, getter, scale in (
         (2, lambda row: row["pixel_pooled_miou"]["mean"], 100),
         (4, lambda row: row["model_only_fps"]["mean"], 1),
-        (5, lambda row: row["native_pipeline_fps"]["mean"], 1),
-        (6, lambda row: row["per_class"]["mud-pumping"]["iou"]["mean"], 100),
+        (6, lambda row: row["native_pipeline_fps"]["mean"], 1),
+        (8, lambda row: row["per_class"]["mud-pumping"]["iou"]["mean"], 100),
     ):
-        best = max(round(getter(row) * scale, 2) for row in headline)
+        finite = [getter(row) for row in headline if getter(row) is not None]
+        best = max(round(value * scale, 2) for value in finite)
         winners.extend(
             (column, index)
             for index, row in enumerate(headline, 1)
-            if round(getter(row) * scale, 2) == best
+            if getter(row) is not None and round(getter(row) * scale, 2) == best
         )
-    table(rows, [0.05, 0.25, 0.13, 0.08, 0.16, 0.16, 0.17], winners)
+    table(rows, [0.05, 0.23, 0.12, 0.06, 0.12, 0.06, 0.12, 0.06, 0.12, 0.06], winners)
     story.append(
         paragraph(
             "Green cells mark the highest displayed means within comparable columns or class rows, including displayed ties. Qualitative figures use the same fixed images and seed 0 for every model.",
@@ -856,28 +1056,34 @@ def build_pdf(path: Path, report: dict) -> None:
             "PaperSmall",
         )
     )
-    if len(aggregates) > len(headline):
-        story.append(paragraph("All prespecified initialization recipes", "Heading2"))
-        table(
+    story.append(PageBreak())
+    title("Speed and segmentation accuracy")
+    story.append(speed_plot("model_only_fps", "Mean model-only FPS - batch one, 1024 square"))
+    story.append(
+        speed_plot("native_pipeline_fps", "Mean native-pipeline FPS - full recorded image workload")
+    )
+    table(
+        [["Plot label", "Model", "RAD weight bank"]]
+        + [
             [
-                [
-                    "Model",
-                    "Recipe",
-                    "Pooled mIoU (%)\nMean / SD",
-                    "Positive-image mIoU (%)\nMean / SD",
-                ]
+                rank,
+                entry["model"],
+                "/".join(
+                    sorted(
+                        {run["weights"] for run in report["runs"] if run["model"] == entry["model"]}
+                    )
+                ),
             ]
-            + [
-                [
-                    entry["model"],
-                    entry["protocol"],
-                    format_summary(entry["pixel_pooled_miou"]),
-                    format_summary(entry["class_positive_image_miou"]),
-                ]
-                for entry in aggregates
-            ],
-            [0.27, 0.29, 0.22, 0.22],
+            for rank, entry in enumerate(headline, 1)
+        ],
+        [0.12, 0.68, 0.2],
+    )
+    story.append(
+        paragraph(
+            "Both plots use the authoritative common-GPU final-checkpoint deployment pass. Vertical bars show RAD adaptation sample SD. Horizontal FPS bars include timing noise across the three checkpoint profiles. Native timings use the full recorded preprocessing and inference contract.",
+            "PaperSmall",
         )
+    )
     for model in report["headline_order"]:
         entries = [entry for entry in aggregates if entry["model"] == model]
         source_stage_pages(model)
@@ -891,59 +1097,45 @@ def build_pdf(path: Path, report: dict) -> None:
         )
         class_table(entries, "iou")
         story.append(paragraph("Deployment and RAD training resources", "Heading2"))
-        table(
-            [
-                [
-                    "Recipe",
-                    "Model FPS\nMean / SD",
-                    "Native FPS\nMean / SD",
-                    "Train peak GiB\nMean / SD",
-                    "Train hours\nMean / SD",
-                    "Parameters M",
-                    "Weights MiB",
-                ]
+        for entry in entries:
+            banks = sorted({run["weights"] for run in report["runs"] if run["model"] == model})
+            story.append(paragraph("Final-checkpoint weight bank " + "/".join(banks), "PaperSmall"))
+            rows = [["Measurement", "Mean", "SD", "n / 3", "Minimum", "Maximum"]]
+            fields = [
+                ("Model-only FPS", "model_only_fps", 1),
+                ("Native-pipeline FPS", "native_pipeline_fps", 1),
+                ("Observed train allocator peak GiB", "training_peak_bytes", 1 / 2**30),
+                ("Sampled train driver peak GiB", "sampled_training_driver_peak_bytes", 1 / 2**30),
+                ("Recorded RAD training hours", "training_hours", 1),
+                ("Parameters M", "parameter_count", 1 / 1e6),
+                ("Weights MiB", "resident_parameter_bytes", 1 / 2**20),
+                ("Inference allocator peak GiB", "allocator_peak_bytes", 1 / 2**30),
+                ("Inference process GiB", "process_total_bytes", 1 / 2**30),
+                ("Native allocator peak GiB", "native_allocator_peak_bytes", 1 / 2**30),
             ]
-            + [
-                [
-                    entry["protocol"],
-                    format_summary(entry["model_only_fps"], 1),
-                    format_summary(entry["native_pipeline_fps"], 1),
-                    format_summary(entry["training_peak_bytes"], 1 / 2**30),
-                    (
-                        f">= {entry['training_hours']['mean']:.2f}\nSD unknown"
-                        if entry["training_hours_is_lower_bound"]
-                        else format_summary(entry["training_hours"], 1)
-                    ),
-                    format_summary(entry["parameter_count"], 1 / 1e6),
-                    format_summary(entry["resident_parameter_bytes"], 1 / 2**20),
-                ]
-                for entry in entries
-            ],
-            [0.22, 0.13, 0.13, 0.13, 0.13, 0.13, 0.13],
-        )
-        table(
-            [
-                [
-                    "Recipe",
-                    "Inference allocator peak GiB",
-                    "Inference process GiB",
-                    "Native allocator peak GiB",
-                ]
-            ]
-            + [
-                [
-                    entry["protocol"],
-                    format_summary(entry["allocator_peak_bytes"], 1 / 2**30),
-                    format_summary(entry["process_total_bytes"], 1 / 2**30),
-                    format_summary(entry["native_allocator_peak_bytes"], 1 / 2**30),
-                ]
-                for entry in entries
-            ],
-            [0.28, 0.24, 0.24, 0.24],
-        )
+            for label, field, scale in fields:
+                values = entry[field]
+                lower = (field == "training_hours" and entry["training_hours_is_lower_bound"]) or (
+                    field == "training_peak_bytes"
+                    and not entry["training_allocator_peak_accounting_complete"]
+                )
+                mean = metric(values["mean"], scale)
+                if lower and values["mean"] is not None:
+                    mean = ">= " + mean
+                rows.append(
+                    [
+                        label,
+                        mean,
+                        "Unknown" if lower else metric(values["sample_sd"], scale),
+                        values["n"],
+                        metric(values.get("minimum"), scale),
+                        metric(values.get("maximum"), scale),
+                    ]
+                )
+            table(rows, [0.34, 0.14, 0.14, 0.1, 0.14, 0.14])
         story.append(
             paragraph(
-                "Training hours include recorded failed attempts. Incomplete-tail hours are explicit lower bounds with unknown SD. Train peak is the successful final invocation's allocator peak. Weight size counts resident parameters. Process memory is the recorded post-loop sample. Native timing uses its recorded preprocessing, tiling and prediction contract.",
+                "Recorded training hours include failed attempts. Missing tails and missing allocator observations produce lower bounds with unknown full-run SD. Allocator peaks take the maximum across retained invocation receipts. Driver memory is sampled separately and includes context. Available measurement counts accompany incomplete resource summaries.",
                 "PaperSmall",
             )
         )
@@ -991,6 +1183,7 @@ def build_pdf(path: Path, report: dict) -> None:
                 ],
                 "RAD_duration_seconds": training.get("wall_clock_s"),
                 "source_checkpoint": run.get("source_checkpoint"),
+                "initialization": training.get("env", {}).get("initialization"),
             }
             story.append(
                 paragraph(
@@ -1000,19 +1193,12 @@ def build_pdf(path: Path, report: dict) -> None:
                 )
             )
         story.append(PageBreak())
-        title(model.replace("_", " ") + "\nClass metrics and false alarms")
+        title(model.replace("_", " ") + "\nPooled class metrics")
         common = next(
             entry for entry in entries if entry["protocol"] == protocol["headline_protocol"]
         )
         rows = [
-            [
-                "Class",
-                "Precision (%)\nMean / SD",
-                "Recall (%)\nMean / SD",
-                "Dice (%)\nMean / SD",
-                "Any-pixel alarm (%)\nMean / SD",
-                "0.1% area alarm (%)\nMean / SD",
-            ]
+            ["Class", "Precision mean (%)", "SD", "Recall mean (%)", "SD", "Dice mean (%)", "SD"]
         ]
         for name in report["class_names"]:
             values = common["per_class"][name]
@@ -1020,21 +1206,71 @@ def build_pdf(path: Path, report: dict) -> None:
                 [
                     name,
                     *[
-                        format_summary(values[field])
-                        for field in (
-                            "precision",
-                            "recall",
-                            "dice",
-                            "negative_image_false_alarm_rate",
-                            "negative_image_false_alarm_rate_area",
-                        )
+                        metric(values[field][statistic])
+                        for field in ("precision", "recall", "dice")
+                        for statistic in ("mean", "sample_sd")
                     ],
                 ]
             )
-        table(rows, [0.3, 0.14, 0.14, 0.14, 0.14, 0.14])
+        table(rows, [0.28, 0.14, 0.1, 0.14, 0.1, 0.14, 0.1])
+        story.append(PageBreak())
+        title(model.replace("_", " ") + "\nNegative-image false alarms")
+        rows = [["Class", "Any-pixel mean (%)", "SD", "0.1% area mean (%)", "SD"]]
+        for name in report["class_names"]:
+            values = common["per_class"][name]
+            rows.append(
+                [
+                    name,
+                    *[
+                        metric(values[field][statistic])
+                        for field in (
+                            "negative_image_false_alarm_rate",
+                            "negative_image_false_alarm_rate_area",
+                        )
+                        for statistic in ("mean", "sample_sd")
+                    ],
+                ]
+            )
+        table(rows, [0.36, 0.2, 0.12, 0.2, 0.12])
         story.append(
             paragraph(
-                "False-alarm rates use only images with zero ground-truth pixels of the named class. The two fixed rules count any predicted pixel, or predicted area at least 0.1 percent of valid pixels. N/A records zero negative images. Precise positive/negative image and pixel denominators remain in rad-paper.json.",
+                "False-alarm denominators contain images with zero ground-truth pixels of the named class. The fixed rules count any predicted pixel, or predicted area at least 0.1 percent of valid pixels. N/A identifies an unavailable denominator. Exact support counts remain in the JSON.",
+                "PaperSmall",
+            )
+        )
+        story.append(paragraph("Individual RAD replicates and observed range", "Heading2"))
+        rows = [["Measurement", "Seed 0", "Seed 1", "Seed 2", "Minimum", "Maximum", "Mean", "SD"]]
+        replicate_fields = [
+            ("Pooled mIoU (%)", common["pixel_pooled_miou"], 100),
+            ("Positive-image mIoU (%)", common["class_positive_image_miou"], 100),
+            ("Mud pooled IoU (%)", common["per_class"]["mud-pumping"]["iou"], 100),
+            (
+                "Mud positive-image IoU (%)",
+                common["per_class"]["mud-pumping"]["positive_image_iou"],
+                100,
+            ),
+            ("Model-only FPS", common["model_only_fps"], 1),
+            ("Native-pipeline FPS", common["native_pipeline_fps"], 1),
+            ("Recorded training hours", common["training_hours"], 1),
+        ]
+        for label, values, scale in replicate_fields:
+            rows.append(
+                [
+                    label,
+                    *[metric(values["seeds"].get(str(seed)), scale) for seed in range(3)],
+                    metric(values.get("minimum"), scale),
+                    metric(values.get("maximum"), scale),
+                    metric(values["mean"], scale),
+                    "Unknown"
+                    if label == "Recorded training hours"
+                    and common["training_hours_is_lower_bound"]
+                    else metric(values["sample_sd"], scale),
+                ]
+            )
+        table(rows, [0.3] + [0.1] * 7)
+        story.append(
+            paragraph(
+                "FPS variation across adaptation seeds includes timing noise. Resource summaries with fewer available measurements remain descriptive and retain their observed count in the resource table. Unknown recovery tails do not trigger a scientific rerun.",
                 "PaperSmall",
             )
         )

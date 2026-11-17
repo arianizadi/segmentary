@@ -316,15 +316,19 @@ def test_legacy_parent_and_child_keep_seven_gpu_authorization(paper_request, mon
     ) == set(allowed)
 
 
-def test_native_pipeline_profile_restores_narrow_shapes_on_cpu(tmp_path, monkeypatch):
+@pytest.mark.parametrize("heights", [(3,), (3, 33)])
+def test_native_pipeline_profile_restores_narrow_shapes_on_cpu(tmp_path, monkeypatch, heights):
     import segmentary.performance as performance
 
-    samples = [{"key": "narrow", "width": 5, "height": 3}]
+    samples = [{"key": f"narrow-{height}", "width": 5, "height": height} for height in heights]
     monkeypatch.setattr(profiler.test_eval, "validate_dataset", lambda *a: samples)
     monkeypatch.setattr(
         profiler.test_eval,
         "load_test_image",
-        lambda *a: (np.zeros((3, 5, 3), np.uint8), np.zeros((3, 5), np.uint8)),
+        lambda root, sample, n: (
+            np.zeros((sample["height"], 5, 3), np.uint8),
+            np.zeros((sample["height"], 5), np.uint8),
+        ),
     )
     monkeypatch.setattr(torch.Tensor, "cuda", lambda self: self)
     monkeypatch.setattr(torch, "autocast", lambda *a, **k: contextlib.nullcontext())
@@ -352,8 +356,12 @@ def test_native_pipeline_profile_restores_narrow_shapes_on_cpu(tmp_path, monkeyp
     result = profiler.native_pipeline_profile(
         object(), cfg, {"dataset_root": str(tmp_path)}, ["a", "b"], "GPU-fake"
     )
-    assert sizes == [(32, 32)] * 3
-    assert result["contract"]["measured_images"] == 1
+    expected_shapes = [((height + 31) // 32 * 32, 32) for height in heights]
+    assert sizes == [shape for shape in expected_shapes for _ in range(2)] + expected_shapes
+    assert result["contract"]["warmup_padded_shapes_hw"] == [
+        list(shape) for shape in expected_shapes
+    ]
+    assert result["contract"]["measured_images"] == len(heights)
     assert result["measurements"]["per_image"][0]["width"] == 5
     assert result["measurements"]["peak_allocated_bytes"] == 80
 

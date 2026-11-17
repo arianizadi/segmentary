@@ -70,7 +70,8 @@ def test_old_deterministic_or_invalid_profiles_cannot_resume(tmp_path, change):
 def test_does_not_start_profiling_until_every_frozen_test_job_completed(monkeypatch):
     calls = []
 
-    def complete(output, job, *_):
+    def complete(output, job, *_, rehearsal=False):
+        assert rehearsal is False
         calls.append((output, job["name"]))
         return job["name"] == "a"
 

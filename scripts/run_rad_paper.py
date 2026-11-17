@@ -20,6 +20,7 @@ import yaml
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "src"))
+from scripts import evaluate_rad_source_stages as source_stages
 from scripts import run_rtis_full_campaign as full
 from scripts.rad_test_contract import validate_v2
 from scripts.run_rad_test import digest, validate_request, write
@@ -125,9 +126,82 @@ def protocol_before_training(plan: dict) -> dict:
     return protocol
 
 
+def confirmed_scope(plan: dict) -> None:
+    protocol = protocol_before_training(plan)
+    models = protocol["models"]
+    headline = "cityscapes_to_railsem19_to_rtis"
+    expected = {(model, headline, seed) for model in models for seed in (0, 1, 2)}
+    actual = [(job["model"], job["protocol"], job["seed"]) for job in plan["jobs"]]
+    if (
+        protocol.get("matrix") != "staged24"
+        or protocol["split_policy"] != "finalfit"
+        or len(models) != 8
+        or len(set(models)) != 8
+        or len(actual) != 24
+        or set(actual) != expected
+        or any(type(job["seed"]) is not int for job in plan["jobs"])
+        or protocol["headline_protocol"] != headline
+        or plan["target_steps_per_job"] != 4000
+        or plan.get("validation_enabled") is not False
+        or plan.get("primary_checkpoint") != "final"
+        or plan.get("collection_contract") != "rtis-final-train-statistics-v2"
+    ):
+        raise ValueError(
+            "The confirmed paper scope is staged24 finalfit: eight City-to-Rail-to-RAD models, three seeds, 4000 steps"
+        )
+
+
+def dataset_binding(plan: dict, campaign: dict) -> Path:
+    roots = {
+        str(
+            Path(
+                yaml.safe_load(Path(job["config"]).read_text())["stages"][0]["data"][0]["root"]
+            ).resolve()
+        )
+        for job in plan["jobs"]
+    }
+    if len(roots) != 1:
+        raise ValueError("The paper run set must use one frozen dataset")
+    root = Path(roots.pop())
+    splits = read(root / "splits.json")
+    if {split: len(splits[split]) for split in ("train", "val", "test")} != {
+        "train": 255,
+        "val": 0,
+        "test": 59,
+    }:
+        raise ValueError("The confirmed final-fit dataset must contain 255/0/59 images")
+    if (
+        digest(root / "splits.json") != plan["split_sha256"]
+        or plan["split_sha256"] != campaign["split_sha256"]
+    ):
+        raise ValueError("Dataset split differs from the frozen training campaign")
+    if digest(root / "audit/samples.json") != campaign.get("dataset_audit_sha256"):
+        raise ValueError("Dataset sample audit differs from the frozen training campaign")
+    if digest(root / "classes.json") != campaign.get("dataset_classes_sha256"):
+        raise ValueError("Dataset class schema differs from the frozen training campaign")
+    return root
+
+
+def preflight(root: Path, plan: dict, repo: Path) -> None:
+    """Fail on every frozen source dependency before any training is launched."""
+    confirmed_scope(plan)
+    campaign = read(root / "campaign.json")
+    source_stages.verify_checkout(repo, campaign["code_sha"])
+    if campaign.get("plan_sha256") != digest(root / "plan.json"):
+        raise ValueError("Training campaign plan SHA-256 differs")
+    dataset_binding(plan, campaign)
+    pointer = plan["research_protocol"]["source_stage_reports"]
+    spec, _policy, _sha = source_stages.validate_request(Path(pointer["spec"]), repo)
+    if set(spec["models"]) != set(plan["research_protocol"]["models"]):
+        raise ValueError("Source-stage request models differ from the confirmed paper scope")
+    for job in spec["jobs"]:
+        source_stages.verify_source(job)
+
+
 def freeze_request(root: Path, plan_path: Path, repo: Path, benchmark_gpu: int) -> Path:
     """Create an immutable complete-run request, or verify the existing request."""
     plan = read(plan_path)
+    confirmed_scope(plan)
     protocol = protocol_before_training(plan)
     jobs = completed_jobs(root, plan)
     training_path = root / "campaign.json"
@@ -135,11 +209,7 @@ def freeze_request(root: Path, plan_path: Path, repo: Path, benchmark_gpu: int) 
     allowed = training.get("launch_requirements", {}).get("expected_gpu_allowlist", [])
     if benchmark_gpu not in allowed:
         raise ValueError("Benchmark GPU is outside the training campaign authorization")
-    configured = [yaml.safe_load(Path(job["config"]).read_text()) for job in jobs]
-    roots = {str(Path(cfg["stages"][0]["data"][0]["root"]).resolve()) for cfg in configured}
-    if len(roots) != 1:
-        raise ValueError("The paper run set must use one frozen dataset")
-    dataset_root = Path(roots.pop())
+    dataset_root = dataset_binding(plan, training)
     splits = read(dataset_root / "splits.json")
     if not set(protocol["qualitative_keys"]) <= set(splits["test"]):
         raise ValueError("Frozen qualitative keys must belong to the held-out test split")
@@ -152,7 +222,7 @@ def freeze_request(root: Path, plan_path: Path, repo: Path, benchmark_gpu: int) 
     campaign_path = output / "campaign.json"
     head = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
     dirty = subprocess.check_output(["git", "-C", str(repo), "status", "--porcelain"], text=True)
-    if dirty:
+    if dirty or head != training["code_sha"]:
         raise ValueError("Freeze test evaluation from a clean committed checkout")
     request = {
         "schema_version": 2,
@@ -208,6 +278,7 @@ def run(args: argparse.Namespace) -> dict:
     protocol_before_training(plan)
     if not (root / "campaign.json").is_file():
         raise ValueError("Initialize the training campaign and its launch preflight first")
+    preflight(root, plan, repo)
     status_path = root / "paper-controller-status.json"
 
     def phase(name: str) -> None:

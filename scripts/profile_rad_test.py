@@ -32,10 +32,12 @@ def output_directory(request: dict, job_name: str) -> Path:
 def require_finished_test(request: dict, job: dict, request_sha: str) -> tuple[Path, dict]:
     path = Path(request["output_root"]) / job["name"] / "result.json"
     value = test_eval.read_json(path)
+    rehearsal = request.get("rehearsal", False)
     if not (
         value.get("status") == "completed"
-        and value.get("test_evaluated") is True
-        and value.get("split") == "test"
+        and value.get("test_evaluated") is (not rehearsal)
+        and value.get("split") == ("train" if rehearsal else "test")
+        and bool(value.get("rehearsal")) == rehearsal
         and value.get("name") == job["name"]
         and value.get("request_sha256") == request_sha
         and value.get("checkpoint_sha256") == job["final_checkpoint_sha256"]
@@ -112,9 +114,14 @@ def native_pipeline_profile(model, cfg, request: dict, names: list[str], gpu_uui
                 "Native benchmark failed to restore original image dimensions"
             )
 
-    first_rgb, first_target = test_eval.load_test_image(root, samples[0], len(names))
-    for _ in range(2):
-        predict(first_rgb, first_target.shape)
+    shape_examples = {}
+    for sample in samples:
+        shape = ((sample["height"] + 31) // 32 * 32, (sample["width"] + 31) // 32 * 32)
+        shape_examples.setdefault(shape, sample)
+    for sample in shape_examples.values():
+        rgb, target = test_eval.load_test_image(root, sample, len(names))
+        for _ in range(2):
+            predict(rgb, target.shape)
     torch.cuda.synchronize()
     torch.cuda.empty_cache()
     torch.cuda.reset_peak_memory_stats()
@@ -142,8 +149,10 @@ def native_pipeline_profile(model, cfg, request: dict, names: list[str], gpu_uui
             "sliding_window": cfg.eval.sliding_window,
             "window": list(cfg.eval.window),
             "stride": list(cfg.eval.stride),
-            "warmup_images": 2,
-            "warmup_image_key": samples[0]["key"],
+            "warmup_images": 2 * len(shape_examples),
+            "warmup_iterations_per_shape": 2,
+            "warmup_padded_shapes_hw": [list(shape) for shape in shape_examples],
+            "warmup_image_keys": [sample["key"] for sample in shape_examples.values()],
             "measured_images": len(samples),
             "includes": [
                 "RGB preprocessing",
@@ -203,7 +212,9 @@ def completed_profile(directory: Path, request_sha: str, checkpoint_sha: str) ->
 
 def profile(request_path: Path, job_name: str, gpu: int) -> dict:
     request, job, campaign = test_eval.validate_request(request_path, job_name, gpu)
-    if request["schema_version"] == 2 and request.get("benchmark_gpu") != gpu:
+    if (request["schema_version"] == 2 or request.get("rehearsal")) and request.get(
+        "benchmark_gpu"
+    ) != gpu:
         raise test_eval.TestEvaluationError("Use the prespecified single benchmark GPU")
     request_sha = test_eval.digest(request_path)
     source_test, source_identity = require_finished_test(request, job, request_sha)
@@ -319,10 +330,12 @@ def profile(request_path: Path, job_name: str, gpu: int) -> dict:
             "finished_at": runtime.now(),
             "environment": collect_env(),
         }
-        if request["schema_version"] == 2:
+        if request["schema_version"] == 2 or request.get("rehearsal"):
             del image
             torch.cuda.empty_cache()
-            performance["authoritative_for_paper"] = True
+            performance["authoritative_for_paper"] = not bool(request.get("rehearsal"))
+            if request.get("rehearsal"):
+                performance["benchmark_scope"] = "rad_pipeline_rehearsal_nonheldout"
             performance["native_pipeline"] = native_pipeline_profile(
                 model, cfg, request, list(space.names), gpu_entry["uuid"]
             )
@@ -334,6 +347,7 @@ def profile(request_path: Path, job_name: str, gpu: int) -> dict:
             "schema_version": 1,
             "status": "completed",
             "task": TASK,
+            "rehearsal": bool(request.get("rehearsal")),
             "name": job_name,
             "request_sha256": request_sha,
             "checkpoint_sha256": job["final_checkpoint_sha256"],

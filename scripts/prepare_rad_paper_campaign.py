@@ -106,6 +106,8 @@ def prepare(
         raise ValueError("Explicit supported matrix and split policy are required")
     if matrix == "staged24" and split_policy != "finalfit":
         raise ValueError("The confirmed staged24 protocol requires finalfit")
+    if matrix == "staged24" and source_stage_spec is None:
+        raise ValueError("The staged24 protocol requires an explicit source-stage spec")
     dataset_root = dataset_root.resolve(strict=True)
     source_checkpoints = source_checkpoints.resolve(strict=True)
     development_scores = development_scores.resolve(strict=True)
@@ -254,6 +256,7 @@ def prepare(
         ],
         "stage_comparison_scope": "Each stage uses its own native dataset and label space; stage metrics describe distinct benchmarks",
         "rad_adaptation_seeds": [0, 1, 2],
+        "seeds": [0, 1, 2],
         "source_training_seeds": [0],
         "source_checkpoint_manifest": {
             "path": str(source_checkpoints),
@@ -265,7 +268,8 @@ def prepare(
         },
         "preset_initialization_order_models": [] if matrix == "staged24" else preset_models,
         "models_without_complete_development_scores": preset_models,
-        "primary_metric": "pixel-pooled 21-class mIoU, seed mean on the prespecified Cityscapes-to-RailSem19-to-RAD headline arm",
+        "primary_metric": "pixel_pooled_miou",
+        "primary_metric_description": "pixel-pooled 21-class mIoU, seed mean on the prespecified Cityscapes-to-RailSem19-to-RAD headline arm",
         "secondary_metrics": [
             "class-positive-image mIoU",
             "per-class pooled IoU, precision, recall and Dice",
@@ -308,8 +312,8 @@ def prepare(
             "The test split has historical exposure",
             "Scene groups are inferred and recording independence remains unconfirmed",
             "RAD seed variation is conditional on fixed source seed-0 checkpoints and does not estimate source-training variation",
-            "Seeds are labels across architectures and initialization recipes, without paired data orders",
-            "Public pretraining corpora and source recipes differ; transfer backbone LR is 0.1x and recipe LR is 1x, so contrasts are system-level initialization recipes",
+            "Seed labels span architectures with architecture-dependent data orders",
+            "Public pretraining corpora and archived source-training conditions vary across architectures",
             "The EoMT public recipe includes COCO-panoptic pretraining; public pretraining exposure differs across model families",
             "Class-positive-image scores omit false alarms on class-negative images",
             "GT qualitative selection is fixed before inference",

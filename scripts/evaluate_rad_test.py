@@ -29,6 +29,7 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts import run_rtis_campaign as runtime
+from scripts.rad_test_contract import evaluation_mode
 
 from segmentary import gpu_policy
 from segmentary.engine.present_image import present_image_metrics
@@ -55,13 +56,16 @@ def verified_path(path: str | Path, expected: str, label: str) -> Path:
 
 def validate_request(request_path: Path, job_name: str, gpu: int) -> tuple[dict, dict, dict]:
     request = read_json(request_path)
-    if (
-        request.get("schema_version") not in (1, 2)
-        or request.get("test_evaluation_authorized") is not True
-    ):
+    if request.get("schema_version") not in (1, 2):
         raise TestEvaluationError(
             "A version-1 or version-2 request explicitly authorizing test evaluation is required"
         )
+    try:
+        evaluation_mode(request)
+    except ValueError as error:
+        raise TestEvaluationError(
+            f"A request explicitly authorizing evaluation is required: {error}"
+        ) from error
     campaign_path = Path(request["campaign_json"])
     campaign = read_json(campaign_path)
     if campaign.get("request_sha256") != digest(request_path):
@@ -73,6 +77,10 @@ def validate_request(request_path: Path, job_name: str, gpu: int) -> tuple[dict,
         verify_evaluation_code(campaign, Path(__file__).resolve().parents[1])
         if not set(gpu_policy.allowed_indices(gpu_policy.load(campaign))) <= authorized:
             raise TestEvaluationError("Frozen test GPU policy exceeds the campaign authorization")
+    elif request.get("rehearsal"):
+        from scripts.rad_test_contract import verify_evaluation_code
+
+        verify_evaluation_code(campaign, Path(__file__).resolve().parents[1])
     policy = gpu_policy.load(campaign)
     if request["schema_version"] == 1 and not set(gpu_policy.allowed_indices(policy)) <= {
         0,
@@ -110,6 +118,12 @@ def validate_request(request_path: Path, job_name: str, gpu: int) -> tuple[dict,
         raise TestEvaluationError("Source training job is not completed")
     if "state_sha256" in job:
         verified_path(job["state_path"], job["state_sha256"], "Source state")
+    if request.get("rehearsal") and (
+        not job.get("state_sha256")
+        or state.get("code_sha") != campaign.get("code_sha")
+        or state.get("collection", {}).get("verified") is not True
+    ):
+        raise TestEvaluationError("Rehearsal requires verified same-code smoke endpoints")
     return request, job, campaign
 
 
@@ -152,7 +166,13 @@ def validate_dataset(request: dict, names: list[str]) -> list[dict]:
         by_split[split] = selected
     if sum(map(len, by_split.values())) != len(samples):
         raise TestEvaluationError("Unknown splits in sample audit")
-    selected = sorted(by_split["test"], key=lambda s: s["key"])
+    split = "train" if request.get("rehearsal") else "test"
+    selected = sorted(by_split[split], key=lambda s: s["key"])
+    if request.get("rehearsal"):
+        wanted = set(request["image_keys"])
+        if not wanted <= set(splits["train"]):
+            raise TestEvaluationError("Rehearsal image keys must belong to training")
+        selected = [sample for sample in selected if sample["key"] in wanted]
     if not selected:
         raise TestEvaluationError("Test split is empty")
     support = sum((audited_pixels(s, len(names)) > 0 for s in selected), np.zeros(len(names), int))
@@ -164,8 +184,11 @@ def validate_dataset(request: dict, names: list[str]) -> list[dict]:
 
 def load_test_image(root: Path, sample: dict, n: int) -> tuple[np.ndarray, np.ndarray]:
     key = sample["key"]
-    image_path = root / "images/test" / (key + sample["image_extension"])
-    target_path = root / "masks/test" / (key + ".png")
+    split = sample.get("split", "test")
+    if split not in ("train", "test"):
+        raise TestEvaluationError("Expected a scored training rehearsal or test sample")
+    image_path = root / "images" / split / (key + sample["image_extension"])
+    target_path = root / "masks" / split / (key + ".png")
     verified_path(image_path, sample["image_sha256"], "Test image")
     with Image.open(target_path) as decoded:
         if decoded.mode != "L" or decoded.size != (sample["width"], sample["height"]):
@@ -243,7 +266,9 @@ def summarize(matrices: dict[str, np.ndarray], names: list[str], samples: list[d
     }
 
 
-def completed_result(directory: Path, request_sha: str, checkpoint_sha: str) -> dict | None:
+def completed_result(
+    directory: Path, request_sha: str, checkpoint_sha: str, *, rehearsal=False
+) -> dict | None:
     path = directory / "result.json"
     if not path.exists():
         return None
@@ -252,8 +277,9 @@ def completed_result(directory: Path, request_sha: str, checkpoint_sha: str) -> 
         value.get("status") == "completed"
         and value.get("request_sha256") == request_sha
         and value.get("checkpoint_sha256") == checkpoint_sha
-        and value.get("split") == "test"
-        and value.get("test_evaluated") is True
+        and value.get("split") == ("train" if rehearsal else "test")
+        and value.get("test_evaluated") is (not rehearsal)
+        and bool(value.get("rehearsal")) == rehearsal
     ):
         raise TestEvaluationError("Existing completed result belongs to a different evaluation")
     for artifact in value["artifacts"].values():
@@ -270,6 +296,8 @@ def completed_result(directory: Path, request_sha: str, checkpoint_sha: str) -> 
 
 def evaluate(request_path: Path, job_name: str, gpu: int) -> dict:
     request, job, campaign = validate_request(request_path, job_name, gpu)
+    split, held_out = evaluation_mode(request)
+    rehearsal = not held_out
     policy = gpu_policy.load(campaign)
     # Verify physical placement before importing the model implementation or touching CUDA.
     gpu_policy.enforce_from_env(init_cuda=False)
@@ -285,7 +313,9 @@ def evaluate(request_path: Path, job_name: str, gpu: int) -> dict:
     directory.mkdir(parents=True, exist_ok=True)
     with (directory / ".evaluate.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        done = completed_result(directory, digest(request_path), job["final_checkpoint_sha256"])
+        done = completed_result(
+            directory, digest(request_path), job["final_checkpoint_sha256"], rehearsal=rehearsal
+        )
         if done is not None:
             return done
         # Fail before CUDA initialization if another process uses the assigned GPU.
@@ -319,13 +349,24 @@ def evaluate(request_path: Path, job_name: str, gpu: int) -> dict:
         started = time.monotonic()
         model = build_model(cfg.model, len(names))
         use_ema = ema_evaluation_safe(model)
+        if request["schema_version"] == 2 or rehearsal:
+            recorded_bank = (
+                read_json(job["state_path"])
+                .get("training", {})
+                .get("env", {})
+                .get("final_weights_policy")
+            )
+            if recorded_bank != ("ema" if use_ema else "raw"):
+                raise TestEvaluationError(
+                    "Evaluation bank differs from the recorded final training policy"
+                )
         model = (
             load_configured_checkpoint(model, cfg, Path(job["final_checkpoint"]), use_ema)
             .cuda()
             .eval()
         )
         performance = None
-        if request["schema_version"] == 1:
+        if request["schema_version"] == 1 and not rehearsal:
             # Same model-only normalized-space zero input as the existing benchmark.
             # Measure before full-resolution evaluation changes the CUDA allocator cache.
             image = torch.zeros((1, 3, 1024, 1024), dtype=torch.float32, device="cuda").contiguous()
@@ -416,7 +457,7 @@ def evaluate(request_path: Path, job_name: str, gpu: int) -> dict:
             rows.append(
                 {
                     "key": sample["key"],
-                    "split": "test",
+                    "split": split,
                     "group": sample["group"],
                     "image_sha256": sample["image_sha256"],
                     "mask_decoded_sha256": sample["mask_sha256"],
@@ -424,7 +465,7 @@ def evaluate(request_path: Path, job_name: str, gpu: int) -> dict:
                     **{f"iou:{name}": s.iou for name, s in zip(names, single.classes, strict=True)},
                 }
             )
-            print(f"{job_name}: test {index}/{len(samples)} {sample['key']}", flush=True)
+            print(f"{job_name}: {split} {index}/{len(samples)} {sample['key']}", flush=True)
         present = summarize(matrices, names, samples)
         total = sum(matrices.values(), np.zeros((len(names), len(names)), np.int64))
         pixel = ConfusionMatrix(len(names), 255, device="cpu")
@@ -476,8 +517,9 @@ def evaluate(request_path: Path, job_name: str, gpu: int) -> dict:
         result = {
             "schema_version": request["schema_version"],
             "status": "completed",
-            "test_evaluated": True,
-            "split": "test",
+            "test_evaluated": held_out,
+            "rehearsal": rehearsal,
+            "split": split,
             "name": job_name,
             "model": job["model"],
             "protocol": job["protocol"],
@@ -511,7 +553,7 @@ def evaluate(request_path: Path, job_name: str, gpu: int) -> dict:
             "pixel_pooled": pixel_metrics,
             "performance": performance,
             "performance_authority": "separate frozen deployment-performance record"
-            if request["schema_version"] == 2
+            if performance is None
             else "legacy inline deterministic profile",
             "environment": collect_env(),
             "artifacts": {

@@ -47,7 +47,7 @@ def verify_checkout(repo: Path, expected: str) -> None:
         raise ValueError("Source-stage evaluation requires its frozen clean code checkout")
 
 
-def validate_request(path: Path, repo: Path) -> tuple[dict, dict, str]:
+def validate_request(path: Path, repo: Path, *, verify_code: bool = True) -> tuple[dict, dict, str]:
     request = json.loads(path.read_text())
     if (
         request.get("schema_version") != 1
@@ -67,7 +67,8 @@ def validate_request(path: Path, repo: Path) -> tuple[dict, dict, str]:
         raise ValueError("Main campaign research protocol SHA-256 changed")
     if request.get("code_sha") != campaign.get("code_sha"):
         raise ValueError("Source-stage code SHA differs from the main campaign")
-    verify_checkout(repo, request["code_sha"])
+    if verify_code:
+        verify_checkout(repo, request["code_sha"])
     policy = gpu_policy.load(campaign)
     if set(gpu_policy.allowed_indices(policy)) != set(range(10)):
         raise ValueError("Source stages require the explicitly frozen 0-9 campaign policy")
@@ -428,7 +429,9 @@ def build_report(request: dict, request_sha: str, *, write_output: bool = True) 
 
 def load_verified_report(request_path: Path, repo: Path) -> dict:
     """Read the aggregate after independently verifying its entire frozen job set."""
-    request, _policy, request_sha = validate_request(request_path.resolve(), repo)
+    request, _policy, request_sha = validate_request(
+        request_path.resolve(), repo, verify_code=False
+    )
     path = Path(request["output_root"]) / "source-stage-reports.json"
     report = json.loads(path.read_text())
     if report != build_report(request, request_sha, write_output=False):

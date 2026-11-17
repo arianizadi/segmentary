@@ -44,7 +44,13 @@ def require_completed_tests(request: dict, request_hash: str) -> None:
     missing = [
         job["name"]
         for job in request["jobs"]
-        if not test_result_complete(output, job, request_hash, request["class_names"])
+        if not test_result_complete(
+            output,
+            job,
+            request_hash,
+            request["class_names"],
+            rehearsal=bool(request.get("rehearsal")),
+        )
     ]
     if missing:
         raise ValueError(
@@ -107,7 +113,7 @@ def run(args: argparse.Namespace) -> int:
     request_path = args.request.resolve()
     request, policy, request_hash = validate_request(request_path)
     selected_gpu = getattr(args, "gpu", None)
-    if request["schema_version"] == 2:
+    if request["schema_version"] == 2 or request.get("rehearsal"):
         frozen_gpu = request.get("benchmark_gpu")
         if not isinstance(frozen_gpu, int) or (
             selected_gpu is not None and selected_gpu != frozen_gpu

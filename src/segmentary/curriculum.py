@@ -150,6 +150,7 @@ def validate_resume_checkpoint(
     stage: StageConfig,
     train_cfg: TrainConfig,
     optim_cfg: OptimConfig,
+    provenance: dict[str, Any] | None = None,
 ) -> int:
     """Require a complete, compatible Lightning training state before resuming."""
     if not checkpoint.is_file():
@@ -208,6 +209,18 @@ def validate_resume_checkpoint(
                 f"resume checkpoint {checkpoint} EMA updates={ema.get('num_updates')!r}, "
                 f"but global_step={step}"
             )
+    if provenance is not None:
+        provenance.update(
+            kind="full_state_resume",
+            checkpoint=str(checkpoint.resolve()),
+            checkpoint_bytes=checkpoint.stat().st_size,
+            checkpoint_global_step=step,
+            weights="raw",
+            model_state_key="state_dict",
+            optimizer_state="restored",
+            ema_shadow_restored=EMA_CHECKPOINT_KEY in state,
+            reset_head=False,
+        )
     return step
 
 
@@ -352,6 +365,7 @@ def load_backbone_weights(
     reset_head: bool,
     *,
     checkpoint_state: dict | None = None,
+    provenance: dict[str, Any] | None = None,
 ) -> None:
     """Load the weights a previous stage evaluated, then optionally reset its head.
 
@@ -361,6 +375,23 @@ def load_backbone_weights(
     training validation and avoiding an EMA-parameter/live-buffer mismatch.
     """
     state = read_checkpoint(ckpt) if checkpoint_state is None else checkpoint_state
+    use_ema = EMA_CHECKPOINT_KEY in state and ema_evaluation_safe(model)
+    source = (
+        {
+            "kind": "source_checkpoint",
+            "checkpoint": str(ckpt.resolve()),
+            "checkpoint_bytes": ckpt.stat().st_size,
+            "checkpoint_global_step": state.get("global_step"),
+            "weights": "ema" if use_ema else "raw",
+            "model_state_key": (
+                EMA_CHECKPOINT_KEY if use_ema else "state_dict" if "state_dict" in state else "root"
+            ),
+            "optimizer_state": "fresh",
+            "reset_head": reset_head,
+        }
+        if provenance is not None
+        else {}
+    )
     if reset_head:
         # A standard source taxonomy and a unified target taxonomy legitimately
         # have different classifier shapes. Identify exactly the tensors owned
@@ -405,7 +436,7 @@ def load_backbone_weights(
                 )
             reset_keys.update(extra_reset_keys)
 
-        if EMA_CHECKPOINT_KEY in state and ema_evaluation_safe(model):
+        if use_ema:
             ema_state = state[EMA_CHECKPOINT_KEY]
             if not isinstance(ema_state, dict):
                 raise RuntimeError(f"invalid EMA state in {ckpt}: expected a mapping")
@@ -459,9 +490,11 @@ def load_backbone_weights(
                 f"loading {ckpt} with reset_head produced an unexpected partial load: "
                 f"missing={missing[:5]}, unexpected={unexpected_after[:5]}"
             )
+        if provenance is not None:
+            provenance.update(source)
         return
 
-    if EMA_CHECKPOINT_KEY in state and ema_evaluation_safe(model):
+    if use_ema:
         ema = ModelEma(model, EmaConfig())
         try:
             ema.load_state_dict(state[EMA_CHECKPOINT_KEY])
@@ -479,6 +512,8 @@ def load_backbone_weights(
                 f"uninitialised (first {missing[:5]}), {len(unexpected)} unexpected "
                 f"(first {unexpected[:5]}). Refusing a partially-loaded checkpoint."
             )
+    if provenance is not None:
+        provenance.update(source)
 
 
 def prepare_stage_model(
@@ -486,6 +521,8 @@ def prepare_stage_model(
     cfg: ExperimentConfig,
     init_ckpt: Path | None,
     reset_head: bool,
+    *,
+    provenance: dict[str, Any] | None = None,
 ) -> SegmentationModel:
     """Apply tuning and a raw/adapted warm-start in the only compatible order."""
     checkpoint_state = read_checkpoint(init_ckpt) if init_ckpt is not None else None
@@ -500,6 +537,7 @@ def prepare_stage_model(
             init_ckpt,
             reset_head,
             checkpoint_state=checkpoint_state,
+            **({"provenance": provenance} if provenance is not None else {}),
         )
     elif reset_head:
         model.reset_head()
@@ -541,7 +579,24 @@ def run_stage(
     # otherwise disable dropout/stochastic depth for the whole experiment.
     model.train()
     init_ckpt = resolve_init(stage, previous)
-    model = prepare_stage_model(model, cfg, init_ckpt, stage.reset_head)
+    source_initializer: dict[str, Any] | None = (
+        {
+            "kind": "public_recipe",
+            "checkpoint": cfg.model.checkpoint,
+            "weights": "recipe_pretrained",
+            "optimizer_state": "fresh",
+            "reset_head": stage.reset_head,
+        }
+        if not train_cfg.validation_enabled
+        else None
+    )
+    model = prepare_stage_model(
+        model,
+        cfg,
+        init_ckpt,
+        stage.reset_head,
+        **({"provenance": source_initializer} if source_initializer is not None else {}),
+    )
     n_frozen = apply_freeze(model, stage.freeze)
     trainable, total = count_trainable(model)
 
@@ -583,6 +638,7 @@ def run_stage(
     )
 
     resume_step: int | None = None
+    resume_provenance: dict[str, Any] | None = {} if not train_cfg.validation_enabled else None
     if resume_checkpoint is not None:
         resume_checkpoint = resume_checkpoint.expanduser().resolve()
         resume_step = validate_resume_checkpoint(
@@ -590,6 +646,7 @@ def run_stage(
             stage=stage,
             train_cfg=train_cfg,
             optim_cfg=optim_cfg,
+            **({"provenance": resume_provenance} if resume_provenance is not None else {}),
         )
 
     checkpoint_callbacks = _checkpoint_callbacks(out_dir, train_cfg)
@@ -671,11 +728,17 @@ def run_stage(
     if not train_cfg.validation_enabled:
         record_env["validation_enabled"] = False
         record_env["final_weights_policy"] = lit.validation_weights
+        record_env["initialization"] = {
+            "source_stage_initializer": source_initializer,
+            "invocation_start": resume_provenance
+            if resume_checkpoint is not None
+            else source_initializer,
+        }
         record_env["stage_optimizer"] = asdict(optim_cfg)
         record_env["training_observations"] = {
             "scope": "this training invocation",
             "examples_seen_this_invocation": lit._training_samples,
-            "optimizer_steps_this_invocation": int(trainer.global_step) - lit._telemetry_start_step,
+            "optimizer_steps_this_invocation": int(trainer.global_step) - (resume_step or 0),
             "nominal_effective_batch_size": train_cfg.batch_size
             * train_cfg.accum
             * int(trainer.world_size),

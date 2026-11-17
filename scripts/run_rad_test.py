@@ -28,7 +28,10 @@ from pathlib import Path
 from typing import Any
 
 REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "src"))
+from scripts.rad_test_contract import evaluation_mode
+
 from segmentary import gpu_policy
 
 AUTHORIZED_GPUS = frozenset((0, 1, 2, 3, 7, 8, 9))
@@ -55,11 +58,9 @@ def write(path: Path, data: dict[str, Any]) -> None:
 
 def validate_request(path: Path) -> tuple[dict[str, Any], dict[str, Any], str]:
     request = json.loads(path.read_text())
-    if (
-        request.get("schema_version") not in (1, 2)
-        or request.get("test_evaluation_authorized") is not True
-    ):
+    if request.get("schema_version") not in (1, 2):
         raise ValueError("An explicitly authorized schema-1 or schema-2 test request is required")
+    evaluation_mode(request)
     campaign_path = Path(request["campaign_json"])
     campaign = json.loads(campaign_path.read_text())
     request_hash = digest(path)
@@ -160,7 +161,7 @@ def shared_lock_paths(root: Path, gpu: int, uuid: str) -> list[Path]:
 
 
 def result_complete(
-    output: Path, job: dict[str, Any], request_hash: str, class_names: list[str]
+    output: Path, job: dict[str, Any], request_hash: str, class_names: list[str], *, rehearsal=False
 ) -> bool:
     """Only a complete, hash-verified result for this exact frozen request resumes."""
     path = output / job["name"] / "result.json"
@@ -172,8 +173,9 @@ def result_complete(
     if (
         result.get("request_sha256") != request_hash
         or result.get("checkpoint_sha256") != job["final_checkpoint_sha256"]
-        or result.get("split") != "test"
-        or result.get("test_evaluated") is not True
+        or result.get("split") != ("train" if rehearsal else "test")
+        or result.get("test_evaluated") is not (not rehearsal)
+        or bool(result.get("rehearsal")) != rehearsal
     ):
         raise ValueError(
             f"Existing result belongs to a different request/checkpoint: {job['name']}"
@@ -256,7 +258,13 @@ def run(args: argparse.Namespace) -> int:
     pending: queue.Queue = queue.Queue()
     mutex, stop = threading.Lock(), threading.Event()
     for job in jobs:
-        complete = result_complete(output, job, request_hash, request["class_names"])
+        complete = result_complete(
+            output,
+            job,
+            request_hash,
+            request["class_names"],
+            rehearsal=bool(request.get("rehearsal")),
+        )
         states[job["name"]] = {"status": "completed" if complete else "queued"}
         if not complete:
             pending.put(job)
@@ -368,7 +376,13 @@ def run(args: argparse.Namespace) -> int:
                             raise RuntimeError(
                                 f"Evaluator exited with code {process.returncode}; see {log}"
                             )
-                    if not result_complete(output, job, request_hash, request["class_names"]):
+                    if not result_complete(
+                        output,
+                        job,
+                        request_hash,
+                        request["class_names"],
+                        rehearsal=bool(request.get("rehearsal")),
+                    ):
                         raise RuntimeError("Evaluator exited without verified completion evidence")
                     update(job["name"], status="completed", finished_at=now())
                 except BaseException as error:

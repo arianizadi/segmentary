@@ -44,6 +44,8 @@ For class `c`, pooled IoU is `sum(TP_c) / [sum(TP_c) + sum(FP_c) + sum(FN_c)]`, 
 
 Precision is `TP / (TP + FP)`, recall is `TP / (TP + FN)`, and Dice is `2TP / (2TP + FP + FN)`. Negative-image reports retain false-positive pixels, their fraction of valid negative-image pixels, and image alarm rates at two fixed descriptive thresholds of one pixel and 0.1 percent of valid image area. The thresholds are fixed before inference. A class with no negative images has an undefined negative-image alarm rate, displayed as `N/A`.
 
+The pooled evaluator assigns precision zero when a supported class is never predicted. An inactive native-source class has `N/A` IoU and remains visible with its actual zero ground-truth support. FPS variation across repeated profiles reflects timing variability. It has a different interpretation from the three-seed accuracy SD.
+
 Every three-seed result includes the three values, mean, sample SD with `ddof=1`, minimum and maximum. Seed SD describes RAD adaptation variation conditional on the fixed source checkpoints. The analysis uses descriptive comparisons. Model construction and global-RNG shuffling produce architecture-dependent data orders, so matching seed labels provide no paired experimental design.
 
 For the three observed scores `x0`, `x1` and `x2`, the mean is `(x0+x1+x2)/3` and sample SD is `sqrt([(x0-mean)^2+(x1-mean)^2+(x2-mean)^2]/2)`. The reported range is `[min(x0,x1,x2), max(x0,x1,x2)]`. These quantities describe adaptation replicates on the fixed test images. Per-block tables retain their class-specific support and macro denominator.
@@ -51,6 +53,8 @@ For the three observed scores `x0`, `x1` and `x2`, the mean is `(x0+x1+x2)/3` an
 Qualitative examples use seed 0 and fixed image keys selected before inference. A deterministic greedy procedure uses only audited ground-truth class presence and group identity, with lexicographic ties. It covers all 21 classes, every test group and a mud-negative image. The default maximum is six images. Preparation raises an error if those requirements need a larger explicit budget.
 
 Report model-only BF16 batch-one 1024² forward FPS separately from native-resolution sliding-window pipeline timing. The speed/accuracy plot uses the pipeline measurement. Record inference allocator peak, process-total GPU memory and training peak memory with their measurement definitions. Report RAD adaptation compute, source-stage compute and available public-pretraining provenance separately.
+
+Native timing warms each distinct stride-32 padded image shape twice before the measured pass. The benchmark retains every image key, native shape and elapsed time. The final RAD deployment pass uses one prespecified idle GPU serially. Source-stage profiles run alongside native source evaluation and retain their device identities as contextual measurements.
 
 ## Scope of interpretation
 
@@ -68,6 +72,23 @@ python scripts/prepare_rad_finalfit.py \
 ```
 
 Point `DATASET_ROOT` at that materialized final-fit dataset. Keep `QUALIFIED_SOURCES` bound to the reviewed archived source-checkpoint manifest.
+
+Prepare the required source-stage request using the committed code SHA, the qualified source manifest, complete archived receipts and the pinned surviving RailSem19 split. `SOURCE_STAGE_SPEC` belongs in the input directory, while `PREPARATION` names the new preparation directory.
+
+```bash
+python scripts/prepare_rad_source_stages.py \
+  --qualified-sources "$QUALIFIED_SOURCES" \
+  --source-metadata tmp/rad-update-20261116/source-stage-evidence.raw.json \
+  --source-provenance tmp/rad-update-20261116/source-provenance.json \
+  --campaign-json "$CAMPAIGN/campaign.json" \
+  --code-sha "$CODE_SHA" \
+  --output-root "$CAMPAIGN/paper/source-stages" \
+  --rail-split-file "$RAIL_SPLIT" \
+  --rail-split-sha256 "$RAIL_SPLIT_SHA256" \
+  --out "$SOURCE_STAGE_SPEC"
+```
+
+The `staged24` preparation requires `--source-stage-spec`. Its bytes are bound into the research protocol before the planner prepares training configurations.
 
 ```bash
 python scripts/prepare_rad_paper_campaign.py \

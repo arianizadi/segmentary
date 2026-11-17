@@ -8,6 +8,38 @@ from pathlib import Path
 from typing import Any
 
 
+def evaluation_mode(request: dict) -> tuple[str, bool]:
+    """Keep an explicitly authorized train-only rehearsal outside held-out results."""
+    rehearsal = request.get("rehearsal", False)
+    if type(rehearsal) is not bool:
+        raise ValueError("rehearsal must be a boolean")
+    if rehearsal:
+        keys = request.get("image_keys")
+        if (
+            request.get("schema_version") != 1
+            or request.get("rehearsal_authorized") is not True
+            or request.get("test_evaluation_authorized") is not False
+            or request.get("evaluation_split") != "train"
+            or not isinstance(keys, list)
+            or not keys
+            or any(
+                not isinstance(key, str) or Path(key).is_absolute() or ".." in Path(key).parts
+                for key in keys
+            )
+            or len(set(keys)) != len(keys)
+        ):
+            raise ValueError(
+                "Explicit schema-1 train-only rehearsal authorization and image keys are required"
+            )
+        return "train", False
+    if (
+        request.get("test_evaluation_authorized") is not True
+        or request.get("evaluation_split", "test") != "test"
+    ):
+        raise ValueError("Explicit held-out test evaluation authorization is required")
+    return "test", True
+
+
 def read_verified(path: str, expected: str, label: str) -> dict:
     raw = Path(path).read_bytes()
     if hashlib.sha256(raw).hexdigest() != expected:

@@ -85,6 +85,13 @@ def verify_frozen(root, repo):
     if digest(root / "plan.json") != campaign["plan_sha256"]:
         raise RuntimeError("Campaign plan changed")
     plan = read(root / "plan.json")
+    if campaign.get("research_protocol"):
+        from segmentary.config import load_experiment
+
+        cfg = load_experiment([Path(plan["jobs"][0]["config"])])
+        classes_path = Path(cfg.stages[0].data[0].root) / "classes.json"
+        if digest(classes_path) != campaign.get("dataset_classes_sha256"):
+            raise RuntimeError("Paper dataset classes changed after initialization")
     # ``smoke`` relaxes the launch preflight, so it must come from the hashed plan.
     if bool(campaign.get("smoke")) != bool(plan.get("smoke")):
         raise RuntimeError("Campaign smoke flag disagrees with the frozen plan")
@@ -288,6 +295,8 @@ def initialize(root, repo):
     for field in ("research_protocol", "research_protocol_sha256"):
         if field in plan:
             campaign[field] = plan[field]
+    if plan.get("research_protocol"):
+        campaign["dataset_classes_sha256"] = digest(data_root / "classes.json")
     if requirements is not None:
         campaign["launch_requirements"] = requirements
         if requirements.get("require_non_rad_sources"):
@@ -405,6 +414,39 @@ def validate_training_collection(cfg, campaign):
             raise RuntimeError("Final-train collection requires the full fixed training budget")
 
 
+def archive_training_receipts(root, job, run):
+    """Retain each original RunRecord before a later invocation can replace it."""
+    directory = root / "attempts" / job["name"] / "training-receipts"
+    source = run / "results.json"
+    if source.exists():
+        raw = source.read_bytes()
+        record = json.loads(raw)
+        if record.get("name") != job["name"] or record.get("seed") != job["seed"]:
+            raise RuntimeError("Training invocation receipt has a different run identity")
+        sha256 = hashlib.sha256(raw).hexdigest()
+        path = directory / f"{sha256}.json"
+        directory.mkdir(parents=True, exist_ok=True)
+        if path.exists():
+            if digest(path) != sha256:
+                raise RuntimeError("Archived training invocation receipt changed")
+        else:
+            temporary = path.with_suffix(f".json.{os.getpid()}.tmp")
+            with temporary.open("wb") as stream:
+                stream.write(raw)
+                stream.flush()
+                os.fsync(stream.fileno())
+            temporary.replace(path)
+    receipts = []
+    for path in sorted(directory.glob("*.json")):
+        if digest(path) != path.stem:
+            raise RuntimeError("Archived training invocation receipt changed")
+        record = read(path)
+        if record.get("name") != job["name"] or record.get("seed") != job["seed"]:
+            raise RuntimeError("Archived training invocation receipt has a different run identity")
+        receipts.append({"path": str(path), "sha256": path.stem})
+    return receipts
+
+
 def run_job(root, repo, job, gpu, campaign):
     from segmentary.config import load_experiment
 
@@ -434,6 +476,12 @@ def run_job(root, repo, job, gpu, campaign):
         "config_sha256": job["config_sha256"],
         "code_sha": campaign["code_sha"],
     }
+    keep_receipts = final_train or bool(campaign.get("research_protocol"))
+    if keep_receipts:
+        state["training_invocation_receipts"] = archive_training_receipts(root, job, run)
+        state["training_invocation_receipts_scope"] = (
+            "Completed RunRecords retained by content SHA. Interrupted invocations without a RunRecord have unknown allocator peaks."
+        )
     write(state_path, state)
     env = gpu_policy.child_env(
         {
@@ -482,6 +530,16 @@ def run_job(root, repo, job, gpu, campaign):
             )
         last = checkpoint_info(run / "last.ckpt")
         training = read(run / "results.json")
+        if keep_receipts:
+            state["training_invocation_receipts"] = archive_training_receipts(root, job, run)
+            missing = []
+            for path in sorted((root / "attempts" / job["name"]).glob("*.json")):
+                attempt = read(path)
+                if attempt.get("phase") == "training" and attempt.get("status") != "completed":
+                    missing.append(str(path))
+            state["training_allocator_peak_accounting_complete"] = not missing
+            state["missing_training_allocator_peak_attempts"] = missing
+            write(state_path, state)
         stop = validate_stop(training, last["global_step"], campaign["target_steps"])
         if final_train and (
             training.get("metrics") != {}

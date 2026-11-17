@@ -64,6 +64,7 @@ def train_dataset(root):
     }
     runtime.write(root / "audit/samples.json", [sample, test])
     runtime.write(root / "splits.json", splits)
+    runtime.write(root / "classes.json", {"classes": ["other", "mud-pumping"]})
     # Deliberately create no test directory. Adaptation must only read its metadata.
     return splits, [sample, test]
 
@@ -80,6 +81,7 @@ def test_final_train_runtime_uses_last_and_genuine_train_evaluation(tmp_path, mo
         "config": str(config),
         "config_sha256": runtime.digest(config),
         "source_checkpoint": None,
+        "seed": 0,
     }
     cfg = final_train_config(data, tmp_path / "future-runs")
     run = tmp_path / "future-runs/job_seed0/rtis"
@@ -87,7 +89,7 @@ def test_final_train_runtime_uses_last_and_genuine_train_evaluation(tmp_path, mo
     (run / "last.ckpt").write_text("final")
     runtime.write(
         run / "results.json",
-        {"metrics": {}, "env": {"validation_enabled": False}},
+        {"name": "job", "seed": 0, "metrics": {}, "env": {"validation_enabled": False}},
     )
     monkeypatch.setitem(
         sys.modules, "segmentary.config", SimpleNamespace(load_experiment=lambda layers: cfg)
@@ -197,6 +199,11 @@ def test_final_train_initialization_does_not_open_test_files(tmp_path, monkeypat
     assert "best" not in campaign["selection"]
     for field in ("dataset_final_fit", "research_protocol", "research_protocol_sha256"):
         assert campaign[field] == plan[field]
+    assert campaign["dataset_classes_sha256"] == runtime.digest(data / "classes.json")
+    runtime.verify_frozen(root, tmp_path)
+    (data / "classes.json").write_text("changed")
+    with pytest.raises(RuntimeError, match="dataset classes changed"):
+        runtime.verify_frozen(root, tmp_path)
 
 
 @pytest.mark.parametrize(
@@ -209,8 +216,18 @@ def test_final_train_protocol_metadata_remains_bound_to_frozen_plan(tmp_path, mo
         "research_protocol": {"primary_metric": "pooled_miou"},
         "research_protocol_sha256": "protocol-hash",
     }
-    campaign = write_campaign(tmp_path, **metadata)
+    data = tmp_path / "data"
+    train_dataset(data)
+    config = tmp_path / "job.yaml"
+    config.write_text("config")
+    campaign = write_campaign(
+        tmp_path,
+        jobs=["job"],
+        **metadata,
+        dataset_classes_sha256=runtime.digest(data / "classes.json"),
+    )
     plan = {**runtime.read(tmp_path / "plan.json"), **metadata}
+    plan["jobs"][0]["config"] = str(config)
     runtime.write(tmp_path / "plan.json", plan)
     campaign["plan_sha256"] = runtime.digest(tmp_path / "plan.json")
     runtime.write(tmp_path / "campaign.json", campaign)
@@ -218,6 +235,11 @@ def test_final_train_protocol_metadata_remains_bound_to_frozen_plan(tmp_path, mo
         runtime, "git", lambda repo, *args: "code" if args[0] == "rev-parse" else ""
     )
     monkeypatch.setattr(runtime.launch_requirements, "validate_plan", lambda *a: None)
+    monkeypatch.setitem(
+        sys.modules,
+        "segmentary.config",
+        SimpleNamespace(load_experiment=lambda *a: final_train_config(data, tmp_path / "runs")),
+    )
     patch_live(monkeypatch)
     runtime.verify_frozen(tmp_path, tmp_path)
     campaign[field] = "changed"

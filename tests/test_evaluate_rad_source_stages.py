@@ -68,6 +68,7 @@ def prepared(tmp_path, monkeypatch):
                                 "data": [
                                     {
                                         "name": dataset,
+                                        "root": str(native_root),
                                         "limit": None,
                                         "loader": None,
                                         "split_file": "/retired/source/rail-split.json"
@@ -276,6 +277,21 @@ def test_aggregate_is_idempotent_and_retains_native_absent_classes(prepared):
         report["models"][0]["stages"][0]["training"]
         == request["jobs"][0]["training_receipt"]["record"]
     )
+
+
+def test_report_verification_allows_current_report_code_to_differ(prepared, monkeypatch):
+    path, request, _ = prepared
+    for job in request["jobs"]:
+        complete(request, job, stages.digest(path))
+    stages.build_report(request, stages.digest(path))
+
+    def changed_checkout(*args):
+        raise ValueError("report checkout has a new HEAD")
+
+    monkeypatch.setattr(stages, "verify_checkout", changed_checkout)
+    with pytest.raises(ValueError, match="new HEAD"):
+        stages.validate_request(path, path.parent)
+    assert stages.load_verified_report(path, path.parent)["code_sha"] == request["code_sha"]
 
 
 @pytest.mark.parametrize("change", ["partial", "duplicate", "wrong-count", "wrong-stage"])
