@@ -1,5 +1,7 @@
 # RAD November 2026 all-class scene split and fresh adaptation
 
+The 149-run development campaign described here was stopped on 16 November 2026. Its completed records are preserved. The current [eight-model, three-seed paper campaign](rad-2026-11-paper.md) reuses this dataset's frozen test membership and combines its training and validation images for the approved final fit.
+
 Claude fable high approved the protocol on 2026-11-13. The dataset was
 materialized and verified on HDRFS. All six GPU preflight jobs passed. The
 149-job campaign started at 11:11 am Pacific on November 13, using frozen code

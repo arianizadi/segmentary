@@ -9,6 +9,7 @@ import hashlib
 import io
 import json
 import math
+import re
 import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -23,6 +24,8 @@ from scripts.rad_paper_metrics import paper_metrics, seed_summary
 from scripts.run_rad_test import digest, result_complete, validate_request, write
 from scripts.run_rad_test_profiles import result_complete as profile_complete
 
+from segmentary.utils.provenance import git_sha
+
 LIMITATIONS = [
     "Seeds measure RAD adaptation variation conditional on the frozen source training runs and these test images. Sample SD uses ddof=1. Seed labels do not establish paired data orders.",
     "The held-out test set was historically exposed. Scene blocks are visually inferred, with original recording provenance unconfirmed. Seed SD does not estimate test sampling uncertainty.",
@@ -31,7 +34,7 @@ LIMITATIONS = [
     "Recipe initialization includes architecture-specific public supervision. EoMT's COCO-panoptic checkpoint and ImageNet-initialized encoders carry different upstream supervision and compute. The comparison describes complete initialization recipes.",
     "Model-only FPS measures batch-one BF16 1024-square dense-logit forwards. Native-pipeline timing includes the independently recorded full-image inference contract. Allocator peak, process memory and resident parameter bytes have separate denominators.",
     "Per-block and leave-one-block-out results are descriptive. Each block has its own class support. Four scene blocks provide limited evidence about new recordings.",
-    "The 4000-step final-fit budget spans about 250 passes through the 255-image loader. The 187-image development loader had about 333 passes at the same update budget. Tail accumulation changes nominal examples per update. Reported example totals use recorded invocation telemetry.",
+    "The 4000-step final-fit budget spans about 250 passes through the 255-image loader. The 187-image development loader had about 333 passes at the same update budget. Tail accumulation changes nominal examples per update. Example counters describe individual recorded invocations. Retained receipts provide the available earlier invocation history, with interrupted counter tails unobserved.",
 ]
 
 
@@ -86,6 +89,101 @@ def training_memory(state: dict) -> dict:
         "sampled_driver_peak_bytes": max(driver, default=None),
         "receipts": state.get("training_invocation_receipts", []),
     }
+
+
+def public_origin_evidence(run: dict, source_stages: dict) -> dict | None:
+    origins = run["training"].get("env", {}).get("model_origins")
+    if origins:
+        return {
+            "basis": "runtime_model_origins",
+            "runtime_model_origins_recorded": True,
+            "model_origins": origins,
+        }
+    model = run["training"].get("config", {}).get("model", {})
+    encoder, weights = model.get("encoder_name"), model.get("encoder_weights")
+    if model.get("arch") != "smp" or not encoder or not weights:
+        return None
+    expected = f"smp-hub/{encoder}.{weights}"
+    for source in source_stages["models"]:
+        if source["model"] != run["model"]:
+            continue
+        for stage in source["stages"]:
+            public = stage.get("public_pretraining", {})
+            revision = public.get("smp_registry_pinned_revision")
+            if (
+                stage["stage"] == "cityscapes"
+                and public.get("public_checkpoint") == expected
+                and isinstance(revision, str)
+                and re.fullmatch(r"[0-9a-fA-F]{40}", revision)
+            ):
+                return {
+                    "basis": "source_public_pretraining_and_encoder_recipe",
+                    "runtime_model_origins_recorded": False,
+                    "revision_evidence": "Evidence is the recorded SMP package-registry pin. RAD runtime observation of the loaded public revision is unavailable.",
+                    "encoder_name": encoder,
+                    "encoder_weights": weights,
+                    "public_pretraining": public,
+                }
+    return None
+
+
+def training_timing(training: dict, resources: dict) -> dict:
+    return {
+        "latest_invocation_run_record_wall_seconds": training.get("wall_clock_s"),
+        "recorded_training_process_wall_seconds_all_attempts": resources.get(
+            "phase_wall_seconds_including_failed_attempts", {}
+        ).get("training"),
+        "recorded_training_process_seconds_is_lower_bound": resources.get(
+            "phase_wall_seconds_are_lower_bounds", {}
+        ).get("training"),
+        "training_process_accounting_complete": resources.get("phase_accounting_complete", {}).get(
+            "training"
+        ),
+        "scope": "RunRecord duration describes the latest completed invocation; training-process duration includes the recorded wall time of all attempts",
+    }
+
+
+def resource_summary(
+    values: dict[int, float | None], lower_bound_seeds: list[int], measurement_scope: str
+) -> dict:
+    result = nullable_summary(values)
+    result.update(
+        measurement_scope=measurement_scope,
+        lower_bound_seeds=sorted(lower_bound_seeds),
+        mean_and_range_are_lower_bounds=bool(lower_bound_seeds),
+    )
+    if lower_bound_seeds:
+        result["observed_sample_sd"] = result["sample_sd"]
+        result["sample_sd"] = None
+    return result
+
+
+def recorded_training_hours(runs: dict[int, dict]) -> dict:
+    durations = {}
+    lower_bound_seeds = []
+    for seed, run in runs.items():
+        timing = training_timing(run["training"], run["training_resources"])
+        seconds = timing["recorded_training_process_wall_seconds_all_attempts"]
+        durations[seed] = seconds / 3600 if seconds is not None else None
+        if timing["recorded_training_process_seconds_is_lower_bound"]:
+            lower_bound_seeds.append(seed)
+    return resource_summary(
+        durations, lower_bound_seeds, "recorded training-process wall time across all attempts"
+    )
+
+
+def recorded_training_allocator_peaks(runs: dict[int, dict]) -> dict:
+    values = {seed: run["training_memory"]["allocator_peak_bytes"] for seed, run in runs.items()}
+    lower_bound_seeds = [
+        seed
+        for seed, run in runs.items()
+        if run["training_memory"]["allocator_accounting_complete"] is not True
+    ]
+    return resource_summary(
+        values,
+        lower_bound_seeds,
+        "maximum observed allocator peak across retained training invocation records",
+    )
 
 
 def class_split_support(samples: list[dict], names: list[str]) -> dict:
@@ -217,9 +315,7 @@ def aggregate(runs: list[dict], names: list[str]) -> list[dict]:
                 "resident_parameter_bytes": summary(
                     lambda run: run["performance"]["model"]["resident_parameter_bytes"]
                 ),
-                "training_peak_bytes": summary(
-                    lambda run: run["training_memory"]["allocator_peak_bytes"]
-                ),
+                "training_peak_bytes": recorded_training_allocator_peaks(seeds),
                 "sampled_training_driver_peak_bytes": summary(
                     lambda run: run["training_memory"]["sampled_driver_peak_bytes"]
                 ),
@@ -227,19 +323,7 @@ def aggregate(runs: list[dict], names: list[str]) -> list[dict]:
                     run["training_memory"]["allocator_accounting_complete"] is True
                     for run in seeds.values()
                 ),
-                "training_hours": summary(
-                    lambda run: (
-                        run["training_resources"]
-                        .get("phase_wall_seconds_including_failed_attempts", {})
-                        .get("training", None)
-                        / 3600
-                        if run["training_resources"]
-                        .get("phase_wall_seconds_including_failed_attempts", {})
-                        .get("training")
-                        is not None
-                        else None
-                    )
-                ),
+                "training_hours": recorded_training_hours(seeds),
                 "training_hours_is_lower_bound": any(
                     run["training_resources"]
                     .get("phase_wall_seconds_are_lower_bounds", {})
@@ -418,7 +502,9 @@ def load_report(request_path: Path) -> dict:
         raise ValueError("Test class support differs between sample audit and confusion evidence")
     missing = []
     for run in runs:
-        if not run["training"].get("env", {}).get("model_origins"):
+        run["public_origin_evidence"] = public_origin_evidence(run, source_stages)
+        run["training_timing"] = training_timing(run["training"], run["training_resources"])
+        if run["public_origin_evidence"] is None:
             missing.append(
                 run["name"] + " public checkpoint origins and revisions must be collected"
             )
@@ -430,8 +516,11 @@ def load_report(request_path: Path) -> dict:
                 missing.append(
                     entry["model"] + "/" + entry["protocol"] + " " + field + " must be collected"
                 )
+    report_code_sha, report_code_dirty = git_sha(REPO)
     return {
         "schema_version": 1,
+        "report_code_sha": report_code_sha,
+        "report_code_dirty": report_code_dirty,
         "request": str(request_path.resolve()),
         "request_sha256": request_sha,
         "training_plan_sha256": request["training_plan_sha256"],
@@ -503,6 +592,13 @@ def write_csv(path: Path, report: dict) -> None:
         ]
         row["weight_bank"] = "/".join(sorted({run["weights"] for run in runs}))
         row["training_hours_is_lower_bound"] = entry["training_hours_is_lower_bound"]
+        for field in ("training_hours", "training_peak_bytes"):
+            row[f"{field}:measurement_scope"] = entry[field]["measurement_scope"]
+            row[f"{field}:observed_sample_sd"] = entry[field].get("observed_sample_sd")
+            for seed in range(3):
+                row[f"{field}:seed_{seed}_is_lower_bound"] = (
+                    seed in entry[field]["lower_bound_seeds"]
+                )
         row["training_allocator_peak_accounting_complete"] = entry[
             "training_allocator_peak_accounting_complete"
         ]
@@ -636,8 +732,10 @@ def build_pdf(path: Path, report: dict) -> None:
         canvas.drawRightString(A4[0] - 36, 22, str(canvas.getPageNumber()))
         canvas.restoreState()
 
-    def metric(value, scale=100):
-        return "N/A" if value is None else f"{scale * value:.2f}"
+    def metric(value, scale=100, lower_bound=False):
+        if value is None:
+            return "N/A"
+        return (">= " if lower_bound else "") + f"{scale * value:.2f}"
 
     def speed_plot(field, label):
         drawing = Drawing(width, 220)
@@ -849,7 +947,7 @@ def build_pdf(path: Path, report: dict) -> None:
                     [
                         "Native validation mIoU (%)",
                         "Model-only FPS",
-                        "Training hours",
+                        "Latest recorded invocation wall hours",
                         "Parameters M",
                         "Weights MiB",
                     ],
@@ -884,7 +982,7 @@ def build_pdf(path: Path, report: dict) -> None:
             table(rows, [0.31, 0.17, 0.13, 0.13, 0.13, 0.13])
             story.append(
                 paragraph(
-                    "Source evaluations use the native dataset and label space of this stage. Cityscapes validation, RailSem19 validation and RAD test each describe their own samples and taxonomy. Source training runs are reused across all three RAD adaptation seeds.",
+                    "Source evaluations use the native dataset and label space of this stage. Cityscapes validation, RailSem19 validation and RAD test each describe their own samples and taxonomy. Source wall time comes from its latest recorded RunRecord invocation and includes validation. Earlier source invocation history is unknown. Source training runs are reused across all three RAD adaptation seeds.",
                     "PaperSmall",
                 )
             )
@@ -894,7 +992,8 @@ def build_pdf(path: Path, report: dict) -> None:
                 "optimizer": cfg.get("optim"),
                 "effective_stage_optimizer": training.get("env", {}).get("stage_optimizer"),
                 "model": cfg.get("model"),
-                "training_duration_seconds": duration,
+                "latest_recorded_source_invocation_wall_seconds": duration,
+                "source_wall_time_scope": "latest recorded source RunRecord invocation including validation; earlier invocation history is unknown",
             }
             story.append(
                 paragraph(
@@ -1119,17 +1218,14 @@ def build_pdf(path: Path, report: dict) -> None:
                     field == "training_peak_bytes"
                     and not entry["training_allocator_peak_accounting_complete"]
                 )
-                mean = metric(values["mean"], scale)
-                if lower and values["mean"] is not None:
-                    mean = ">= " + mean
                 rows.append(
                     [
                         label,
-                        mean,
+                        metric(values["mean"], scale, lower),
                         "Unknown" if lower else metric(values["sample_sd"], scale),
                         values["n"],
-                        metric(values.get("minimum"), scale),
-                        metric(values.get("maximum"), scale),
+                        metric(values.get("minimum"), scale, lower),
+                        metric(values.get("maximum"), scale, lower),
                     ]
                 )
             table(rows, [0.34, 0.14, 0.14, 0.1, 0.14, 0.14])
@@ -1161,8 +1257,14 @@ def build_pdf(path: Path, report: dict) -> None:
         if observations:
             story.append(
                 paragraph(
-                    "Recorded training observations by invocation\n"
+                    "Latest-invocation training observations\n"
                     + json.dumps(observations, sort_keys=True),
+                    "PaperSmall",
+                )
+            )
+            story.append(
+                paragraph(
+                    "These counters describe the latest completed RunRecord invocation. Available earlier invocation counters remain in the hash-verified training invocation receipts referenced in the JSON. Interrupted invocation counter tails can be unrecorded.",
                     "PaperSmall",
                 )
             )
@@ -1176,12 +1278,13 @@ def build_pdf(path: Path, report: dict) -> None:
                 "recipe": run["protocol"],
                 "public_model": cfg.get("model"),
                 "origins": origins,
+                "public_origin_evidence": run["public_origin_evidence"],
                 "optimizer": cfg.get("optim"),
                 "stage_learning_rates": [
                     {key: stage.get(key) for key in ("lr_scale", "head_group_lr_scale", "iters")}
                     for stage in cfg.get("stages", [])
                 ],
-                "RAD_duration_seconds": training.get("wall_clock_s"),
+                "training_timing": run["training_timing"],
                 "source_checkpoint": run.get("source_checkpoint"),
                 "initialization": training.get("env", {}).get("initialization"),
             }
@@ -1254,13 +1357,21 @@ def build_pdf(path: Path, report: dict) -> None:
             ("Recorded training hours", common["training_hours"], 1),
         ]
         for label, values, scale in replicate_fields:
+            lower = values.get("mean_and_range_are_lower_bounds", False)
             rows.append(
                 [
                     label,
-                    *[metric(values["seeds"].get(str(seed)), scale) for seed in range(3)],
-                    metric(values.get("minimum"), scale),
-                    metric(values.get("maximum"), scale),
-                    metric(values["mean"], scale),
+                    *[
+                        metric(
+                            values["seeds"].get(str(seed)),
+                            scale,
+                            seed in values.get("lower_bound_seeds", []),
+                        )
+                        for seed in range(3)
+                    ],
+                    metric(values.get("minimum"), scale, lower),
+                    metric(values.get("maximum"), scale, lower),
+                    metric(values["mean"], scale, lower),
                     "Unknown"
                     if label == "Recorded training hours"
                     and common["training_hours_is_lower_bound"]
@@ -1356,10 +1467,12 @@ def build_pdf(path: Path, report: dict) -> None:
         "training_plan_sha256",
         "training_campaign_sha256",
         "training_code_sha",
+        "report_code_sha",
+        "report_code_dirty",
         "split_sha256",
         "samples_sha256",
     ):
-        story.append(paragraph(field.replace("_", " ") + "\n" + report[field], "PaperSmall"))
+        story.append(paragraph(field.replace("_", " ") + "\n" + str(report[field]), "PaperSmall"))
     story.append(
         paragraph(
             "Every RAD run binds its configuration and final checkpoint. Full state hashes, raw timing samples, optimizer recipes, source records, per-block statistics and individual-seed metrics remain in rad-paper.json and the hashed artifacts it references.",

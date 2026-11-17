@@ -27,7 +27,8 @@ from segmentary import gpu_policy
 
 
 @pytest.fixture
-def paper_campaign(tmp_path, monkeypatch):
+def paper_campaign(tmp_path, monkeypatch, request):
+    smp = getattr(request, "param", None) == "smp"
     root = tmp_path / "campaign"
     root.mkdir()
     data = tmp_path / "dataset"
@@ -157,6 +158,15 @@ def paper_campaign(tmp_path, monkeypatch):
     }
     base_source = source_report["models"][0]
     source_report["models"] = [{**copy.deepcopy(base_source), "model": model} for model in models]
+    if smp:
+        for source in source_report["models"]:
+            for stage in source["stages"]:
+                stage["public_pretraining"] = {
+                    "model": source["model"],
+                    "public_checkpoint": "smp-hub/resnet50.imagenet",
+                    "public_revision_status": "Pinned inside installed SMP encoder registry",
+                    "smp_registry_pinned_revision": "c" * 40,
+                }
     write(tmp_path / "source-stage/source-stage-reports.json", source_report)
     monkeypatch.setattr(
         source_evaluator, "load_verified_report", lambda *args: source_report, raising=False
@@ -181,7 +191,9 @@ def paper_campaign(tmp_path, monkeypatch):
         config.parent.mkdir(exist_ok=True)
         cfg = {
             "stages": [{"data": [{"root": str(data)}], "lr_scale": 0.1}],
-            "model": {"arch": "tiny"},
+            "model": {"arch": "smp", "encoder_name": "resnet50", "encoder_weights": "imagenet"}
+            if smp
+            else {"arch": "tiny"},
             "optim": {"backbone_lr": 1e-5},
         }
         config.write_text(yaml.safe_dump(cfg))
@@ -225,7 +237,9 @@ def paper_campaign(tmp_path, monkeypatch):
                     "peak_vram_bytes": {"cuda:0": 2**30},
                     "wall_clock_s": 90 + seed,
                     "env": {
-                        "model_origins": [{"hf_name_or_path": "synthetic", "hf_commit": "pinned"}]
+                        "model_origins": []
+                        if smp
+                        else [{"hf_name_or_path": "synthetic", "hf_commit": "pinned"}]
                     },
                 },
             },
@@ -499,6 +513,9 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
     assert "Speed and segmentation accuracy" in text
     assert "Individual RAD replicates and observed range" in text
     assert "Evaluation weight bank raw" in text
+    assert "report code sha" in text
+    assert "report code dirty" in text
+    assert "RAD_duration_seconds" not in text
     assert json.loads((out / "rad-paper.json").read_text())["request_sha256"] == digest(
         paper_campaign.request
     )
@@ -688,3 +705,185 @@ def test_training_allocator_peak_uses_verified_invocation_history(tmp_path):
     assert memory["allocator_peak_bytes"] == 4 * 2**30
     assert memory["sampled_driver_peak_bytes"] == 9000 * 2**20
     assert memory["allocator_accounting_complete"] is False
+
+
+@pytest.mark.parametrize("paper_campaign", ["smp"], indirect=True)
+def test_smp_public_encoder_evidence_prevents_false_missing_origin_warning(paper_campaign):
+    value = report.load_report(paper_campaign.request)
+    assert not any(
+        "public checkpoint origins" in missing for missing in value["missing_provenance"]
+    )
+    for run in value["runs"]:
+        assert run["training"]["env"]["model_origins"] == []
+        origin = run["public_origin_evidence"]
+        assert origin["basis"] == "source_public_pretraining_and_encoder_recipe"
+        assert origin["runtime_model_origins_recorded"] is False
+        assert "package-registry pin" in origin["revision_evidence"]
+        assert "RAD runtime observation" in origin["revision_evidence"]
+        assert origin["public_pretraining"]["public_checkpoint"] == "smp-hub/resnet50.imagenet"
+        assert origin["public_pretraining"]["smp_registry_pinned_revision"] == "c" * 40
+
+
+def test_smp_origin_requires_matching_public_pretraining_and_encoder_recipe():
+    run = {
+        "model": "smp-model",
+        "training": {
+            "env": {"model_origins": []},
+            "config": {
+                "model": {"arch": "smp", "encoder_name": "resnet50", "encoder_weights": "imagenet"}
+            },
+        },
+    }
+    stages = {
+        "models": [
+            {
+                "model": "smp-model",
+                "stages": [
+                    {
+                        "stage": "cityscapes",
+                        "public_pretraining": {"public_checkpoint": "smp-hub/resnet101.imagenet"},
+                    }
+                ],
+            }
+        ]
+    }
+    assert report.public_origin_evidence(run, stages) is None
+    stages["models"][0]["stages"][0]["public_pretraining"]["public_checkpoint"] = (
+        "smp-hub/resnet50.imagenet"
+    )
+    assert report.public_origin_evidence(run, stages) is None
+    stages["models"][0]["stages"][0]["public_pretraining"]["smp_registry_pinned_revision"] = (
+        "c" * 40
+    )
+    assert report.public_origin_evidence(run, stages) is not None
+    run["training"]["config"]["model"]["encoder_weights"] = None
+    assert report.public_origin_evidence(run, stages) is None
+
+
+@pytest.mark.parametrize("revision", [None, "", "c" * 39, "c" * 41, "g" * 40, 123])
+def test_smp_origin_requires_a_valid_40_hex_registry_revision(revision):
+    run = {
+        "model": "smp-model",
+        "training": {
+            "env": {"model_origins": []},
+            "config": {
+                "model": {"arch": "smp", "encoder_name": "resnet50", "encoder_weights": "imagenet"}
+            },
+        },
+    }
+    stages = {
+        "models": [
+            {
+                "model": "smp-model",
+                "stages": [
+                    {
+                        "stage": "cityscapes",
+                        "public_pretraining": {
+                            "public_checkpoint": "smp-hub/resnet50.imagenet",
+                            "smp_registry_pinned_revision": revision,
+                        },
+                    }
+                ],
+            }
+        ]
+    }
+    assert report.public_origin_evidence(run, stages) is None
+
+
+def test_training_timing_distinguishes_latest_invocation_and_accumulated_process_time():
+    value = report.training_timing(
+        {"wall_clock_s": 1.25},
+        {
+            "phase_wall_seconds_including_failed_attempts": {"training": 90.5},
+            "phase_wall_seconds_are_lower_bounds": {"training": True},
+            "phase_accounting_complete": {"training": False},
+        },
+    )
+    assert value["latest_invocation_run_record_wall_seconds"] == 1.25
+    assert value["recorded_training_process_wall_seconds_all_attempts"] == 90.5
+    assert value["recorded_training_process_seconds_is_lower_bound"] is True
+    assert value["training_process_accounting_complete"] is False
+    missing = report.training_timing({"wall_clock_s": 1.25}, {})
+    assert missing["recorded_training_process_wall_seconds_all_attempts"] is None
+
+
+def test_report_code_identity_preserves_frozen_training_execution_identity(
+    paper_campaign, monkeypatch
+):
+    request = json.loads(paper_campaign.request.read_text())
+    monkeypatch.setattr(report, "git_sha", lambda path: ("report-only-code", True))
+    value = report.load_report(paper_campaign.request)
+    assert value["report_code_sha"] == "report-only-code"
+    assert value["report_code_dirty"] is True
+    assert value["training_code_sha"] == request["training_code_sha"]
+    assert (
+        json.loads(paper_campaign.request.read_text())["training_code_sha"]
+        == request["training_code_sha"]
+    )
+
+
+def test_recorded_duration_lower_bounds_preserve_observed_statistics_without_full_run_sd():
+    runs = {
+        seed: {
+            "training": {"wall_clock_s": 1.0},
+            "training_resources": {
+                "phase_wall_seconds_including_failed_attempts": {"training": seconds},
+                "phase_wall_seconds_are_lower_bounds": {"training": seed == 0},
+            },
+        }
+        for seed, seconds in enumerate((3600, 7200, None))
+    }
+    value = report.recorded_training_hours(runs)
+    assert value["mean"] == 1.5
+    assert value["sample_sd"] is None
+    assert value["observed_sample_sd"] == pytest.approx(np.sqrt(0.5))
+    assert value["lower_bound_seeds"] == [0]
+    assert value["mean_and_range_are_lower_bounds"] is True
+    assert value["n"] == 2
+
+
+def test_lower_bound_resource_json_csv_and_pdf_keep_unknown_full_run_sd(paper_campaign, tmp_path):
+    pytest.importorskip("reportlab")
+    reader = pytest.importorskip("pypdf")
+    value = report.load_report(paper_campaign.request)
+    model = value["runs"][0]["model"]
+    for run in value["runs"]:
+        if run["model"] != model:
+            continue
+        seed = run["seed"]
+        run["training_memory"]["allocator_peak_bytes"] = (seed + 1) * 2**30
+        run["training_memory"]["allocator_accounting_complete"] = False
+        run["training_resources"]["phase_wall_seconds_including_failed_attempts"]["training"] = (
+            seed + 1
+        ) * 3600
+        run["training_resources"]["phase_wall_seconds_are_lower_bounds"] = {"training": True}
+        run["training"]["env"]["training_observations"] = {
+            "examples_seen_this_invocation": 100,
+            "optimizer_steps_this_invocation": 10,
+        }
+        run["training_timing"] = report.training_timing(run["training"], run["training_resources"])
+    value["aggregates"] = report.aggregate(value["runs"], value["class_names"])
+    summary = next(entry for entry in value["aggregates"] if entry["model"] == model)
+    assert summary["training_peak_bytes"]["sample_sd"] is None
+    assert summary["training_peak_bytes"]["observed_sample_sd"] == 2**30
+    assert summary["training_hours"]["sample_sd"] is None
+    assert summary["training_hours"]["observed_sample_sd"] == 1.0
+    json_path = tmp_path / "lower-bound-report.json"
+    write(json_path, value)
+    stored = json.loads(json_path.read_text())["aggregates"][0]
+    assert stored["training_peak_bytes"]["sample_sd"] is None
+    csv_path = tmp_path / "lower-bound-report.csv"
+    report.write_csv(csv_path, value)
+    with csv_path.open() as stream:
+        row = next(row for row in csv.DictReader(stream) if row["model"] == model)
+    for field in ("training_hours", "training_peak_bytes"):
+        assert row[f"{field}:sample_sd"] == ""
+        assert row[f"{field}:seed_0_is_lower_bound"] == "True"
+        assert row[f"{field}:observed_sample_sd"]
+    pdf_path = tmp_path / "lower-bound-report.pdf"
+    report.build_pdf(pdf_path, value)
+    text = "\n".join(page.extract_text() for page in reader.PdfReader(pdf_path).pages)
+    assert ">= 2.00" in text and "Unknown" in text
+    assert "Latest-invocation training observations" in text
+    assert "Earlier source invocation history is unknown" in text
+    assert "hash-verified training invocation receipts" in text

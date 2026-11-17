@@ -1,4 +1,4 @@
-# RAD paper campaign draft
+# RAD paper campaign
 
 The confirmed campaign contains eight models and 24 fresh RAD adaptation runs. Every model follows the same public recipe → Cityscapes → RailSem19 → RAD chain. Archived source-training seed-0 checkpoints are reused, and the RAD stage runs seeds 0, 1 and 2. The preparation helper receives `--matrix staged24 --split-policy finalfit` explicitly.
 
@@ -22,6 +22,8 @@ Queue order is seed-major. Models descend by their best final-checkpoint, class-
 
 The approved corpus contains 314 native annotated images and 21 trainable classes. The inherited development split contains 187 training, 68 validation and 59 test images.
 
+The [parent all-class split](rad-2026-11-allclasses.md) assigns whole conservative visual blocks through the reviewed class-positive-image balancing proposal. Candidate 0 requires at least five positive images of every class in each development split. Its 51-image sunny-mountain must-link block closes a documented possible recording boundary. The final-fit merge retains those block boundaries and the parent's exact test membership. All 314 images have distinct encoded files and decoded RGB content. Original recording independence remains unconfirmed.
+
 The confirmed `finalfit` policy uses the exact 255-image union of parent training and validation, an explicit empty validation split, and the same 59 test images. `prepare_rad_finalfit.py` binds the parent split SHA, verifies image, mask and annotation bytes, retains sample and group identities, and writes parent provenance. The materialized dataset contains the original approved sample set. The legacy CVAT-origin additions stay excluded.
 
 Each RAD adaptation receives 4,000 optimizer steps with batch size 2 and gradient accumulation 8, giving effective batch size 16. Training uses BF16 mixed precision and the final checkpoint. The auto weight-bank policy uses EMA where the model supports its running-statistics policy and raw weights for models with running-stat BatchNorm. The current recipe EMA decay is 0.9998. Checkpoint metadata records the bank actually loaded.
@@ -31,6 +33,8 @@ The effective batch of 16 is nominal. With 255 training images and `drop_last=tr
 The stored stage optimizer resolves backbone and head scales before training. Backbone LR is `base_backbone_lr * stage.lr_scale`. Declared-head LR is `base_backbone_lr * base_head_lr_mult * head_group_lr_scale`. The current transfer scales are 0.1 for the backbone and 1.0 for declared head groups. Layerwise decay can further scale individual backbone groups. Scheduler warmup is clipped to `min(base_warmup, floor(total_steps/10), total_steps-1)`, giving 400 warmup updates for the 4,000-update RAD fit. The saved effective optimizer accompanies the base configuration and stage scales.
 
 The independently verified final-fit split has at least 27 positive training images and five positive test images for every class. Mud-pumping appears in 117 training images and 17 test images. The [complete class support CSV](../datasets/rad_2026_11_paper_finalfit/class-split.csv) retains exact image and pixel counts. The final split SHA-256 is `9715d453ee3161b6bf9e02c204dc4a2898f654322cd78cce7f6545e4f7149d3b` and its sample audit SHA-256 is `61fe2d3dcc7a20f61fc7a16027dd4ba85cd6dc691fcaf4965868356e57d1c962`.
+
+Every one of the 21 classes has positive pixel support on each side of the final split. Class coverage does not imply equal prevalence. Mud-pumping occupies 10.6609 percent of valid training pixels and 0.9030 percent of valid test pixels. The report retains these counts so readers can interpret the fixed test distribution. The empty validation split follows the approved final-fitting policy after development choices were frozen.
 
 Infrastructure recovery permits at most three attempts while retaining the same seed and configuration. A non-finite loss stops the run for investigation. Retry decisions use training and infrastructure evidence. Resume restores the global Python, NumPy, Torch CPU and CUDA random states. Worker and dataloader execution order has a broader reproducibility limit.
 
@@ -52,7 +56,7 @@ For the three observed scores `x0`, `x1` and `x2`, the mean is `(x0+x1+x2)/3` an
 
 Qualitative examples use seed 0 and fixed image keys selected before inference. A deterministic greedy procedure uses only audited ground-truth class presence and group identity, with lexicographic ties. It covers all 21 classes, every test group and a mud-negative image. The default maximum is six images. Preparation raises an error if those requirements need a larger explicit budget.
 
-Report model-only BF16 batch-one 1024² forward FPS separately from native-resolution sliding-window pipeline timing. The speed/accuracy plot uses the pipeline measurement. Record inference allocator peak, process-total GPU memory and training peak memory with their measurement definitions. Report RAD adaptation compute, source-stage compute and available public-pretraining provenance separately.
+Report model-only BF16 batch-one 1024² forward FPS separately from native-resolution sliding-window pipeline timing. Separate speed/accuracy plots retain each timing definition. Record inference allocator peak, process-total GPU memory and training peak memory with their measurement definitions. Report RAD adaptation compute, source-stage compute and available public-pretraining provenance separately.
 
 Native timing warms each distinct stride-32 padded image shape twice before the measured pass. The benchmark retains every image key, native shape and elapsed time. The final RAD deployment pass uses one prespecified idle GPU serially. Source-stage profiles run alongside native source evaluation and retain their device identities as contextual measurements.
 
@@ -137,6 +141,9 @@ Run the new final-fit GPU smoke campaign on the same committed code, dataset and
 python scripts/validate_rtis_launch.py \
   --campaign "$CAMPAIGN" --smoke-campaign "$SMOKE_CAMPAIGN"
 
+HF_HOME="$HF_CACHE" python scripts/evaluate_rad_source_stages.py \
+  --request "$SOURCE_STAGE_SPEC"
+
 python scripts/run_rad_paper.py \
   --campaign "$CAMPAIGN" \
   --benchmark-gpu 0 \
@@ -146,3 +153,34 @@ python scripts/run_rad_paper.py \
 The controller completes training, evaluates all sixteen source stages, freezes every completed RAD endpoint, evaluates the 59-image test set, profiles the RAD checkpoints serially on the selected benchmark GPU, and writes `paper/report/rad-paper.pdf`, `rad-paper.csv` and `rad-paper.json`. Its current phase appears in `paper-controller-status.json`. Re-running the command verifies existing artifacts and continues unfinished phases. Infrastructure recovery keeps the same configuration and seed, with the declared attempt limit. A stop marker ends the campaign before further scheduling.
 
 Each model's PDF section includes source-stage class metrics, RAD class metrics under both IoU definitions, seed-level results, resource accounting and the common full-scene qualitative examples. The accompanying JSON retains confusions, per-block sensitivity, raw latency samples and complete artifact provenance. Interrupted timing records explicitly identify lower-bound compute and an unknown missing tail.
+
+### Report-only revisions
+
+Keep the frozen execution checkout available through the controller's completed state. A separate clean checkout of a later report revision can render the existing artifacts on CPU. Choose a separate output directory so the original controller retains its own outputs.
+
+```bash
+CUDA_VISIBLE_DEVICES= python scripts/build_rad_paper_report.py \
+  --request "$CAMPAIGN/paper/test-request.json" \
+  --out "$FINAL_REPORT"
+```
+
+The JSON records `report_code_sha` and `report_code_dirty` alongside the original `training_code_sha` and hashed evaluation artifacts. The report loader verifies the frozen inputs and completed results before rendering. Report-only revisions preserve the original execution evidence. Training durations identify latest-invocation observations and accumulated recorded process time separately, including lower-bound flags for interruptions. SMP public-origin evidence identifies its package-registry revision and whether the RAD process recorded the origin directly.
+
+## Verified launch evidence
+
+The campaign started on 17 November 2026 at 05:14 UTC using the clean execution commit `f92985e64accf952da73fd2979d4229a5092c5a8`. Its artifact directory is `rad_2026_11_paper-full-20261116-f92985e6`. Source checkpoint files and the final-fit dataset were frozen before launch.
+
+Claude Fable, invoked with high effort, reviewed the methodology and implementation. The final read-only review found no code blocker and required the four runtime gates below. The execution checks were performed separately from that review.
+
+| Runtime gate | Verified evidence before the main launch |
+| --- | --- |
+| Eight model training smokes | Eight 40-step final-fit jobs completed with the same dataset, code and collection contract. `launch-validation.json` passed. |
+| Sixteen source endpoints | Fresh full native-validation evaluations and matching deployment profiles completed for all eight Cityscapes and eight City-to-Rail checkpoints. The 32 evaluation/profile artifact hashes were verified. |
+| Train-only inference rehearsal | All eight smoke checkpoints completed evaluation and profiling on 13 training images covering all 21 classes and 12 native image shapes. Each evaluator's weight bank matched its training receipt. |
+| Clean execution checkout | The execution checkout was clean at the frozen commit when the controller started. |
+
+The rehearsal exercised `run_rad_test.py` and `run_rad_test_profiles.py` before main training. Its schema-1 request explicitly authorized `evaluation_split="train"`, `rehearsal=true` and `rehearsal_authorized=true`, with `test_evaluation_authorized=false`. It bound smoke state, configuration and final checkpoint hashes, a separate rehearsal `campaign.json`, and benchmark GPU 0. Its GPU policy used the schema-1 supported allowlist. `HF_HOME` was supplied explicitly to both commands. The request SHA-256 was `78ac61b0b9d949f0cbf0c8f32b08425e8bb81f2bd1c291f7c65a8de3c1693e6f`.
+
+Training image selection used audited class-presence and dimension metadata. All three native test dimensions had a training-image representative. The rehearsal's results are diagnostic artifacts. The final report requires the separate frozen schema-2 request after all 24 full-budget RAD endpoints pass collection.
+
+`extended-preflight.json` records these gates in the main artifact directory. `paper-input-preflight.json` records the controller's input checks. `paper-controller-status.json` identifies the active phase, and `launcher-status.json` records scheduling and GPU occupancy. Source results are reused only after their stored hashes and identities verify successfully.
