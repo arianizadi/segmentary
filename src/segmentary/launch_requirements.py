@@ -75,7 +75,11 @@ def validate_plan(plan: dict[str, Any]) -> dict[str, Any] | None:
             raise ValueError(
                 "Required queue_priority_provenance is missing; prioritize before init"
             )
-        for key in ["source_priority_sha256", "source_csv_sha256"]:
+        priority_version = provenance.get("schema_version", 1)
+        if priority_version not in (1, 2):
+            raise ValueError("Unsupported queue priority schema_version")
+        scores_hash_key = "source_scores_sha256" if priority_version == 2 else "source_csv_sha256"
+        for key in ["source_priority_sha256", scores_hash_key]:
             if not isinstance(provenance.get(key), str) or not re.fullmatch(
                 "[0-9a-f]{64}", provenance[key]
             ):
@@ -100,12 +104,37 @@ def validate_plan(plan: dict[str, Any]) -> dict[str, Any] | None:
         if hashlib.sha256(raw).hexdigest() != provenance["source_priority_sha256"]:
             raise ValueError("Frozen queue priority source SHA-256 changed")
         source_data = json.loads(raw)
-        if source_data.get("source_csv_sha256") != provenance["source_csv_sha256"]:
-            raise ValueError("Queue priority source CSV SHA-256 disagrees")
-        expected = [(j["model"], j["protocol"]) for j in source_data.get("jobs", [])]
-        actual = [(j.get("model"), j.get("protocol")) for j in jobs]
+        if source_data.get(scores_hash_key) != provenance[scores_hash_key]:
+            raise ValueError("Queue priority source scores SHA-256 disagrees")
+        fields = ("model", "protocol", "seed") if priority_version == 2 else ("model", "protocol")
+        expected = [tuple(j.get(key) for key in fields) for j in source_data.get("jobs", [])]
+        actual = [tuple(j.get(key) for key in fields) for j in jobs]
         if expected != actual:
             raise ValueError("Actual plan job order differs from the frozen historical priority")
+        if priority_version == 2:
+            if source_data.get("schema_version") != 2:
+                raise ValueError("Seed-aware priority source schema disagrees")
+            seeds = provenance.get("seeds")
+            if (
+                not isinstance(seeds, list)
+                or not seeds
+                or any(type(seed) is not int or seed < 0 for seed in seeds)
+                or seeds != sorted(set(seeds))
+                or source_data.get("seeds") != seeds
+            ):
+                raise ValueError("Seed-aware priority seeds disagree")
+            if provenance.get("ordered_job_keys") != [list(key) for key in actual]:
+                raise ValueError("Seed-aware priority ordered triples disagree")
+            actual_seeds = [key[2] for key in actual]
+            if any(type(seed) is not int or seed < 0 for seed in actual_seeds):
+                raise ValueError("Prioritized job seeds must be nonnegative integers")
+            if actual_seeds != sorted(actual_seeds) or set(actual_seeds) != set(seeds):
+                raise ValueError("Prioritized jobs must use the declared seed-major order")
+            if len(set(actual)) != len(actual):
+                raise ValueError("Prioritized plan has duplicate model/protocol/seed triples")
+            blocks = [[key[:2] for key in actual if key[2] == seed] for seed in seeds]
+            if any(block != blocks[0] for block in blocks[1:]):
+                raise ValueError("Every seed must cover the same ordered model/protocol matrix")
         if provenance.get("models") != list(dict.fromkeys(j.get("model") for j in jobs)):
             raise ValueError("Actual plan model order differs from its priority provenance")
     return requirements

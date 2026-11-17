@@ -133,9 +133,127 @@ def validate_priority(priority: dict[str, Any]) -> list[dict[str, Any]]:
     return jobs
 
 
+def validate_seed_priority(priority: dict[str, Any]) -> list[dict[str, Any]]:
+    """Validate an explicit, seed-major matrix without changing the legacy contract."""
+    if priority.get("schema_version") != 2:
+        raise PriorityError("Seed-aware priority requires schema_version 2")
+    models, seeds, jobs = (priority.get(key) for key in ("models", "seeds", "jobs"))
+    if (
+        not isinstance(models, list)
+        or not models
+        or any(not isinstance(model, str) or not model for model in models)
+        or len(set(models)) != len(models)
+    ):
+        raise PriorityError("Seed-aware priority models must be unique nonempty names")
+    if (
+        not isinstance(seeds, list)
+        or not seeds
+        or any(type(seed) is not int or seed < 0 for seed in seeds)
+        or seeds != sorted(set(seeds))
+    ):
+        raise PriorityError("Seed-aware priority seeds must be sorted unique nonnegative integers")
+    if not isinstance(jobs, list) or not jobs:
+        raise PriorityError("Seed-aware priority jobs must be a nonempty list")
+    if not isinstance(priority.get("source_scores_sha256"), str) or not re.fullmatch(
+        r"[0-9a-f]{64}", priority["source_scores_sha256"]
+    ):
+        raise PriorityError("Priority source_scores_sha256 must be a lowercase SHA-256")
+    git_sha = priority.get("source_git_sha")
+    if not isinstance(git_sha, str) or not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", git_sha):
+        raise PriorityError("Priority source_git_sha must be a commit hash")
+    for name in ("ranking_metric", "rule"):
+        if not isinstance(priority.get(name), str) or not priority[name].strip():
+            raise PriorityError(f"Priority {name} must describe the frozen queue rule")
+    keys = []
+    blocks = {seed: [] for seed in seeds}
+    for index, row in enumerate(jobs, 1):
+        model, protocol = job_key(row, "Priority")
+        seed = row.get("seed")
+        if type(seed) is not int or seed not in blocks:
+            raise PriorityError("Priority job seed is absent from the declared seeds")
+        if model not in models:
+            raise PriorityError(f"Priority job has unknown model {model!r}")
+        if type(row.get("priority")) is not int or row["priority"] != index:
+            raise PriorityError("Priority jobs must have consecutive queue order")
+        keys.append((model, protocol, seed))
+        blocks[seed].append((model, protocol))
+    if len(set(keys)) != len(keys):
+        raise PriorityError("Duplicate priority model/protocol/seed triple")
+    if [row["seed"] for row in jobs] != sorted(row["seed"] for row in jobs):
+        raise PriorityError("Priority must use seed-major order")
+    first = blocks[seeds[0]]
+    if not first or any(block != first for block in blocks.values()):
+        raise PriorityError("Every seed must cover the same ordered model/protocol matrix")
+    if list(dict.fromkeys(model for model, _ in first)) != models:
+        raise PriorityError("Priority model order differs from the declared models")
+    return jobs
+
+
+def reordered_seed_plan(
+    plan: dict[str, Any], priority: dict[str, Any], priority_path: Path, priority_sha: str
+) -> dict[str, Any]:
+    ordered = validate_seed_priority(priority)
+    jobs = plan.get("jobs")
+    if not isinstance(jobs, list) or not jobs:
+        raise PriorityError("Plan jobs must be a nonempty list")
+    if plan.get("launch_status") != "not_launched":
+        raise PriorityError("Plan launch_status must be not_launched")
+    by_key = {}
+    for job in jobs:
+        model, protocol = job_key(job, "Plan")
+        seed = job.get("seed")
+        if type(seed) is not int or seed < 0:
+            raise PriorityError("Planned seed must be a nonnegative integer")
+        key = model, protocol, seed
+        if key in by_key:
+            raise PriorityError(f"Duplicate planned model/protocol/seed triple: {key}")
+        if job.get("name") != f"{model}--{protocol}--seed-{seed}":
+            raise PriorityError(f"Unexpected planned job name: {job.get('name')!r}")
+        if job.get("status") != "prepared_not_launched":
+            raise PriorityError(f"Planned job is not prepared_not_launched: {job['name']}")
+        by_key[key] = job
+    wanted = [(row["model"], row["protocol"], row["seed"]) for row in ordered]
+    if set(by_key) != set(wanted):
+        missing, unknown = sorted(set(wanted) - set(by_key)), sorted(set(by_key) - set(wanted))
+        raise PriorityError(
+            f"Plan/priority exact triple coverage differs; missing={missing}; unknown={unknown}"
+        )
+    result = copy.deepcopy(plan)
+    result["jobs"] = []
+    for source, key in zip(ordered, wanted, strict=True):
+        job = copy.deepcopy(by_key[key])
+        job["queue_priority"] = source["priority"]
+        job["queue_priority_provenance"] = {
+            "schema_version": 2,
+            "model_priority": priority["models"].index(source["model"]) + 1,
+            "seed": source["seed"],
+            "source_scores_sha256": priority["source_scores_sha256"],
+        }
+        result["jobs"].append(job)
+    result["queue_priority_provenance"] = {
+        "schema_version": 2,
+        "source_priority_file": str(priority_path.resolve()),
+        "source_priority_sha256": priority_sha,
+        "source_scores_sha256": priority["source_scores_sha256"],
+        "source_git_sha": priority["source_git_sha"],
+        "ranking_metric": priority["ranking_metric"],
+        "rule": priority["rule"],
+        "models": list(priority["models"]),
+        "seeds": list(priority["seeds"]),
+        "ordered_job_keys": [list(key) for key in wanted],
+        "jobs": len(wanted),
+        "new_test_scores_used": False,
+    }
+    return result
+
+
 def reordered_plan(
     plan: dict[str, Any], priority: dict[str, Any], priority_path: Path, priority_sha: str
 ) -> dict[str, Any]:
+    if priority.get("schema_version") == 2:
+        return reordered_seed_plan(plan, priority, priority_path, priority_sha)
+    if priority.get("schema_version", 1) != 1:
+        raise PriorityError("Unsupported priority schema_version")
     ordered = validate_priority(priority)
     jobs = plan.get("jobs")
     if not isinstance(jobs, list) or len(jobs) != EXPECTED_JOBS:
@@ -228,10 +346,14 @@ def prioritize(plan_path: Path, priority_path: Path) -> dict[str, Any]:
             temporary_path.unlink(missing_ok=True)
     return {
         "plan": str(plan_path),
-        "jobs": EXPECTED_JOBS,
-        "models": EXPECTED_MODELS,
+        "jobs": len(result["jobs"]),
+        "models": len(priority["models"]),
         "priority_sha256": sha256(priority_bytes),
-        "source_csv_sha256": priority["source_csv_sha256"],
+        **{
+            key: priority[key]
+            for key in ("source_csv_sha256", "source_scores_sha256")
+            if key in priority
+        },
         "first_job": result["jobs"][0]["name"],
         "last_job": result["jobs"][-1]["name"],
         "campaign_initialized": False,

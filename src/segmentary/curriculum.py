@@ -34,6 +34,7 @@ from lightning.pytorch.loggers import TensorBoardLogger
 from .checkpoints import (
     TRAINING_RESUME_KEY,
     TRAINING_RESUME_SCHEMA_VERSION,
+    TRAINING_RNG_KEY,
     checkpoint_uses_lora,
     read_checkpoint,
 )
@@ -175,6 +176,12 @@ def validate_resume_checkpoint(
             f"resume checkpoint stage {metadata.get('stage_name')!r} does not match "
             f"configured stage {stage.name!r}"
         )
+    saved_train = metadata.get("train", {})
+    if (
+        not isinstance(saved_train, dict)
+        or saved_train.get("validation_enabled", True) != train_cfg.validation_enabled
+    ):
+        raise RuntimeError("resume checkpoint validation mode differs from the configured stage")
     expected_optim = asdict(optim_cfg)
     if metadata.get("optim") != expected_optim:
         raise RuntimeError(
@@ -190,6 +197,8 @@ def validate_resume_checkpoint(
         raise RuntimeError(f"resume checkpoint {checkpoint} has no scheduler state")
     if not isinstance(state.get("callbacks"), dict):
         raise RuntimeError(f"resume checkpoint {checkpoint} has no callback state")
+    if not train_cfg.validation_enabled and not isinstance(state.get(TRAINING_RNG_KEY), dict):
+        raise RuntimeError(f"resume checkpoint {checkpoint} has no saved global RNG state")
     if train_cfg.ema_decay is not None:
         ema = state.get(EMA_CHECKPOINT_KEY)
         if not isinstance(ema, dict):
@@ -215,6 +224,17 @@ def _gpu_policy_callbacks() -> list[Callback]:
 
 def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[Callback]:
     """Keep the best validation model and explicit periodic recovery snapshots."""
+    periodic = ModelCheckpoint(
+        dirpath=out_dir,
+        filename="step-{step:08d}",
+        auto_insert_metric_name=False,
+        every_n_train_steps=train_cfg.ckpt_every,
+        save_on_train_epoch_end=False,
+        save_last=False,
+        save_top_k=-1,
+    )
+    if not train_cfg.validation_enabled:
+        return [periodic]
     best = ModelCheckpoint(
         dirpath=out_dir,
         filename="best",
@@ -224,15 +244,6 @@ def _checkpoint_callbacks(out_dir: Path, train_cfg: TrainConfig) -> list[Callbac
         # Write last.ckpt explicitly once at the end instead of duplicating every best.
         save_last=train_cfg.early_stopping_patience is None,
         save_top_k=1,
-    )
-    periodic = ModelCheckpoint(
-        dirpath=out_dir,
-        filename="step-{step:08d}",
-        auto_insert_metric_name=False,
-        every_n_train_steps=train_cfg.ckpt_every,
-        save_on_train_epoch_end=False,
-        save_last=False,
-        save_top_k=-1,
     )
     callbacks: list[Callback] = [best, periodic]
     if train_cfg.early_stopping_patience is not None:
@@ -537,15 +548,18 @@ def run_stage(
     train_loader = build_train_loader(
         stage, space, cfg.taxonomy_root, cfg.aug, train_cfg, model=model
     )
-    val_loader, val_ds = build_val_loader(
-        stage,
-        space,
-        cfg.taxonomy_root,
-        cfg.aug,
-        train_cfg,
-        batch_size=cfg.eval.batch_size,
-        model=model,
-    )
+    val_loader = None
+    val_ds = None
+    if train_cfg.validation_enabled:
+        val_loader, val_ds = build_val_loader(
+            stage,
+            space,
+            cfg.taxonomy_root,
+            cfg.aug,
+            train_cfg,
+            batch_size=cfg.eval.batch_size,
+            model=model,
+        )
 
     loss_fn = (
         QuerySegmentationLoss(cfg.loss.query, space.num_classes, space.ignore_index)
@@ -580,6 +594,15 @@ def run_stage(
 
     checkpoint_callbacks = _checkpoint_callbacks(out_dir, train_cfg)
     tensorboard_logger = _tensorboard_logger(out_dir)
+    validation_options: dict[str, Any] = (
+        {
+            "val_check_interval": _validation_batch_interval(train_cfg),
+            "check_val_every_n_epoch": None,
+            "num_sanity_val_steps": 1,
+        }
+        if train_cfg.validation_enabled
+        else {"limit_val_batches": 0, "num_sanity_val_steps": 0}
+    )
     trainer = L.Trainer(
         default_root_dir=out_dir,
         max_steps=train_cfg.iters,
@@ -596,13 +619,11 @@ def run_stage(
         precision=cast(Any, train_cfg.precision),
         accumulate_grad_batches=train_cfg.accum,
         gradient_clip_val=optim_cfg.grad_clip,
-        val_check_interval=_validation_batch_interval(train_cfg),
-        check_val_every_n_epoch=None,  # iteration-based validation
         callbacks=[*checkpoint_callbacks, *_gpu_policy_callbacks()],
         logger=tensorboard_logger,
         log_every_n_steps=min(50, train_cfg.iters),
-        num_sanity_val_steps=1,
         enable_progress_bar=True,
+        **validation_options,
     )
 
     print(
@@ -626,17 +647,40 @@ def run_stage(
             weights_only=False if resume_checkpoint is not None else None,
         )
         final_checkpoint = _save_final_checkpoint(trainer, out_dir)
-        ensure_final_validation(trainer, lit, val_loader)
+        if train_cfg.validation_enabled:
+            ensure_final_validation(trainer, lit, val_loader)
+        elif trainer.global_step != train_cfg.iters:
+            raise RuntimeError(
+                f"no-validation training stopped at step {trainer.global_step}; "
+                f"the fixed budget requires {train_cfg.iters} optimizer steps"
+            )
 
     train_dataset = as_dataset(train_loader.dataset)
     if timer.started_at is None:
         raise RuntimeError("run timer recorded no start time; the stage never entered training")
-    metrics = lit.latest_metrics() if trainer.is_global_zero else {}
+    metrics = (
+        lit.latest_metrics() if trainer.is_global_zero and train_cfg.validation_enabled else {}
+    )
     sha, dirty = git_sha(provenance_root)
     record_config = to_dict(cfg)
     record_env = collect_env()
     record_env["input_normalization"] = input_normalization(model)
-    record_env["validation_weights"] = lit.validation_weights
+    record_env["validation_weights"] = (
+        lit.validation_weights if train_cfg.validation_enabled else None
+    )
+    if not train_cfg.validation_enabled:
+        record_env["validation_enabled"] = False
+        record_env["final_weights_policy"] = lit.validation_weights
+        record_env["stage_optimizer"] = asdict(optim_cfg)
+        record_env["training_observations"] = {
+            "scope": "this training invocation",
+            "examples_seen_this_invocation": lit._training_samples,
+            "optimizer_steps_this_invocation": int(trainer.global_step) - lit._telemetry_start_step,
+            "nominal_effective_batch_size": train_cfg.batch_size
+            * train_cfg.accum
+            * int(trainer.world_size),
+            "drop_last": True,
+        }
     record_env["model_parameter_count"] = total
     record_env["trainable_parameter_count"] = trainable
     record_env["model_origins"] = [
@@ -667,7 +711,7 @@ def run_stage(
         "maximum_steps": train_cfg.iters,
         "patience": train_cfg.early_stopping_patience,
         "min_delta": train_cfg.early_stopping_min_delta,
-        "monitor": train_cfg.selection_metric,
+        "monitor": train_cfg.selection_metric if train_cfg.validation_enabled else None,
     }
     record = RunRecord(
         name=cfg.name,
@@ -685,14 +729,18 @@ def run_stage(
         env=record_env,
         dataset_sizes={
             "train": len(train_dataset),
-            "val": len(val_ds),
+            "val": len(val_ds) if val_ds is not None else 0,
             # Flat "train:<name>" keys rather than a nested dict: RunRecord types
             # this field dict[str, int] and the table generator reads it as one.
             **{f"train:{d.name}": len(d) for d in _members(train_dataset)},
         },
         notes=(
             f"stage {stage.name} of curriculum {cfg.name}; "
-            f"validation_weights={lit.validation_weights}"
+            + (
+                f"validation_weights={lit.validation_weights}"
+                if train_cfg.validation_enabled
+                else "validation disabled; fixed-budget final checkpoint"
+            )
         ),
     )
     results_path = out_dir / "results.json"

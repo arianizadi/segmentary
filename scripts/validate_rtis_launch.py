@@ -151,6 +151,16 @@ def validate(root, smoke_root):
         raise RuntimeError("The main campaign must not itself be a smoke campaign")
     if smoke.get("code_sha") != main.get("code_sha"):
         raise RuntimeError("Smoke campaign ran a different code revision than the main campaign")
+    if main.get("collection_contract") == runtime.FINAL_TRAIN_CONTRACT:
+        for field in (
+            "collection_contract",
+            "validation_enabled",
+            "split_sha256",
+            "dataset_audit_sha256",
+            "dataset_final_fit",
+        ):
+            if field not in main or smoke.get(field) != main[field]:
+                raise RuntimeError(f"Final-fit smoke campaign differs from main {field}")
     policy = gpu_policy.load(main)
     smoke_policy = gpu_policy.load(smoke)
     if gpu_policy.policy_sha256(policy) != main.get("gpu_policy_sha256"):

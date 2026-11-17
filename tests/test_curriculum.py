@@ -8,10 +8,12 @@ SegFormer-B0, real Cityscapes/RailSem19 samples, and one GPU.
 from __future__ import annotations
 
 import json
+import random
 from dataclasses import asdict
 from pathlib import Path
 from types import SimpleNamespace
 
+import numpy as np
 import pytest
 import torch
 import yaml
@@ -20,9 +22,14 @@ from torch.utils.data import DataLoader, Dataset
 
 import segmentary.curriculum as curriculum
 from segmentary import eval as eval_module
-from segmentary.checkpoints import TRAINING_RESUME_KEY, TRAINING_RESUME_SCHEMA_VERSION
+from segmentary.checkpoints import (
+    TRAINING_RESUME_KEY,
+    TRAINING_RESUME_SCHEMA_VERSION,
+    TRAINING_RNG_KEY,
+)
 from segmentary.config import (
     AugConfigSpec,
+    ConfigError,
     DataConfig,
     EvalConfig,
     ExperimentConfig,
@@ -928,6 +935,190 @@ def test_ensure_final_validation_scores_the_final_step_only_when_needed(
     monkeypatch.setattr(trainer, "validate", counting_validate)
     assert curriculum.ensure_final_validation(trainer, module, loader) == 3
     assert validations == []
+
+
+# ------------------------------------------------------ final-fit training
+
+
+def test_default_validation_serialization_preserves_legacy_config_and_hash() -> None:
+    train = TrainConfig()
+    historical = asdict(train)
+    historical.pop("validation_enabled")
+    assert train.validation_enabled is True
+    assert to_dict(train) == historical
+    assert config_hash(train) == config_hash(historical)
+    assert to_dict(TrainConfig(validation_enabled=False))["validation_enabled"] is False
+
+
+def test_no_validation_configuration_rejects_early_stopping() -> None:
+    with pytest.raises(ConfigError, match="requires validation_enabled"):
+        TrainConfig(validation_enabled=False, early_stopping_patience=2)
+    with pytest.raises(ConfigError, match="must be boolean"):
+        TrainConfig(validation_enabled=0)
+
+
+def test_no_validation_callbacks_only_save_periodic_recovery(tmp_path: Path) -> None:
+    callbacks = _checkpoint_callbacks(tmp_path, TrainConfig(validation_enabled=False))
+    assert len(callbacks) == 1
+    assert isinstance(callbacks[0], curriculum.ModelCheckpoint)
+    assert callbacks[0].monitor is None
+    assert callbacks[0].save_top_k == -1
+    assert callbacks[0].save_last is False
+
+
+def test_no_validation_nonfinite_loss_stops_before_an_optimizer_update(monkeypatch) -> None:
+    from segmentary.engine import module as engine_module
+
+    module = _metrics_module(0, iters=4, val_every=4)
+    module.train_cfg.validation_enabled = False
+    monkeypatch.setattr(
+        engine_module, "dense_training_objective", lambda *a, **k: (torch.tensor(float("nan")), {})
+    )
+    with pytest.raises(RuntimeError, match="NONFINITE_TRAINING_LOSS"):
+        module.training_step({"image": torch.zeros(1, 3, 2, 2), "mask": torch.zeros(1, 2, 2)}, 0)
+
+
+def test_resume_normalizes_historical_validation_default_and_rejects_mode_changes() -> None:
+    source = _metrics_module(1, iters=4, val_every=4)
+    checkpoint = {}
+    source.on_save_checkpoint(checkpoint)
+    checkpoint[TRAINING_RESUME_KEY]["train"].pop("validation_enabled")
+    checkpoint[TRAINING_RESUME_KEY]["train"].pop("selection_metric")
+    target = _metrics_module(2, iters=4, val_every=4)
+    target.on_load_checkpoint(checkpoint)
+    target.train_cfg.validation_enabled = False
+    with pytest.raises(RuntimeError, match="resume metadata does not match"):
+        target.on_load_checkpoint(checkpoint)
+    target.on_save_checkpoint(checkpoint)
+    with pytest.raises(RuntimeError, match="resume metadata does not match"):
+        source.on_load_checkpoint(checkpoint)
+
+
+def test_no_validation_checkpoint_restores_global_rng_streams_before_training() -> None:
+    source = _metrics_module(1, iters=4, val_every=4)
+    source.train_cfg.validation_enabled = False
+    random.seed(7)
+    np.random.seed(7)
+    torch.manual_seed(7)
+    checkpoint = {}
+    source.on_save_checkpoint(checkpoint)
+    expected = (random.random(), float(np.random.random()), torch.rand(3))
+    target = _metrics_module(99, iters=4, val_every=4)
+    target.train_cfg.validation_enabled = False
+    target.on_load_checkpoint(checkpoint)
+    random.random()
+    np.random.random()
+    torch.rand(3)
+    target.on_train_start()
+    assert random.random() == expected[0]
+    assert float(np.random.random()) == expected[1]
+    assert torch.equal(torch.rand(3), expected[2])
+    assert target._resume_rng_state is None
+    checkpoint.pop(TRAINING_RNG_KEY)
+    with pytest.raises(RuntimeError, match="saved global RNG"):
+        target.on_load_checkpoint(checkpoint)
+
+
+def test_no_validation_stage_and_recovery_preserve_final_training_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class _TrainDataset(_StepDataset):
+        name = "synthetic"
+
+    loader = DataLoader(_TrainDataset(), batch_size=1)
+    space = SimpleNamespace(
+        name="final-fit",
+        num_classes=3,
+        ignore_index=255,
+        names=("a", "b", "c"),
+        thin_classes=(),
+    )
+    cfg = ExperimentConfig(
+        name="final-fit",
+        model=ModelConfig(arch="toy"),
+        space="final-fit",
+        stages=[_stage()],
+        train=TrainConfig(
+            iters=4,
+            batch_size=1,
+            num_workers=0,
+            precision="32-true",
+            ema_decay=0.9,
+            ckpt_every=1,
+            validation_enabled=False,
+        ),
+        optim=OptimConfig(warmup_iters=0),
+        eval=EvalConfig(sliding_window=False),
+    )
+    monkeypatch.setattr(curriculum, "build_model", lambda *a: _tiny_model(1))
+    monkeypatch.setattr(curriculum, "build_train_loader", lambda *a, **k: loader)
+    monkeypatch.setattr(curriculum, "as_dataset", lambda dataset: dataset)
+    monkeypatch.setattr(
+        curriculum, "validation_active_mask", lambda *a: torch.ones(3, dtype=torch.bool)
+    )
+    monkeypatch.setattr(curriculum.torch.cuda, "is_available", lambda: False)
+    monkeypatch.setattr(curriculum, "git_sha", lambda *a: ("frozen", False))
+    monkeypatch.setattr(curriculum, "collect_env", lambda: {})
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("no-validation stage entered validation")
+
+    monkeypatch.setattr(curriculum, "build_val_loader", forbidden)
+    monkeypatch.setattr(curriculum, "ensure_final_validation", forbidden)
+    monkeypatch.setattr(curriculum.SegLitModule, "latest_metrics", forbidden)
+    monkeypatch.setattr(curriculum.SegLitModule, "on_validation_epoch_start", forbidden)
+    monkeypatch.setattr(curriculum.L.Trainer, "validate", forbidden)
+    real_trainer = curriculum.L.Trainer
+    trainers = []
+
+    def trainer_for_attempt(**kwargs):
+        kwargs.update(enable_progress_bar=False, enable_model_summary=False)
+        if not trainers:
+            kwargs["max_steps"] = 2
+        trainer = real_trainer(**kwargs)
+        trainers.append(trainer)
+        return trainer
+
+    monkeypatch.setattr(curriculum.L, "Trainer", trainer_for_attempt)
+    with pytest.raises(RuntimeError, match="fixed budget requires 4"):
+        curriculum.run_stage(cfg, cfg.stages[0], space, None, tmp_path, 1, tmp_path)
+    run = tmp_path / "stage"
+    recovery = run / "step-00000002.ckpt"
+    saved = torch.load(recovery, map_location="cpu", weights_only=False)
+    assert saved[TRAINING_RNG_KEY]["torch"].numel() > 0
+    assert saved[EMA_CHECKPOINT_KEY]["num_updates"] == 2
+    assert saved["optimizer_states"] and saved["lr_schedulers"] and saved["callbacks"]
+    assert not (run / "results.json").exists()
+    result = curriculum.run_stage(
+        cfg,
+        cfg.stages[0],
+        space,
+        None,
+        tmp_path,
+        1,
+        tmp_path,
+        resume_checkpoint=recovery,
+    )
+    final = torch.load(result.checkpoint, map_location="cpu", weights_only=False)
+    assert result.checkpoint.name == "last.ckpt"
+    assert final["global_step"] == 4
+    assert final[EMA_CHECKPOINT_KEY]["num_updates"] == 4
+    assert final[TRAINING_RESUME_KEY]["train"]["validation_enabled"] is False
+    assert final[TRAINING_RNG_KEY]["torch"].numel() > 0
+    assert (run / "step-00000004.ckpt").is_file()
+    assert not list(run.glob("best*.ckpt"))
+    assert {int(value["step"].item()) for value in trainers[-1].optimizers[0].state.values()} == {4}
+    assert trainers[-1].lr_scheduler_configs[0].scheduler.last_epoch == 4
+    record = json.loads(result.results_path.read_text())
+    assert record["metrics"] == result.metrics == {}
+    assert record["dataset_sizes"] == {"train": 8, "val": 0, "train:synthetic": 8}
+    assert record["env"]["validation_enabled"] is False
+    assert record["env"]["validation_weights"] is None
+    assert record["env"]["final_weights_policy"] == "ema"
+    assert record["env"]["training_stop"]["reason"] == "budget_complete"
+    assert record["env"]["training_stop"]["monitor"] is None
+    assert trainers[-1].num_sanity_val_steps == 0
+    assert trainers[-1].limit_val_batches == 0
 
 
 # -------------------------------------------------------------- integration

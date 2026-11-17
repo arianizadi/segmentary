@@ -10,9 +10,120 @@ from pathlib import Path
 import pytest
 from scripts import prioritize_rad_plan as priority_tool
 
+from segmentary import launch_requirements
+
 
 def write(path: Path, value: dict) -> None:
     path.write_text(json.dumps(value, indent=2) + "\n")
+
+
+def seed_matrix(tmp_path, mode):
+    models = [f"model_{index}" for index in range(5 if mode == 60 else 8)]
+    protocols = sorted(priority_tool.PROTOCOLS)
+    source_jobs = []
+    plan_jobs = []
+    for seed in range(3):
+        for index, model in enumerate(models):
+            arms = protocols[:1] if mode == 69 and index >= 5 else protocols
+            for protocol in arms:
+                source_jobs.append(
+                    {
+                        "model": model,
+                        "protocol": protocol,
+                        "seed": seed,
+                        "priority": len(source_jobs) + 1,
+                    }
+                )
+                plan_jobs.append(
+                    {
+                        "name": f"{model}--{protocol}--seed-{seed}",
+                        "model": model,
+                        "protocol": protocol,
+                        "seed": seed,
+                        "status": "prepared_not_launched",
+                        "source_checkpoint": {"checkpoint": "/unchanged/source.ckpt"},
+                        "config_sha256": "b" * 64,
+                    }
+                )
+    source = {
+        "schema_version": 2,
+        "models": models,
+        "seeds": [0, 1, 2],
+        "jobs": source_jobs,
+        "source_git_sha": "c" * 40,
+        "source_scores_sha256": "a" * 64,
+        "ranking_metric": "final positive-image development mIoU",
+        "rule": "seed-major, then frozen model and initialization order",
+    }
+    root = tmp_path / "campaign"
+    root.mkdir()
+    plan_path, priority_path = root / "plan.json", tmp_path / "priority.json"
+    plan = {
+        "launch_status": "not_launched",
+        "launch_requirements": {"require_queue_priority": True},
+        "jobs": list(reversed(plan_jobs)),
+    }
+    write(plan_path, plan)
+    write(priority_path, source)
+    return plan_path, priority_path, plan, source
+
+
+@pytest.mark.parametrize("mode", [60, 69, 96])
+def test_seed_aware_matrix_exact_triples_and_seed_major_launch_validation(tmp_path, mode):
+    plan_path, source_path, original, source = seed_matrix(tmp_path, mode)
+    result = priority_tool.prioritize(plan_path, source_path)
+    frozen = json.loads(plan_path.read_text())
+    assert result["jobs"] == mode
+    assert [job["seed"] for job in frozen["jobs"]] == sorted(job["seed"] for job in frozen["jobs"])
+    assert frozen["queue_priority_provenance"]["ordered_job_keys"] == [
+        [row["model"], row["protocol"], row["seed"]] for row in source["jobs"]
+    ]
+    before = {job["name"]: job for job in original["jobs"]}
+    for job in frozen["jobs"]:
+        assert {
+            key: value for key, value in job.items() if not key.startswith("queue_priority")
+        } == before[job["name"]]
+    launch_requirements.validate_plan(frozen)
+    original_bytes = plan_path.read_bytes()
+    priority_tool.prioritize(plan_path, source_path)
+    assert plan_path.read_bytes() == original_bytes
+    frozen["jobs"][0]["seed"] = 1
+    with pytest.raises(ValueError, match="job order differs"):
+        launch_requirements.validate_plan(frozen)
+    frozen["jobs"][0]["seed"] = False
+    with pytest.raises(ValueError, match="seeds must be nonnegative integers"):
+        launch_requirements.validate_plan(frozen)
+
+
+@pytest.mark.parametrize("mutation", ["duplicate", "seed-order", "incomplete-seed", "boolean-seed"])
+def test_seed_aware_priority_rejects_ambiguous_or_unbalanced_source(tmp_path, mutation):
+    plan_path, source_path, _, source = seed_matrix(tmp_path, 69)
+    if mutation == "duplicate":
+        source["jobs"][1].update(
+            {key: source["jobs"][0][key] for key in ("model", "protocol", "seed")}
+        )
+    elif mutation == "seed-order":
+        source["jobs"][0]["seed"], source["jobs"][-1]["seed"] = 2, 0
+    elif mutation == "incomplete-seed":
+        source["jobs"].pop()
+    else:
+        source["jobs"][0]["seed"] = False
+    write(source_path, source)
+    previous = plan_path.read_bytes()
+    with pytest.raises(priority_tool.PriorityError):
+        priority_tool.prioritize(plan_path, source_path)
+    assert plan_path.read_bytes() == previous
+
+
+def test_seed_aware_priority_refuses_partial_plan_and_live_campaign(tmp_path):
+    plan_path, source_path, plan, _ = seed_matrix(tmp_path, 60)
+    plan["jobs"].pop()
+    write(plan_path, plan)
+    with pytest.raises(priority_tool.PriorityError, match="exact triple coverage"):
+        priority_tool.prioritize(plan_path, source_path)
+    (plan_path.parent / "state").mkdir()
+    with pytest.raises(priority_tool.PriorityError, match="initialized/live"):
+        priority_tool.prioritize(plan_path, source_path)
 
 
 @pytest.fixture

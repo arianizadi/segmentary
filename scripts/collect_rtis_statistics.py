@@ -257,13 +257,20 @@ def collect(model, cfg, samples, split, directory, names):
     }
 
 
-def validate_split_coverage(results, splits):
-    for variant, split in (
-        ("best-auto-train", "train"),
-        ("best-auto-val", "val"),
-        ("best-alternate-val", "val"),
-        ("final-auto-val", "val"),
-    ):
+def validate_split_coverage(results, splits, collection_contract=None):
+    variants = (
+        (("final-auto-train", "train"), ("final-alternate-train", "train"))
+        if collection_contract == runtime.FINAL_TRAIN_CONTRACT
+        else (
+            ("best-auto-train", "train"),
+            ("best-auto-val", "val"),
+            ("best-alternate-val", "val"),
+            ("final-auto-val", "val"),
+        )
+    )
+    if set(results) != {variant for variant, _ in variants}:
+        raise RuntimeError("Diagnostic variants differ from the collection contract")
+    for variant, split in variants:
         expected = len(splits[split])
         actual = results.get(variant, {}).get("images")
         if actual != expected:
@@ -289,6 +296,11 @@ def validate_dataset(root, job, cfg, campaign):
     splits = runtime.read(data_root / "splits.json")
     samples = runtime.read(data_root / "audit/samples.json")
     validate_audit_groups(samples, splits)
+    final_train = campaign.get("collection_contract") == runtime.FINAL_TRAIN_CONTRACT
+    if final_train:
+        runtime.validate_training_collection(cfg, campaign)
+        if splits["val"]:
+            raise RuntimeError("Final-train collection requires an empty validation split")
     seen = set()
     for split in ("train", "val", "test"):
         expected_keys = splits[split]
@@ -309,6 +321,8 @@ def validate_dataset(root, job, cfg, campaign):
         count = (dataset.get("dataset_sizes") or {}).get(split, len(expected_keys))
         if len(actual_keys) != count:
             raise RuntimeError(f"Dataset {split}: expected {count} images, got {len(actual_keys)}")
+        if final_train and split == "test":
+            continue
         for kind in ("images", "masks"):
             base = data_root / kind / split
             expected_files = {
@@ -323,9 +337,12 @@ def validate_dataset(root, job, cfg, campaign):
                 )
     if len(seen) != len(samples):
         raise RuntimeError("Sample manifest contains unknown splits or duplicate images")
-    runtime.verify_samples(data_root, samples)
+    checked_samples = (
+        [sample for sample in samples if sample["split"] == "train"] if final_train else samples
+    )
+    runtime.verify_samples(data_root, checked_samples)
     num_classes = load_space(cfg.taxonomy_root, cfg.space).num_classes
-    for sample in samples:
+    for sample in checked_samples:
         mask = data_root / "masks" / sample["split"] / (sample["key"] + ".png")
         with Image.open(mask) as image:
             bad = [
@@ -363,25 +380,36 @@ def main():
     names = list(space.names)
     campaign = runtime.read(root / "campaign.json")
     primary = runtime.primary_checkpoint(campaign)
+    final_train = campaign.get("collection_contract") == runtime.FINAL_TRAIN_CONTRACT
+    if final_train:
+        runtime.validate_training_collection(cfg, campaign)
+        if set(state["checkpoints"]) != {"final"}:
+            raise RuntimeError("Final-train collection requires exactly one final checkpoint")
+    standalone_split = runtime.evaluation_split(campaign)
     dataset_splits, samples = validate_dataset(root, job, cfg, campaign)
     if args.limit_per_split is not None:
         if args.limit_per_split < 1:
             raise ValueError("Limit must be positive")
         samples = [
             s
-            for split in ("train", "val")
+            for split in (("train",) if final_train else ("train", "val"))
             for s in [x for x in samples if x["split"] == split][: args.limit_per_split]
         ]
-    out = Path(state["checkpoints"]["best"]["path"]).parent / "diagnostics"
+    out = Path(state["checkpoints"][primary]["path"]).parent / "diagnostics"
     results = {}
     torch.set_num_threads(4)
     seed_everything(cfg.train.seed, deterministic=True)
     gpu_policy.enforce_from_env(init_cuda=True)
-    for anchor, mode, splits in [
-        ("best", "auto", ["train", "val"]),
-        ("best", "alternate", ["val"]),
-        ("final", "auto", ["val"]),
-    ]:
+    variants = (
+        [("final", "auto", ["train"]), ("final", "alternate", ["train"])]
+        if final_train
+        else [
+            ("best", "auto", ["train", "val"]),
+            ("best", "alternate", ["val"]),
+            ("final", "auto", ["val"]),
+        ]
+    )
+    for anchor, mode, splits in variants:
         model = build_model(cfg.model, space.num_classes)
         auto_ema = ema_evaluation_safe(model)
         use_ema = auto_ema if mode == "auto" else not auto_ema
@@ -402,21 +430,24 @@ def main():
         del model
         gc.collect()
         torch.cuda.empty_cache()
-    selected = results[f"{primary}-auto-val"]["metrics"]
+    standalone_variant = f"{primary}-auto-{standalone_split}"
+    selected = results[standalone_variant]["metrics"]
     reference = state["evaluation"]["metrics"]
     if args.limit_per_split is None and not np.allclose(
         selected["confusion"], reference["confusion"], rtol=0, atol=0
     ):
-        raise RuntimeError("Detailed validation does not reproduce standalone confusion matrix")
+        raise RuntimeError(
+            f"Detailed {standalone_split} diagnostics do not reproduce standalone confusion matrix"
+        )
     if args.limit_per_split is None:
-        validate_split_coverage(results, dataset_splits)
+        validate_split_coverage(results, dataset_splits, campaign.get("collection_contract"))
     runtime.write(
         out / "summary.json",
         {
-            "contract": "rtis-full-statistics-v1",
+            "contract": runtime.FINAL_TRAIN_CONTRACT if final_train else "rtis-full-statistics-v1",
             "test_evaluated": False,
             "primary_checkpoint": primary,
-            "standalone_variant": f"{primary}-auto-val",
+            "standalone_variant": standalone_variant,
             "deterministic": True,
             "results": results,
             "standalone_confusion_exact_match": args.limit_per_split is None,

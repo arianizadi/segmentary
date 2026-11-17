@@ -31,7 +31,16 @@ def measure(root, name):
     checkpoint = state["checkpoints"][anchor]
     if runtime.digest(checkpoint["path"]) != checkpoint["sha256"]:
         raise RuntimeError(f"{anchor.capitalize()} checkpoint hash changed")
-    result = Path(checkpoint["path"]).parent / f"{anchor}-val.json"
+    split = runtime.evaluation_split(campaign)
+    result = Path(checkpoint["path"]).parent / f"{anchor}-{split}.json"
+    if campaign.get("collection_contract") == runtime.FINAL_TRAIN_CONTRACT and (
+        state.get("evaluation_split") != "train"
+        or state.get("evaluation_result", {}).get("path") != str(result)
+        or runtime.digest(result) != state["evaluation_result"].get("sha256")
+        or state.get("evaluation", {}).get("config", {}).get("evaluation", {}).get("split")
+        != "train"
+    ):
+        raise RuntimeError("Profile requires the genuine final-train evaluation result")
     temporary = root / "performance" / f".{name}.pending.json"
     args = build_parser().parse_args(
         [
@@ -68,6 +77,8 @@ def measure(root, name):
         else "rtis_selected_checkpoint_model_only"
     )
     payload["primary_checkpoint"] = anchor
+    if campaign.get("collection_contract") == runtime.FINAL_TRAIN_CONTRACT:
+        payload["evaluation_split"] = "train"
     payload["status"] = "complete"
     runtime.write(root / "performance" / f"{name}.json", payload)
     temporary.unlink()

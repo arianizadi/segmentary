@@ -62,6 +62,102 @@ def primary_checkpoint(spec):
     return value
 
 
+def final_fit_dataset(spec: dict, root: Path) -> dict | None:
+    """Require the separately audited train/validation union for a final-only fit."""
+    enabled = spec.get("validation_enabled", True)
+    if not isinstance(enabled, bool):
+        raise ValueError("validation_enabled must be a boolean")
+    if enabled:
+        return None
+    if primary_checkpoint(spec) != "final" or spec.get("cross_validation"):
+        raise ValueError("Disabled validation requires final checkpoints without cross-validation")
+    if spec.get("collection_contract") != "rtis-final-train-statistics-v2":
+        raise ValueError("Disabled validation requires rtis-final-train-statistics-v2")
+    splits = json.loads((root / "splits.json").read_text())
+    audit_path = root / "audit/validation.json"
+    audit = json.loads(audit_path.read_text())
+    metadata = splits.get("_final_fit")
+    if not isinstance(metadata, dict) or metadata != audit.get("final_fit"):
+        raise ValueError("Final-fit parent dataset provenance is missing or inconsistent")
+    if (
+        splits.get("val") != []
+        or not splits.get("train")
+        or not splits.get("test")
+        or audit.get("passed") is not True
+        or metadata.get("merge_splits") != ["train", "val"]
+        or metadata.get("training_membership") != "exact_parent_train_union_val"
+        or any(
+            metadata.get(key) is not True
+            for key in ("test_bytes_identical", "groups_preserved", "no_additional_samples")
+        )
+    ):
+        raise ValueError(
+            "Final-fit dataset must preserve the audited train union and held-out test"
+        )
+    for key in (
+        "parent_split_sha256",
+        "parent_samples_sha256",
+        "parent_validation_sha256",
+        "parent_classes_sha256",
+        "test_keys_sha256",
+        "test_files_sha256",
+    ):
+        value = metadata.get(key)
+        if (
+            not isinstance(value, str)
+            or len(value) != 64
+            or any(c not in "0123456789abcdef" for c in value)
+        ):
+            raise ValueError(f"Final-fit dataset is missing a valid {key}")
+    for key, path in (
+        ("split_sha256", root / "splits.json"),
+        ("samples_sha256", root / "audit/samples.json"),
+    ):
+        if audit.get(key) != hashlib.sha256(path.read_bytes()).hexdigest():
+            raise ValueError(f"Final-fit dataset {key} differs from its audit")
+    parent_path = root / "audit/parent-splits.json"
+    if hashlib.sha256(parent_path.read_bytes()).hexdigest() != metadata["parent_split_sha256"]:
+        raise ValueError("Final-fit parent split copy differs from its frozen parent")
+    parent = json.loads(parent_path.read_text())
+    if (
+        splits["train"] != sorted(set(parent["train"]) | set(parent["val"]))
+        or splits["test"] != parent["test"]
+        or splits.get("groups") != parent.get("groups")
+    ):
+        raise ValueError("Final-fit membership or groups differ from the exact parent union")
+    samples = json.loads((root / "audit/samples.json").read_text())
+    tests = sorted(
+        (sample for sample in samples if sample["split"] == "test"),
+        key=lambda sample: sample["key"],
+    )
+    test_keys_sha = hashlib.sha256(
+        json.dumps(splits["test"], separators=(",", ":")).encode()
+    ).hexdigest()
+    test_files_sha = hashlib.sha256(
+        json.dumps(
+            [
+                {
+                    "key": sample["key"],
+                    "image_sha256": sample["image_sha256"],
+                    "mask_file_sha256": sample["mask_file_sha256"],
+                }
+                for sample in tests
+            ],
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    if (
+        test_keys_sha != metadata["test_keys_sha256"]
+        or test_files_sha != metadata["test_files_sha256"]
+    ):
+        raise ValueError("Final-fit held-out identities differ from the recorded test hashes")
+    return {
+        **metadata,
+        "validation_audit_sha256": hashlib.sha256(audit_path.read_bytes()).hexdigest(),
+    }
+
+
 def _names(value):
     return sorted([value] if isinstance(value, str) else value)
 
@@ -177,6 +273,8 @@ def build_jobs(models, spec, lookup, root, out, folds=None):
                 cfg.taxonomy_root = str(Path("taxonomy").resolve())
                 cfg.output_root = str(out.resolve() / "future-runs")
                 cfg.train.seed = seed
+                if spec.get("validation_enabled", True) is False:
+                    cfg.train.validation_enabled = False
                 cfg.train.iters = spec["target_steps"]
                 cfg.train.batch_size = spec["batch_size"]
                 cfg.train.accum = spec["accumulation"]
@@ -244,6 +342,7 @@ def main() -> None:
     root = args.dataset_root.resolve()
     dataset = dataset_name(spec)
     primary = primary_checkpoint(spec)
+    final_fit = final_fit_dataset(spec, root)
     cv = cross_validation(spec, root)
     if cv is None:
         split_hash = hashlib.sha256((root / "splits.json").read_bytes()).hexdigest()
@@ -290,6 +389,14 @@ def main() -> None:
         result["primary_checkpoint"] = primary
     if cv is not None:
         result["cross_validation"] = cv
+    if final_fit is not None:
+        result["validation_enabled"] = False
+        result["dataset_final_fit"] = final_fit
+    if "research_protocol" in spec:
+        result["research_protocol"] = spec["research_protocol"]
+        result["research_protocol_sha256"] = hashlib.sha256(
+            json.dumps(spec["research_protocol"], sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
     (args.out / "plan.json").write_text(json.dumps(result, indent=2) + "\n")
     print(f"Prepared {len(jobs)} configs. Training and publisher processes started: 0.")
 

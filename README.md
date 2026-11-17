@@ -52,6 +52,15 @@ exports and current scope, see the [instance and panoptic guide](docs/guides/ins
 - [Real benchmark validation](docs/guides/object-benchmark-validation.md):
   reproducible Cityscapes conversion and official evaluator parity checks.
 
+## RAD research comparison
+
+The RAD paper workflow freezes eight models and their Cityscapes → RailSem19 → RAD
+checkpoints, fits three RAD seeds on a versioned training/validation union, and
+evaluates the held-out test set. Its PDF and data exports include pooled and
+class-positive-image IoU, per-class results, full-scene overlays, deployment speed,
+memory and checkpoint provenance. Install `.[reports]` for PDF generation and follow
+the [RAD paper campaign guide](docs/guides/rad-2026-11-paper.md).
+
 ## Medical CT volumes
 
 The separate `segmentary-medical` workflow supports audited Task07 NIfTI volumes,

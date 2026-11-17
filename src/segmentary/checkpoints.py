@@ -12,6 +12,7 @@ from .engine.ema import EMA_CHECKPOINT_KEY
 
 TRAINING_RESUME_KEY = "segmentary_training_resume"
 TRAINING_RESUME_SCHEMA_VERSION = 1
+TRAINING_RNG_KEY = "segmentary_training_rng"
 
 
 def read_checkpoint(path: Path) -> dict[str, Any]:

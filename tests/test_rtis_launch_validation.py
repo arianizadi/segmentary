@@ -71,6 +71,42 @@ def test_validation_passes_and_writes_launch_record(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize(
+    "field",
+    [
+        None,
+        "collection_contract",
+        "validation_enabled",
+        "split_sha256",
+        "dataset_audit_sha256",
+        "dataset_final_fit",
+    ],
+)
+def test_final_fit_preflight_requires_same_data_and_collection_contract(
+    tmp_path, monkeypatch, field
+):
+    main, smoke = _pair(tmp_path, monkeypatch)
+    frozen = {
+        "collection_contract": "rtis-final-train-statistics-v2",
+        "validation_enabled": False,
+        "split_sha256": "split",
+        "dataset_audit_sha256": "samples",
+        "dataset_final_fit": {"parent_split_sha256": "parent"},
+    }
+    for root in (main, smoke):
+        path = root / "campaign.json"
+        current = json.loads(path.read_text())
+        current.update(frozen)
+        if root == smoke and field is not None:
+            current[field] = "different"
+        path.write_text(json.dumps(current))
+    if field is None:
+        assert validator.validate(main, smoke)["passed"] is True
+    else:
+        with pytest.raises(RuntimeError, match="Final-fit smoke campaign differs"):
+            validator.validate(main, smoke)
+
+
+@pytest.mark.parametrize(
     "damage,match",
     [
         ("not_smoke", "smoke: true"),

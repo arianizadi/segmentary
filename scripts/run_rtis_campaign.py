@@ -3,7 +3,7 @@
 One worker per GPU; job locks permit safe worker restart. Failed jobs stay visible
 and require explicit review. A STOP file drains workers after their current job.
 No test-set evaluation is performed. Periodic snapshots are removed only after
-successful training, best-checkpoint validation and durable completion evidence.
+successful training and durable endpoint completion evidence.
 """
 
 from __future__ import annotations
@@ -26,6 +26,7 @@ from segmentary import gpu_policy, launch_requirements
 
 REPORT = Path("docs/results/paul-test-rtis/live")
 TERMINAL = {"completed", "failed"}
+FINAL_TRAIN_CONTRACT = "rtis-final-train-statistics-v2"
 
 
 def now():
@@ -87,6 +88,20 @@ def verify_frozen(root, repo):
     # ``smoke`` relaxes the launch preflight, so it must come from the hashed plan.
     if bool(campaign.get("smoke")) != bool(plan.get("smoke")):
         raise RuntimeError("Campaign smoke flag disagrees with the frozen plan")
+    if FINAL_TRAIN_CONTRACT in (
+        campaign.get("collection_contract"),
+        plan.get("collection_contract"),
+    ):
+        for field in (
+            "collection_contract",
+            "primary_checkpoint",
+            "validation_enabled",
+            "dataset_final_fit",
+            "research_protocol",
+            "research_protocol_sha256",
+        ):
+            if campaign.get(field) != plan.get(field):
+                raise RuntimeError(f"Campaign {field} disagrees with the frozen plan")
     requirements = launch_requirements.validate_plan(plan)
     if campaign.get("launch_requirements") != plan.get("launch_requirements"):
         raise RuntimeError("Campaign launch requirements disagree with frozen plan")
@@ -195,16 +210,23 @@ def initialize(root, repo):
         dataset_sizes = None  # per fold, in campaign["cross_validation"]
     else:
         data_cfg = load_experiment([Path(plan["jobs"][0]["config"])])
+        validate_training_collection(data_cfg, plan)
         data_root = Path(data_cfg.stages[0].data[0].root)
         samples = read(data_root / "audit/samples.json")
-        verify_samples(data_root, samples)
-        samples_verified = len(samples)
+        verified_samples = (
+            [sample for sample in samples if sample["split"] == "train"]
+            if plan.get("collection_contract") == FINAL_TRAIN_CONTRACT
+            else samples
+        )
+        verify_samples(data_root, verified_samples)
+        samples_verified = len(verified_samples)
         dataset_sizes = split_sizes(read(data_root / "splits.json"))
     verified = {}
     for job in plan["jobs"]:
         if digest(job["config"]) != job["config_sha256"]:
             raise RuntimeError(f"Config changed: {job['name']}")
         cfg = load_experiment([Path(job["config"])])
+        validate_training_collection(cfg, plan)
         data_root = Path(cfg.stages[0].data[0].root)
         if digest(data_root / "splits.json") != job_dataset(plan, job)["split_sha256"]:
             raise RuntimeError("Dataset split changed")
@@ -252,8 +274,20 @@ def initialize(root, repo):
                 "raw/EMA-safe weights; no TTA. The best-on-val checkpoint is kept and scored "
                 "as secondary evidence only"
             )
+    if plan.get("collection_contract") == FINAL_TRAIN_CONTRACT:
+        campaign.update(
+            validation_enabled=False,
+            selection="final checkpoint at the fixed step budget; train resubstitution diagnostics; auto raw/EMA-safe weights; no TTA",
+            retention="Keep final; delete periodic snapshots after complete train diagnostics and profiling. Keep failed-run checkpoints for recovery.",
+        )
+        for field in ("dataset_final_fit", "research_protocol", "research_protocol_sha256"):
+            if field in plan:
+                campaign[field] = plan[field]
     if cv:
         campaign["cross_validation"] = {**cv, "fold_datasets": folds}
+    for field in ("research_protocol", "research_protocol_sha256"):
+        if field in plan:
+            campaign[field] = plan[field]
     if requirements is not None:
         campaign["launch_requirements"] = requirements
         if requirements.get("require_non_rad_sources"):
@@ -284,7 +318,11 @@ def cleanup(run, evidence, log_path):
                 "path": str(path),
                 "sha256": digest(path),
                 "bytes": path.stat().st_size,
-                "reason": "Validated best and final retained",
+                "reason": (
+                    "Final checkpoint and train diagnostics retained"
+                    if set(evidence["checkpoints"]) == {"final"}
+                    else "Validated best and final retained"
+                ),
                 "deleted_at": now(),
             }
             # Record intent durably before unlink; mark outcome afterward.
@@ -343,7 +381,28 @@ def primary_checkpoint(campaign):
     anchor = campaign.get("primary_checkpoint", "best")
     if anchor not in {"best", "final"}:
         raise RuntimeError(f"Invalid primary checkpoint: {anchor!r}")
+    if campaign.get("collection_contract") == FINAL_TRAIN_CONTRACT and anchor != "final":
+        raise RuntimeError("Final-train collection requires the final checkpoint")
     return anchor
+
+
+def evaluation_split(campaign):
+    return "train" if campaign.get("collection_contract") == FINAL_TRAIN_CONTRACT else "val"
+
+
+def validate_training_collection(cfg, campaign):
+    """Bind no-validation training to its explicit final-train collection contract."""
+    train = getattr(cfg, "train", None)
+    enabled = getattr(train, "validation_enabled", True)
+    final_train = campaign.get("collection_contract") == FINAL_TRAIN_CONTRACT
+    if final_train and enabled:
+        raise RuntimeError("Final-train collection requires train.validation_enabled=false")
+    if not enabled and not final_train:
+        raise RuntimeError("No-validation training requires the final-train collection contract")
+    if final_train:
+        primary_checkpoint(campaign)
+        if getattr(train, "early_stopping_patience", None) is not None:
+            raise RuntimeError("Final-train collection requires the full fixed training budget")
 
 
 def run_job(root, repo, job, gpu, campaign):
@@ -352,6 +411,8 @@ def run_job(root, repo, job, gpu, campaign):
     if digest(job["config"]) != job["config_sha256"]:
         raise RuntimeError("Config digest mismatch")
     cfg = load_experiment([Path(job["config"])])
+    validate_training_collection(cfg, campaign)
+    final_train = campaign.get("collection_contract") == FINAL_TRAIN_CONTRACT
     expected = job_dataset(campaign, job)["split_sha256"]
     if digest(Path(cfg.stages[0].data[0].root) / "splits.json") != expected:
         raise RuntimeError("Dataset split changed")
@@ -388,7 +449,9 @@ def run_job(root, repo, job, gpu, campaign):
         root / "campaign.json",
     )
     command = [sys.executable, "-m", "segmentary.train", job["config"], "--devices", "1"]
-    candidates = list(run.glob("step-*.ckpt")) + list(run.glob("best*.ckpt"))
+    candidates = list(run.glob("step-*.ckpt"))
+    if not final_train:
+        candidates += list(run.glob("best*.ckpt"))
     if (run / "last.ckpt").exists():
         candidates.append(run / "last.ckpt")
     valid = []
@@ -420,6 +483,12 @@ def run_job(root, repo, job, gpu, campaign):
         last = checkpoint_info(run / "last.ckpt")
         training = read(run / "results.json")
         stop = validate_stop(training, last["global_step"], campaign["target_steps"])
+        if final_train and (
+            training.get("metrics") != {}
+            or training.get("env", {}).get("validation_enabled") is not False
+            or last["global_step"] != campaign["target_steps"]
+        ):
+            raise RuntimeError("Final-train run has invalid no-validation training evidence")
         if (
             campaign.get("primary_checkpoint") == "final"
             and stop.get("reason") != "budget_complete"
@@ -429,14 +498,21 @@ def run_job(root, repo, job, gpu, campaign):
             )
 
         best_paths = list(run.glob("best*.ckpt"))
-        if len(best_paths) != 1:
+        if final_train and best_paths:
+            raise RuntimeError("Final-train run unexpectedly wrote a best checkpoint")
+        if not final_train and len(best_paths) != 1:
             raise RuntimeError(f"Expected exactly one best checkpoint: {best_paths}")
-        best = checkpoint_info(best_paths[0])
+        checkpoints = (
+            {"final": last}
+            if final_train
+            else {"best": checkpoint_info(best_paths[0]), "final": last}
+        )
         state.update(status="evaluating", final_step=last["global_step"])
         write(state_path, state)
         anchor = primary_checkpoint(campaign)
-        evaluated = last if anchor == "final" else best
-        result_path = run / f"{anchor}-val.json"
+        evaluated = checkpoints[anchor]
+        split = evaluation_split(campaign)
+        result_path = run / f"{anchor}-{split}.json"
         subprocess.run(
             [
                 sys.executable,
@@ -448,7 +524,8 @@ def run_job(root, repo, job, gpu, campaign):
                 evaluated["path"],
                 "--auto-weights",
                 "--split",
-                "val",
+                split,
+                *(["--pad-to-multiple", "32"] if final_train else []),
                 "--out",
                 str(result_path),
                 "--device",
@@ -463,16 +540,21 @@ def run_job(root, repo, job, gpu, campaign):
     evaluation = read(result_path)
     if evaluation.get("metrics", {}).get("miou") is None:
         raise RuntimeError("Evaluation has no finite mIoU")
+    if final_train and evaluation.get("config", {}).get("evaluation", {}).get("split") != "train":
+        raise RuntimeError("Final-train result does not identify a train evaluation")
     state.update(
         status="collecting" if campaign.get("collection_contract") else "completed",
         finished_at=now(),
-        checkpoints={"best": best, "final": last},
+        checkpoints=checkpoints,
         evaluation=evaluation,
         evaluation_checkpoint=anchor,
         training=training,
         stopping=stop,
         learning_curve=learning_curve(run),
     )
+    if final_train:
+        state["evaluation_split"] = "train"
+        state["evaluation_result"] = {"path": str(result_path), "sha256": digest(result_path)}
     write(state_path, state)
     if campaign.get("collection_contract"):
         return

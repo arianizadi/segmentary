@@ -50,6 +50,7 @@ Repository = "https://github.com/arianizadi/segmentary"
 
 [project.optional-dependencies]
 objects = ["pycocotools==2.0.11"]
+reports = ["reportlab==5.1.0", "pypdf==7.1.0"]
 # Medical data/evaluation stays optional; the external trainer is isolated.
 medical = ["nibabel==5.4.2", "pydicom==3.0.2", "surface-distance==0.1"]
 medical-models = ["nibabel==5.4.2", "pydicom==3.0.2", "surface-distance==0.1", "monai==1.6.0", "einops==0.8.2", "ml-collections==1.1.0"]

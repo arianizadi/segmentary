@@ -17,16 +17,18 @@ Two things worth knowing before editing:
 
 from __future__ import annotations
 
+import random
 import warnings
 from dataclasses import asdict
 from time import monotonic
 from typing import Any, Literal, cast
 
 import lightning as L
+import numpy as np
 import torch
 from torch import Tensor
 
-from ..checkpoints import TRAINING_RESUME_KEY, TRAINING_RESUME_SCHEMA_VERSION
+from ..checkpoints import TRAINING_RESUME_KEY, TRAINING_RESUME_SCHEMA_VERSION, TRAINING_RNG_KEY
 from ..config import EvalConfig, OptimConfig, TrainConfig
 from ..models.outputs import SegmentationOutput
 from ..tasks import active_for_loss, validate_canonical_active, validate_task_space
@@ -192,7 +194,11 @@ class SegLitModule(L.LightningModule):
         self.validation_weights = (
             "ema" if self.ema is not None and ema_evaluation_safe(model) else "raw"
         )
-        if self.ema is not None and self.validation_weights == "raw":
+        if (
+            train_cfg.validation_enabled
+            and self.ema is not None
+            and self.validation_weights == "raw"
+        ):
             warnings.warn(
                 "model contains running-stat BatchNorm; validation uses raw weights because "
                 "the saved EMA parameters have no separately recalibrated BN statistics",
@@ -209,6 +215,7 @@ class SegLitModule(L.LightningModule):
         self._training_samples = 0
         self._telemetry_start_step = 0
         self._telemetry_step = -1
+        self._resume_rng_state: dict[str, Any] | None = None
         self.save_hyperparameters(ignore=["model", "loss_fn", "space", "eval_active"])
 
     # -- training ----------------------------------------------------------
@@ -230,6 +237,9 @@ class SegLitModule(L.LightningModule):
             loss, parts = dense_training_objective(
                 self.model, self.loss_fn, batch["image"], batch["mask"], active=batch.get("active")
             )
+
+        if not self.train_cfg.validation_enabled and not bool(torch.isfinite(loss).all()):
+            raise RuntimeError("NONFINITE_TRAINING_LOSS: final-fit optimization stopped")
 
         bs = batch["image"].shape[0]
         self.log("train/loss", loss, prog_bar=True, on_step=True, batch_size=bs, sync_dist=False)
@@ -301,6 +311,16 @@ class SegLitModule(L.LightningModule):
         pre-hook, so this does not weaken those ablations.
         """
         self.train()
+        if self._resume_rng_state is not None:
+            # Model/optimizer/loader setup may consume randomness after loading
+            # the checkpoint. Restore global streams immediately before training.
+            state = self._resume_rng_state
+            random.setstate(state["python"])
+            np.random.set_state(state["numpy"])
+            torch.set_rng_state(state["torch"])
+            if state["cuda"] is not None:
+                torch.cuda.set_rng_state(state["cuda"], self.device)
+            self._resume_rng_state = None
         self._train_started_monotonic = monotonic()
         self._training_samples = 0
         self._telemetry_start_step = int(self.global_step)
@@ -324,10 +344,21 @@ class SegLitModule(L.LightningModule):
             "train": asdict(self.train_cfg),
             "optim": asdict(self.optim_cfg),
         }
+        if not self.train_cfg.validation_enabled:
+            checkpoint[TRAINING_RNG_KEY] = {
+                "python": random.getstate(),
+                "numpy": np.random.get_state(),
+                "torch": torch.get_rng_state(),
+                "cuda": torch.cuda.get_rng_state(self.device)
+                if self.device.type == "cuda"
+                else None,
+            }
 
     def on_load_checkpoint(self, checkpoint: dict[str, Any]) -> None:
         """Restore EMA exactly when resuming an EMA-enabled training run."""
         metadata = checkpoint.get(TRAINING_RESUME_KEY)
+        if not self.train_cfg.validation_enabled and metadata is None:
+            raise RuntimeError("no-validation resume requires matching training metadata")
         if metadata is not None:
             expected = {
                 "schema_version": TRAINING_RESUME_SCHEMA_VERSION,
@@ -337,12 +368,16 @@ class SegLitModule(L.LightningModule):
                 "train": asdict(self.train_cfg),
                 "optim": asdict(self.optim_cfg),
             }
-            # Older checkpoints always selected val/miou. Normalize only that
-            # missing default; changing selection to a class still fails strictly.
+            # Normalize missing historical defaults while keeping any explicit
+            # selection or validation-mode change a strict resume mismatch.
             if isinstance(metadata, dict) and isinstance(metadata.get("train"), dict):
                 metadata = {
                     **metadata,
-                    "train": {"selection_metric": "val/miou", **metadata["train"]},
+                    "train": {
+                        "selection_metric": "val/miou",
+                        "validation_enabled": True,
+                        **metadata["train"],
+                    },
                 }
             if not isinstance(metadata, dict) or metadata != expected:
                 wrong = sorted(
@@ -354,6 +389,11 @@ class SegLitModule(L.LightningModule):
                     "checkpoint resume metadata does not match this stage "
                     f"({', '.join(wrong)} differ); refusing a partial or cross-config resume"
                 )
+        if not self.train_cfg.validation_enabled:
+            rng = checkpoint.get(TRAINING_RNG_KEY)
+            if not isinstance(rng, dict) or set(rng) != {"python", "numpy", "torch", "cuda"}:
+                raise RuntimeError("no-validation resume requires saved global RNG state")
+            self._resume_rng_state = rng
         if self.ema is None:
             return
         if EMA_CHECKPOINT_KEY not in checkpoint:

@@ -166,6 +166,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--deterministic", action="store_true", help="Reproducible evaluation kernels")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument(
+        "--pad-to-multiple",
+        type=int,
+        default=None,
+        help="optionally pad the bottom/right image edges, ignoring padded target pixels",
+    )
+    ap.add_argument(
         "--num-workers",
         type=int,
         default=None,
@@ -175,6 +181,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.limit is not None and args.limit < 1:
         ap.error("--limit must be at least 1")
+    if args.pad_to_multiple is not None and args.pad_to_multiple < 1:
+        ap.error("--pad-to-multiple must be positive")
     if args.num_workers is not None and args.num_workers < 0:
         ap.error("--num-workers cannot be negative")
     try:
@@ -256,7 +264,12 @@ def main(argv: list[str] | None = None) -> int:
     model = load_configured_checkpoint(model, cfg, args.ckpt, use_ema)
     model = model.to(device).eval()
 
-    transform = build_eval_transform(aug_from_spec(cfg.aug, model))
+    augmentation = aug_from_spec(cfg.aug, model)
+    transform = (
+        build_eval_transform(augmentation)
+        if args.pad_to_multiple is None
+        else build_eval_transform(augmentation, pad_to_multiple=args.pad_to_multiple)
+    )
     mapping = load_data_mapping(data, space, cfg.taxonomy_root)
     active = torch.from_numpy(mapping.active_mask())
     if cfg.loss.task == "binary":
@@ -375,6 +388,13 @@ def main(argv: list[str] | None = None) -> int:
         },
     }
     record_env = collect_env()
+    if args.pad_to_multiple is not None:
+        record_config["evaluation"]["padding"] = {
+            "multiple": args.pad_to_multiple,
+            "position": "bottom_right",
+            "target_fill": space.ignore_index,
+            "padded_pixels_scored": False,
+        }
     record_env["input_normalization"] = input_normalization(model)
     out = args.out or (
         args.ckpt.parent / f"eval_{data.name}_{split}{'_tta' if args.tta else ''}" / "results.json"

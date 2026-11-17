@@ -1262,6 +1262,7 @@ class TrainConfig:
     early_stopping_min_delta: float = 0.0
     seed: int = 0
     devices: int | str = "auto"
+    validation_enabled: bool = True
 
     def __post_init__(self) -> None:
         if self.iters <= 0:
@@ -1273,6 +1274,10 @@ class TrainConfig:
             )
         if self.num_workers < 0:
             raise ConfigError(f"train.num_workers cannot be negative, got {self.num_workers}")
+        if type(self.validation_enabled) is not bool:
+            raise ConfigError("train.validation_enabled must be boolean")
+        if not self.validation_enabled and self.early_stopping_patience is not None:
+            raise ConfigError("train.early_stopping_patience requires validation_enabled: true")
         if self.val_every <= 0 or self.ckpt_every <= 0:
             raise ConfigError(
                 f"train.val_every and train.ckpt_every must be positive, got "
@@ -1622,7 +1627,17 @@ def load_experiment(paths: list[Path | str], overrides: dict | None = None) -> E
 def to_dict(cfg: Any) -> Any:
     """Dataclass -> plain JSON-able dict."""
     if is_dataclass(cfg):
-        return {f.name: to_dict(getattr(cfg, f.name)) for f in fields(cfg)}
+        return {
+            f.name: to_dict(getattr(cfg, f.name))
+            for f in fields(cfg)
+            # Keep historical resolved configs and their hashes unchanged unless
+            # a run explicitly opts into the final-fit training path.
+            if not (
+                isinstance(cfg, TrainConfig)
+                and f.name == "validation_enabled"
+                and cfg.validation_enabled
+            )
+        }
     if isinstance(cfg, (list, tuple)):
         return [to_dict(v) for v in cfg]
     if isinstance(cfg, dict):
