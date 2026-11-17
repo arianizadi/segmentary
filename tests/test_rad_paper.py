@@ -50,6 +50,48 @@ def test_displayed_winner_indices_can_require_a_complete_finite_cohort():
         assert report.displayed_winner_indices([1.0, missing], require_complete=True) == set()
 
 
+def test_pdf_compact_provenance_preserves_false_and_zero():
+    assert report.pdf_compact_provenance(
+        {"flag": False, "count": 0, "absent": None, "empty": {}, "nested": {"unused": []}}
+    ) == {"flag": False, "count": 0}
+
+
+def test_pdf_origin_summary_groups_deep_module_receipts_without_mutating_evidence():
+    origin = {
+        "hf_name_or_path": "tue-mps/eomt-dinov3-coco-panoptic-large-640",
+        "hf_commit": "e" * 40,
+        "timm_pretrained": {},
+    }
+    evidence = {
+        "basis": "runtime_model_origins",
+        "runtime_model_origins_recorded": True,
+        "model_origins": [
+            {**origin, "module": f"model.layers.{index}.attention"} for index in range(51)
+        ]
+        + [{**origin, "module": "other_revision", "hf_commit": "f" * 40}],
+    }
+    original = copy.deepcopy(evidence)
+    summary = report.pdf_origin_summary(evidence)
+    assert summary == {
+        "basis": "runtime_model_origins",
+        "runtime_model_origins_recorded": True,
+        "recorded_module_count": 52,
+        "unique_origins": [
+            {
+                "hf_name_or_path": origin["hf_name_or_path"],
+                "hf_commit": "e" * 40,
+                "module_count": 51,
+            },
+            {
+                "hf_name_or_path": origin["hf_name_or_path"],
+                "hf_commit": "f" * 40,
+                "module_count": 1,
+            },
+        ],
+    }
+    assert evidence == original
+
+
 @pytest.fixture
 def paper_campaign(tmp_path, monkeypatch, request):
     smp = getattr(request, "param", None) == "smp"
@@ -655,6 +697,54 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
     )
 
 
+def test_pdf_provenance_condenses_module_origins_and_source_artifact_paths(paper_campaign):
+    pytest.importorskip("reportlab")
+    reader = pytest.importorskip("pypdf")
+    value = report.load_report(paper_campaign.request)
+    run = next(run for run in value["runs"] if run["seed"] == 0)
+    origins = [
+        {
+            "hf_name_or_path": "unique-public-origin-for-layout",
+            "hf_commit": "d" * 40,
+            "module": f"model.layers.{index}.attention",
+            "timm_pretrained": {},
+        }
+        for index in range(51)
+    ]
+    run["training"]["env"]["model_origins"] = origins
+    run["public_origin_evidence"] = report.public_origin_evidence(
+        run, value["source_stage_reports"]
+    )
+    for model in value["source_stage_reports"]["models"]:
+        for stage in model["stages"]:
+            for label in (
+                "checkpoint",
+                "config",
+                "evaluation_receipt",
+                "performance_receipt",
+                "training_receipt",
+            ):
+                stage[label]["path"] = "/retained-only-in-json/" + "deep-source-directory/" * 20
+    original = copy.deepcopy(value)
+    target = paper_campaign.root / "compact-provenance.pdf"
+    report.build_pdf(target, value)
+    pages = [page.extract_text() for page in reader.PdfReader(target).pages]
+    text = "\n".join(pages)
+    assert text.count("unique-public-origin-for-layout") == 1
+    assert '"module_count": 51' in text
+    assert '"recorded_module_count": 51' in text
+    assert "model.layers.50.attention" not in text
+    assert "/retained-only-in-json/" not in text
+    assert "b" * 64 in text
+    assert "SHA256 - full artifact paths in rad-paper.json" in text
+    assert value == original
+    assert all(
+        "Artifact" in page and "SHA256" in page
+        for page in pages
+        if "Public supervision and training recipe" in page
+    )
+
+
 @pytest.mark.parametrize(
     ("complete_training", "incomplete_resources"), [(False, False), (True, False), (True, True)]
 )
@@ -1008,6 +1098,47 @@ def test_smp_public_encoder_evidence_prevents_false_missing_origin_warning(paper
         assert "RAD runtime observation" in origin["revision_evidence"]
         assert origin["public_pretraining"]["public_checkpoint"] == "smp-hub/resnet50.imagenet"
         assert origin["public_pretraining"]["smp_registry_pinned_revision"] == "c" * 40
+
+
+@pytest.mark.parametrize("paper_campaign", ["smp"], indirect=True)
+def test_smp_module_only_origin_uses_registry_evidence_and_preserves_raw_receipt(paper_campaign):
+    value = report.load_report(paper_campaign.request)
+    run = value["runs"][0]
+    placeholder = {
+        "module": "model",
+        "hf_commit": None,
+        "hf_name_or_path": None,
+        "timm_pretrained": {},
+    }
+    run["training"]["env"]["model_origins"] = [placeholder]
+    origin = report.public_origin_evidence(run, value["source_stage_reports"])
+    assert origin["basis"] == "source_public_pretraining_and_encoder_recipe"
+    assert origin["runtime_model_origins_recorded"] is False
+    assert "RAD runtime observation" in origin["revision_evidence"]
+    assert run["training"]["env"]["model_origins"] == [placeholder]
+    compact = report.pdf_origin_summary(origin)
+    assert compact["basis"] == origin["basis"]
+    assert compact["runtime_model_origins_recorded"] is False
+    assert compact["revision_evidence"] == origin["revision_evidence"]
+    assert compact["public_pretraining"]["smp_registry_pinned_revision"] == "c" * 40
+
+
+@pytest.mark.parametrize(
+    "identity",
+    [
+        {"hf_name_or_path": "public/model"},
+        {"hf_commit": "c" * 40},
+        {"timm_pretrained": {"architecture": "convnext_tiny"}},
+    ],
+)
+def test_meaningful_runtime_origin_identity_is_retained(identity):
+    observed = {"module": "backbone", **identity}
+    run = {"training": {"env": {"model_origins": [observed]}}}
+    assert report.public_origin_evidence(run, {}) == {
+        "basis": "runtime_model_origins",
+        "runtime_model_origins_recorded": True,
+        "model_origins": [observed],
+    }
 
 
 def test_smp_origin_requires_matching_public_pretraining_and_encoder_recipe():

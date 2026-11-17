@@ -113,7 +113,11 @@ def training_memory(state: dict) -> dict:
 
 
 def public_origin_evidence(run: dict, source_stages: dict) -> dict | None:
-    origins = run["training"].get("env", {}).get("model_origins")
+    origins = [
+        origin
+        for origin in (run["training"].get("env", {}).get("model_origins") or [])
+        if any(origin.get(field) for field in ("hf_name_or_path", "hf_commit", "timm_pretrained"))
+    ]
     if origins:
         return {
             "basis": "runtime_model_origins",
@@ -826,6 +830,52 @@ def semantic_panel(
     return stream
 
 
+def pdf_compact_provenance(value):
+    """Condense display-only provenance while retaining the raw report evidence."""
+    if isinstance(value, dict):
+        compacted = {}
+        for key, item in value.items():
+            compact = pdf_compact_provenance(item)
+            if compact not in (None, "", [], {}):
+                compacted[key] = compact
+        return compacted
+    if isinstance(value, list):
+        return [pdf_compact_provenance(item) for item in value]
+    return value
+
+
+def pdf_origin_summary(evidence: dict | None) -> dict | None:
+    """Show each observed origin once, with the count of modules recording it."""
+    if not evidence:
+        return evidence
+    summary = {key: value for key, value in evidence.items() if key != "model_origins"}
+    if "public_pretraining" in summary:
+        summary["public_pretraining"] = {
+            key: value
+            for key, value in summary["public_pretraining"].items()
+            if key.startswith("public_") or key in ("identity", "smp_registry_pinned_revision")
+        }
+    origins = evidence.get("model_origins")
+    if origins is not None:
+        grouped = {}
+        for origin in origins:
+            identity = pdf_compact_provenance(
+                {key: value for key, value in origin.items() if key != "module"}
+            )
+            key = json.dumps(identity, sort_keys=True)
+            grouped.setdefault(key, {**identity, "module_count": 0})["module_count"] += 1
+        summary["recorded_module_count"] = len(origins)
+        summary["unique_origins"] = list(grouped.values())
+    return pdf_compact_provenance(summary)
+
+
+def pdf_model_recipe(model: dict) -> dict:
+    summary = pdf_compact_provenance(model)
+    if summary.get("tuning") != "lora":
+        summary = {key: value for key, value in summary.items() if not key.startswith("lora_")}
+    return summary
+
+
 def build_pdf(path: Path, report: dict) -> None:
     from reportlab.graphics.shapes import Circle, Drawing, Line, Rect, String
     from reportlab.lib import colors
@@ -1298,21 +1348,25 @@ def build_pdf(path: Path, report: dict) -> None:
                 )
             )
             cfg = training.get("config", {})
+            public = {
+                key: value
+                for key, value in (stage.get("public_pretraining") or {}).items()
+                if key != "model" and (key != "base_optimizer" or value != cfg.get("optim"))
+            }
             provenance = {
-                "public_pretraining": stage.get("public_pretraining"),
+                "public_pretraining": public,
                 "optimizer": cfg.get("optim"),
                 "effective_stage_optimizer": training.get("env", {}).get("stage_optimizer"),
-                "model": cfg.get("model"),
-                "latest_recorded_source_invocation_wall_seconds": duration,
-                "source_wall_time_scope": "latest recorded source RunRecord invocation including validation; earlier invocation history is unknown",
+                "model": pdf_model_recipe(cfg.get("model", {})),
             }
             story.append(
                 paragraph(
                     "Public supervision and training recipe\n"
-                    + json.dumps(provenance, sort_keys=True),
+                    + json.dumps(pdf_compact_provenance(provenance), sort_keys=True),
                     "PaperSmall",
                 )
             )
+            artifacts = [["Artifact", "SHA256 - full artifact paths in rad-paper.json"]]
             for label in (
                 "checkpoint",
                 "config",
@@ -1320,12 +1374,8 @@ def build_pdf(path: Path, report: dict) -> None:
                 "performance_receipt",
                 "training_receipt",
             ):
-                story.append(
-                    paragraph(
-                        label.replace("_", " ") + "\n" + json.dumps(stage[label], sort_keys=True),
-                        "PaperSmall",
-                    )
-                )
+                artifacts.append([label.replace("_", " "), stage[label]["sha256"]])
+            table(artifacts, [0.23, 0.77])
             if duration is None or not stage.get("public_pretraining"):
                 story.append(
                     paragraph(
@@ -1608,25 +1658,40 @@ def build_pdf(path: Path, report: dict) -> None:
                 continue
             training = run["training"]
             cfg = training.get("config", {})
-            origins = training.get("env", {}).get("model_origins", [])
+            source = run.get("source_checkpoint") or {}
+            initialization = {
+                key: {
+                    field: "source_checkpoint"
+                    if field == "checkpoint" and value == source.get("checkpoint")
+                    else value
+                    for field, value in item.items()
+                }
+                for key, item in (training.get("env", {}).get("initialization") or {}).items()
+            }
+            if initialization.get("invocation_start") == initialization.get(
+                "source_stage_initializer"
+            ):
+                initialization = {
+                    "source_and_invocation_start": initialization.get("source_stage_initializer")
+                }
             summary = {
                 "recipe": run["protocol"],
-                "public_model": cfg.get("model"),
-                "origins": origins,
-                "public_origin_evidence": run["public_origin_evidence"],
+                "public_model": pdf_model_recipe(cfg.get("model", {})),
+                "public_origin_evidence": pdf_origin_summary(run["public_origin_evidence"]),
                 "optimizer": cfg.get("optim"),
+                "effective_stage_optimizer": training.get("env", {}).get("stage_optimizer"),
                 "stage_learning_rates": [
                     {key: stage.get(key) for key in ("lr_scale", "head_group_lr_scale", "iters")}
                     for stage in cfg.get("stages", [])
                 ],
                 "training_timing": run["training_timing"],
-                "source_checkpoint": run.get("source_checkpoint"),
-                "initialization": training.get("env", {}).get("initialization"),
+                "source_checkpoint": {key: source.get(key) for key in ("name", "recorded_sha256")},
+                "initialization": initialization,
             }
             story.append(
                 paragraph(
                     "Initialization and optimizer provenance\n"
-                    + json.dumps(summary, sort_keys=True),
+                    + json.dumps(pdf_compact_provenance(summary), sort_keys=True),
                     "PaperSmall",
                 )
             )
