@@ -1571,7 +1571,7 @@ def build_pdf(path: Path, report: dict) -> None:
             table(rows, [0.24, 0.07, 0.14, 0.11, 0.11, 0.11, 0.11, 0.11], class_winners)
             story.append(
                 paragraph(
-                    "Class-positive IoU averages selected GT-positive image IoUs. Pooled IoU combines all validation counts. Precision, recall and Dice use selected-image counts. Source validation datasets and label spaces differ. Wall hours include validation in the latest invocation. Earlier history is unknown. Source runs are shared across all three RAD seeds.",
+                    "Class-positive IoU averages selected GT-positive image IoUs. Pooled IoU combines all validation counts. Precision, recall and Dice use selected-image counts. Source validation datasets and label spaces differ. Wall hours include validation in the latest invocation. Earlier source invocation history is unknown. Source runs are shared across all three RAD seeds.",
                     "PaperSmall",
                 )
             )
