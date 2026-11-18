@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import gzip
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -324,7 +326,7 @@ def test_seed_and_set_overrides_are_recorded_without_hash_collision(
 
     def fake_loader(*args, **kwargs):
         loader_kwargs.append(kwargs)
-        return [{"image": image, "mask": target}]
+        return [{"image": image, "mask": target, "key": ["synthetic-image"]}]
 
     monkeypatch.setattr(eval_module, "DataLoader", fake_loader)
     monkeypatch.setattr(eval_module, "tqdm", lambda iterable, **kwargs: iterable)
@@ -483,6 +485,46 @@ def test_seed_and_set_overrides_are_recorded_without_hash_collision(
     table_dir = tmp_path / "table"
     assert results_table.main(["--runs", str(tmp_path), "--out", str(table_dir)]) == 0
     assert "eval:railsem19:val" in (table_dir / "results.md").read_text(encoding="utf-8")
+
+    captured = tmp_path / "per-image-confusion.json.gz"
+    captured_record = tmp_path / "captured.json"
+    assert (
+        eval_module.main(
+            [
+                str(config),
+                "--ckpt",
+                str(checkpoint),
+                "--device",
+                "cpu",
+                "--out",
+                str(captured_record),
+                "--per-image-confusions-out",
+                str(captured),
+            ]
+        )
+        == 0
+    )
+    captured_metrics = json.loads(captured_record.read_text())["metrics"]
+    assert json.loads(gzip.decompress(captured.read_bytes())) == {
+        "synthetic-image": [[2, 0], [0, 2]]
+    }
+    assert captured_metrics["per_image_confusions"] == {
+        "path": str(captured),
+        "sha256": hashlib.sha256(captured.read_bytes()).hexdigest(),
+    }
+    assert all("per_image_confusions" not in record.metrics for record in records[:-1])
+
+
+def test_per_image_capture_excludes_ignore_pixels_and_rejects_repeated_keys() -> None:
+    matrices = {}
+    target = torch.tensor([[[0, 255], [1, 1]]])
+    prediction = torch.tensor([[[0, 0], [0, 1]]])
+    eval_module.capture_image_confusions(matrices, ["image"], prediction, target, 2, 255)
+    assert matrices == {"image": [[1, 0], [1, 1]]}
+    with pytest.raises(ValueError, match="unique nonempty dataset keys"):
+        eval_module.capture_image_confusions(matrices, ["image"], prediction, target, 2, 255)
+    with pytest.raises(ValueError, match="same batch"):
+        eval_module.capture_image_confusions({}, [], prediction, target, 2, 255)
 
 
 @pytest.mark.slow

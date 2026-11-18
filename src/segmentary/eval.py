@@ -22,7 +22,11 @@ is how the zero-shot domain-gap numbers are produced.
 from __future__ import annotations
 
 import argparse
+import gzip
+import hashlib
 import json
+import os
+import tempfile
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -116,6 +120,43 @@ def load_configured_checkpoint(
     return model
 
 
+def capture_image_confusions(
+    matrices: dict[str, list[list[int]]],
+    keys: list[str],
+    predictions: torch.Tensor,
+    targets: torch.Tensor,
+    num_classes: int,
+    ignore_index: int,
+) -> None:
+    """Retain one integer confusion matrix for every stable dataset key."""
+    if len(keys) != len(targets) or len(predictions) != len(targets):
+        raise ValueError("Per-image confusion keys and tensors must cover the same batch")
+    for key, prediction, target in zip(keys, predictions, targets, strict=True):
+        if not isinstance(key, str) or not key or key in matrices:
+            raise ValueError(f"Per-image confusion requires unique nonempty dataset keys: {key!r}")
+        confusion = ConfusionMatrix(num_classes, ignore_index, device=target.device)
+        confusion.update(prediction, target)
+        matrices[key] = confusion.mat.cpu().tolist()
+
+
+def write_image_confusions(path: Path, matrices: dict[str, list[list[int]]]) -> dict[str, Any]:
+    """Atomically persist the capture and return its byte-bound artifact pointer."""
+    payload = gzip.compress(
+        json.dumps(matrices, separators=(",", ":"), allow_nan=False).encode(), mtime=0
+    )
+    path = path.resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.")
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(payload)
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+    return {"path": str(path), "sha256": hashlib.sha256(payload).hexdigest()}
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -162,6 +203,11 @@ def main(argv: list[str] | None = None) -> int:
         help="use EMA unless running-stat BatchNorm requires raw weights",
     )
     ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument(
+        "--per-image-confusions-out",
+        type=Path,
+        help="optionally save gzip JSON confusion matrices indexed by dataset key",
+    )
     ap.add_argument("--device", default="cuda:0")
     ap.add_argument("--deterministic", action="store_true", help="Reproducible evaluation kernels")
     ap.add_argument("--limit", type=int, default=None)
@@ -340,6 +386,7 @@ def main(argv: list[str] | None = None) -> int:
     if infer_cfg.task == "binary":
         print(f"  prediction: sigmoid class-1 threshold {infer_cfg.threshold:.6g}")
 
+    image_confusions: dict[str, list[list[int]]] = {}
     with RunTimer() as timer, torch.no_grad():
         for batch in tqdm(loader, desc="eval"):
             image = batch["image"].to(device, non_blocking=True)
@@ -349,6 +396,15 @@ def main(argv: list[str] | None = None) -> int:
             pred = prediction_from_inference(logits.float(), infer_cfg)
             cm.update(pred, target)
             bf1.update(pred, target)
+            if args.per_image_confusions_out is not None:
+                capture_image_confusions(
+                    image_confusions,
+                    batch["key"],
+                    pred,
+                    target,
+                    space.num_classes,
+                    space.ignore_index,
+                )
 
     if timer.started_at is None:
         raise RuntimeError("run timer recorded no start time; evaluation never ran")
@@ -357,6 +413,15 @@ def main(argv: list[str] | None = None) -> int:
     metrics["boundary"] = bf1.compute().as_dict(list(space.names))
     if cfg.eval.save_confusion:
         metrics["confusion"] = result.confusion.tolist()
+    if args.per_image_confusions_out is not None:
+        if len(image_confusions) != len(dataset):
+            raise ValueError("Per-image confusion capture must cover the entire evaluation dataset")
+        captured_total = torch.tensor(list(image_confusions.values()), dtype=torch.int64).sum(0)
+        if not torch.equal(captured_total, result.confusion.cpu()):
+            raise ValueError("Per-image confusion capture differs from the evaluation total")
+        metrics["per_image_confusions"] = write_image_confusions(
+            args.per_image_confusions_out, image_confusions
+        )
 
     print(
         f"\nmIoU {result.miou:.4f} | mAcc {result.macc:.4f} | pixel acc {result.pixel_accuracy:.4f}"
