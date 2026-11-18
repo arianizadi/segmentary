@@ -339,6 +339,18 @@ def run(args: argparse.Namespace) -> dict:
                 "--gpu",
                 str(args.benchmark_gpu),
             )
+            phase("source-positive-image-evaluation")
+            command(
+                "collect_rad_source_positive_metrics.py",
+                "--request",
+                plan["research_protocol"]["source_stage_reports"]["spec"],
+                "--repo",
+                str(repo),
+                "--python",
+                args.python,
+                "--expected-code-sha",
+                read(root / "campaign.json")["code_sha"],
+            )
             phase("report")
             command(
                 "build_rad_paper_report.py",

@@ -22,6 +22,8 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "src"))
 from scripts.rad_paper_metrics import paper_metrics, pooled_metrics, seed_summary
+from scripts.rad_present_image_evidence import load_train_positive_evidence
+from scripts.rad_source_positive_evidence import load_source_positive_evidence
 from scripts.run_rad_test import digest, result_complete, validate_request, write
 from scripts.run_rad_test_profiles import result_complete as profile_complete
 
@@ -437,6 +439,14 @@ def aggregate(runs: list[dict], names: list[str]) -> list[dict]:
                         label
                     ]["mean_image_iou"]
                 ),
+                **{
+                    f"positive_image_{metric}": summary(
+                        lambda run, field=metric, label=name: run["metrics"][
+                            "class_positive_images"
+                        ]["per_class"][label][field]
+                    )
+                    for metric in ("precision", "recall", "dice")
+                },
                 "negative_image_false_alarm_rate_area": summary(
                     lambda run, label=name: run["metrics"]["negative_images"][label][
                         "image_false_alarm_rate_0_1_percent_area"
@@ -453,6 +463,12 @@ def aggregate(runs: list[dict], names: list[str]) -> list[dict]:
                 ),
                 "train_pixel_pooled_miou": summary(lambda run: run["train_pixel_pooled_miou"]),
                 "train_test_miou_gap": summary(lambda run: run["train_test_miou_gap"]),
+                "train_class_positive_image_miou": summary(
+                    lambda run: run["train_class_positive_image_miou"]
+                ),
+                "conditional_train_test_miou_gap": summary(
+                    lambda run: run["conditional_train_test_miou_gap"]
+                ),
                 "model_only_fps": summary(
                     lambda run: run["performance"]["measurements"]["latency"]["fps"]
                 ),
@@ -525,14 +541,25 @@ def load_source_stage_report(request: dict) -> dict:
     return recorded
 
 
-def load_report(request_path: Path) -> dict:
+def load_report(request_path: Path, source_positive_path: Path | None = None) -> dict:
     request, policy, request_sha = validate_request(request_path)
     if request["schema_version"] != 2:
         raise ValueError("The paper report requires a complete-run-set schema-2 request")
     protocol = request["research_protocol"]
     if protocol["primary_metric"] != "pixel_pooled_miou" or protocol["qualitative_seed"] != 0:
-        raise ValueError("The report requires pooled primary mIoU and frozen qualitative seed 0")
+        raise ValueError(
+            "The archived protocol requires pooled primary mIoU and qualitative seed 0"
+        )
     source_stages = load_source_stage_report(request)
+    if source_positive_path is None:
+        source_positive_path = (
+            Path(request["source_stage_reports"]["path"]).parent.parent
+            / "source-positive-images/source-positive-metrics.json"
+        )
+    source_positive = load_source_positive_evidence(source_positive_path, request, source_stages)
+    for model in source_stages["models"]:
+        for stage in model["stages"]:
+            stage.update(source_positive[(model["model"], stage["stage"])])
     root = Path(request["dataset_root"])
     samples = verified_json(root / "audit/samples.json", request["samples_sha256"])
     classes = sorted(
@@ -603,7 +630,9 @@ def load_report(request_path: Path) -> dict:
             raise ValueError("Paper metrics differ from the per-image confusion evidence")
         state = json.loads(Path(job["state_path"]).read_text())
         train_evaluation = full_train_evaluation(job, state, request, names, split_support, source)
+        train_evaluation.update(load_train_positive_evidence(job, state, request, names, samples))
         train_miou = train_evaluation["pixel_pooled"]["miou"]
+        train_positive_miou = train_evaluation["class_positive_images"]["miou"]
         runs.append(
             {
                 **{
@@ -629,6 +658,10 @@ def load_report(request_path: Path) -> dict:
                 "train_evaluation": train_evaluation,
                 "train_pixel_pooled_miou": train_miou,
                 "train_test_miou_gap": train_miou - metrics["pixel_pooled"]["miou"],
+                "train_class_positive_image_miou": train_positive_miou,
+                "conditional_train_test_miou_gap": (
+                    train_positive_miou - metrics["class_positive_images"]["miou"]
+                ),
                 "performance": performance,
                 "provenance": {
                     "test_result": str(directory / "result.json"),
@@ -641,11 +674,11 @@ def load_report(request_path: Path) -> dict:
             }
         )
     aggregates = aggregate(runs, names)
-    if any(entry["pixel_pooled_miou"]["n"] != 3 for entry in aggregates):
+    if any(entry["class_positive_image_miou"]["n"] != 3 for entry in aggregates):
         raise ValueError("Ranking requires three finite primary quality scores per model")
     headline = sorted(
         [row for row in aggregates if row["protocol"] == protocol["headline_protocol"]],
-        key=lambda row: (-row["pixel_pooled_miou"]["mean"], row["model"]),
+        key=lambda row: (-row["class_positive_image_miou"]["mean"], row["model"]),
     )
     if {row["model"] for row in headline} != set(protocol["models"]):
         raise ValueError("Headline recipe lacks all prespecified models")
@@ -697,6 +730,28 @@ def load_report(request_path: Path) -> dict:
         "split_sha256": request["split_sha256"],
         "samples_sha256": request["samples_sha256"],
         "research_protocol": protocol,
+        "report_metric_policy": {
+            "primary_metric": "class_positive_image_miou",
+            "secondary_metric": "pixel_pooled_miou",
+            "recorded_on": "2026-11-17",
+            "reason": "author_requested_reporting_correction_and_dual_metric_comparison",
+            "class_positive_image_miou": (
+                "For each class, compute whole-valid-image IoU on each image with GT pixels "
+                "of that class, average those image IoUs, then average supported class scores."
+            ),
+            "pixel_pooled_miou": (
+                "Pool all image confusion matrices, compute each class IoU from pooled "
+                "TP/FP/FN, then average class scores with a nonempty union. The native "
+                "source evaluator uses its archived active-class mask."
+            ),
+            "ranking": "descending three-RAD-seed mean class_positive_image_miou",
+            "source_positive_evaluations": {
+                "path": str(source_positive_path.resolve()),
+                "sha256": digest(source_positive_path),
+            },
+            "archived_primary_metric": protocol["primary_metric"],
+            "scope": "reporting correction after the first report; archived training protocol retained",
+        },
         "class_names": names,
         "class_coverage": coverage,
         "class_split_support": split_support["classes"],
@@ -723,14 +778,33 @@ def write_csv(path: Path, report: dict) -> None:
         for seed, value in statistics["seeds"].items():
             row[f"{prefix}:seed_{seed}"] = value
 
+    ranks = {model: index for index, model in enumerate(report["headline_order"], start=1)}
+    sources = {
+        model["model"]: model["stages"] for model in report["source_stage_reports"]["models"]
+    }
     rows = []
-    for entry in report["aggregates"]:
-        row = {"model": entry["model"], "protocol": entry["protocol"], "seeds": "0,1,2"}
+    for entry in sorted(report["aggregates"], key=lambda row: ranks[row["model"]]):
+        row = {
+            "model": entry["model"],
+            "protocol": entry["protocol"],
+            "seeds": "0,1,2",
+            "primary_metric": report["report_metric_policy"]["primary_metric"],
+            "class_positive_rank": ranks[entry["model"]],
+        }
+        for stage in sources[entry["model"]]:
+            prefix = f"source:{stage['stage']}"
+            row[f"{prefix}:pixel_pooled_miou"] = stage["metrics"]["metrics"]["miou"]
+            row[f"{prefix}:class_positive_image_miou"] = stage["class_positive_images"]["miou"]
+            row[f"{prefix}:class_positive_scored_classes"] = stage["class_positive_images"][
+                "macro_scored_classes"
+            ]
         for metric in (
             "pixel_pooled_miou",
             "class_positive_image_miou",
             "train_pixel_pooled_miou",
             "train_test_miou_gap",
+            "train_class_positive_image_miou",
+            "conditional_train_test_miou_gap",
             "model_only_fps",
             "native_pipeline_fps",
             "allocator_peak_bytes",
@@ -748,6 +822,9 @@ def write_csv(path: Path, report: dict) -> None:
             for metric in (
                 "iou",
                 "positive_image_iou",
+                "positive_image_precision",
+                "positive_image_recall",
+                "positive_image_dice",
                 "precision",
                 "recall",
                 "dice",
@@ -774,13 +851,14 @@ def write_csv(path: Path, report: dict) -> None:
         ]
         for scope in ("per_block", "leave_one_block_out"):
             for block in runs[0]["metrics"][scope]:
-                statistics = nullable_summary(
-                    {
-                        run["seed"]: run["metrics"][scope][block]["pixel_pooled"]["miou"]
-                        for run in runs
-                    }
-                )
-                add_summary(row, f"{scope}:{block}:pixel_pooled_miou", statistics)
+                for field, label in (
+                    ("pixel_pooled", "pixel_pooled_miou"),
+                    ("class_positive_images", "class_positive_image_miou"),
+                ):
+                    statistics = nullable_summary(
+                        {run["seed"]: run["metrics"][scope][block][field]["miou"] for run in runs}
+                    )
+                    add_summary(row, f"{scope}:{block}:{label}", statistics)
         rows.append(row)
     with path.open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator="\n")
@@ -907,13 +985,36 @@ def build_pdf(path: Path, report: dict) -> None:
     styles.add(ParagraphStyle(name="PaperBody", fontSize=8.5, leading=11.5, spaceAfter=7))
     styles.add(ParagraphStyle(name="PaperSmall", fontSize=6.8, leading=8.8, spaceAfter=5))
     styles.add(ParagraphStyle(name="PaperCell", fontSize=6.5, leading=8))
+    styles.add(ParagraphStyle(name="GuideBody", fontSize=10, leading=14, spaceAfter=9))
+    styles.add(
+        ParagraphStyle(
+            name="GuideHeading",
+            fontName="Helvetica-Bold",
+            fontSize=13,
+            leading=17,
+            spaceBefore=8,
+            spaceAfter=5,
+            textColor=colors.HexColor("#142D46"),
+        )
+    )
     story = []
 
-    def paragraph(value, style="PaperBody"):
-        return Paragraph(escape(str(value)).replace("\n", "<br/>"), styles[style])
+    def paragraph(value, style="PaperBody", help_key=None, target=None):
+        markup = escape(str(value)).replace("\n", "<br/>")
+        if target:
+            markup = f'<link href="#{escape(target)}" color="#007F83">{markup}</link>'
+        if help_key:
+            markup += f' <link href="#help-{escape(help_key)}" color="#007F83">?</link>'
+        return Paragraph(markup, styles[style])
 
-    def table(rows, fractions=None, winners=()):
-        rendered = [[paragraph(value, "PaperCell") for value in row] for row in rows]
+    def table(rows, fractions=None, winners=(), cell_padding=3):
+        rendered = [
+            [
+                value if isinstance(value, Paragraph) else paragraph(value, "PaperCell")
+                for value in row
+            ]
+            for row in rows
+        ]
         widths = (
             [width * fraction for fraction in fractions]
             if fractions
@@ -926,8 +1027,8 @@ def build_pdf(path: Path, report: dict) -> None:
             ("VALIGN", (0, 0), (-1, -1), "TOP"),
             ("LEFTPADDING", (0, 0), (-1, -1), 4),
             ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-            ("TOPPADDING", (0, 0), (-1, -1), 3),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ("TOPPADDING", (0, 0), (-1, -1), cell_padding),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), cell_padding),
         ]
         for column, row in winners:
             commands.extend(
@@ -939,14 +1040,96 @@ def build_pdf(path: Path, report: dict) -> None:
         item.setStyle(TableStyle(commands))
         story.extend([item, Spacer(1, 8)])
 
-    def title(value):
-        story.append(paragraph(value, "PaperTitle"))
+    def title(value, anchor=None):
+        markup = escape(str(value)).replace("\n", "<br/>")
+        if anchor:
+            markup = f'<a name="{escape(anchor)}"/>' + markup
+        story.append(Paragraph(markup, styles["PaperTitle"]))
 
-    def rad_title(model, section):
-        title(model.replace("_", " ") + "\n" + section)
+    def guide_section(key, heading, explanation):
+        story.append(
+            Paragraph(f'<a name="help-{escape(key)}"/>' + escape(heading), styles["GuideHeading"])
+        )
+        story.append(paragraph(explanation, "GuideBody"))
+
+    def reading_guide():
+        story.append(PageBreak())
+        title("How to read the scores")
         story.append(
             paragraph(
-                f"RAD pooled-mIoU rank {headline_indices[model] + 1} of {len(headline)} | three-seed held-out test mean",
+                "Click a blue ? beside a table label to return to the matching explanation.",
+                "GuideBody",
+            )
+        )
+        guide_section(
+            "iou",
+            "IoU measures overlap",
+            "Intersection over Union (IoU) asks how much the predicted class overlaps its ground truth. Divide correctly predicted class pixels (TP) by TP + false-positive pixels (FP) + missed class pixels (FN). A perfect overlap scores 100%.",
+        )
+        guide_section(
+            "positive",
+            "Class-positive IoU gives each selected image equal weight",
+            "For each class, select images containing ground-truth pixels of that class. Compute IoU separately in each selected image, then average those IoUs. Images shows how many images were selected. A model can make false alarms in other images, which the negative-image table measures separately.",
+        )
+        guide_section(
+            "pooled",
+            "Pooled IoU combines pixels across the full split",
+            "Add TP, FP and FN across every image, then divide the combined TP by the combined union. Larger class regions contribute more pixels, and false alarms in class-absent images enter the combined FP count.",
+        )
+        story.append(
+            paragraph(
+                "Example for one class\nImage A contains the class. TP 50, FP 25 and FN 25 give IoU 50%.\nImage B contains the class. TP 8, FP 1 and FN 1 give IoU 80%.\nImage C has no ground-truth pixels of the class and contributes 20 false-positive pixels.\nClass-positive IoU is (50% + 80%) / 2 = 65%.\nPooled IoU is 58 / (58 + 46 + 26) = 44.62%.",
+                "GuideBody",
+            )
+        )
+        guide_section(
+            "miou",
+            "mIoU averages the class scores",
+            "Compute each class's IoU using the named method, then average the class scores. RAD uses all 21 supported classes. Both methods appear side by side. The report ranks models by class-positive mIoU, and their pooled-mIoU ordering can differ.",
+        )
+        guide_section(
+            "seeds",
+            "Mean and SD describe three RAD training repeats",
+            "Seeds 0, 1 and 2 repeat RAD adaptation from the same source checkpoint. Mean is their average. Sample SD describes their spread. Scores 60%, 63% and 66% have mean 63% and SD 3 percentage points. Train-test gaps subtract each seed's test score from its train score before summarizing the three gaps.",
+        )
+        story.append(PageBreak())
+        title("Data, stages and resources")
+        guide_section(
+            "data",
+            "Training data and source stages",
+            "The final RAD fit uses 255 training images, including the former validation images. Evaluation uses 59 test images. Models follow Cityscapes -> RailSem19 -> RAD. Source-stage tables use each source dataset's own validation images and labels. Their score levels describe different datasets. GT pixels counts labeled class pixels, and Images counts class-positive images.",
+        )
+        guide_section(
+            "precision",
+            "Precision, recall and Dice use the selected images",
+            "For each class, these tables sum confusion counts over its ground-truth-positive images. Precision asks how many predicted class pixels are correct. Recall asks how many ground-truth class pixels were found. Dice divides twice the overlap by the total predicted and ground-truth class pixels.",
+        )
+        guide_section(
+            "speed",
+            "FPS measures processing speed",
+            "Higher frames per second (FPS) means faster processing. Model-only FPS measures batch-one BF16 forwards on a 1024-by-1024 input. Native-pipeline FPS measures the full recorded image workload, including preprocessing, CPU/GPU transfers and inference. Their work differs, so read the named measurement. Speed variation includes timing noise.",
+        )
+        guide_section(
+            "memory",
+            "GPU memory has several scopes",
+            "Reserved allocator memory includes PyTorch's cached GPU blocks. Allocated memory counts live tensors within those blocks. The reported allocator peaks use reserved memory. Process memory also includes the CUDA context and other process allocations. Sampled training-driver memory describes whole-device usage observed during training. GiB means 2^30 bytes.",
+        )
+        guide_section(
+            "size",
+            "Model size and checkpoints",
+            "Parameters M counts millions of learned numbers. Weights MiB measures resident parameter bytes, with 1 MiB = 2^20 bytes. A checkpoint can also store optimizer and training state, so its file size has a broader scope. SHA256 fingerprints identify the exact recorded artifacts.",
+        )
+        guide_section(
+            "green",
+            "Green boxes, N/A and zero",
+            "Green boxes mark the best comparable displayed value, including displayed ties. Higher scores and FPS win. Lower false alarms, memory and model size win. Source comparisons match dataset and stage. Block comparisons match scored class sets. N/A means the denominator or measurement is unavailable. Zero is a defined result, and 0.00 can include a small value rounded to two decimals. A recorded lower bound begins with >=, and its full-run SD can be Unknown.",
+        )
+
+    def rad_title(model, section, anchor=None):
+        title(model.replace("_", " ") + "\n" + section, anchor)
+        story.append(
+            paragraph(
+                f"RAD class-positive-image mIoU rank {headline_indices[model] + 1} of {len(headline)} | three-seed held-out test mean",
                 "PaperSmall",
             )
         )
@@ -966,11 +1149,11 @@ def build_pdf(path: Path, report: dict) -> None:
             return "N/A"
         return (">= " if lower_bound else "") + f"{scale * value:.2f}"
 
-    def speed_plot(field, label):
+    def speed_plot(field, label, quality_field, quality_label):
         drawing = Drawing(width, 220)
         left, bottom, plot_width, plot_height = 43, 31, width - 56, 165
         points = [
-            (rank, entry[field], entry["pixel_pooled_miou"])
+            (rank, entry[field], entry[quality_field])
             for rank, entry in enumerate(headline, 1)
             if entry[field]["mean"] is not None
         ]
@@ -1046,7 +1229,7 @@ def build_pdf(path: Path, report: dict) -> None:
         drawing.add(
             Line(left, bottom, left, bottom + plot_height, strokeColor=colors.HexColor("#586979"))
         )
-        drawing.add(String(left, bottom + plot_height + 11, "Mean pooled mIoU (%)", fontSize=8))
+        drawing.add(String(left, bottom + plot_height + 11, quality_label, fontSize=8))
         drawing.add(String(left + plot_width / 2, 4, label, textAnchor="middle", fontSize=8))
         used = []
         for rank, speed, quality in points:
@@ -1103,11 +1286,21 @@ def build_pdf(path: Path, report: dict) -> None:
                     winners.append((column, row))
         return winners
 
-    def class_table(entries, field):
+    def class_table(entries):
         if len(entries) != 1:
             raise ValueError("The confirmed paper tables require the single common recipe")
         entry = entries[0]
-        rows = [["Class", "Images", "GT pixels", "IoU mean (%)", "SD"]]
+        rows = [
+            [
+                "Class",
+                paragraph("Images", "PaperCell", "data"),
+                "GT pixels",
+                paragraph("Class-positive IoU mean (%)", "PaperCell", "positive"),
+                "SD",
+                paragraph("Pooled IoU mean (%)", "PaperCell", "pooled"),
+                "SD",
+            ]
+        ]
         for name in report["class_names"]:
             values = entry["per_class"][name]
             rows.append(
@@ -1115,12 +1308,14 @@ def build_pdf(path: Path, report: dict) -> None:
                     name,
                     values["positive_images"],
                     f"{values['pixels']:,}",
-                    metric(values[field]["mean"]),
-                    metric(values[field]["sample_sd"]),
+                    metric(values["positive_image_iou"]["mean"]),
+                    metric(values["positive_image_iou"]["sample_sd"]),
+                    metric(values["iou"]["mean"]),
+                    metric(values["iou"]["sample_sd"]),
                 ]
             )
-        winners = class_mean_winners(entry, [(3, field, True)])
-        table(rows, [0.36, 0.1, 0.18, 0.21, 0.15], winners)
+        winners = class_mean_winners(entry, [(3, "positive_image_iou", True), (5, "iou", True)])
+        table(rows, [0.29, 0.08, 0.16, 0.16, 0.075, 0.16, 0.075], winners)
 
     def resource_mean_winners(entry, fields):
         maximize_fields = {"model_only_fps", "native_pipeline_fps"}
@@ -1157,7 +1352,7 @@ def build_pdf(path: Path, report: dict) -> None:
                 winners.append((1, row))
         return winners
 
-    def block_mean_winners(model, field, blocks):
+    def block_mean_winners(model, field, blocks, measurement_field, class_field, column):
         winners = []
         current = headline_indices[model]
         for row, block in enumerate(blocks, 1):
@@ -1165,7 +1360,7 @@ def build_pdf(path: Path, report: dict) -> None:
             values = []
             for entry in headline:
                 measurements = {
-                    run["seed"]: run["metrics"][field][block]["pixel_pooled"]
+                    run["seed"]: run["metrics"][field][block][measurement_field]
                     for run in headline_runs[entry["model"]]
                 }
                 for measurement in measurements.values():
@@ -1173,7 +1368,7 @@ def build_pdf(path: Path, report: dict) -> None:
                         tuple(
                             name
                             for name in report["class_names"]
-                            if measurement["per_class"][name]["iou"] is not None
+                            if measurement["per_class"][name][class_field] is not None
                         )
                     )
                 statistics = nullable_summary(
@@ -1183,7 +1378,7 @@ def build_pdf(path: Path, report: dict) -> None:
             if len(scored_class_sets) == 1 and current in displayed_winner_indices(
                 values, scale=100
             ):
-                winners.append((4, row))
+                winners.append((column, row))
         return winners
 
     def legend(classes):
@@ -1244,6 +1439,7 @@ def build_pdf(path: Path, report: dict) -> None:
             title(model.replace("_", " ") + "\n" + stage["stage"].replace("_", " "))
             record = stage["metrics"]
             metrics = record["metrics"]
+            positive = stage["class_positive_images"]
             performance = stage["performance"]
             training = stage["training"]
             duration = training.get("wall_clock_s")
@@ -1262,15 +1458,16 @@ def build_pdf(path: Path, report: dict) -> None:
             current = next(index for index, (name, _) in enumerate(cohort) if name == model)
             summary_winners = []
             source_summary_values = [
-                (0, [value["metrics"]["metrics"].get("miou") for _, value in cohort], 100, True),
+                (0, [value["class_positive_images"]["miou"] for _, value in cohort], 100, True),
+                (1, [value["metrics"]["metrics"]["miou"] for _, value in cohort], 100, True),
                 (
-                    3,
+                    4,
                     [value["performance"]["model"]["parameter_count"] for _, value in cohort],
                     1 / 1e6,
                     False,
                 ),
                 (
-                    4,
+                    5,
                     [
                         value["performance"]["model"]["resident_parameter_bytes"]
                         for _, value in cohort
@@ -1295,14 +1492,16 @@ def build_pdf(path: Path, report: dict) -> None:
             table(
                 [
                     [
-                        "Native validation mIoU (%)",
-                        "Model-only FPS",
-                        "Latest recorded invocation wall hours",
-                        "Parameters M",
-                        "Weights MiB",
+                        paragraph("Class-positive mIoU (%)", "PaperCell", "positive"),
+                        paragraph("Pooled mIoU (%)", "PaperCell", "pooled"),
+                        paragraph("Model-only FPS", "PaperCell", "speed"),
+                        "Latest source wall hours",
+                        paragraph("Parameters M", "PaperCell", "size"),
+                        paragraph("Weights MiB", "PaperCell", "size"),
                     ],
                     [
-                        metric(metrics.get("miou")),
+                        metric(positive["miou"]),
+                        metric(metrics["miou"]),
                         metric(performance["measurements"]["latency"]["fps"], 1),
                         metric(duration / 3600 if duration is not None else None, 1),
                         metric(performance["model"]["parameter_count"], 1 / 1e6),
@@ -1311,40 +1510,68 @@ def build_pdf(path: Path, report: dict) -> None:
                 ],
                 winners=summary_winners,
             )
-            rows = [["Class", "GT pixels", "IoU (%)", "Precision (%)", "Recall (%)", "Dice (%)"]]
+            rows = [
+                [
+                    "Class",
+                    "Images",
+                    "GT pixels",
+                    paragraph("Class-positive IoU (%)", "PaperCell", "positive"),
+                    paragraph("Pooled IoU (%)", "PaperCell", "pooled"),
+                    paragraph("Precision (%)", "PaperCell", "precision"),
+                    "Recall (%)",
+                    "Dice (%)",
+                ]
+            ]
             class_winners = []
             class_fields = (
-                "per_class_iou",
-                "per_class_precision",
-                "per_class_recall",
-                "per_class_dice",
+                "precision",
+                "recall",
+                "dice",
             )
             for row, name in enumerate(stage["class_names"], 1):
                 rows.append(
                     [
                         name,
+                        positive["per_class"][name]["positive_images"],
                         f"{metrics['support'][name]:,}",
+                        metric(positive["per_class"][name]["mean_image_iou"]),
+                        metric(metrics["per_class_iou"][name]),
                         *[
-                            metric(metrics.get(field, {}).get(name))
-                            if metrics["support"][name] > 0
+                            metric(positive["per_class"][name][field])
+                            if positive["per_class"][name]["positive_images"] > 0
                             else "N/A"
                             for field in class_fields
                         ],
                     ]
                 )
-                for column, field in enumerate(class_fields, 2):
+                for column, field in enumerate(class_fields, 5):
                     values = [
-                        value["metrics"]["metrics"].get(field, {}).get(name)
-                        if value["metrics"]["metrics"]["support"][name] > 0
+                        value["class_positive_images"]["per_class"][name][field]
+                        if value["class_positive_images"]["per_class"][name]["positive_images"] > 0
                         else None
                         for _, value in cohort
                     ]
                     if current in displayed_winner_indices(values, scale=100):
                         class_winners.append((column, row))
-            table(rows, [0.31, 0.17, 0.13, 0.13, 0.13, 0.13], class_winners)
+                for column, values in (
+                    (
+                        3,
+                        [
+                            value["class_positive_images"]["per_class"][name]["mean_image_iou"]
+                            for _, value in cohort
+                        ],
+                    ),
+                    (
+                        4,
+                        [value["metrics"]["metrics"]["per_class_iou"][name] for _, value in cohort],
+                    ),
+                ):
+                    if current in displayed_winner_indices(values, scale=100):
+                        class_winners.append((column, row))
+            table(rows, [0.24, 0.07, 0.14, 0.11, 0.11, 0.11, 0.11, 0.11], class_winners)
             story.append(
                 paragraph(
-                    "Source evaluations use the native dataset and label space of this stage. Cityscapes validation, RailSem19 validation and RAD test each describe their own samples and taxonomy. Source wall time comes from its latest recorded RunRecord invocation and includes validation. Earlier source invocation history is unknown. Source training runs are reused across all three RAD adaptation seeds.",
+                    "Class-positive IoU averages selected GT-positive image IoUs. Pooled IoU combines all validation counts. Precision, recall and Dice use selected-image counts. Source validation datasets and label spaces differ. Wall hours include validation in the latest invocation. Earlier history is unknown. Source runs are shared across all three RAD seeds.",
                     "PaperSmall",
                 )
             )
@@ -1376,7 +1603,12 @@ def build_pdf(path: Path, report: dict) -> None:
                 "training_receipt",
             ):
                 artifacts.append([label.replace("_", " "), stage[label]["sha256"]])
-            table(artifacts, [0.23, 0.77])
+            for label, field in (
+                ("GT-positive evaluation", "evaluation_record"),
+                ("GT-positive confusions", "per_image_confusions"),
+            ):
+                artifacts.append([label, stage["positive_image_evidence"][field]["sha256"]])
+            table(artifacts, [0.23, 0.77], cell_padding=1.5)
             if duration is None or not stage.get("public_pretraining"):
                 story.append(
                     paragraph(
@@ -1426,7 +1658,16 @@ def build_pdf(path: Path, report: dict) -> None:
     )
     story.append(
         paragraph(
-            "The primary ranking uses dataset-pooled 21-class mIoU under the common initialization recipe frozen before test evaluation. Mean and sample SD summarize adaptation seeds 0, 1 and 2. All individual values remain in the CSV and JSON."
+            "Class-positive IoU averages image IoUs over images containing ground-truth pixels of the class. Pooled IoU combines confusion counts across all images. Each mIoU averages its 21 RAD class scores. Models are ranked by class-positive mIoU. Mean and sample SD summarize RAD adaptation seeds 0, 1 and 2.",
+            help_key="miou",
+        )
+    )
+    story.append(
+        paragraph(
+            "User-requested dual-metric reporting correction recorded "
+            + report["report_metric_policy"]["recorded_on"]
+            + ". The archived research protocol retains the original study record.",
+            "PaperSmall",
         )
     )
     story.append(paragraph("Common recipe " + protocol["headline_protocol"]))
@@ -1434,37 +1675,33 @@ def build_pdf(path: Path, report: dict) -> None:
         [
             "Rank",
             "Model",
-            "mIoU mean (%)",
+            paragraph("Class-positive mIoU mean (%)", "PaperCell", "positive"),
             "SD",
-            "Model FPS mean",
+            paragraph("Pooled mIoU mean (%)", "PaperCell", "pooled"),
             "SD",
-            "Native FPS mean",
-            "SD",
-            "Mud IoU mean (%)",
-            "SD",
+            paragraph("Model FPS mean", "PaperCell", "speed"),
+            paragraph("Native FPS mean", "PaperCell", "speed"),
         ]
     ]
     for index, entry in enumerate(headline, 1):
         rows.append(
             [
                 index,
-                entry["model"],
+                paragraph(entry["model"], "PaperCell", target="model-" + entry["model"]),
+                metric(entry["class_positive_image_miou"]["mean"]),
+                metric(entry["class_positive_image_miou"]["sample_sd"]),
                 metric(entry["pixel_pooled_miou"]["mean"]),
                 metric(entry["pixel_pooled_miou"]["sample_sd"]),
                 metric(entry["model_only_fps"]["mean"], 1),
-                metric(entry["model_only_fps"]["sample_sd"], 1),
                 metric(entry["native_pipeline_fps"]["mean"], 1),
-                metric(entry["native_pipeline_fps"]["sample_sd"], 1),
-                metric(entry["per_class"]["mud-pumping"]["iou"]["mean"]),
-                metric(entry["per_class"]["mud-pumping"]["iou"]["sample_sd"]),
             ]
         )
     winners = []
     for column, summaries, scale in (
-        (2, [entry["pixel_pooled_miou"] for entry in headline], 100),
-        (4, [entry["model_only_fps"] for entry in headline], 1),
-        (6, [entry["native_pipeline_fps"] for entry in headline], 1),
-        (8, [entry["per_class"]["mud-pumping"]["iou"] for entry in headline], 100),
+        (2, [entry["class_positive_image_miou"] for entry in headline], 100),
+        (4, [entry["pixel_pooled_miou"] for entry in headline], 100),
+        (6, [entry["model_only_fps"] for entry in headline], 1),
+        (7, [entry["native_pipeline_fps"] for entry in headline], 1),
     ):
         values = [
             summary["mean"] if summary["complete_three_seeds"] else None for summary in summaries
@@ -1473,11 +1710,12 @@ def build_pdf(path: Path, report: dict) -> None:
             (column, index + 1)
             for index in displayed_winner_indices(values, scale=scale, require_complete=True)
         )
-    table(rows, [0.05, 0.23, 0.12, 0.06, 0.12, 0.06, 0.12, 0.06, 0.12, 0.06], winners)
+    table(rows, [0.04, 0.27, 0.14, 0.06, 0.14, 0.06, 0.145, 0.145], winners)
     story.append(
         paragraph(
             "Green boxes mark the best comparable displayed values, including ties. Higher quality and FPS win. Lower defined false alarms, memory, parameter counts and weight sizes win. RAD comparisons use the common recipe, source quality and size comparisons use matching native stages, and block comparisons use identical scored-class sets. Resource comparisons require complete cohort evidence. Seed boxes compare that model's test quality and speed. Qualitative figures use fixed images and seed 0 for every model.",
             "PaperSmall",
+            "green",
         )
     )
     for limitation in report["limitations"]:
@@ -1491,6 +1729,7 @@ def build_pdf(path: Path, report: dict) -> None:
                 "The complete missing-evidence list is retained in rad-paper.json.", "PaperSmall"
             )
         )
+    reading_guide()
     story.append(PageBreak())
     title("Complete study summary")
     table(
@@ -1532,54 +1771,77 @@ def build_pdf(path: Path, report: dict) -> None:
             "PaperSmall",
         )
     )
-    story.append(PageBreak())
-    title("Speed and segmentation accuracy")
-    story.append(speed_plot("model_only_fps", "Mean model-only FPS - batch one, 1024 square"))
-    story.append(
-        speed_plot("native_pipeline_fps", "Mean native-pipeline FPS - full recorded image workload")
-    )
-    table(
-        [["Plot label", "Model", "RAD weight bank"]]
-        + [
-            [
-                rank,
-                entry["model"],
-                "/".join(
-                    sorted(
-                        {run["weights"] for run in report["runs"] if run["model"] == entry["model"]}
-                    )
-                ),
-            ]
-            for rank, entry in enumerate(headline, 1)
-        ],
-        [0.12, 0.68, 0.2],
-    )
-    story.append(
-        paragraph(
-            "Both plots use the authoritative common-GPU final-checkpoint deployment pass. Vertical bars show RAD adaptation sample SD. Horizontal FPS bars include timing noise across the three checkpoint profiles. Native timings use the full recorded preprocessing and inference contract.",
-            "PaperSmall",
+    for quality_field, quality_label in (
+        ("class_positive_image_miou", "Class-positive mIoU (%)"),
+        ("pixel_pooled_miou", "Pooled mIoU (%)"),
+    ):
+        story.append(PageBreak())
+        title("Speed and segmentation accuracy\n" + quality_label)
+        story.append(
+            speed_plot(
+                "model_only_fps",
+                "Mean model-only FPS - batch one, 1024 square",
+                quality_field,
+                quality_label,
+            )
         )
-    )
+        story.append(
+            speed_plot(
+                "native_pipeline_fps",
+                "Mean native-pipeline FPS - full recorded image workload",
+                quality_field,
+                quality_label,
+            )
+        )
+        table(
+            [["Plot label", "Model", "RAD weight bank"]]
+            + [
+                [
+                    rank,
+                    entry["model"],
+                    "/".join(
+                        sorted(
+                            {
+                                run["weights"]
+                                for run in report["runs"]
+                                if run["model"] == entry["model"]
+                            }
+                        )
+                    ),
+                ]
+                for rank, entry in enumerate(headline, 1)
+            ],
+            [0.12, 0.68, 0.2],
+        )
+        story.append(
+            paragraph(
+                "Plot numbers follow the class-positive rank on the cover. Both plots use the common-GPU final-checkpoint deployment pass. Vertical bars show RAD adaptation sample SD. Horizontal bars include timing noise across the three checkpoint profiles. Native timings cover the recorded preprocessing and inference workload.",
+                "PaperSmall",
+                "speed",
+            )
+        )
     for model in report["headline_order"]:
         entries = [entry for entry in aggregates if entry["model"] == model]
         source_stage_pages(model)
         story.append(PageBreak())
-        rad_title(model, "RAD test pooled IoU")
+        rad_title(model, "RAD IoU comparison", anchor="model-" + model)
         story.append(
             paragraph(
-                "Each class pools every test-image confusion matrix before computing TP / (TP + FP + FN). All 21 classes have ground-truth support.",
+                "Class-positive IoU averages image IoUs over GT-positive images. Pooled IoU combines counts across all test images. Images lists the GT-positive count. All 21 RAD classes have test support.",
                 "PaperSmall",
             )
         )
-        class_table(entries, "iou")
+        class_table(entries)
         story.append(paragraph("Deployment and RAD training resources", "Heading2"))
         for entry in entries:
             banks = sorted({run["weights"] for run in report["runs"] if run["model"] == model})
             story.append(paragraph("Final-checkpoint weight bank " + "/".join(banks), "PaperSmall"))
             rows = [["Measurement", "Mean", "SD", "Seeds", "Minimum", "Maximum"]]
             fields = [
+                ("Train class-positive mIoU (%)", "train_class_positive_image_miou", 100),
+                ("Train-test class-positive mIoU gap (pp)", "conditional_train_test_miou_gap", 100),
                 ("Train pooled mIoU (%)", "train_pixel_pooled_miou", 100),
-                ("Train-test mIoU gap (pp)", "train_test_miou_gap", 100),
+                ("Train-test pooled mIoU gap (pp)", "train_test_miou_gap", 100),
                 ("Model-only FPS", "model_only_fps", 1),
                 ("Native-pipeline FPS", "native_pipeline_fps", 1),
                 ("Observed train allocator peak GiB", "training_peak_bytes", 1 / 2**30),
@@ -1591,6 +1853,22 @@ def build_pdf(path: Path, report: dict) -> None:
                 ("Inference process GiB", "process_total_bytes", 1 / 2**30),
                 ("Native allocator peak GiB", "native_allocator_peak_bytes", 1 / 2**30),
             ]
+            resource_help = {
+                "train_class_positive_image_miou": "positive",
+                "conditional_train_test_miou_gap": "seeds",
+                "train_pixel_pooled_miou": "pooled",
+                "train_test_miou_gap": "seeds",
+                "model_only_fps": "speed",
+                "native_pipeline_fps": "speed",
+                "training_peak_bytes": "memory",
+                "sampled_training_driver_peak_bytes": "memory",
+                "training_hours": "seeds",
+                "parameter_count": "size",
+                "resident_parameter_bytes": "size",
+                "allocator_peak_bytes": "memory",
+                "process_total_bytes": "memory",
+                "native_allocator_peak_bytes": "memory",
+            }
             for label, field, scale in fields:
                 values = entry[field]
                 lower = (field == "training_hours" and entry["training_hours_is_lower_bound"]) or (
@@ -1599,7 +1877,7 @@ def build_pdf(path: Path, report: dict) -> None:
                 )
                 rows.append(
                     [
-                        label,
+                        paragraph(label, "PaperCell", resource_help[field]),
                         metric(values["mean"], scale, lower),
                         "Unknown" if lower else metric(values["sample_sd"], scale),
                         values["n"],
@@ -1617,19 +1895,57 @@ def build_pdf(path: Path, report: dict) -> None:
         )
         story.append(
             paragraph(
-                "Train scores use all 255 training images at the same final checkpoint and selected weight bank as test. The descriptive train-test mIoU gap combines fitting and train/test distribution differences. Its SD is computed from the three individual seed gaps.",
+                "Train evaluation covers all 255 images at the test checkpoint and weight bank. Both named IoU methods follow their definitions within each split. Each train-test gap combines fitting and train/test distribution differences. Its SD uses the three individual seed gaps.",
                 "PaperSmall",
             )
         )
         story.append(PageBreak())
-        rad_title(model, "Class-positive-image IoU")
+        rad_title(model, "Class-positive precision, recall and Dice")
         story.append(
             paragraph(
-                "For each class, image IoU is averaged over test images containing that class. False alarms on entirely class-negative images have separate statistics in the full JSON.",
+                "For each class, precision, recall and Dice use confusion counts summed only over test images containing ground-truth pixels of that class.",
                 "PaperSmall",
             )
         )
-        class_table(entries, "positive_image_iou")
+        common = next(
+            entry for entry in entries if entry["protocol"] == protocol["headline_protocol"]
+        )
+        rows = [
+            [
+                "Class",
+                paragraph("Precision mean (%)", "PaperCell", "precision"),
+                "SD",
+                "Recall mean (%)",
+                "SD",
+                "Dice mean (%)",
+                "SD",
+            ]
+        ]
+        for name in report["class_names"]:
+            values = common["per_class"][name]
+            rows.append(
+                [
+                    name,
+                    *[
+                        metric(values[field][statistic])
+                        for field in (
+                            "positive_image_precision",
+                            "positive_image_recall",
+                            "positive_image_dice",
+                        )
+                        for statistic in ("mean", "sample_sd")
+                    ],
+                ]
+            )
+        winners = class_mean_winners(
+            common,
+            [
+                (1, "positive_image_precision", True),
+                (3, "positive_image_recall", True),
+                (5, "positive_image_dice", True),
+            ],
+        )
+        table(rows, [0.28, 0.14, 0.1, 0.14, 0.1, 0.14, 0.1], winners)
         model_runs = [run for run in report["runs"] if run["model"] == model]
         observations = [
             {
@@ -1697,32 +2013,16 @@ def build_pdf(path: Path, report: dict) -> None:
                 )
             )
         story.append(PageBreak())
-        rad_title(model, "Pooled class metrics")
-        common = next(
-            entry for entry in entries if entry["protocol"] == protocol["headline_protocol"]
-        )
-        rows = [
-            ["Class", "Precision mean (%)", "SD", "Recall mean (%)", "SD", "Dice mean (%)", "SD"]
-        ]
-        for name in report["class_names"]:
-            values = common["per_class"][name]
-            rows.append(
-                [
-                    name,
-                    *[
-                        metric(values[field][statistic])
-                        for field in ("precision", "recall", "dice")
-                        for statistic in ("mean", "sample_sd")
-                    ],
-                ]
-            )
-        winners = class_mean_winners(
-            common, [(1, "precision", True), (3, "recall", True), (5, "dice", True)]
-        )
-        table(rows, [0.28, 0.14, 0.1, 0.14, 0.1, 0.14, 0.1], winners)
-        story.append(PageBreak())
         rad_title(model, "Negative-image false alarms")
-        rows = [["Class", "Any-pixel mean (%)", "SD", "0.1% area mean (%)", "SD"]]
+        rows = [
+            [
+                "Class",
+                paragraph("Any-pixel mean (%)", "PaperCell", "green"),
+                "SD",
+                "0.1% area mean (%)",
+                "SD",
+            ]
+        ]
         for name in report["class_names"]:
             values = common["per_class"][name]
             rows.append(
@@ -1753,28 +2053,41 @@ def build_pdf(path: Path, report: dict) -> None:
             )
         )
         story.append(paragraph("Individual RAD replicates and observed range", "Heading2"))
-        rows = [["Measurement", "Seed 0", "Seed 1", "Seed 2", "Minimum", "Maximum", "Mean", "SD"]]
+        rows = [
+            [
+                paragraph("Measurement", "PaperCell", "seeds"),
+                "Seed 0",
+                "Seed 1",
+                "Seed 2",
+                "Minimum",
+                "Maximum",
+                "Mean",
+                "SD",
+            ]
+        ]
         replicate_fields = [
+            ("Train class-positive mIoU (%)", common["train_class_positive_image_miou"], 100),
+            ("Test class-positive mIoU (%)", common["class_positive_image_miou"], 100),
+            ("Train-test class-positive gap (pp)", common["conditional_train_test_miou_gap"], 100),
             ("Train pooled mIoU (%)", common["train_pixel_pooled_miou"], 100),
             ("Test pooled mIoU (%)", common["pixel_pooled_miou"], 100),
-            ("Train-test mIoU gap (pp)", common["train_test_miou_gap"], 100),
-            ("Positive-image mIoU (%)", common["class_positive_image_miou"], 100),
-            ("Mud pooled IoU (%)", common["per_class"]["mud-pumping"]["iou"], 100),
+            ("Train-test pooled gap (pp)", common["train_test_miou_gap"], 100),
             (
-                "Mud positive-image IoU (%)",
+                "Mud class-positive IoU (%)",
                 common["per_class"]["mud-pumping"]["positive_image_iou"],
                 100,
             ),
+            ("Mud pooled IoU (%)", common["per_class"]["mud-pumping"]["iou"], 100),
             ("Model-only FPS", common["model_only_fps"], 1),
             ("Native-pipeline FPS", common["native_pipeline_fps"], 1),
             ("Recorded training hours", common["training_hours"], 1),
         ]
         seed_winners = []
         seed_objectives = {
+            "Test class-positive mIoU (%)",
+            "Mud class-positive IoU (%)",
             "Test pooled mIoU (%)",
-            "Positive-image mIoU (%)",
             "Mud pooled IoU (%)",
-            "Mud positive-image IoU (%)",
             "Model-only FPS",
             "Native-pipeline FPS",
         }
@@ -1826,15 +2139,23 @@ def build_pdf(path: Path, report: dict) -> None:
                 [
                     "Block",
                     "Scored images",
-                    "GT classes",
-                    "Scored classes by seed",
-                    "Pooled mIoU mean (%)",
+                    "GT-positive classes",
+                    "Pooled classes by seed",
+                    paragraph("Class-positive mIoU mean (%)", "PaperCell", "positive"),
+                    "SD",
+                    paragraph("Pooled mIoU mean (%)", "PaperCell", "pooled"),
                     "SD",
                 ]
             ]
             blocks = common_runs[0]["metrics"][field]
             for block in blocks:
                 statistics = seed_summary(
+                    {
+                        run["seed"]: run["metrics"][field][block]["class_positive_images"]["miou"]
+                        for run in common_runs
+                    }
+                )
+                pooled_statistics = seed_summary(
                     {
                         run["seed"]: run["metrics"][field][block]["pixel_pooled"]["miou"]
                         for run in common_runs
@@ -1845,7 +2166,7 @@ def build_pdf(path: Path, report: dict) -> None:
                     [
                         block,
                         first["images"],
-                        first["pixel_pooled"]["ground_truth_present_classes"],
+                        first["class_positive_images"]["macro_scored_classes"],
                         "/".join(
                             str(
                                 run["metrics"][field][block]["pixel_pooled"]["macro_scored_classes"]
@@ -1854,13 +2175,18 @@ def build_pdf(path: Path, report: dict) -> None:
                         ),
                         metric(statistics["mean"]),
                         metric(statistics["sample_sd"]),
+                        metric(pooled_statistics["mean"]),
+                        metric(pooled_statistics["sample_sd"]),
                     ]
                 )
-            winners = block_mean_winners(model, field, blocks)
-            table(rows, [0.3, 0.12, 0.11, 0.17, 0.18, 0.12], winners)
+            winners = block_mean_winners(
+                model, field, blocks, "class_positive_images", "mean_image_iou", 4
+            )
+            winners.extend(block_mean_winners(model, field, blocks, "pixel_pooled", "iou", 6))
+            table(rows, [0.29, 0.08, 0.09, 0.14, 0.14, 0.06, 0.14, 0.06], winners)
         story.append(
             paragraph(
-                "Each block has a different ground-truth class subset. The scored-class denominator also includes classes with predicted union. Class-by-class block IoU, support and negative-image false alarms are retained for every seed in the JSON. Leave-one-block-out rows exclude the named block. Four inferred scene blocks provide descriptive sensitivity, with recording independence unconfirmed.",
+                "Class-positive mIoU averages GT-supported class means within the scored subset. Pooled mIoU uses classes with GT or predicted pixels, so its class count can differ by seed. Green comparisons require matching class sets for the named metric. Leave-one-block-out rows exclude the named block. Four inferred scene blocks provide descriptive sensitivity, with recording independence unconfirmed. Full class statistics remain in the JSON.",
                 "PaperSmall",
             )
         )
@@ -1934,8 +2260,8 @@ def build_pdf(path: Path, report: dict) -> None:
     ).build(story, onFirstPage=footer, onLaterPages=footer)
 
 
-def build(request_path: Path, out: Path) -> dict:
-    report = load_report(request_path)
+def build(request_path: Path, out: Path, source_positive_path: Path | None = None) -> dict:
+    report = load_report(request_path, source_positive_path)
     out.mkdir(parents=True, exist_ok=True)
     write(out / "rad-paper.json", report)
     write_csv(out / "rad-paper.csv", report)
@@ -1950,8 +2276,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--request", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--source-positive-evaluations", type=Path)
     args = parser.parse_args()
-    print(json.dumps(build(args.request.resolve(), args.out.resolve()), indent=2))
+    print(
+        json.dumps(
+            build(args.request.resolve(), args.out.resolve(), args.source_positive_evaluations),
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

@@ -40,13 +40,13 @@ Infrastructure recovery permits at most three attempts while retaining the same 
 
 ## Evaluation and reporting
 
-The primary metric is pixel-pooled 21-class mIoU. Native-image confusion matrices are summed before class IoUs are calculated. The headline comparison uses the prespecified common City→Rail recipe and reports the mean over three RAD seeds.
+The report shows class-positive-image mIoU and standard pixel-pooled mIoU side by side. The current headline ranking uses the mean class-positive-image mIoU over the three RAD seeds. On 17 November 2026, the author requested this reporting correction after the first report. The JSON retains the original frozen protocol, whose primary metric was pixel-pooled mIoU, and records the correction separately in `report_metric_policy`. The existing checkpoints, dataset membership and evaluation predictions retain their original provenance.
 
-Secondary results include class-positive-image mIoU, per-class pooled IoU, precision, recall and Dice, mud-pumping pooled and conditional scores, negative-image false alarms, and per-block class scores with support. Class-positive-image IoU averages only over images containing ground-truth pixels of that class. Negative-image false alarms therefore have a separate report. Leave-one-block-out results describe sensitivity to the inferred scene blocks.
+The tables retain both IoU definitions per class, precision, recall and Dice within class-positive images, mud-pumping scores, negative-image false alarms, and per-block results with class support. Class-positive-image IoU averages only over images containing ground-truth pixels of that class. Negative-image false alarms therefore have a separate report. Leave-one-block-out results describe sensitivity to the inferred scene blocks.
 
-The final checkpoint also receives a deterministic full-training-set evaluation on all 255 images. The report verifies that receipt, its selected weight bank and its confusion-matrix support against the frozen training audit. For seed `s`, the descriptive training/test gap is `train_mIoU_s - test_mIoU_s`. Its mean and sample SD use the three individual gap values. The gap summarizes fitting and differences between the training and test distributions. It accompanies the independently reported support and scene-block evidence.
+The final checkpoint also receives a deterministic full-training-set evaluation on all 255 images. The report verifies that receipt, its selected weight bank and its confusion-matrix support against the frozen training audit. For seed `s`, the descriptive training/test gap is `train_mIoU_s - test_mIoU_s`. Both pooled and class-positive-image gaps use their matching train/test definitions. Their means and sample SDs use the three individual gap values. The positive-image train scores are recomputed from the hash-bound complete 255-image diagnostic matrices. The gap summarizes fitting and differences between the training and test distributions. It accompanies the independently reported support and scene-block evidence.
 
-For class `c`, pooled IoU is `sum(TP_c) / [sum(TP_c) + sum(FP_c) + sum(FN_c)]`, with sums over all test images. Primary mIoU is the arithmetic mean of the 21 class IoUs. Conditional class IoU is the arithmetic mean of individual image IoUs over the images containing ground-truth pixels of that class. Thus each conditional class score uses its own image subset. Void pixels with label 255 are excluded from every confusion matrix.
+For class `c`, pooled IoU is `sum(TP_c) / [sum(TP_c) + sum(FP_c) + sum(FN_c)]`, with sums over all test images. Standard pooled mIoU is the arithmetic mean of the 21 pooled class IoUs. Conditional class IoU is the arithmetic mean of individual image IoUs over the images containing ground-truth pixels of that class. Thus each conditional class score uses its own image subset. Void pixels with label 255 are excluded from every confusion matrix.
 
 Precision is `TP / (TP + FP)`, recall is `TP / (TP + FN)`, and Dice is `2TP / (2TP + FP + FN)`. Negative-image reports retain false-positive pixels, their fraction of valid negative-image pixels, and image alarm rates at two fixed descriptive thresholds of one pixel and 0.1 percent of valid image area. The thresholds are fixed before inference. A class with no negative images has an undefined negative-image alarm rate, displayed as `N/A`.
 
@@ -152,17 +152,39 @@ python scripts/run_rad_paper.py \
   --hf-home "$HF_CACHE"
 ```
 
-The controller completes training, evaluates all sixteen source stages, freezes every completed RAD endpoint, evaluates the 59-image test set, profiles the RAD checkpoints serially on the selected benchmark GPU, and writes `paper/report/rad-paper.pdf`, `rad-paper.csv` and `rad-paper.json`. Its current phase appears in `paper-controller-status.json`. Re-running the command verifies existing artifacts and continues unfinished phases. Infrastructure recovery keeps the same configuration and seed, with the declared attempt limit. A stop marker ends the campaign before further scheduling.
+The controller completes training, evaluates all sixteen source stages, freezes every completed RAD endpoint, evaluates the 59-image test set, profiles the RAD checkpoints serially on the selected benchmark GPU, collects the source per-image confusion matrices, and writes `paper/report/rad-paper.pdf`, `rad-paper.csv` and `rad-paper.json`. Its current phase appears in `paper-controller-status.json`. Re-running the command verifies existing artifacts and continues unfinished phases. Infrastructure recovery keeps the same configuration and seed, with the declared attempt limit. A stop marker ends the campaign before further scheduling.
 
 Each model's PDF section includes source-stage class metrics, RAD class metrics under both IoU definitions, seed-level results, resource accounting and the common full-scene qualitative examples. The accompanying JSON retains confusions, per-block sensitivity, raw latency samples and complete artifact provenance. Interrupted timing records explicitly identify lower-bound compute and an unknown missing tail.
 
-Per-model RAD pages identify the primary pooled-mIoU rank. Green boxes mark the best displayed values among comparable model or seed measurements, including displayed ties. Quality comparisons use matching datasets, class definitions and metrics. Lower defined false-alarm rates and lower comparable resource costs receive the corresponding highlights.
+Per-model RAD pages identify the primary class-positive-image-mIoU rank. Green boxes mark the best displayed values among comparable model or seed measurements, including displayed ties. Quality comparisons use matching datasets, class definitions and metrics. Lower defined false-alarm rates and lower comparable resource costs receive the corresponding highlights.
+
+### Reading the scores
+
+- **IoU** measures how much the prediction and ground-truth regions overlap. It divides correctly predicted pixels by all pixels included in either region. Higher is better.
+- **Class-positive-image mIoU** gives equal weight to each image containing the class, then equal weight to each supported class. For each class, its own ground-truth-positive image subset is used. False positives elsewhere within a selected image count in its union.
+- **Standard pooled mIoU** sums pixel counts across the entire evaluation set before computing each class IoU. False positives in ground-truth-negative images count, and large regions influence a class score more strongly.
+- **Mean** is the average of the three RAD seeds. **SD** describes how much those three runs vary. Small SD indicates similar observed runs on this fixed test set.
+- **Precision** asks how much of a predicted class region is correct. **Recall** asks how much of the labeled class region was found. **Dice** combines overlap and the two error types.
+- **Model-only FPS** measures repeated 1024-square model forwards. **Native-pipeline FPS** measures the full decoded-image inference path, including image preparation, transfer, sliding windows and prediction transfer back to CPU.
+- **VRAM** is GPU memory. Reserved allocator memory includes reusable PyTorch memory. Whole-process GPU memory also includes allocations outside that allocator. **M parameters** counts millions of learned values. **MiB weights** measures resident parameter bytes.
+- **N/A** means the metric's denominator is zero. This includes IoU for a class absent from a native source taxonomy's labeled pixels and class-positive precision when the model predicts no class pixels in the selected images. An IoU score of **0** means the class could be scored and the prediction had no overlap.
+
+A small example shows why the two IoU measures differ. Two ground-truth-positive images have `(TP, FP, FN)` values `(50, 25, 25)` and `(8, 1, 1)`, yielding image IoUs of 50% and 80%. A third image contains no ground-truth pixels of the class and has 20 false-positive pixels. Class-positive-image IoU is `(50% + 80%) / 2 = 65%`. Pooled IoU is `58 / (58 + 46 + 26) = 44.62%`. Repeat this calculation for each supported class and average the class scores to obtain the corresponding mIoU.
+
+The PDF includes a linked reading guide and clickable `?` help links beside technical tables. Green boxes identify the best displayed comparable values, including ties. All 21 RAD classes appear in the tables. Source-stage comparisons use each source dataset's supported class set.
 
 ### Report-only revisions
 
 Keep the frozen execution checkout available through the controller's completed state. A separate clean checkout of a later report revision can render the existing artifacts on CPU. Choose a separate output directory so the original controller retains its own outputs.
 
+Source positive-image scores require a one-time deterministic capture of all sixteen native source validation sets. The collector uses the existing idle-GPU policy and shared locks, preserves the original source evaluation receipts, and requires every new per-image matrix sum to match its archived aggregate exactly. Launch or resume the capture from a clean checkout at `COLLECTOR_CODE_SHA`. Once the aggregate is complete, subsequent report revisions can reuse it from any compatible rendering checkout.
+
 ```bash
+HF_HOME="$HF_CACHE" python scripts/collect_rad_source_positive_metrics.py \
+  --request "$SOURCE_STAGE_SPEC" \
+  --expected-code-sha "$COLLECTOR_CODE_SHA" \
+  --output-root "$CAMPAIGN/paper/source-positive-images"
+
 CUDA_VISIBLE_DEVICES= python scripts/build_rad_paper_report.py \
   --request "$CAMPAIGN/paper/test-request.json" \
   --out "$FINAL_REPORT"

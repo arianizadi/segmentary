@@ -20,7 +20,7 @@ from scripts import build_rad_paper_report as report
 from scripts import evaluate_rad_source_stages as source_evaluator
 from scripts import run_rad_paper as controller
 from scripts.profile_rad_test import deployment_contract
-from scripts.rad_paper_metrics import paper_metrics, pooled_metrics
+from scripts.rad_paper_metrics import paper_metrics, pooled_metrics, score_images
 from scripts.run_rad_test import digest, write
 
 from segmentary import gpu_policy
@@ -237,6 +237,26 @@ def paper_campaign(tmp_path, monkeypatch, request):
     monkeypatch.setattr(
         source_evaluator, "load_verified_report", lambda *args: source_report, raising=False
     )
+    source_positive = score_images(
+        {"source-fixture": np.diag(np.full(21, 2, dtype=np.int64))}, names
+    )["class_positive_images"]
+    write(tmp_path / "source-positive-images/source-positive-metrics.json", {"fixture": True})
+    monkeypatch.setattr(
+        report,
+        "load_source_positive_evidence",
+        lambda path, request, stages: {
+            (model["model"], stage["stage"]): {
+                "class_positive_images": source_positive,
+                "positive_image_evidence": {
+                    "collector_code_sha": "c" * 40,
+                    "evaluation_record": {"path": "synthetic", "sha256": "d" * 64},
+                    "per_image_confusions": {"path": "synthetic", "sha256": "e" * 64},
+                },
+            }
+            for model in stages["models"]
+            for stage in model["stages"]
+        },
+    )
     protocol = {
         "models": models,
         "matrix": "staged24",
@@ -334,6 +354,18 @@ def paper_campaign(tmp_path, monkeypatch, request):
         }
         train_path = checkpoint.parent / "final-train.json"
         write(train_path, train_record)
+        train_matrices = {}
+        for index, sample in enumerate(train_samples):
+            matrix = np.diag(np.full(21, 2, dtype=np.int64))
+            if index < seed * 5:
+                matrix[0, 0] -= 1
+                matrix[0, 20] += 1
+            train_matrices[sample["key"]] = matrix.tolist()
+        train_confusions = (
+            checkpoint.parent / "diagnostics/final-auto-train/per-image-confusion.json.gz"
+        )
+        train_confusions.parent.mkdir(parents=True)
+        train_confusions.write_bytes(gzip.compress(json.dumps(train_matrices).encode()))
         write(
             root / "state" / (name + ".json"),
             {
@@ -363,14 +395,32 @@ def paper_campaign(tmp_path, monkeypatch, request):
                 },
                 "collection": {
                     "verified": True,
+                    "smoke": False,
                     "contract": "rtis-final-train-statistics-v2",
+                    "artifacts": {
+                        "final-auto-train": {
+                            "per-image-confusion.json.gz": {
+                                "path": str(train_confusions),
+                                "sha256": digest(train_confusions),
+                            }
+                        }
+                    },
                     "diagnostics": {
+                        "contract": "rtis-final-train-statistics-v2",
+                        "test_evaluated": False,
+                        "primary_checkpoint": "final",
+                        "standalone_variant": "final-auto-train",
+                        "deterministic": True,
+                        "smoke_limit": None,
                         "standalone_confusion_exact_match": True,
                         "results": {
                             "final-auto-train": {
                                 "checkpoint_sha256": digest(checkpoint),
                                 "weights": "raw",
                                 "images": 255,
+                                "split": "train",
+                                "artifacts": {"per-image-confusion.json.gz": str(train_confusions)},
+                                "metrics": {"confusion": train_matrix.tolist()},
                             }
                         },
                     },
@@ -608,6 +658,25 @@ def test_report_recomputes_full_metrics_and_three_seed_sample_sd(paper_campaign)
             aggregate["pixel_pooled_miou"]["sample_sd"],
         )
     )
+    assert result["report_metric_policy"]["primary_metric"] == "class_positive_image_miou"
+    assert result["research_protocol"]["primary_metric"] == "pixel_pooled_miou"
+    positive_gaps = [
+        run["train_class_positive_image_miou"] - run["metrics"]["class_positive_images"]["miou"]
+        for run in selected
+    ]
+    assert aggregate["conditional_train_test_miou_gap"]["mean"] == pytest.approx(
+        np.mean(positive_gaps)
+    )
+    assert aggregate["conditional_train_test_miou_gap"]["sample_sd"] == pytest.approx(
+        np.std(positive_gaps, ddof=1)
+    )
+    assert result["headline_order"] == [
+        row["model"]
+        for row in sorted(
+            result["aggregates"],
+            key=lambda row: (-row["class_positive_image_miou"]["mean"], row["model"]),
+        )
+    ]
 
 
 @pytest.mark.parametrize("split", ["train", "test"])
@@ -663,8 +732,15 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
     out = paper_campaign.root / "report"
     report.build(paper_campaign.request, out)
     text = "\n".join(page.extract_text() for page in reader.PdfReader(out / "rad-paper.pdf").pages)
-    assert "RAD test pooled IoU" in text
-    assert "Class-positive-image IoU" in text
+    normalized = " ".join(text.split())
+    assert text.count("RAD IoU comparison") == 8
+    assert "Class-positive IoU mean (%)" in normalized
+    assert "Pooled IoU mean (%)" in normalized
+    assert "Class-positive precision, recall and Dice" in text
+    assert "How to read the scores" in text
+    assert "Data, stages and resources" in text
+    assert "65%" in text and "44.62%" in text
+    assert "2026-11-17" in text
     assert "Full semantic overlays" in text
     assert "best seed" not in text.lower()
     assert "+/-" not in text
@@ -673,6 +749,12 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
     with (out / "rad-paper.csv").open() as stream:
         rows = list(csv.DictReader(stream))
     assert len(rows) == 8
+    assert [int(row["class_positive_rank"]) for row in rows] == list(range(1, 9))
+    assert all(row["primary_metric"] == "class_positive_image_miou" for row in rows)
+    assert "source:cityscapes:class_positive_image_miou" in rows[0]
+    assert "source:cityscapes:pixel_pooled_miou" in rows[0]
+    assert "conditional_train_test_miou_gap:sample_sd" in rows[0]
+    assert "per_block:block-0:class_positive_image_miou:seed_2" in rows[0]
     assert "pixel_pooled_miou:seed_2" in rows[0]
     assert "pixels:mud-pumping" in rows[0]
     assert "iou:mud-pumping:seed_0" in rows[0]
@@ -688,10 +770,12 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
     assert "report code dirty" in text
     assert "RAD_duration_seconds" not in text
     assert "Train pooled mIoU (%)" in text
-    assert "Train-test mIoU gap (pp)" in text
+    assert "Train class-positive mIoU (%)" in text
+    assert "Train-test class-positive mIoU gap (pp)" in text
+    assert "Train-test pooled mIoU gap (pp)" in text
     assert "combines fitting and train/test distribution differences" in " ".join(text.split())
     for rank in range(1, 9):
-        assert " ".join(text.split()).count(f"RAD pooled-mIoU rank {rank} of 8") >= 6
+        assert " ".join(text.split()).count(f"RAD class-positive-image mIoU rank {rank} of 8") == 5
     assert json.loads((out / "rad-paper.json").read_text())["request_sha256"] == digest(
         paper_campaign.request
     )
@@ -701,6 +785,22 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
     for run in json.loads((out / "rad-paper.json").read_text())["runs"]:
         entry = (run["name"], run["config_sha256"], run["final_checkpoint_sha256"])
         assert any(all(value in page for value in entry) for page in appendix)
+    document = reader.PdfReader(out / "rad-paper.pdf")
+    page_ids = {page.indirect_reference.idnum for page in document.pages}
+    links = [
+        reference.get_object()
+        for page in document.pages
+        for reference in page.get("/Annots", [])
+        if reference.get_object().get("/Subtype") == "/Link"
+    ]
+    assert len(links) > 50
+    assert all(link["/Dest"][0].idnum in page_ids for link in links)
+    cover_targets = {
+        reference.get_object()["/Dest"][0].idnum for reference in document.pages[0]["/Annots"]
+    }
+    model_pages = [page for page in document.pages if "RAD IoU comparison" in page.extract_text()]
+    assert len(model_pages) == 8
+    assert all(page.indirect_reference.idnum in cover_targets for page in model_pages)
 
 
 def test_pdf_provenance_condenses_module_origins_and_source_artifact_paths(paper_campaign):
@@ -766,8 +866,18 @@ def test_pdf_green_boxes_follow_comparable_metric_objectives(
     for index, entry in enumerate(value["aggregates"]):
         best = index < 2
         quality = 0.8888 + index * 0.0000001 if best else 0.5
-        for field in ("iou", "positive_image_iou", "precision", "recall", "dice"):
-            entry["per_class"][name][field]["mean"] = quality
+        for field in (
+            "iou",
+            "positive_image_iou",
+            "positive_image_precision",
+            "positive_image_recall",
+            "positive_image_dice",
+        ):
+            entry["per_class"][name][field] = report.nullable_summary(
+                dict.fromkeys(range(3), quality)
+            )
+        entry["class_positive_image_miou"]["mean"] = quality
+        entry["pixel_pooled_miou"]["mean"] = 0.7777 if index >= 6 else 0.3
         for field in ("negative_image_false_alarm_rate", "negative_image_false_alarm_rate_area"):
             entry["per_class"][name][field] = {
                 **report.nullable_summary(dict.fromkeys(range(3), 0.01 if best else 0.1)),
@@ -793,19 +903,28 @@ def test_pdf_green_boxes_follow_comparable_metric_objectives(
         if run["model"] == value["headline_order"][0] and run["seed"] == 0:
             for field in ("per_block", "leave_one_block_out"):
                 run["metrics"][field]["block-0"]["pixel_pooled"]["per_class"][name]["iou"] = None
+                run["metrics"][field]["block-0"]["class_positive_images"]["per_class"][name][
+                    "mean_image_iou"
+                ] = None
     for index, source in enumerate(value["source_stage_reports"]["models"]):
         for stage in source["stages"]:
             stage["metrics"] = copy.deepcopy(stage["metrics"])
+            stage["class_positive_images"] = copy.deepcopy(stage["class_positive_images"])
             metrics = stage["metrics"]["metrics"]
+            positive = stage["class_positive_images"]["per_class"][name]
+            source_quality = 0.8 + index * 0.0000001 if index < 2 else 0.5
             if stage["stage"] == "cityscapes_to_railsem19":
                 metrics["support"][name] = 0
+                positive["positive_images"] = 0
             for field in (
                 "per_class_iou",
                 "per_class_precision",
                 "per_class_recall",
                 "per_class_dice",
             ):
-                metrics[field][name] = 0.8 + index * 0.0000001 if index < 2 else 0.5
+                metrics[field][name] = source_quality if metrics["support"][name] else None
+            for field in ("mean_image_iou", "precision", "recall", "dice"):
+                positive[field] = source_quality if positive["positive_images"] else None
 
     tables = []
     original = Table.setStyle
@@ -824,7 +943,9 @@ def test_pdf_green_boxes_follow_comparable_metric_objectives(
         }
         assert boxes == fills
         if all(hasattr(cell, "getPlainText") for row in item._cellvalues for cell in row):
-            rows = [[cell.getPlainText() for cell in row] for row in item._cellvalues]
+            rows = [
+                [cell.getPlainText().removesuffix(" ?") for cell in row] for row in item._cellvalues
+            ]
             tables.append((rows, boxes))
         return original(item, style)
 
@@ -834,27 +955,39 @@ def test_pdf_green_boxes_follow_comparable_metric_objectives(
     class_tables = [
         (rows, boxes)
         for rows, boxes in tables
-        if rows[0] == ["Class", "Images", "GT pixels", "IoU mean (%)", "SD"]
+        if rows[0]
+        == [
+            "Class",
+            "Images",
+            "GT pixels",
+            "Class-positive IoU mean (%)",
+            "SD",
+            "Pooled IoU mean (%)",
+            "SD",
+        ]
     ]
-    assert len(class_tables) == 16
-    assert sum((3, 1) in boxes for _, boxes in class_tables) == 4
+    assert len(class_tables) == 8
+    assert sum((3, 1) in boxes for _, boxes in class_tables) == 2
     for rows, boxes in class_tables:
         assert ((3, 1) in boxes) == (rows[1][3] == "88.88")
-        assert all(column == 3 for column, _ in boxes)
+        assert ((5, 1) in boxes) == (rows[1][5] == "88.88")
+        assert all(column in {3, 5} for column, _ in boxes)
 
     source_tables = [
-        (rows, boxes) for rows, boxes in tables if rows[0][:3] == ["Class", "GT pixels", "IoU (%)"]
+        (rows, boxes)
+        for rows, boxes in tables
+        if rows[0][:4] == ["Class", "Images", "GT pixels", "Class-positive IoU (%)"]
     ]
     assert len(source_tables) == 16
     for rows, boxes in source_tables:
-        for column in range(2, 6):
+        for column in range(3, 8):
             assert ((column, 1) in boxes) == (rows[1][column] == "80.00")
-        assert all(column >= 2 for column, _ in boxes)
+        assert all(column >= 3 for column, _ in boxes)
     source_summaries = [
-        (rows, boxes) for rows, boxes in tables if rows[0][0] == "Native validation mIoU (%)"
+        (rows, boxes) for rows, boxes in tables if rows[0][0] == "Class-positive mIoU (%)"
     ]
     assert len(source_summaries) == 16
-    assert all(column in {0, 3, 4} for _, boxes in source_summaries for column, _ in boxes)
+    assert all(column in {0, 1, 4, 5} for _, boxes in source_summaries for column, _ in boxes)
 
     precision_tables = [
         (rows, boxes) for rows, boxes in tables if rows[0][1] == "Precision mean (%)"
@@ -876,13 +1009,13 @@ def test_pdf_green_boxes_follow_comparable_metric_objectives(
         if rows[0] == ["Measurement", "Mean", "SD", "Seeds", "Minimum", "Maximum"]
     ]
     assert len(resources) == 8
-    objective_rows = {3, 4, 8, 9, 10, 11, 12}
+    objective_rows = {5, 6, 10, 11, 12, 13, 14}
     if complete_training:
-        objective_rows.update({5, 7})
+        objective_rows.update({7, 9})
     if incomplete_resources:
-        objective_rows.difference_update({3, 8, 11})
+        objective_rows.difference_update({5, 10, 13})
     for rows, boxes in resources:
-        expected = {(1, row) for row in objective_rows} if rows[3][1] == "200.00" else set()
+        expected = {(1, row) for row in objective_rows} if rows[5][1] == "200.00" else set()
         assert boxes == expected
     replicates = [
         (rows, boxes) for rows, boxes in tables if rows[0][:2] == ["Measurement", "Seed 0"]
@@ -890,17 +1023,23 @@ def test_pdf_green_boxes_follow_comparable_metric_objectives(
     assert len(replicates) == 8
     for _, boxes in replicates:
         assert (1, 2) in boxes
-        assert {(2, 7), (3, 7), (2, 8), (3, 8)} <= boxes
-        assert all(1 <= column <= 3 and row not in {1, 3, 9} for column, row in boxes)
+        assert (1, 5) in boxes
+        assert {(2, 9), (3, 9), (2, 10), (3, 10)} <= boxes
+        assert all(1 <= column <= 3 and row not in {1, 3, 4, 6, 11} for column, row in boxes)
 
     blocks = [(rows, boxes) for rows, boxes in tables if rows[0][0] == "Block"]
     assert len(blocks) == 16
     assert all((4, 1) not in boxes and (4, 2) in boxes for _, boxes in blocks)
+    assert all((6, 1) not in boxes and (6, 2) in boxes for _, boxes in blocks)
     support = [boxes for rows, boxes in tables if rows[0][0] == "Split"]
     assert support == [set()]
     cover = [boxes for rows, boxes in tables if rows[0][0] == "Rank"]
     assert len(cover) == 1
-    assert any(column == 4 for column, _ in cover[0]) is not incomplete_resources
+    assert any(column == 6 for column, _ in cover[0]) is not incomplete_resources
+    cover_rows = next(rows for rows, _ in tables if rows[0][0] == "Rank")
+    for row, values in enumerate(cover_rows[1:], 1):
+        assert ((2, row) in cover[0]) == (values[2] == "88.88")
+        assert ((4, row) in cover[0]) == (values[4] == "77.77")
 
 
 def test_semantic_panel_verifies_saved_prediction_hash(paper_campaign):
@@ -981,6 +1120,7 @@ def test_controller_runs_source_test_fixed_gpu_profile_report_and_propagates_cac
         "evaluate_rad_source_stages.py",
         "run_rad_test.py",
         "run_rad_test_profiles.py",
+        "collect_rad_source_positive_metrics.py",
         "build_rad_paper_report.py",
     ]
     assert calls[2][1][-2:] == ["--gpu", "0"]
