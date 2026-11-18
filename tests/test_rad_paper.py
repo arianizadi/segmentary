@@ -780,6 +780,7 @@ def test_csv_json_pdf_build_retains_all_classes_and_seed_columns(paper_campaign)
         paper_campaign.request
     )
     pages = [page.extract_text() for page in reader.PdfReader(out / "rad-paper.pdf").pages]
+    assert all(len(page.splitlines()) > 2 for page in pages)
     appendix_start = next(index for index, page in enumerate(pages) if "Exact provenance" in page)
     appendix = ["".join(page.split()) for page in pages[appendix_start:]]
     for run in json.loads((out / "rad-paper.json").read_text())["runs"]:

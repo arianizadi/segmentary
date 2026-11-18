@@ -1020,7 +1020,7 @@ def build_pdf(path: Path, report: dict) -> None:
             if fractions
             else [width / len(rows[0])] * len(rows[0])
         )
-        item = Table(rendered, colWidths=widths, repeatRows=1)
+        item = Table(rendered, colWidths=widths, repeatRows=1, spaceAfter=8)
         commands = [
             ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#DBE5ED")),
             ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#F2F5F8")]),
@@ -1038,7 +1038,7 @@ def build_pdf(path: Path, report: dict) -> None:
                 ]
             )
         item.setStyle(TableStyle(commands))
-        story.extend([item, Spacer(1, 8)])
+        story.append(item)
 
     def title(value, anchor=None):
         markup = escape(str(value)).replace("\n", "<br/>")
