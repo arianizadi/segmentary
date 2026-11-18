@@ -1710,7 +1710,7 @@ def build_pdf(path: Path, report: dict) -> None:
             (column, index + 1)
             for index in displayed_winner_indices(values, scale=scale, require_complete=True)
         )
-    table(rows, [0.04, 0.27, 0.14, 0.06, 0.14, 0.06, 0.145, 0.145], winners)
+    table(rows, [0.05, 0.26, 0.14, 0.06, 0.14, 0.06, 0.145, 0.145], winners)
     story.append(
         paragraph(
             "Green boxes mark the best comparable displayed values, including ties. Higher quality and FPS win. Lower defined false alarms, memory, parameter counts and weight sizes win. RAD comparisons use the common recipe, source quality and size comparisons use matching native stages, and block comparisons use identical scored-class sets. Resource comparisons require complete cohort evidence. Seed boxes compare that model's test quality and speed. Qualitative figures use fixed images and seed 0 for every model.",
